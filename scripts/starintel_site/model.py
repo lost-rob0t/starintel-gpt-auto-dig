@@ -49,6 +49,10 @@ def org_id(value: str) -> str:
 
 
 def read_canonical(path: Path) -> str:
+    if path.name.endswith(".parts"):
+        names = [line.strip() for line in path.read_text().splitlines() if line.strip()]
+        encoded = "".join((path.parent / name).read_text().strip() for name in names).encode()
+        return gzip.decompress(base64.b64decode(encoded)).decode("utf-8")
     if path.name.endswith(".gz.b64"):
         return gzip.decompress(base64.b64decode(path.read_bytes())).decode("utf-8")
     return path.read_text(encoding="utf-8")
@@ -80,6 +84,7 @@ def load(path: Path) -> list[dict[str, Any]]:
 def discover(root: Path) -> list[Packet]:
     paths = list(root.glob("*/*/starintel-documents.jsonl"))
     paths += list(root.glob("*/*/starintel-documents.jsonl.gz.b64"))
+    paths += list(root.glob("*/*/starintel-documents.jsonl.gz.b64.parts"))
     packets = []
     for path in sorted(paths):
         rel = path.relative_to(root)
