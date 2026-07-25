@@ -13,6 +13,19 @@ const COLORS = {
   "research-pass": "#06b6d4", contract: "#10b981", policy: "#8b5cf6",
   source: "#64748b", entity: "#94a3b8"
 };
+const COLOR_VARIABLES = {
+  person: "--node-person", organization: "--node-organization", relation: "--node-relation",
+  event: "--node-event", claim: "--node-claim", analysis: "--node-analysis",
+  concept: "--node-concept", "investigation-target": "--node-target",
+  "financial-observation": "--node-financial", education: "--node-education",
+  employment: "--node-employment", "dataset-manifest": "--node-manifest",
+  "research-pass": "--node-research", contract: "--node-contract", policy: "--node-policy",
+  source: "--node-source", entity: "--node-entity"
+};
+const FALLBACK_VARIABLES = [
+  "--accent", "--accent-2", "--warm", "--danger", "--node-organization",
+  "--node-event", "--node-financial", "--node-education", "--node-policy", "--node-research"
+];
 const FALLBACK = ["#2dd4bf", "#60a5fa", "#c084fc", "#f472b6", "#fb7185", "#fbbf24", "#a3e635", "#4ade80", "#22d3ee", "#818cf8"];
 
 export const clamp = (value, min, max) => Math.max(min, Math.min(max, value));
@@ -33,10 +46,17 @@ export function seeded(id, salt) {
   return (hash(`${id}:${salt}`) % 100000) / 100000;
 }
 
+function cssColor(variable, fallback) {
+  if (typeof document === "undefined" || typeof getComputedStyle === "undefined") return fallback;
+  return getComputedStyle(document.documentElement).getPropertyValue(variable).trim() || fallback;
+}
+
 export function colorFor(group, provided) {
-  if (COLORS[group]) return COLORS[group];
-  if (provided && provided !== COLORS.entity) return provided;
-  return group === "entity" ? COLORS.entity : FALLBACK[hash(group) % FALLBACK.length];
+  const variable = COLOR_VARIABLES[group];
+  if (variable) return cssColor(variable, COLORS[group]);
+  if (group === "entity") return cssColor("--node-entity", provided || COLORS.entity);
+  const index = hash(group) % FALLBACK.length;
+  return cssColor(FALLBACK_VARIABLES[index], provided || FALLBACK[index]);
 }
 
 export function shapeFor(group) {
