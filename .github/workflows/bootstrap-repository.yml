@@ -31,17 +31,43 @@ jobs:
           show-progress: false
           ref: ${{ github.event.pull_request.head.ref || github.ref_name }}
 
-      - name: Reconstruct and verify repository archive
+      - name: Reconstruct repository archive
+        shell: bash
+        run: |
+          set -u
+          : > /tmp/bootstrap-diagnostics.txt
+          find bootstrap -maxdepth 1 -type f -printf '%f %s bytes\n' | sort | tee -a /tmp/bootstrap-diagnostics.txt
+          cat bootstrap/archive.b64.0[0-5] > /tmp/starintel-repository.b64
+          wc -c /tmp/starintel-repository.b64 | tee -a /tmp/bootstrap-diagnostics.txt
+          sha256sum bootstrap/archive.b64.0[0-5] /tmp/starintel-repository.b64 | tee -a /tmp/bootstrap-diagnostics.txt
+          base64 --decode /tmp/starintel-repository.b64 > /tmp/starintel-repository.tar.xz
+          decode_status=$?
+          printf 'base64_status=%s\n' "$decode_status" | tee -a /tmp/bootstrap-diagnostics.txt
+          wc -c /tmp/starintel-repository.tar.xz | tee -a /tmp/bootstrap-diagnostics.txt
+          sha256sum /tmp/starintel-repository.tar.xz | tee -a /tmp/bootstrap-diagnostics.txt
+          xz --test /tmp/starintel-repository.tar.xz
+          xz_status=$?
+          printf 'xz_status=%s\n' "$xz_status" | tee -a /tmp/bootstrap-diagnostics.txt
+          exit 0
+
+      - name: Upload bootstrap diagnostics
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: bootstrap-diagnostics
+          path: |
+            /tmp/bootstrap-diagnostics.txt
+            /tmp/starintel-repository.tar.xz
+          if-no-files-found: warn
+
+      - name: Verify and extract repository archive
         shell: bash
         run: |
           set -euo pipefail
-          test "$(find bootstrap -maxdepth 1 -name 'archive.b64.*' | wc -l)" -eq 6
-          wc -c bootstrap/archive.b64.*
-          cat bootstrap/archive.b64.0[0-5] | base64 --decode > /tmp/starintel-repository.tar.xz
-          sha256sum /tmp/starintel-repository.tar.xz
-          xz --test /tmp/starintel-repository.tar.xz
+          grep -q '^base64_status=0$' /tmp/bootstrap-diagnostics.txt
+          grep -q '^xz_status=0$' /tmp/bootstrap-diagnostics.txt
           tar --extract --xz --file /tmp/starintel-repository.tar.xz
-          rm -rf bootstrap /tmp/starintel-repository.tar.xz
+          rm -rf bootstrap /tmp/starintel-repository.b64 /tmp/starintel-repository.tar.xz /tmp/bootstrap-diagnostics.txt
 
       - name: Validate database
         run: python3 scripts/validate-db.py
