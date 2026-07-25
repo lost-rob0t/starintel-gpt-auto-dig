@@ -1,0 +1,60 @@
+:PROPERTIES:
+:ID:       starintel-palantir-method
+:END:
+#+title: Palantir Source and Accounting Methodology
+#+description: Source hierarchy, confidence treatment and contract/lobbying normalization rules used for the Palantir dataset.
+#+filetags: :research:palantir:methodology:provenance:
+
+* Source hierarchy
+
+The pass prioritizes:
+
+1. Securities and Exchange Commission filings
+2. Senate Lobbying Disclosure Act[fn:lda] records
+3. USAspending and System for Award Management procurement records
+4. Department of Defense and Army award notices
+5. National Health Service and United Kingdom tender records
+6. Government Accountability Office protest decisions
+7. corporate statements
+8. advocacy sources, clearly labeled by viewpoint
+
+* Normalization rules
+
+- Use the latest amended lobbying filing rather than adding original and amended versions.
+- Exclude a disclosed subcontractor from spend totals when the primary registrant already reports the income.
+- Keep contract ceiling[fn:ceiling], potential value, current amount, obligation, outlay and revenue distinct.
+- Preserve lower confidence for award leads that have not been reconciled to a complete award record.
+- Treat former government employment as a relationship indicator, not proof of corruption.
+- Preserve the source viewpoint of corporate and advocacy claims.
+- Mark analytical inference explicitly.
+
+* Known limits
+
+- Classified scope is not public.
+- Commercial customer identities and contract values are often confidential.
+- Award recipient profiles can contain aliases and child profiles.
+- Second-quarter 2026 lobbying reports can be amended after the cutoff.
+- State, local and foreign lobbying regimes are not fully represented.
+- Public contract notices often omit data flows, permissions, user actions and operational results.
+
+* Integrity
+
+The manifest contains a SHA-256 hash for every document path. Database validation checks path identity, one-line NDJSON structure, duplicate identifiers and relation endpoint resolution.
+
+* Related
+
+- [[id:starintel-palantir-index][Palantir index]]
+- [[id:starintel-palantir-contracts][Contracts and procurement]]
+- [[id:starintel-palantir-lobbying][Lobbying and influence]]
+
+* Footnotes and Glossary
+
+[fn:starintel] StarIntel: A document-centered research system that preserves entities, relationships, events, evidence, provenance, confidence and investigative questions as structured records.
+
+[fn:ndjson] Newline-delimited JSON (NDJSON): A text format in which each line is one complete JavaScript Object Notation object. This repository stores one object per file.
+
+[fn:orgroam] Org-roam: An Emacs knowledge-management system that links Org files through stable identifiers and maintains a graph database of nodes and backlinks.
+
+[fn:ceiling] Contract ceiling: The maximum amount that may be ordered under a contract vehicle. It is not the same as money obligated, paid or recognized as revenue.
+
+[fn:lda] Lobbying Disclosure Act filing: A federal disclosure reporting lobbying registrants, clients, lobbyists, issue areas and reported expenses or income.

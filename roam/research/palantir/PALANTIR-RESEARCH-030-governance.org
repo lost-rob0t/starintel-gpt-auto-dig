@@ -1,0 +1,60 @@
+:PROPERTIES:
+:ID:       starintel-palantir-governance
+:END:
+#+title: Palantir Governance and Founder Control
+#+description: Founder Voting Trust, Class F voting mechanics, board structure and international subsidiary footprint.
+#+filetags: :research:palantir:governance:ownership:
+
+* Founder control
+
+The Founder Voting Trust consists of Alexander Karp, Stephen Cohen and Peter Thiel. Palantir's 2026 proxy describes Class F voting mechanics that can preserve founder voting power near 49.999999 percent under specified ownership and trust conditions.
+
+The same filing reported approximately 22 percent voting power for founders and affiliates excluding Class F as of February 10, 2026.
+
+This is a material governance-concentration feature. It is not evidence of unlawful conduct.
+
+* Board and executive nodes
+
+The structured corpus includes records for:
+
+- Alexander Karp
+- Stephen Cohen
+- Peter Thiel
+- Shyam Sankar
+- David Glazer
+- Ryan Taylor
+- Alexander Moore
+- Alexandra Schiff
+- Lauren Friedman Stat
+- Eric Woersching
+
+* International footprint
+
+The subsidiary graph covers operating entities across the United States, United Kingdom, European Union member states, Switzerland, Norway, Israel, Qatar, India, East Asia, Australia, New Zealand, Canada, Mexico and Brazil.
+
+The next pass should connect each local subsidiary to public contracts, data-controller roles, tax and invoicing functions, lobbying intermediaries and data-localization requirements.
+
+* Governance questions
+
+1. How do Class F mechanics change after transfers, deaths or trust amendments?
+2. Which corporate actions can founders block or determine?
+3. How independent are board committees in practice?
+4. Which future proxy amendments change voting control?
+5. Which subsidiaries sign, invoice or process data for each foreign public-sector deployment?
+
+* Related
+
+- [[id:starintel-palantir-deep-dive][Deep-dive assessment]]
+- [[id:starintel-palantir-index][Palantir index]]
+
+* Footnotes and Glossary
+
+[fn:starintel] StarIntel: A document-centered research system that preserves entities, relationships, events, evidence, provenance, confidence and investigative questions as structured records.
+
+[fn:ndjson] Newline-delimited JSON (NDJSON): A text format in which each line is one complete JavaScript Object Notation object. This repository stores one object per file.
+
+[fn:orgroam] Org-roam: An Emacs knowledge-management system that links Org files through stable identifiers and maintains a graph database of nodes and backlinks.
+
+[fn:ceiling] Contract ceiling: The maximum amount that may be ordered under a contract vehicle. It is not the same as money obligated, paid or recognized as revenue.
+
+[fn:lda] Lobbying Disclosure Act filing: A federal disclosure reporting lobbying registrants, clients, lobbyists, issue areas and reported expenses or income.

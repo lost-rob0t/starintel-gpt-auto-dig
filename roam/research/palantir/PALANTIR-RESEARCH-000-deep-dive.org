@@ -1,0 +1,75 @@
+:PROPERTIES:
+:ID:       starintel-palantir-deep-dive
+:END:
+#+title: Palantir Deep-Dive Assessment — 2026-07-25
+#+description: Evidence-linked assessment of Palantir's corporate structure, government contracts, lobbying network and governance.
+#+filetags: :research:palantir:assessment:
+
+* Assessment
+
+Palantir has developed a vertically integrated public-sector influence and delivery system:
+
+- Gotham, Foundry, Apollo and the Artificial Intelligence Platform connect data, permissions, models and operational workflows.
+- Long-duration enterprise agreements and blanket purchase agreements reduce the friction of expanding deployments.
+- A large in-house lobbying operation is reinforced by outside firms specializing in defense, appropriations, health, aviation, agriculture, privacy and bipartisan political access.
+- The Founder Voting Trust and Class F stock structure preserve concentrated founder voting influence.
+
+These findings establish institutional capacity and influence architecture. They do not establish bribery, fraud, corruption or improper contract steering.
+
+* Corporate scale
+
+For fiscal year 2025, Palantir reported approximately:
+
+| Measure | Value |
+|-
+| Revenue | $4.5 billion |
+| Operating income | $1.4 billion |
+| Gross margin | 82% |
+| Government share of revenue | 54% |
+| United States share of revenue | 74% |
+| Customers | 954 |
+| Employees | 4,429 |
+| Remaining deal value | $11.2 billion |
+| Unfunded indefinite-delivery ceiling excluded from remaining deal value | $12.3 billion |
+
+In the first quarter of 2026, United States government revenue was reported as $687 million and the customer count reached 1,007.
+
+* Structural conclusions
+
+** Enterprise-contract migration
+
+The United States Army agreement is strategically significant because it consolidates 75 arrangements into a ten-year purchasing structure. The $10 billion headline is a ceiling[fn:ceiling], not guaranteed revenue.
+
+** Program-aligned lobbying
+
+The lobbying disclosures mention programs and procurement domains adjacent to active Palantir business, including Tactical Intelligence Targeting Access Node, Battlefield Domain Awareness, Joint All-Domain Command and Control, Army intelligence, Department of Veterans Affairs modernization, aviation and public-health data platforms.
+
+This demonstrates alignment. It does not prove that lobbying caused any award.
+
+** Lock-in exposure
+
+Lock-in can exist through proprietary ontology, permissions, lineage, integrations, application logic, user training and operational dependence even when raw data can technically be exported.
+
+** Data-governance exposure
+
+Palantir supplies software capable of integrating sensitive data and operational workflows. Actual source systems, permissions, retention rules and user actions vary by deployment and are often incompletely public.
+
+* Linked investigations
+
+- [[id:starintel-palantir-contracts][Contracts and procurement]]
+- [[id:starintel-palantir-lobbying][Lobbying and influence]]
+- [[id:starintel-palantir-governance][Governance]]
+- [[id:starintel-palantir-method][Methodology]]
+- [[id:starintel-palantir-index][Palantir index]]
+
+* Footnotes and Glossary
+
+[fn:starintel] StarIntel: A document-centered research system that preserves entities, relationships, events, evidence, provenance, confidence and investigative questions as structured records.
+
+[fn:ndjson] Newline-delimited JSON (NDJSON): A text format in which each line is one complete JavaScript Object Notation object. This repository stores one object per file.
+
+[fn:orgroam] Org-roam: An Emacs knowledge-management system that links Org files through stable identifiers and maintains a graph database of nodes and backlinks.
+
+[fn:ceiling] Contract ceiling: The maximum amount that may be ordered under a contract vehicle. It is not the same as money obligated, paid or recognized as revenue.
+
+[fn:lda] Lobbying Disclosure Act filing: A federal disclosure reporting lobbying registrants, clients, lobbyists, issue areas and reported expenses or income.
