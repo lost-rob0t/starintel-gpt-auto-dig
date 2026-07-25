@@ -125,7 +125,6 @@ def endpoint_api_get(endpoint: str, params: dict[str, Any]):
 
 ledger.identity_score = strict_identity_score
 ledger.api_get = endpoint_api_get
-ledger.committee_lookup = lambda ids: ({}, [])
 
 if __name__ == "__main__":
     ledger.main()
