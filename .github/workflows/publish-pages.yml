@@ -54,18 +54,18 @@ jobs:
           test -s .generated/org/larry-fink/index.org
           python - <<'PY'
           import json
+          import sys
           from pathlib import Path
+          sys.path.insert(0, "scripts")
+          from starintel_site.model import discover
           graph = json.loads(Path("_site/larry-fink/graph.json").read_text())
           assert graph["nodes"]
           assert graph["edges"]
-          for path in list(Path("digs").glob("*/*/starintel-documents.jsonl")) + list(Path("digs").glob("*/*/starintel-documents.jsonl.gz.b64")):
-              import base64, gzip
-              text = gzip.decompress(base64.b64decode(path.read_bytes())).decode() if path.name.endswith(".gz.b64") else path.read_text()
-              ids = set()
-              for number, line in enumerate(text.splitlines(), 1):
-                  doc = json.loads(line)
-                  assert doc["_id"] not in ids, (path, number, doc["_id"])
-                  ids.add(doc["_id"])
+          packets = discover(Path("digs"))
+          assert packets
+          for packet in packets:
+              ids = [doc["_id"] for doc in packet.documents]
+              assert len(ids) == len(set(ids)), packet.path
           print("validated", len(graph["nodes"]), "nodes and", len(graph["edges"]), "edges")
           PY
 
