@@ -1,11 +1,18 @@
 {
   "site_title": "StarIntel GPT Auto Dig",
+  "database_targets": {
+    "palantir-deep-dive-2026-07-25": "palantir"
+  },
   "packets": {
     "larry-fink": {
       "title": "Larry Fink",
-      "subtitle": "Institutions, government ties, lobbying, stewardship, infrastructure, and neutral political-economy analysis",
-      "narrative_document_id": "starintel:analysis:fink-corporatism-fascism-comparison",
+      "subtitle": "Institutions, government ties, lobbying, stewardship, infrastructure, and source-backed research",
       "central_entity_id": "starintel:person:laurence-d-fink"
+    },
+    "palantir": {
+      "title": "Palantir",
+      "subtitle": "Organizations, people, products, contracts, lobbying, governance, and direct relationship exploration",
+      "central_entity_id": "starintel:org:palantir-technologies-inc"
     }
   }
 }
