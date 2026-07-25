@@ -75,6 +75,8 @@ jobs:
           grep -q '^xz_status=0$' /tmp/bootstrap-diagnostics.txt
           echo "28e1c6291deb4a51b09e8f71f62a0081a2c9968ad01659be56374f73eb71fba6  /tmp/starintel-repository.tar.xz" | sha256sum --check --strict
           tar --extract --xz --file /tmp/starintel-repository.tar.xz
+          mv lisp/starintel/second-brain.el lisp/starintel/starintel-second-brain.el
+          mv lisp/starintel/pages.el lisp/starintel/starintel-pages.el
           rm -rf bootstrap /tmp/starintel-repository.b64 /tmp/starintel-repository.tar.xz /tmp/bootstrap-diagnostics.txt
 
       - name: Validate database
