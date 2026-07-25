@@ -1,44 +1,41 @@
 # StarIntel GPT Auto Dig
 
-Evidence-first research packets produced through GPT-assisted StarIntel loops and published through the Python research-site generator.
+Evidence-first research packets produced through GPT-assisted StarIntel loops and published as generated Org-roam corpora, source inventories, neutral narratives, agent research ledgers, and interactive exploration graphs.
 
-This repository stores bounded dig packets, normalized StarIntel records, source inventories, reports, manifests, and optional Org research notes. It does not replace the canonical design and implementation records in `starintel-auto-research`.
+This repository stores bounded dig outputs and machine-readable StarIntel documents. It does not replace the canonical design and implementation records in `starintel-auto-research`.
 
 ## Repository layout
 
-Research may be published in either of two compatible forms.
-
-Packet-oriented digs live under:
+Each completed loop belongs under:
 
 ```text
 digs/<target>/<YYYY-MM-DD>-<loop-slug>/
 ├── README.md
-├── sources.md
 └── starintel-documents.jsonl
 ```
 
-Normalized records live under:
+A packet may add supporting fixtures, manifests, or exports when required. A large canonical stream may be stored as a gzip-compressed, base64-encoded `starintel-documents.jsonl.gz.b64` file or an ordered `.parts` manifest. These are transport forms of one logical JSONL dataset, not duplicate research copies.
 
-```text
-db/<dtype>/<_id>.ndjson
-```
+Multiple packets may exist for the same target. The generator merges them by stable document ID and `date_updated`, preserving the target's complete history. The generated canonical download contains the merged target corpus rather than only the newest incremental packet.
 
-Each normalized file contains exactly one compact JSON object plus one terminating newline. Its directory and filename must match the record's `dtype` and `_id` exactly.
+## Agent research ledger
 
-Supporting material may live under:
+An agent may publish its synthesis as a `research-pass` document inside a later packet. A research pass should expose:
 
-- `manifests/` — dataset manifests and integrity metadata
-- `reports/` — readable research reports
-- `roam/research/` and `roam/indexes/` — optional Org research and index nodes
-- `scripts/` — validation and Python site-generation tooling
+- the research question;
+- method and classification rules;
+- findings with confidence;
+- supporting record IDs;
+- counterevidence or competing interpretations;
+- unresolved investigation-target IDs;
+- source records and retrieval dates;
+- the agent identity and narrative role.
 
-A packet may add fixtures, manifests, compressed transport files, or exports when required. Generated files must remain beside the packet or dataset that produced them.
-
-Multiple packets may exist for the same target. The Python generator merges packet records by stable document ID and `date_updated`, preserving the target's research history.
+Research passes are append-only. A later pass supplements or challenges earlier analysis instead of silently replacing it. The site renders these passes as an evidence-linked narrative ledger.
 
 ## Generated research site
 
-The canonical publisher is Python:
+`Org` nodes, graph data, source indexes, and HTML are derived by `scripts/build_research_site.py`. Generated output is not committed.
 
 ```bash
 python3 scripts/build_research_site.py \
@@ -47,34 +44,17 @@ python3 scripts/build_research_site.py \
   --org-output .generated/org
 ```
 
-The GitHub Pages workflow validates pull requests and deploys `main`. Generated output is not committed.
+Open `_site/index.html`. The GitHub Pages workflow validates pull requests and deploys `main`. Each target page can contain:
 
-Each generated target page can contain:
-
-- a neutral evidence-based narrative
-- an append-only agent research ledger
-- an evidence-posture summary
-- an interactive exploration graph
-- typed StarIntel record pages
-- generated source and packet indexes
-- a merged canonical JSONL download
-
-The repository does not use an Emacs-based Pages deployment workflow.
-
-## Agent research ledger
-
-An agent may publish its synthesis as a `research-pass` document inside a packet. A research pass should expose:
-
-- the research question
-- method and classification rules
-- findings with confidence
-- supporting record IDs
-- counterevidence or competing interpretations
-- unresolved investigation-target IDs
-- source records and retrieval dates
-- the agent identity and narrative role
-
-Research passes are append-only. A later pass supplements or challenges earlier analysis instead of silently replacing it.
+- a neutral evidence-based narrative;
+- an append-only agent research ledger;
+- an evidence-posture summary;
+- an interactive exploration graph;
+- typed StarIntel record pages;
+- generated Org-roam nodes;
+- a generated source inventory;
+- the merged canonical JSONL download;
+- the ordered research-packet history.
 
 ## Git flow
 
@@ -82,9 +62,9 @@ Use the same branch-first workflow as `starintel-auto-research`:
 
 1. Start from `main`.
 2. Create `agent/<description>`.
-3. Commit only the current research packet or dataset and its required publishing or validation changes.
+3. Commit only the current dig packet and its required publishing or validation changes.
 4. Open a pull request into `main`.
-5. Validate structured documents, generated output, and the complete diff.
+5. Validate structured documents, generated Org, graph output, and the complete diff.
 6. Squash-merge when the packet is internally consistent and evidence links resolve.
 
 Do not publish a research packet directly to `main`.

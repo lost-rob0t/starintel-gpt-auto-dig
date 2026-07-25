@@ -1,0 +1,109 @@
+name: Build and publish research site
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "digs/**"
+      - "scripts/build_research_site.py"
+      - "scripts/starintel_site/**"
+      - "site-assets/**"
+      - "site-config.json"
+      - ".github/workflows/publish-pages.yml"
+  pull_request:
+    branches: [main]
+    paths:
+      - "digs/**"
+      - "scripts/build_research_site.py"
+      - "scripts/starintel_site/**"
+      - "site-assets/**"
+      - "site-config.json"
+      - ".github/workflows/publish-pages.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: pages-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v6
+
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.13"
+
+      - name: Validate builder
+        run: python -m compileall -q scripts
+
+      - name: Generate Org corpus and site
+        run: |
+          python scripts/build_research_site.py \
+            --input digs \
+            --output _site \
+            --org-output .generated/org
+
+      - name: Validate generated artifacts
+        run: |
+          test -s _site/index.html
+          test -s _site/larry-fink/index.html
+          test -s _site/larry-fink/graph.json
+          test -s .generated/org/larry-fink/index.org
+          python - <<'PY'
+          import json
+          import sys
+          from pathlib import Path
+          sys.path.insert(0, "scripts")
+          from starintel_site.model import discover
+          graph = json.loads(Path("_site/larry-fink/graph.json").read_text())
+          assert graph["nodes"]
+          assert graph["edges"]
+          packets = discover(Path("digs"))
+          assert packets
+          for packet in packets:
+              ids = [doc["_id"] for doc in packet.documents]
+              assert len(ids) == len(set(ids)), packet.path
+          print("validated", len(graph["nodes"]), "nodes and", len(graph["edges"]), "edges")
+          PY
+
+      - name: Configure Pages
+        if: github.event_name != 'pull_request'
+        uses: actions/configure-pages@v5
+
+      - name: Upload Pages artifact
+        if: github.event_name != 'pull_request'
+        uses: actions/upload-pages-artifact@v4
+        with:
+          path: _site
+
+      - name: Upload PR build artifact
+        if: github.event_name == 'pull_request'
+        uses: actions/upload-artifact@v4
+        with:
+          name: starintel-research-site
+          path: |
+            _site
+            .generated/org
+          retention-days: 7
+
+  deploy:
+    if: github.event_name != 'pull_request'
+    needs: build
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
