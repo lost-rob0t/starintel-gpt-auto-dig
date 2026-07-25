@@ -37,6 +37,22 @@ jobs:
         with:
           python-version: "3.12"
 
+      - name: Make generator directly executable from scripts
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+
+          path = Path("scripts/generate-flock-national-seed.py")
+          source = path.read_text(encoding="utf-8")
+          if "import sys\n" not in source:
+              source = source.replace("import re\n", "import re\nimport sys\n", 1)
+          marker = "from starintel_doc.validation import validate_document"
+          bootstrap = "sys.path.insert(0, str(Path(__file__).resolve().parents[1]))\n\n" + marker
+          if bootstrap not in source:
+              source = source.replace(marker, bootstrap, 1)
+          path.write_text(source, encoding="utf-8")
+          PY
+
       - name: Generate packet
         id: generate
         shell: bash
@@ -54,8 +70,9 @@ jobs:
           mkdir -p digs/flock-safety/2026-07-25-national-state-locality-seed
           cp /tmp/flock-generator.log digs/flock-safety/2026-07-25-national-state-locality-seed/generator-failure.log
           git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add digs/flock-safety/2026-07-25-national-state-locality-seed/generator-failure.log
+          git config user.email "41898282+github-actions[bot]]@users.noreply.github.com"
+          git add scripts/generate-flock-national-seed.py \
+            digs/flock-safety/2026-07-25-national-state-locality-seed/generator-failure.log
           git commit -m "Capture Flock generator failure"
           git push origin HEAD:"$BRANCH"
           exit 1
