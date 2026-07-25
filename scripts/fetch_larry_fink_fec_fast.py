@@ -9,6 +9,7 @@ from urllib.parse import urlencode
 from urllib.request import Request, urlopen
 
 import fetch_larry_fink_fec as ledger
+from sanitize_fec_audit import sanitize_audit
 
 # FEC reports contributor names surname-first. These variants cover the
 # documented name forms; the base generator also runs a FINK + BLACKROCK query.
@@ -128,3 +129,4 @@ ledger.api_get = endpoint_api_get
 
 if __name__ == "__main__":
     ledger.main()
+    sanitize_audit(ledger.OUT / "query-audit.json")
