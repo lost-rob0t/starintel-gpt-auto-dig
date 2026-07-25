@@ -2,7 +2,15 @@
 
 ## Decision
 
-StarIntel v0.9 remains the active compatibility family while StarLang is not usable as the schema compiler. The immediate source of truth is executable Python plus generated JSON Schema Draft 2020-12. Every other runtime consumes the generated schema, its manifest, and shared conformance fixtures.
+StarIntel v0.9 remains the active compatibility family while StarLang is not usable as the schema compiler. The source of truth is currently:
+
+1. the executable Python registry;
+2. the immutable v0.9 base JSON Schema;
+3. the portable expansion registry;
+4. the revision manifest and canonical-JSON hash;
+5. shared conformance vectors.
+
+Other runtimes materialize the expanded schema from the same bundle. StarLang can later replace the Python registry as the compiler without becoming a runtime dependency.
 
 This change is additive:
 
@@ -11,54 +19,60 @@ This change is additive:
 - every registered dtype receives shared identity, linkage, provenance, lifecycle, and facet fields;
 - every registered dtype receives an explicit dtype-specific expansion;
 - strict rejection of undeclared fields remains in force;
-- the complete corpus does not need to be rewritten merely to adopt this revision.
+- the complete corpus does not need a mass rewrite merely to adopt this revision.
 
 ## Current-state findings
 
-The original v0.9 work fixed the largest structural problem: incompatible top-level document shapes. It established one strict envelope, one dtype registry, a generated schema, lossless legacy migration, and a validated repository writer.
+The original v0.9 work fixed the largest structural problem: incompatible top-level document shapes. It established one strict envelope, one dtype registry, lossless legacy migration, and a validated repository writer.
 
-The remaining issues are inside the dtype layer:
+The remaining problems were inside the dtype layer:
 
-1. The registry contains 49 dtypes, but only eight have required `data` fields. Most objects can therefore validate with semantically empty `data`.
-2. Many complex fields are unrestricted JSON maps or arrays of unrestricted objects. Examples include network services, DNS records, HTTP forms, message reactions, contract modifications, legal docket entries, research findings, actor configuration, and manifest files.
-3. Several dtypes share a field dictionary even though their semantics differ. `event` and `meeting`, `contract` and `procurement`, location variants, and the two manifest types need distinct fields.
-4. Object identity is stable at `_id`, but the exact schema contract used to create or validate a record is not recorded.
-5. Provenance is a flat metadata object. It does not fully distinguish the collected entity, the activity that generated it, and the agent that performed the activity.
-6. Relationship documents are expressive but underspecified. Predicate namespace, endpoint dtype, assertion agent, evidence links, negation, and statement identity are absent.
-7. Cross-runtime synchronization relies on a mutable branch URL rather than a content fingerprint and conformance vectors.
-8. The schema is structurally strict but lacks many semantic checks: temporal ordering, currency and country-code vocabularies, endpoint existence, identifier normalization, percentage basis, and amount basis.
+1. The registry contains 49 dtypes, but only eight have required `data` fields. Most objects can validate with semantically thin `data`.
+2. Many complex fields are unrestricted JSON maps or arrays of unrestricted objects, including services, DNS records, HTTP exchanges, reactions, contract modifications, docket entries, findings, actor configuration, and manifest files.
+3. Several dtypes shared field dictionaries even though their semantics differ. Meetings, procurements, grants, location variants, and both manifest types require distinct fields.
+4. `_id` identifies a record, but the exact schema contract used to emit it was not recorded.
+5. Provenance did not fully distinguish the collected entity, the generating activity, and the responsible agent.
+6. Relations lacked predicate namespace, endpoint dtype and role, asserting agent, explicit evidence links, negation, and statement identity.
+7. Cross-runtime synchronization depended on a mutable schema URL rather than an immutable compatibility base plus a revisioned, hashed expansion.
+8. Structural validation existed, but semantic checks such as endpoint existence, temporal ordering, identifier normalization, amount basis, and percentage basis remain incomplete.
 
-## Architecture
+## Compatibility version and revision
 
-### 1. Compatibility version and immutable revision
+`schema_version` identifies the compatibility family:
 
-`schema_version` identifies the compatibility family: `0.9.0`.
+```text
+0.9.0
+```
 
-`schema_revision` identifies the exact additive contract: `0.9.0+fields.20260725.1`.
+`schema_revision` identifies the exact additive contract:
 
-The generated manifest records:
+```text
+0.9.0+fields.20260725.1
+```
 
-- schema version and revision;
-- profile and profile version;
-- SHA-256 of the generated schema;
-- source commit;
-- dtype list;
-- field count for each dtype.
+The synchronized bundle is:
 
-A runtime must reject a configured expected hash that does not match the materialized schema. A runtime may accept a v0.9 document without `schema_revision` for backward compatibility, but every newly emitted document must include it.
+```text
+schemas/starintel-doc-v0.9.0.schema.json
+schemas/starintel-doc-v0.9.0.expansion.json
+schemas/starintel-doc-v0.9.0.manifest.json
+```
 
-### 2. Shared typed records
+The base schema is the immutable v0.9 compatibility contract. The expansion registry records common fields, explicit fields for all 49 dtypes, field-kind metadata, and additions to provenance, lineage, verification, and the top-level envelope. The manifest records version, revision, profile, dtype count, and the canonical-JSON SHA-256 of the expansion registry.
+
+A runtime must reject a bundle whose version, revision, profile, dtype count, or hash does not reconcile. A runtime may accept a v0.9 record without `schema_revision` for backward compatibility, but every newly emitted record must include it.
+
+## Shared typed records
 
 The expansion introduces reusable records for:
 
-- document references;
-- external references;
-- money and measurement values;
+- document and external references;
+- money and measurements;
 - status changes;
 - role assignments;
 - facets;
 - collection or processing actions;
-- network services and interfaces;
+- network interfaces and services;
 - certificates and DNS records;
 - HTTP exchanges;
 - message reactions;
@@ -68,15 +82,15 @@ The expansion introduces reusable records for:
 - manifest files;
 - executable query specifications.
 
-Legacy unrestricted fields remain accepted. New typed companion fields provide a migration path without invalidating the corpus.
+Legacy unrestricted fields remain valid. New typed companion fields create a migration path without invalidating the corpus.
 
-### 3. Universal data fields
+## Universal data fields
 
-Every dtype now supports:
+Every dtype supports:
 
 - `canonical_key` and `display_label`;
-- status history and validity interval;
-- explicit references to source and evidence records;
+- status history and validity intervals;
+- explicit source-record and evidence-record references;
 - external references;
 - role assignments;
 - object markings;
@@ -84,15 +98,15 @@ Every dtype now supports:
 - supersession links;
 - namespaced attributes.
 
-This does not turn all objects into one universal bag. Dtype-specific fields remain authoritative, and undeclared fields remain invalid.
+This is not an unrestricted universal object. Dtype-specific fields remain authoritative, and undeclared fields remain invalid.
 
-### 4. Facets instead of unbounded dtype growth
+## Facets
 
-A facet is a typed, versioned subobject with its own source and evidence links. Facets allow specialized communities or future StarLang profiles to extend a record without adding every possible field to the core object.
+A facet is a typed, versioned subobject with its own source, evidence, and confidence links. Facets let specialized datasets extend a record without adding every experimental field to the core schema.
 
-Core fields should be added when they are broadly interoperable and query-critical. Specialized fields should be expressed as a named facet until they are stable enough to promote into the core registry.
+Promote a facet field into the core registry only when it is stable, broadly interoperable, and query-critical.
 
-### 5. Provenance as entity, activity, and agent
+## Provenance
 
 The provenance object gains:
 
@@ -105,32 +119,22 @@ The provenance object gains:
 - `plan_id`;
 - typed action records.
 
-This permits a source record, an extraction activity, and the actor or tool that performed it to remain independently addressable.
+This keeps the source entity, extraction or transformation activity, and performing actor independently addressable.
 
-### 6. Relationship statements
+## Relationship statements
 
 Relations gain:
 
 - statement identity;
 - predicate identifier and namespace;
-- source and target dtype;
-- source and target role;
+- subject and object dtype;
+- subject and object role;
 - asserting agents;
 - supporting and contradicting evidence;
 - negation, symmetry, and transitivity flags;
 - typed qualifier records.
 
-The preferred canonical form remains one subject, one predicate, and one object per relation document. Existing array-valued objects remain valid for compatibility, but new writers should emit separate relation documents unless the relation is explicitly modeled as a hyperedge facet.
-
-### 7. Distinct semantic objects
-
-The expansion separates previously shared shapes:
-
-- meetings receive chair, attendee-role, agenda, minutes, decision, and action-item fields;
-- procurements receive stage, notice, competition-exception, evaluation, and source-system fields;
-- grants receive recipient, program, assistance-listing, matching, performance, objective, and reporting fields;
-- actor manifests receive implementation, routing, dependency, capability, configuration, and health fields;
-- dataset manifests receive versioned document references, file records, schema revision, profile, sync cursor, and validation state.
+The preferred canonical form remains one subject, one predicate, and one object per relation document. Array-valued legacy endpoints remain valid for compatibility, but new writers should emit separate relations unless a true hyperedge is represented through a facet.
 
 ## Dtype expansion matrix
 
@@ -138,46 +142,46 @@ The expansion separates previously shared shapes:
 |---|---|
 | Core identity | canonical identity, duplicate resolution, status history, roles, external references, facets |
 | Person and organization | offices, memberships, ownership, governance, filings, contracts, grants, lobbying, campaign finance, financial observations |
-| Relations and targets | predicate vocabularies, endpoint typing, assertion/evidence, query plans, dependencies, completion and stop conditions |
+| Relations and targets | predicate vocabularies, endpoint typing, assertion and evidence, query plans, dependencies, completion and stop conditions |
 | Network and web | typed interfaces, services, certificates, DNS records, HTTP exchanges, capture and archive links |
-| Location and contact | normalized contact values, geometry, accuracy, containment, providers, account links, validity |
-| Messaging and social | actor/recipient references, conversations, quotes/replies, reactions, attachments, capture and engagement observations |
-| Research | structured propositions, measurements, findings, actions, query plans, outputs, uncertainty, reviews |
-| Finance and institutions | typed money, amount basis, transactions, awards, modifications, line items, party roles, legal dockets and policy versions |
+| Location and contact | normalized contact values, geometry, accuracy, containment, providers, accounts, validity |
+| Messaging and social | actor and recipient references, conversations, quotes and replies, reactions, attachments, captures, engagement observations |
+| Research | propositions, measurements, findings, actions, query plans, outputs, uncertainty, reviews |
+| Finance and institutions | typed money, amount basis, transactions, awards, modifications, line items, party roles, legal dockets, policy versions |
 | Operations | actor dependencies and routing, dataset version manifests, alert lifecycle, task dependencies and attempts |
-| Files and evidence | multiple hashes, derivation, capture actions, custody actions, exact and normalized content, storage and quarantine state |
+| Files and evidence | multiple hashes, derivation, capture and custody actions, exact and normalized content, storage and quarantine state |
 
 ## Validation layers
 
 ### JSON Schema validation
 
-The generated schema enforces:
+The materialized schema enforces:
 
 - declared top-level and dtype-specific fields;
 - reusable nested record shapes;
-- required primitive fields for typed nested objects;
+- required primitive fields inside typed records;
 - score bounds;
 - date-time formats;
 - exact schema revision when present.
 
 ### Repository semantic validation
 
-The repository validator should incrementally add checks that are awkward or impossible in JSON Schema:
+The repository validator should add, incrementally:
 
-1. relation endpoint existence and endpoint dtype agreement;
+1. relation endpoint existence and dtype agreement;
 2. start/end and valid-from/valid-to ordering;
-3. unique identifiers and deterministic identity-key collisions;
+3. deterministic identity collisions and duplicate identity keys;
 4. currency, country, jurisdiction, and identifier-scheme vocabularies;
-5. percentages with an explicit basis and permitted range;
+5. percentages with an explicit basis and valid range;
 6. contract amount reconciliation by basis rather than silent summation;
 7. document references constrained to expected dtype families;
 8. revoked, deleted, and tombstone lifecycle invariants;
-9. manifest record count, per-dtype count, version, and content-hash reconciliation;
-10. source/evidence references and content hashes.
+9. manifest count, version, revision, and hash reconciliation;
+10. source, evidence, and content-hash reconciliation.
 
 ### Cross-runtime conformance
 
-All maintained runtimes should execute the same vectors:
+Every maintained runtime should execute the same vectors:
 
 - minimal valid document for every dtype;
 - expanded valid document for every dtype;
@@ -186,46 +190,41 @@ All maintained runtimes should execute the same vectors:
 - relation endpoint variants;
 - old v0.9 document without `schema_revision`;
 - new v0.9 document with the current revision;
-- manifest hash match and mismatch;
+- expansion hash match and mismatch;
+- deterministic identity vectors;
 - migration fixtures from v0.8 and earlier JavaScript shapes.
 
 ## Runtime synchronization contract
 
 ### Canonical Python package
 
-The Python package owns:
-
-- dtype and field registry;
-- generated JSON Schema;
-- schema manifest and hash;
-- migration logic;
-- corpus and semantic validation;
-- conformance vectors.
+The Python package owns the executable dtype registry, expansion materialization, migrations, repository validation, and canonical conformance fixtures. The portable JSON registry must be tested against the executable registry.
 
 ### JavaScript package
 
-`starintel_doc.js` should:
+`starintel_doc.js` now:
 
-- materialize both schema and manifest;
-- verify SHA-256 before replacing its local schema;
-- export schema version, revision, profile, dtypes, and field names;
-- stamp new documents with the revision and profile;
-- use deterministic IDs when identity inputs are supplied;
-- retain random IDs only as an explicit fallback;
-- validate strict raw documents separately from normalization;
-- run the shared conformance vectors;
-- avoid a mandatory network fetch during ordinary package installation.
+- loads the immutable base schema, expansion registry, and manifest;
+- verifies the canonical expansion hash;
+- materializes the expanded schema locally;
+- preserves the strict Schema.org JSON-LD layer;
+- exports version, revision, profile, hash, dtypes, and dtype field names;
+- stamps new documents with revision and profile metadata;
+- supports deterministic identity inputs with random fallback;
+- separates raw validation from normalization;
+- verifies its local bundle without a network request during package installation.
 
 ### Common Lisp, Nim, and server runtimes
 
-Until StarLang can generate bindings, these runtimes should consume the same schema artifact and manifest. Hand-maintained model classes should be treated as convenience APIs, not independent schema authorities.
+Until StarLang generates bindings, these runtimes should consume the same three-file bundle. Hand-maintained classes are convenience APIs, not independent schema authorities.
 
-Each runtime must expose at least:
+Each runtime must expose:
 
-- `schema-version`;
-- `schema-revision`;
-- `schema-hash`;
-- `supported-dtypes`;
+- schema version;
+- schema revision;
+- schema hash;
+- supported dtypes;
+- dtype field inventory;
 - raw validation;
 - normalization;
 - deterministic identity construction;
@@ -233,24 +232,24 @@ Each runtime must expose at least:
 
 ## StarLang handoff
 
-StarLang should eventually compile the registry, facets, semantic constraints, and migration mappings into JSON Schema and language bindings. It should not become a required runtime dependency for document validation.
+StarLang should eventually compile the registry, facets, semantic constraints, and migration mappings into JSON Schema and language bindings. It should not become mandatory for reading or validating StarIntel records.
 
-The handoff boundary is therefore stable:
+The stable handoff boundary is:
 
-1. v0.9 JSON Schema and manifest remain the interchange contract;
-2. conformance vectors define behavior;
-3. StarLang later replaces the Python registry as the compiler input;
-4. generated artifacts and runtime APIs remain compatible.
+1. v0.9 base schema plus revisioned expansion and manifest remain the interchange contract;
+2. conformance vectors define runtime behavior;
+3. StarLang later replaces the Python registry as compiler input;
+4. generated artifacts and public runtime APIs remain compatible.
 
 ## Rollout
 
-1. Merge the additive canonical expansion and generated schema manifest.
-2. Update the open JavaScript v0.9 PR to verify and expose the manifest revision.
-3. Add shared conformance vectors and make Python and JavaScript pass them.
-4. Port the artifact/manifest contract to Common Lisp, Nim, and the server.
-5. Add repository semantic validators in small, corpus-safe increments.
-6. Deprecate the old standalone v0.8 Python package or turn it into a compatibility shim that imports the canonical v0.9 implementation.
-7. Freeze the v0.9 compatibility family after all maintained runtimes report the same schema hash.
+1. Merge the additive canonical expansion bundle.
+2. Merge the JavaScript v0.9 runtime after it passes bundle and dtype conformance.
+3. Publish shared conformance fixtures from the canonical repository.
+4. Port bundle materialization to Common Lisp, Nim, and the server.
+5. Add semantic validators in corpus-safe increments.
+6. Convert the old standalone v0.8 Python package into a compatibility shim or deprecate it.
+7. Freeze the v0.9 compatibility family after every maintained runtime reports the same revision and expansion hash.
 
 ## External design references
 
