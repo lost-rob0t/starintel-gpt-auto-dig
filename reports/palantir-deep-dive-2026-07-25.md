@@ -175,7 +175,8 @@ The UK is the clearest non-U.S. node: a health-data platform with a maximum valu
 - NHS contract explainer: https://www.england.nhs.uk/digitaltechnology/nhs-federated-data-platform/security-privacy/contract-explainer/
 - UK MOD tender record: https://www.find-tender.service.gov.uk/procurement/ocds-h6vhtk-05f7e9
 - GAO DCGS-A protest: https://www.gao.gov/products/b-412746
-- GAO CDC brand-name protest: https://www.gao.gov/products/b-421558
+- GAO CDC brand-name protest: https://www.gao.gov/products/b-421337%2Cb-421337.2
+- GAO CDC brand-name protest reconsideration: https://www.gao.gov/products/b-421337.3
 
 ## StarIntel contents
 
