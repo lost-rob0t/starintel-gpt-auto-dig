@@ -20,6 +20,11 @@ def build_site(input_root: Path, output: Path, org_output: Path, config_path: Pa
     asset_output.mkdir()
     shutil.copy2(assets / "style.css", asset_output / "style.css")
     shutil.copy2(assets / "graph.js", asset_output / "graph.js")
+    shutil.copy2(assets / "graph-core.mjs", asset_output / "graph-core.mjs")
+    shutil.copy2(assets / "graph-model.mjs", asset_output / "graph-model.mjs")
+    shutil.copy2(assets / "graph-render.mjs", asset_output / "graph-render.mjs")
+    shutil.copy2(assets / "graph-ui.mjs", asset_output / "graph-ui.mjs")
+    shutil.copy2(assets / "graph-controller.mjs", asset_output / "graph-controller.mjs")
     shutil.copy2(assets / "graph-touch.js", asset_output / "graph-touch.js")
     (output / ".nojekyll").write_text("")
 
@@ -49,8 +54,8 @@ def build_site(input_root: Path, output: Path, org_output: Path, config_path: Pa
         network = graph(docs)
         (target_out / "graph.json").write_text(json.dumps(network, ensure_ascii=False, separators=(",", ":")))
         packet_html = packet(target, docs, config, network).replace(
-            '<script src="../assets/graph.js"></script>',
-            '<script src="../assets/graph.js"></script><script src="../assets/graph-touch.js"></script>',
+            '<script src="../assets/graph.js"></script><script>StarIntelGraph.mount("graph-canvas","graph-detail","graph.json");</script>',
+            '<script type="module">import { mount } from "../assets/graph-controller.mjs"; mount("graph-canvas","graph-detail","graph.json");</script><script src="../assets/graph-touch.js"></script>',
             1,
         )
         (target_out / "index.html").write_text(packet_html)
