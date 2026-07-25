@@ -20,11 +20,15 @@ def json_object(value: str, label: str) -> dict[str, Any]:
     if not value:
         return {}
     if value.startswith("@"):
-        path = Path(value[1:])
-        text = path.read_text(encoding="utf-8")
+        text = Path(value[1:]).read_text(encoding="utf-8")
     else:
-        candidate = Path(value)
-        text = candidate.read_text(encoding="utf-8") if candidate.is_file() else value
+        text = value
+        try:
+            candidate = Path(value)
+            if len(value) < 4096 and candidate.is_file():
+                text = candidate.read_text(encoding="utf-8")
+        except OSError:
+            text = value
     parsed = json.loads(text)
     if not isinstance(parsed, dict):
         raise ValueError(f"{label} must contain a JSON object")
@@ -50,6 +54,7 @@ def build_parser() -> argparse.ArgumentParser:
 def main(argv: list[str] | None = None) -> int:
     args = build_parser().parse_args(argv)
     try:
+        root = Path(args.root).resolve()
         document = Document.create(
             args.dtype,
             args.dataset,
@@ -60,12 +65,12 @@ def main(argv: list[str] | None = None) -> int:
             **json_object(args.metadata, "--metadata"),
         ).to_dict()
         target = write_db_document(
-            Path(args.root),
+            root,
             document,
             replace=args.replace,
             validate_corpus=True,
         )
-        print(target.relative_to(Path(args.root).resolve()))
+        print(target.relative_to(root))
         return 0
     except (OSError, ValueError, TypeError, KeyError, json.JSONDecodeError) as exc:
         print(f"ERROR: {exc}", file=sys.stderr)
