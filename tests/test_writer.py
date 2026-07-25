@@ -28,15 +28,26 @@ class CanonicalDatabaseWriterTests(unittest.TestCase):
             self.assertEqual(len(target.read_text(encoding="utf-8").splitlines()), 1)
             self.assertTrue(validate_repository(root)["ok"])
 
-    def test_rejects_path_separator_in_id(self) -> None:
+    def test_schema_rejects_path_separator_in_id(self) -> None:
+        with self.assertRaises(ValueError):
+            Document.create(
+                "org",
+                "test",
+                doc_id="starintel:org:bad/path",
+                data={"name": "Bad"},
+            )
+
+    def test_canonical_path_preserves_literal_colons(self) -> None:
         document = Document.create(
             "org",
             "test",
-            doc_id="starintel:org:bad/path",
-            data={"name": "Bad"},
+            doc_id="starintel:org:example",
+            data={"name": "Example"},
         ).to_dict()
-        with self.assertRaises(DatabaseWriteError):
-            canonical_db_path(Path("."), document)
+        self.assertEqual(
+            canonical_db_path(Path("/tmp/starintel-root"), document),
+            Path("/tmp/starintel-root/db/org/starintel:org:example.ndjson"),
+        )
 
     def test_requires_replace_for_changed_existing_id(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
