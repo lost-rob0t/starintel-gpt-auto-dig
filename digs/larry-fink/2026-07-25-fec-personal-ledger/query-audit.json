@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-25T18:16:04+00:00",
+  "generated_at": "2026-07-25T18:17:39+00:00",
   "query_urls": [
     "https://api.open.fec.gov/v1/schedules/schedule_a/?contributor_name=FINK%2C+LARRY&is_individual=true&sort=-contribution_receipt_date&api_key=REDACTED&per_page=100&page=1",
     "https://api.open.fec.gov/v1/schedules/schedule_a/?contributor_name=FINK%2C+LARRY&is_individual=true&sort=-contribution_receipt_date&api_key=REDACTED&per_page=100&page=10",
@@ -22,14 +22,14 @@
   "receipt_candidates": 210,
   "refund_candidates": 25,
   "accepted_receipt_versions": 83,
-  "accepted_refund_versions": 8,
+  "accepted_refund_versions": 3,
   "rejected_candidates": [
     {
       "kind": "receipt",
       "score": 0.45,
       "reasons": [
         "exact FINK surname token and Laurence/Larry first name",
-        "other employer: OF THE TOLEDO UNIVERSITY"
+        "other employer: TOLEDO OF THE UNIVERSITY"
       ],
       "record": {
         "sub_id": "4121720241084423288",
@@ -59,7 +59,7 @@
       "score": 0.45,
       "reasons": [
         "exact FINK surname token and Laurence/Larry first name",
-        "other employer: OF THE TOLEDO UNIVERSITY"
+        "other employer: TOLEDO OF THE UNIVERSITY"
       ],
       "record": {
         "sub_id": "4051420251196700747",
@@ -90,7 +90,7 @@
       "score": 0.45,
       "reasons": [
         "exact FINK surname token and Laurence/Larry first name",
-        "other employer: OF THE TOLEDO UNIVERSITY"
+        "other employer: TOLEDO OF THE UNIVERSITY"
       ],
       "record": {
         "sub_id": "4110720241055560779",
@@ -176,7 +176,7 @@
       "score": 0.45,
       "reasons": [
         "exact FINK surname token and Laurence/Larry first name",
-        "other employer: OF THE TOLEDO UNIVERSITY"
+        "other employer: TOLEDO OF THE UNIVERSITY"
       ],
       "record": {
         "sub_id": "4103120241022104853",
@@ -206,7 +206,7 @@
       "score": 0.45,
       "reasons": [
         "exact FINK surname token and Laurence/Larry first name",
-        "other employer: OF THE TOLEDO UNIVERSITY"
+        "other employer: TOLEDO OF THE UNIVERSITY"
       ],
       "record": {
         "sub_id": "4100120242049056906",
@@ -236,7 +236,7 @@
       "score": 0.45,
       "reasons": [
         "exact FINK surname token and Laurence/Larry first name",
-        "other employer: OF THE TOLEDO UNIVERSITY"
+        "other employer: TOLEDO OF THE UNIVERSITY"
       ],
       "record": {
         "sub_id": "4020620251149388788",
@@ -266,7 +266,7 @@
       "score": 0.45,
       "reasons": [
         "exact FINK surname token and Laurence/Larry first name",
-        "other employer: OF THE TOLEDO UNIVERSITY"
+        "other employer: TOLEDO OF THE UNIVERSITY"
       ],
       "record": {
         "sub_id": "4080520242001954848",
@@ -296,7 +296,7 @@
       "score": 0.45,
       "reasons": [
         "exact FINK surname token and Laurence/Larry first name",
-        "other employer: OF THE TOLEDO UNIVERSITY"
+        "other employer: TOLEDO OF THE UNIVERSITY"
       ],
       "record": {
         "sub_id": "4080520242001954847",
@@ -354,7 +354,7 @@
       "score": 0.45,
       "reasons": [
         "exact FINK surname token and Laurence/Larry first name",
-        "other employer: OF THE TOLEDO UNIVERSITY"
+        "other employer: TOLEDO OF THE UNIVERSITY"
       ],
       "record": {
         "sub_id": "4042520241914039018",
@@ -384,7 +384,7 @@
       "score": 0.5700000000000001,
       "reasons": [
         "exact FINK surname token and Laurence/Larry first name",
-        "other employer: OF THE TOLEDO UNIVERSITY",
+        "other employer: TOLEDO OF THE UNIVERSITY",
         "executive or finance occupation"
       ],
       "record": {
@@ -443,7 +443,7 @@
       "score": 0.5700000000000001,
       "reasons": [
         "exact FINK surname token and Laurence/Larry first name",
-        "other employer: OF THE TOLEDO UNIVERSITY",
+        "other employer: TOLEDO OF THE UNIVERSITY",
         "executive or finance occupation"
       ],
       "record": {
@@ -474,7 +474,7 @@
       "score": 0.5700000000000001,
       "reasons": [
         "exact FINK surname token and Laurence/Larry first name",
-        "other employer: OF THE TOLEDO UNIVERSITY",
+        "other employer: TOLEDO OF THE UNIVERSITY",
         "executive or finance occupation"
       ],
       "record": {
@@ -505,7 +505,7 @@
       "score": 0.5700000000000001,
       "reasons": [
         "exact FINK surname token and Laurence/Larry first name",
-        "other employer: OF THE TOLEDO UNIVERSITY",
+        "other employer: TOLEDO OF THE UNIVERSITY",
         "executive or finance occupation"
       ],
       "record": {
@@ -536,7 +536,7 @@
       "score": 0.5700000000000001,
       "reasons": [
         "exact FINK surname token and Laurence/Larry first name",
-        "other employer: OF THE TOLEDO UNIVERSITY",
+        "other employer: TOLEDO OF THE UNIVERSITY",
         "executive or finance occupation"
       ],
       "record": {
@@ -567,7 +567,7 @@
       "score": 0.5700000000000001,
       "reasons": [
         "exact FINK surname token and Laurence/Larry first name",
-        "other employer: OF THE TOLEDO UNIVERSITY",
+        "other employer: TOLEDO OF THE UNIVERSITY",
         "executive or finance occupation"
       ],
       "record": {
@@ -598,7 +598,7 @@
       "score": 0.5700000000000001,
       "reasons": [
         "exact FINK surname token and Laurence/Larry first name",
-        "other employer: OF THE TOLEDO UNIVERSITY",
+        "other employer: TOLEDO OF THE UNIVERSITY",
         "executive or finance occupation"
       ],
       "record": {
@@ -629,7 +629,7 @@
       "score": 0.45,
       "reasons": [
         "exact FINK surname token and Laurence/Larry first name",
-        "other employer: OF THE TOLEDO UNIVERSITY"
+        "other employer: TOLEDO OF THE UNIVERSITY"
       ],
       "record": {
         "sub_id": "4061520221511434065",
@@ -2993,7 +2993,7 @@
       "score": 0.45,
       "reasons": [
         "exact FINK surname token and Laurence/Larry first name",
-        "other employer: MADE REQUEST ND"
+        "other employer: REQUEST MADE ND"
       ],
       "record": {
         "sub_id": "4110720241066528400",
@@ -4002,6 +4002,61 @@
     },
     {
       "kind": "disbursement",
+      "score": 0.45,
+      "reasons": [
+        "exact FINK surname token and Laurence/Larry first name"
+      ],
+      "record": {
+        "sub_id": "4113020161354944922",
+        "committee_id": "C00577130",
+        "recipient_name": "FINK, LARRY",
+        "recipient_city": "HOLLYWOOD",
+        "recipient_state": "FL",
+        "recipient_zip": "330192405",
+        "disbursement_date": "2016-07-15",
+        "disbursement_amount": 175.0,
+        "disbursement_description": "CONTRIBUTION REFUND",
+        "memoed_subtotal": false,
+        "line_number": "28A",
+        "image_number": "201611239037469838",
+        "file_number": 1126765,
+        "transaction_id": "VPE83A20G95",
+        "amendment_indicator": "N",
+        "report_type": "M8",
+        "two_year_transaction_period": 2016,
+        "load_date": "2017-05-31T21:38:23.424343"
+      }
+    },
+    {
+      "kind": "disbursement",
+      "score": 0.45,
+      "reasons": [
+        "exact FINK surname token and Laurence/Larry first name"
+      ],
+      "record": {
+        "sub_id": "4030820171378951754",
+        "committee_id": "C00401224",
+        "recipient_name": "FINK, LARRY",
+        "recipient_city": "HOLLYWOOD",
+        "recipient_state": "FL",
+        "recipient_zip": "330192416",
+        "disbursement_date": "2016-03-26",
+        "disbursement_amount": 5.0,
+        "disbursement_description": "CONTRIBUTION REFUND",
+        "memo_text": "REFUND OF CONTRIBUTION, INITIALLY EARMARKED FOR ACTBLUE (C00401224)",
+        "memoed_subtotal": false,
+        "line_number": "28A",
+        "image_number": "201702069044293082",
+        "file_number": 1147747,
+        "transaction_id": "SB28A_43556269",
+        "amendment_indicator": "N",
+        "report_type": "M4",
+        "two_year_transaction_period": 2016,
+        "load_date": "2017-05-31T21:38:23.424343"
+      }
+    },
+    {
+      "kind": "disbursement",
       "score": 0.0,
       "reasons": [
         "exact FINK surname token and Laurence/Larry first name",
@@ -4115,6 +4170,87 @@
         "image_number": "201509149002290790",
         "file_number": 1024649,
         "transaction_id": "SB28A_24722322",
+        "amendment_indicator": "N",
+        "report_type": "M4",
+        "two_year_transaction_period": 2016,
+        "load_date": "2017-05-31T21:38:23.424343"
+      }
+    },
+    {
+      "kind": "disbursement",
+      "score": 0.45,
+      "reasons": [
+        "exact FINK surname token and Laurence/Larry first name"
+      ],
+      "record": {
+        "sub_id": "4080520151248465503",
+        "committee_id": "C00000935",
+        "recipient_name": "FINK, LARRY",
+        "recipient_city": "MARTINS CREEK",
+        "recipient_state": "PA",
+        "recipient_zip": "180630295",
+        "disbursement_date": "2015-03-02",
+        "disbursement_amount": 25.0,
+        "disbursement_description": "CONTRIBUTION REFUND",
+        "memoed_subtotal": false,
+        "line_number": "28A",
+        "image_number": "201508049000799934",
+        "file_number": 1020395,
+        "transaction_id": "D59162",
+        "amendment_indicator": "N",
+        "report_type": "M4",
+        "two_year_transaction_period": 2016,
+        "load_date": "2017-05-31T21:38:23.424343"
+      }
+    },
+    {
+      "kind": "disbursement",
+      "score": 0.45,
+      "reasons": [
+        "exact FINK surname token and Laurence/Larry first name"
+      ],
+      "record": {
+        "sub_id": "4080520151248465502",
+        "committee_id": "C00000935",
+        "recipient_name": "FINK, LARRY",
+        "recipient_city": "MARTINS CREEK",
+        "recipient_state": "PA",
+        "recipient_zip": "180630295",
+        "disbursement_date": "2015-03-02",
+        "disbursement_amount": 25.0,
+        "disbursement_description": "CONTRIBUTION REFUND",
+        "memoed_subtotal": false,
+        "line_number": "28A",
+        "image_number": "201508049000799934",
+        "file_number": 1020395,
+        "transaction_id": "D59161",
+        "amendment_indicator": "N",
+        "report_type": "M4",
+        "two_year_transaction_period": 2016,
+        "load_date": "2017-05-31T21:38:23.424343"
+      }
+    },
+    {
+      "kind": "disbursement",
+      "score": 0.45,
+      "reasons": [
+        "exact FINK surname token and Laurence/Larry first name"
+      ],
+      "record": {
+        "sub_id": "4080520151248465501",
+        "committee_id": "C00000935",
+        "recipient_name": "FINK, LARRY",
+        "recipient_city": "MARTINS CREEK",
+        "recipient_state": "PA",
+        "recipient_zip": "180630295",
+        "disbursement_date": "2015-03-02",
+        "disbursement_amount": 25.0,
+        "disbursement_description": "CONTRIBUTION REFUND",
+        "memoed_subtotal": false,
+        "line_number": "28A",
+        "image_number": "201508049000799933",
+        "file_number": 1020395,
+        "transaction_id": "D59160",
         "amendment_indicator": "N",
         "report_type": "M4",
         "two_year_transaction_period": 2016,
