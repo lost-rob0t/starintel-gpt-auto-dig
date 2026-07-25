@@ -1,0 +1,79 @@
+name: Materialize Flock StarIntel Packet
+
+on:
+  push:
+    branches:
+      - agent/flock-safety-columbus-local-government
+    paths:
+      - "bootstrap/flock-packet.tar.gz.b64"
+      - ".github/workflows/materialize-flock-packet.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: materialize-flock-packet-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  materialize:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out writable branch
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: agent/flock-safety-columbus-local-government
+
+      - name: Decode packet
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -s bootstrap/flock-packet.tar.gz.b64
+          base64 --decode bootstrap/flock-packet.tar.gz.b64 | tar --extract --gzip
+
+      - name: Validate StarIntel documents
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import json
+          from collections import Counter
+          from pathlib import Path
+
+          packet = Path("digs/flock-safety/2026-07-25-columbus-local-government-lobbying")
+          docs = [json.loads(line) for line in (packet / "starintel-documents.jsonl").read_text().splitlines() if line.strip()]
+          manifest = json.loads((packet / "manifest.json").read_text())
+          required = {"_id", "dataset", "dtype", "version", "sources", "date_added", "date_updated"}
+          predicates = {"administers", "contractor-for", "created-by", "employed-by", "member-of", "operates", "owns", "related-to", "works-with"}
+          ids = [doc["_id"] for doc in docs]
+          assert len(ids) == len(set(ids)), "duplicate document IDs"
+          entities = {doc["_id"] for doc in docs if doc["dtype"] in {"org", "person"}}
+          for doc in docs:
+              assert required <= doc.keys(), (doc.get("_id"), required - doc.keys())
+              assert doc["sources"] and all(url.startswith("https://") for url in doc["sources"])
+              if doc["dtype"] == "relation":
+                  assert doc["source_id"] in entities
+                  assert doc["destination_id"] in entities
+                  assert doc["predicate"] in predicates
+                  assert 0 <= doc["confidence"] <= 1
+              if doc["dtype"] == "target":
+                  assert doc["target_id"] in entities
+          counts = Counter(doc["dtype"] for doc in docs)
+          assert len(docs) == manifest["total"]
+          assert dict(sorted(counts.items())) == manifest["counts"]
+          print(f"validated {len(docs)} StarIntel documents")
+          PY
+
+      - name: Commit materialized packet
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -f bootstrap/flock-packet.tar.gz.b64
+          rm -f .github/workflows/materialize-flock-packet.yml
+          git config user.name "starintel-auto-publisher"
+          git config user.email "starintel-auto-publisher@users.noreply.github.com"
+          git add -A
+          git commit -m "Publish Flock Safety Columbus StarIntel packet"
+          git push origin HEAD:agent/flock-safety-columbus-local-government
