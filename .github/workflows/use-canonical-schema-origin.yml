@@ -1,17 +1,16 @@
 name: Use canonical StarIntel schema origin
 
 on:
-  push:
-    branches:
-      - main
-    paths:
-      - .github/workflows/use-canonical-schema-origin.yml
+  issues:
+    types:
+      - opened
 
 permissions:
   contents: write
 
 jobs:
   migrate:
+    if: github.event.issue.title == 'Run canonical StarIntel schema migration'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
