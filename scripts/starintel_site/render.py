@@ -22,7 +22,7 @@ def page(title: str, body: str, prefix: str = "") -> str:
 
 def value(data: Any) -> str:
     if isinstance(data, str):
-        return "".join(f"<p>{html.escape(part)}</p>" for part in data.split("\\n\\n") if part.strip())
+        return "".join(f"<p>{html.escape(part)}</p>" for part in data.split("\n\n") if part.strip())
     if isinstance(data, list):
         return "<ul>" + "".join(f"<li>{value(item)}</li>" for item in data) + "</ul>"
     if isinstance(data, dict):
@@ -100,6 +100,107 @@ def comparison(rows: list[dict[str, Any]]) -> str:
     return f'<div class="table-wrap"><table class="comparison">{head}{body}</table></div>'
 
 
+def record_refs(values: Any, known: set[str]) -> str:
+    if isinstance(values, str):
+        values = [values]
+    if not isinstance(values, list):
+        return ""
+    rows = []
+    for record in values:
+        if not isinstance(record, str):
+            continue
+        if record in known:
+            rows.append(f'<a class="mini" href="nodes/{slug(record)}.html">{html.escape(record)}</a>')
+        else:
+            rows.append(f'<code>{html.escape(record)}</code>')
+    return " ".join(rows)
+
+
+def evidence_posture(docs: list[dict[str, Any]]) -> str:
+    statuses = Counter()
+    confidence = Counter()
+    source_types = Counter()
+    for doc in docs:
+        statuses[str(doc.get("verification", {}).get("status", "unclassified"))] += 1
+        score = doc.get("confidence")
+        if isinstance(score, (int, float)):
+            if score >= 0.97:
+                confidence["very high"] += 1
+            elif score >= 0.90:
+                confidence["high"] += 1
+            elif score >= 0.80:
+                confidence["moderate"] += 1
+            else:
+                confidence["low / estimate"] += 1
+        else:
+            confidence["unassigned"] += 1
+        for raw_source in doc.get("sources", []):
+            source = source_record(raw_source)
+            source_types[str(source.get("source_type") or "unspecified")] += 1
+    def chips(counter: Counter) -> str:
+        return '<div class="chips">' + "".join(
+            f'<span>{html.escape(label)} <strong>{count}</strong></span>' for label, count in sorted(counter.items())
+        ) + "</div>"
+    return (
+        "<section><h2>Evidence posture</h2>"
+        '<p>This describes the corpus, not the subject. A high-confidence relationship still does not prove control, wrongdoing, or ideological alignment.</p>'
+        "<h3>Verification status</h3>" + chips(statuses) +
+        "<h3>Confidence bands</h3>" + chips(confidence) +
+        "<h3>Source types</h3>" + chips(source_types) + "</section>"
+    )
+
+
+def research_ledger(docs: list[dict[str, Any]]) -> str:
+    passes = sorted(
+        (doc for doc in docs if doc.get("dtype") == "research-pass"),
+        key=lambda doc: (str(doc.get("date_updated", "")), doc["_id"]),
+        reverse=True,
+    )
+    if not passes:
+        return ""
+    known = {doc["_id"] for doc in docs}
+    body = [
+        "<section><h2>Agent research ledger</h2>",
+        '<div class="notice"><strong>Append-only analysis:</strong> each pass publishes its question, method, evidence links, counterevidence, open targets, and confidence. Later passes supplement rather than silently replace earlier work.</div>',
+    ]
+    for research in passes:
+        title = research.get("title") or research["_id"]
+        author = research.get("author", {})
+        body += [
+            '<article class="research-pass">',
+            f'<span>{html.escape(str(research.get("date_updated", "")))}</span>',
+            f'<h3><a href="nodes/{slug(research["_id"])}.html">{html.escape(title)}</a></h3>',
+            f'<p class="lede">{html.escape(summary(research))}</p>',
+            f'<p><strong>Research question:</strong> {html.escape(str(research.get("research_question", "Not recorded")))}</p>',
+            f'<p><strong>Author:</strong> {html.escape(str(author.get("name", "agent")))} · <strong>Confidence:</strong> {html.escape(str(research.get("confidence", "unassigned")))}</p>',
+        ]
+        if research.get("method"):
+            body += ["<h4>Method</h4>", value(research["method"])]
+        findings = research.get("findings", [])
+        if findings:
+            body.append("<h4>Findings</h4><ol>")
+            for finding in findings:
+                if not isinstance(finding, dict):
+                    body.append(f"<li>{html.escape(str(finding))}</li>")
+                    continue
+                body.append("<li>")
+                body.append(f'<p>{html.escape(str(finding.get("finding", "")))}</p>')
+                body.append(f'<p><strong>Confidence:</strong> {html.escape(str(finding.get("confidence", "unassigned")))}</p>')
+                if finding.get("support_ids"):
+                    body.append(f'<p><strong>Support:</strong> {record_refs(finding["support_ids"], known)}</p>')
+                if finding.get("counterevidence_ids"):
+                    body.append(f'<p><strong>Counterevidence:</strong> {record_refs(finding["counterevidence_ids"], known)}</p>')
+                if finding.get("open_target"):
+                    body.append(f'<p><strong>Open target:</strong> {record_refs(finding["open_target"], known)}</p>')
+                body.append("</li>")
+            body.append("</ol>")
+        if research.get("open_targets"):
+            body.append(f'<p><strong>Open investigation targets:</strong> {record_refs(research["open_targets"], known)}</p>')
+        body.append("</article>")
+    body.append("</section>")
+    return "".join(body)
+
+
 def packet(target: str, docs: list[dict[str, Any]], config: dict[str, Any], graph: dict[str, Any]) -> str:
     cfg = config.get("packets", {}).get(target, {})
     title = cfg.get("title") or target.replace("-", " ").title()
@@ -136,6 +237,8 @@ def packet(target: str, docs: list[dict[str, Any]], config: dict[str, Any], grap
         body += ["<h3>Governance failure modes</h3>", value(narrative.get("governance_flaws", [])),
                  "<h3>Corporatism and fascism comparison matrix</h3>", comparison(narrative.get("comparison", [])),
                  "<h3>Limits and falsification conditions</h3>", value(narrative.get("limitations", [])), "</section>"]
+    body.append(research_ledger(docs))
+    body.append(evidence_posture(docs))
     body += [
         '<section><div class="section-head"><div><h2>Exploration graph</h2><p>Search, filter, drag, zoom, and open records.</p></div><a href="graph.json">graph.json</a></div>',
         '<div class="controls"><input id="graph-search" type="search" placeholder="Search nodes…"><select id="graph-filter"><option value="">All record types</option></select><button id="graph-reset">Reset</button></div>',
@@ -153,7 +256,8 @@ def packet(target: str, docs: list[dict[str, Any]], config: dict[str, Any], grap
         )
     body += [
         "</div></section><section><h2>Generated formats</h2><ul>",
-        '<li><a href="downloads/starintel-documents.jsonl">Decoded canonical JSONL</a></li>',
+        '<li><a href="downloads/starintel-documents.jsonl">Merged canonical JSONL</a></li>',
+        '<li><a href="downloads/research-history.json">Research packet history</a></li>',
         f'<li><a href="../org/{quote(target)}/index.org">Generated Org-roam index</a></li>',
         '<li><a href="sources.html">Generated source inventory</a></li></ul></section>',
     ]
