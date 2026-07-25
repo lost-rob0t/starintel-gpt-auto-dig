@@ -36,7 +36,10 @@ jobs:
         run: |
           set -euo pipefail
           cat bootstrap/starintel-v0.9.0/part-* | base64 --decode | tar --extract --gzip
-          rm -rf bootstrap
+          if test -s patches/starintel-v0.9.0-relation-endpoints.tar.gz.b64; then
+            base64 --decode patches/starintel-v0.9.0-relation-endpoints.tar.gz.b64 | tar --extract --gzip
+          fi
+          rm -rf bootstrap patches
           rm -f .github/workflows/bootstrap-starintel-v0.9.yml
       - name: Validate implementation
         run: |
