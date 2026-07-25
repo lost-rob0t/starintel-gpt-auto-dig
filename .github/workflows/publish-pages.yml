@@ -46,8 +46,15 @@ jobs:
         with:
           python-version: "3.13"
 
-      - name: Run mandatory StarIntel merge gate
-        run: python3 scripts/validate-for-merge.py
+      - name: Validate implementation and corpus
+        run: |
+          python -m compileall -q starintel_doc scripts
+          python -m unittest discover -s tests -v
+          for module in site-assets/*.mjs; do node --check "$module"; done
+          node tests/test_graph_pathfinding.mjs
+          python scripts/starintel.py schema --output /tmp/starintel-doc-v0.9.0.schema.json
+          cmp /tmp/starintel-doc-v0.9.0.schema.json schemas/starintel-doc-v0.9.0.schema.json
+          python scripts/validate-db.py
 
       - name: Generate research explorer
         run: |
