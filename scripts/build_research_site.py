@@ -11,7 +11,7 @@ from pathlib import Path
 from typing import Any
 
 from starintel_site.builder import build_site
-from starintel_site.model import slug
+from starintel_site.model import read_canonical, slug
 
 
 def load_config(path: Path) -> dict[str, Any]:
@@ -23,6 +23,17 @@ def load_config(path: Path) -> dict[str, Any]:
     return value
 
 
+def normalize_source(source: Any) -> Any:
+    if not isinstance(source, dict):
+        return source
+    normalized = dict(source)
+    if normalized.get("uri") and not normalized.get("url"):
+        normalized["url"] = normalized["uri"]
+    if normalized.get("name") and not normalized.get("title"):
+        normalized["title"] = normalized["name"]
+    return normalized
+
+
 def normalize_document(path: Path) -> dict[str, Any]:
     lines = [line for line in path.read_text(encoding="utf-8").splitlines() if line.strip()]
     if len(lines) != 1:
@@ -31,11 +42,20 @@ def normalize_document(path: Path) -> dict[str, Any]:
     if not isinstance(document, dict):
         raise ValueError(f"{path}: expected JSON object")
 
-    source = document.get("source")
+    source = normalize_source(document.get("source"))
     if "sources" not in document:
         document["sources"] = [source] if source else []
+    else:
+        document["sources"] = [normalize_source(item) for item in document["sources"]]
     if not isinstance(document["sources"], list):
         raise ValueError(f"{path}: sources must be a list")
+
+    entity = document.get("entity")
+    if isinstance(entity, dict):
+        if not document.get("title") and isinstance(entity.get("name"), str):
+            document["title"] = entity["name"]
+        if not document.get("description") and isinstance(entity.get("role"), str):
+            document["description"] = entity["role"]
 
     if document.get("dtype") == "relation":
         subject = document.get("subject")
@@ -62,6 +82,39 @@ def infer_target(dataset: str, mappings: dict[str, str]) -> str:
     return candidate or slug(dataset)
 
 
+def filter_excluded(workspace: Path, config: dict[str, Any]) -> None:
+    raw_ids = config.get("excluded_document_ids", [])
+    if not isinstance(raw_ids, list):
+        raise ValueError("site-config.json: excluded_document_ids must be a list")
+    excluded = {str(value) for value in raw_ids}
+    if not excluded:
+        return
+
+    paths = list(workspace.glob("*/*/starintel-documents.jsonl"))
+    paths += list(workspace.glob("*/*/starintel-documents.jsonl.gz.b64"))
+    paths += list(workspace.glob("*/*/starintel-documents.jsonl.gz.b64.parts"))
+    for path in sorted(paths):
+        documents = [
+            json.loads(line)
+            for line in read_canonical(path).splitlines()
+            if line.strip()
+        ]
+        kept = [document for document in documents if str(document.get("_id")) not in excluded]
+        canonical = path.parent / "starintel-documents.jsonl"
+        if kept:
+            canonical.write_text(
+                "".join(
+                    json.dumps(document, ensure_ascii=False, separators=(",", ":")) + "\n"
+                    for document in kept
+                ),
+                encoding="utf-8",
+            )
+        elif canonical.exists():
+            canonical.unlink()
+        if path != canonical and path.exists():
+            path.unlink()
+
+
 def materialize_input(
     digs_root: Path,
     db_root: Path,
@@ -73,10 +126,12 @@ def materialize_input(
     workspace.mkdir(parents=True)
     if digs_root.exists():
         shutil.copytree(digs_root, workspace, dirs_exist_ok=True)
+    filter_excluded(workspace, config)
 
     mappings = config.get("database_targets", {})
     if not isinstance(mappings, dict):
         raise ValueError("site-config.json: database_targets must be an object")
+    normalized_mappings = {str(key): str(value) for key, value in mappings.items()}
 
     grouped: dict[tuple[str, str], list[dict[str, Any]]] = defaultdict(list)
     by_target: dict[str, list[dict[str, Any]]] = defaultdict(list)
@@ -84,7 +139,7 @@ def materialize_input(
         for path in sorted(db_root.glob("*/*.ndjson")):
             document = normalize_document(path)
             dataset = str(document.get("dataset") or "database")
-            target = infer_target(dataset, {str(k): str(v) for k, v in mappings.items()})
+            target = infer_target(dataset, normalized_mappings)
             grouped[(target, slug(dataset))].append(document)
             by_target[target].append(document)
 
