@@ -1,0 +1,39 @@
+name: Use canonical StarIntel schema origin
+
+on:
+  pull_request_target:
+    types:
+      - opened
+      - reopened
+      - synchronize
+
+permissions:
+  contents: write
+
+jobs:
+  migrate:
+    if: github.event.pull_request.head.ref == 'fix/use-spec-starintel-actor'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: fix/use-spec-starintel-actor
+          fetch-depth: 0
+
+      - name: Replace schema origin and regenerate
+        shell: bash
+        run: |
+          set -euo pipefail
+          old='https://starintel.dev/schema/starintel-doc-v0.9.0.json'
+          new='https://spec.starintel.actor/schema/starintel-doc-v0.9.0.json'
+          grep -RIlZ --exclude-dir=.git -- "$old" . | xargs -0r sed -i "s#${old}#${new}#g"
+          python -m starintel_doc.cli schema --output schemas/starintel-doc-v0.9.0.schema.json
+          rm -f .schema-migration-trigger
+          git diff --check
+          ! grep -RIl --exclude-dir=.git -- "$old" .
+          grep -Fq '"$id": "https://spec.starintel.actor/schema/starintel-doc-v0.9.0.json"' schemas/starintel-doc-v0.9.0.schema.json
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add -A
+          git commit -m 'Use canonical StarIntel schema origin'
+          git push origin HEAD:fix/use-spec-starintel-actor
