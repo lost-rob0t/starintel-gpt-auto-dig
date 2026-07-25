@@ -1,4 +1,4 @@
-name: Sync expanded StarIntel v0.9 schema
+name: Validate StarIntel v0.9 schema bundle
 
 on:
   push:
@@ -6,71 +6,32 @@ on:
       - "agent/starintel-v0.9-field-expansion"
     paths:
       - "starintel_doc/**"
+      - "schemas/starintel-doc-v0.9.0.*.json"
       - "tests/test_v09_expansion.py"
+      - "scripts/validate-for-merge.py"
       - ".github/workflows/sync-v09-schema.yml"
+  pull_request:
+    branches:
+      - main
   workflow_dispatch:
 
 permissions:
-  contents: write
-
-concurrency:
-  group: starintel-v09-schema-${{ github.ref }}
-  cancel-in-progress: false
+  contents: read
 
 jobs:
-  sync:
-    if: github.actor != 'github-actions[bot]'
+  validate:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-        with:
-          ref: ${{ github.ref_name }}
-          fetch-depth: 0
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
       - run: python -m pip install -e .
-      - name: Generate canonical schema and manifest
-        shell: bash
-        run: |
-          set -euo pipefail
-          python -m starintel_doc schema --output schemas/starintel-doc-v0.9.0.schema.json
-          python - <<'PY'
-          import hashlib
-          import json
-          from pathlib import Path
-          from starintel_doc import SCHEMA_PROFILE, SCHEMA_PROFILE_VERSION, SCHEMA_REVISION, SCHEMA_VERSION, TYPE_FIELDS
-
-          schema_path = Path("schemas/starintel-doc-v0.9.0.schema.json")
-          payload = schema_path.read_bytes()
-          manifest = {
-              "schema_version": SCHEMA_VERSION,
-              "schema_revision": SCHEMA_REVISION,
-              "profile": SCHEMA_PROFILE,
-              "profile_version": SCHEMA_PROFILE_VERSION,
-              "hash_algorithm": "sha256",
-              "content_hash": hashlib.sha256(payload).hexdigest(),
-              "schema_path": str(schema_path),
-              "source_commit": "${{ github.sha }}",
-              "dtypes": sorted(TYPE_FIELDS),
-              "field_counts": {name: len(fields) for name, fields in sorted(TYPE_FIELDS.items())},
-          }
-          Path("schemas/starintel-doc-v0.9.0.manifest.json").write_text(
-              json.dumps(manifest, indent=2, sort_keys=True) + "\n",
-              encoding="utf-8",
-          )
-          PY
       - run: python -m unittest discover -s tests -v
-      - name: Commit generated artifacts
-        shell: bash
-        run: |
-          set -euo pipefail
-          git add schemas/starintel-doc-v0.9.0.schema.json schemas/starintel-doc-v0.9.0.manifest.json
-          if git diff --cached --quiet; then
-            echo "Generated schema already current"
-            exit 0
-          fi
-          git config user.name "starintel-schema-bot"
-          git config user.email "starintel-schema-bot@users.noreply.github.com"
-          git commit -m "Sync expanded StarIntel v0.9 schema"
-          git push origin "HEAD:${GITHUB_REF_NAME}"
+      - run: python scripts/validate-for-merge.py --skip-git-diff-check
+      - name: Materialize expanded schema as an artifact
+        run: python -m starintel_doc schema --output /tmp/starintel-doc-v0.9.0.expanded.schema.json
+      - uses: actions/upload-artifact@v4
+        with:
+          name: starintel-doc-v0.9.0-expanded-schema
+          path: /tmp/starintel-doc-v0.9.0.expanded.schema.json
