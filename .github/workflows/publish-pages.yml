@@ -61,11 +61,14 @@ jobs:
         run: |
           test -s _site/index.html
           test -s _site/search-index.json
+          test -s _site/assets/graph-controller.mjs
+          test -s _site/assets/graph-core.mjs
           test -s _site/larry-fink/index.html
           test -s _site/palantir/index.html
           test -s _site/palantir/graph.json
           test -s _site/palantir/downloads/starintel-documents.jsonl
           test -s .generated/org/palantir/index.org
+          grep -q 'graph-controller.mjs' _site/palantir/index.html
           python - <<'PY'
           import json
           from pathlib import Path
@@ -74,10 +77,10 @@ jobs:
           assert graph["nodes"]
           assert graph["edges"]
           assert any(
-              edge["source"] == "starintel:person:alex-karp"
-              and edge["target"] == "starintel:org:palantir-technologies-inc"
-              and edge["label"] == "founded"
-              for edge in graph["edges"]
+            edge["source"] == "starintel:person:alex-karp"
+            and edge["target"] == "starintel:org:palantir-technologies-inc"
+            and edge["label"] == "founded"
+            for edge in graph["edges"]
           )
           search = json.loads(Path("_site/search-index.json").read_text())
           assert any(record["id"] == "starintel:org:palantir-technologies-inc" for record in search)
