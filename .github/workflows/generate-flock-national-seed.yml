@@ -3,7 +3,7 @@ name: Generate Flock national seed
 on:
   pull_request:
     branches: [main]
-    types: [opened, reopened]
+    types: [opened, reopened, synchronize]
   workflow_dispatch:
 
 permissions:
@@ -30,6 +30,7 @@ jobs:
         with:
           ref: agent/flock-national-state-locality-seed
           fetch-depth: 0
+          show-progress: false
 
       - name: Set up Python
         uses: actions/setup-python@v5
@@ -37,16 +38,39 @@ jobs:
           python-version: "3.12"
 
       - name: Generate packet
-        run: python3 scripts/generate-flock-national-seed.py
+        id: generate
+        shell: bash
+        run: |
+          set +e
+          python3 scripts/generate-flock-national-seed.py > /tmp/flock-generator.log 2>&1
+          STATUS=$?
+          cat /tmp/flock-generator.log
+          echo "status=$STATUS" >> "$GITHUB_OUTPUT"
+          exit 0
+
+      - name: Commit exact generator diagnostic
+        if: steps.generate.outputs.status != '0'
+        run: |
+          mkdir -p digs/flock-safety/2026-07-25-national-state-locality-seed
+          cp /tmp/flock-generator.log digs/flock-safety/2026-07-25-national-state-locality-seed/generator-failure.log
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add digs/flock-safety/2026-07-25-national-state-locality-seed/generator-failure.log
+          git commit -m "Capture Flock generator failure"
+          git push origin HEAD:"$BRANCH"
+          exit 1
 
       - name: Run mandatory merge gate before commit
+        if: steps.generate.outputs.status == '0'
         run: python3 scripts/validate-for-merge.py --site
 
       - name: Commit generated packet and remove one-shot workflow
+        if: steps.generate.outputs.status == '0'
         id: commit
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          rm -f digs/flock-safety/2026-07-25-national-state-locality-seed/generator-failure.log
           rm .github/workflows/generate-flock-national-seed.yml
           git add scripts/generate-flock-national-seed.py \
             digs/flock-safety/2026-07-25-national-state-locality-seed \
@@ -56,6 +80,7 @@ jobs:
           echo "sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
 
       - name: Dispatch canonical validator on generated head
+        if: steps.generate.outputs.status == '0'
         id: dispatch
         run: |
           SHA="${{ steps.commit.outputs.sha }}"
@@ -89,6 +114,7 @@ jobs:
           echo "run_id=$RUN_ID" >> "$GITHUB_OUTPUT"
 
       - name: Require validation on generated head
+        if: steps.generate.outputs.status == '0'
         run: |
           SHA="${{ steps.commit.outputs.sha }}"
           RUN_ID="${{ steps.dispatch.outputs.run_id }}"
