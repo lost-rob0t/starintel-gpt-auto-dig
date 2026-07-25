@@ -96,3 +96,5 @@ Every locality target requires primary-source verification before its Atlas-deri
 ## Validation
 
 The generator validates every record with `starintel_doc.validate_document`, then checks unique IDs, target seed references, related-document references, and source URL schemes.
+
+The generated packet passed `python3 scripts/validate-for-merge.py --site`, and the repository's canonical `Validate StarIntel DB` workflow was dispatched against the generated commit before this documentation-only follow-up commit.
