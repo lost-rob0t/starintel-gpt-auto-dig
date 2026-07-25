@@ -1,88 +1,54 @@
 # StarIntel GPT Auto-Dig Agent Instructions
 
-## Non-negotiable authority
+## Canonical implementation
 
-The repository-local `starintel_doc/` package is the only StarIntel document specification. Never create a parallel JSON shape, a prompt-only “StarIntel style,” a renderer-specific schema, or undocumented fields.
+The repository-local `starintel_doc/` package is the only StarIntel document specification. Never create a parallel JSON shape, “StarIntel style,” prompt-only schema, validator-specific schema, or renderer-specific schema.
 
-Before creating or changing a document, every agent must inspect the executable schema:
+All agents must:
+
+1. select a dtype from `starintel_doc.TYPE_FIELDS`;
+2. place common metadata in the v0.9.0 envelope;
+3. place dtype-specific metadata in `data`;
+4. place unavoidable noncanonical metadata in a namespaced `extensions` entry;
+5. validate before writing;
+6. preserve exact sources, evidence, uncertainty, lineage, and migration provenance.
+
+## Required output
+
+Every completed research pass updates at least one canonical machine-readable surface:
+
+- `digs/<target>/<date>-<slug>/starintel-documents.jsonl`; or
+- `db/<dtype>/<_id>.ndjson`.
+
+A normalized NDJSON file contains exactly one compact JSON object and one terminating newline. `dtype` must equal its directory and `_id` must equal its filename without `.ndjson`.
+
+## Document creation
+
+Use:
 
 ```bash
-python3 scripts/starintel.py types
+python3 scripts/starintel.py create <dtype> --dataset <dataset> --data '<json>'
+```
+
+or import `starintel_doc.Document`. Do not manually invent fields. Query the schema first when uncertain:
+
+```bash
 python3 scripts/starintel.py schema --dtype <dtype>
 ```
 
-Strict rules:
+## Search
 
-1. choose an exact dtype from `starintel_doc.TYPE_FIELDS`;
-2. place common metadata only in the v0.9.0 envelope;
-3. place dtype-specific metadata only in `data`;
-4. use a namespaced `extensions` entry only when the schema cannot represent a value without loss;
-5. preserve exact sources, evidence, uncertainty, lineage, and migration provenance;
-6. stop immediately when validation fails.
-
-## Required scripted write path
-
-Agents must not hand-write normalized DB records with an editor, heredoc, `cat`, `jq`, shell redirection, or ad hoc Python.
-
-For one normalized record, use the transactional writer:
+Use the repository search engine instead of grepping individual files when selecting evidence:
 
 ```bash
-python3 scripts/create-db-document.py <dtype> \
-  --dataset <dataset> \
-  --id <stable-id> \
-  --title '<title>' \
-  --data @data.json \
-  --metadata @metadata.json
+python3 scripts/starintel.py search '<terms>' --dtype relation --predicate founded --with-location
 ```
 
-This script validates the document before writing, writes only to the canonical DB path, validates the complete corpus after writing, and rolls back the write if any invariant fails.
+Search results are JSONL and may be piped into other tools.
 
-For a batch, create validated JSONL outside `db/`, then import it:
+## Recursive target selection
 
-```bash
-python3 scripts/starintel.py import records.jsonl
-```
-
-Use `--replace` only for an intentional correction or newer version of an existing `_id`. Use `--migrate` only for legacy input that must be normalized first.
-
-`scripts/starintel.py create` may be used to inspect or generate a draft document, but agents must not use `--output db/...`; normalized DB writes must go through `scripts/create-db-document.py` or `scripts/starintel.py import`.
-
-## Database convention
-
-Every normalized document must exist at exactly:
-
-```text
-db/<dtype>/<_id>.ndjson
-```
-
-The rules are absolute:
-
-- the directory name equals the document's exact `dtype`;
-- the filename equals the document's exact `_id` plus `.ndjson`;
-- colons in `_id` remain literal;
-- path separators are forbidden in `_id`;
-- the file contains exactly one compact JSON object;
-- the file ends with exactly one newline;
-- duplicate normalized `_id` values are forbidden;
-- relation endpoint IDs must resolve to normalized DB records, unless the endpoint is explicitly represented by the schema as unresolved.
-
-A completed research pass updates at least one canonical machine-readable surface:
-
-- `digs/<target>/<YYYY-MM-DD>-<slug>/starintel-documents.jsonl`; or
-- `db/<dtype>/<_id>.ndjson`.
-
-## Search and recursive target selection
-
-Use the repository search engine rather than grepping individual records:
-
-```bash
-python3 scripts/starintel.py search '<terms>' \
-  --dtype relation \
-  --predicate founded \
-  --with-location
-```
-
-After a pass, use the deterministic target selector:
+Use the deterministic selector after a pass:
 
 ```bash
 python3 scripts/starintel.py select-targets \
@@ -92,61 +58,24 @@ python3 scripts/starintel.py select-targets \
   --output recursive-targets.jsonl
 ```
 
-Any emitted target documents must still be imported through the canonical batch importer.
+The selector scores referenced entities, graph degree, source/evidence coverage, analytical metadata, and unresolved gaps. It emits schema-valid `investigation-target` documents with selection provenance and recursion depth.
 
-## Mandatory validation and merge gate
+## Validation
 
-Before marking a pull request ready, approving it, or merging it, run:
-
-```bash
-python3 scripts/validate-for-merge.py --site
-```
-
-This gate verifies:
-
-- Python compilation;
-- the complete unit-test suite;
-- generated-schema reproducibility;
-- strict v0.9.0 validation of every DB and packet document;
-- DB path and filename consistency;
-- one-record-per-file NDJSON formatting;
-- duplicate IDs;
-- relation endpoint integrity;
-- full research-site generation;
-- `git diff --check` when a Git checkout is available.
-
-## Never merge invalid documents
-
-An agent must never merge, auto-merge, mark ready, or describe a document change as complete when any validation command or required GitHub check is failing, skipped, unavailable, or inconclusive.
-
-If validation fails:
-
-1. leave the pull request in draft state;
-2. identify the exact invalid record or invariant;
-3. fix or remove the invalid change;
-4. rerun the complete merge gate;
-5. merge only after the local gate and all required GitHub checks pass.
-
-Do not merge invalid documents with a promise to repair them later. Do not bypass the validator, weaken the schema, add broad `additionalProperties`, or hide invalid values in `extensions` merely to make a check pass.
-
-## Migration and update policy
-
-Legacy records must be migrated with:
+Run all checks before publication:
 
 ```bash
-python3 scripts/migrate-starintel-v0.9.py --write
+python3 -m compileall -q starintel_doc scripts
+python3 -m unittest discover -s tests -v
+python3 scripts/starintel.py schema --output schemas/starintel-doc-v0.9.0.schema.json
+python3 scripts/validate-db.py
+python3 scripts/build_research_site.py --input digs --db db --output _site --org-output .generated/org
 ```
-
-The migrator preserves unknown legacy values in `extensions.legacy.v0`; it does not silently discard them.
-
-Existing IDs are stable:
-
-- same `_id`, newer integer `version`: intentional replacement;
-- same `_id`, same version, changed bytes: documented correction;
-- different `_id`: new record;
-- deletion: documented reason;
-- schema change: migration plus full-corpus validation.
-
-Keep contract ceilings, potential values, obligations, outlays, and recognized revenue as separate fields.
 
 Generated `_site/`, `.generated/`, caches, and bytecode are never committed.
+
+## Migration and updates
+
+Legacy records must be migrated with `scripts/migrate-starintel-v0.9.py --write`. The migrator preserves unknown legacy values in `extensions.legacy.v0`; it does not silently discard them.
+
+Existing IDs are stable. Replace an existing `_id` only for an intentional correction or newer record version. Keep contract ceilings, potential value, obligations, outlays, and recognized revenue as separate fields.
