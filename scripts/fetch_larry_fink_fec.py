@@ -235,7 +235,7 @@ def main() -> None:
     for row in refund_candidates:
         score, reasons = identity_score(row, "refund")
         purpose = normalized_name(row.get("disbursement_description") or row.get("memo_text"))
-        if score >= 0.70 and "REFUND" in purpose:
+        if score >= 0.45 and "REFUND" in purpose:
             accepted_refunds.append((row, score, reasons + ["refund purpose"] ))
         else:
             rejected.append({"kind": "disbursement", "score": score, "reasons": reasons, "record": safe_row(row, "refund")})

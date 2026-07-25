@@ -1,0 +1,35 @@
+Traceback (most recent call last):
+  File "/home/runner/work/starintel-gpt-auto-dig/starintel-gpt-auto-dig/scripts/fetch_larry_fink_fec_fast.py", line 29, in <module>
+    ledger.main()
+    ~~~~~~~~~~~^^
+  File "/home/runner/work/starintel-gpt-auto-dig/starintel-gpt-auto-dig/scripts/fetch_larry_fink_fec.py", line 199, in main
+    rows, urls = api_get("/schedules/schedule_a/", {
+                 ~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        "contributor_name": name,
+        ^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<2 lines>...
+        "sort": "-contribution_receipt_date",
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    })
+    ^^
+  File "/home/runner/work/starintel-gpt-auto-dig/starintel-gpt-auto-dig/scripts/fetch_larry_fink_fec_fast.py", line 18, in lean_api_get
+    return _original_api_get(endpoint, query)
+  File "/home/runner/work/starintel-gpt-auto-dig/starintel-gpt-auto-dig/scripts/fetch_larry_fink_fec.py", line 52, in api_get
+    with urlopen(request, timeout=60) as response:
+         ~~~~~~~^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/hostedtoolcache/Python/3.13.14/x64/lib/python3.13/urllib/request.py", line 189, in urlopen
+    return opener.open(url, data, timeout)
+           ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^
+  File "/opt/hostedtoolcache/Python/3.13.14/x64/lib/python3.13/urllib/request.py", line 495, in open
+    response = meth(req, response)
+  File "/opt/hostedtoolcache/Python/3.13.14/x64/lib/python3.13/urllib/request.py", line 604, in http_response
+    response = self.parent.error(
+        'http', request, response, code, msg, hdrs)
+  File "/opt/hostedtoolcache/Python/3.13.14/x64/lib/python3.13/urllib/request.py", line 533, in error
+    return self._call_chain(*args)
+           ~~~~~~~~~~~~~~~~^^^^^^^
+  File "/opt/hostedtoolcache/Python/3.13.14/x64/lib/python3.13/urllib/request.py", line 466, in _call_chain
+    result = func(*args)
+  File "/opt/hostedtoolcache/Python/3.13.14/x64/lib/python3.13/urllib/request.py", line 613, in http_error_default
+    raise HTTPError(req.full_url, code, msg, hdrs, fp)
+urllib.error.HTTPError: HTTP Error 429: Too Many Requests
