@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import shutil
 import subprocess
@@ -13,8 +14,10 @@ ROOT = Path(__file__).resolve().parents[1]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
-from starintel_doc.spec import document_schema
+from starintel_doc import SCHEMA_PROFILE, SCHEMA_PROFILE_VERSION, SCHEMA_REVISION, SCHEMA_VERSION
+from starintel_doc.spec import SCHEMA_ID, TYPE_FIELDS, document_schema
 from starintel_doc.store import validate_repository
+from starintel_doc.v09_expansion import COMMON_DATA_FIELDS, EXPANSION_FIELD_NAMES
 
 
 def run(command: list[str]) -> None:
@@ -22,17 +25,67 @@ def run(command: list[str]) -> None:
     subprocess.run(command, cwd=ROOT, check=True)
 
 
-def validate_generated_schema() -> None:
-    expected = ROOT / "schemas" / "starintel-doc-v0.9.0.schema.json"
-    generated = json.dumps(document_schema(), ensure_ascii=False, indent=2, sort_keys=True) + "\n"
-    if not expected.is_file():
-        raise RuntimeError(f"missing generated schema: {expected.relative_to(ROOT)}")
-    actual = expected.read_text(encoding="utf-8")
-    if actual != generated:
-        raise RuntimeError(
-            "checked-in JSON Schema is stale; run: "
-            "python3 scripts/starintel.py schema --output schemas/starintel-doc-v0.9.0.schema.json"
-        )
+def canonical_json_hash(value: object) -> str:
+    payload = json.dumps(value, ensure_ascii=False, sort_keys=True, separators=(",", ":")).encode("utf-8")
+    return hashlib.sha256(payload).hexdigest()
+
+
+def validate_schema_bundle() -> None:
+    base_path = ROOT / "schemas" / "starintel-doc-v0.9.0.schema.json"
+    expansion_path = ROOT / "schemas" / "starintel-doc-v0.9.0.expansion.json"
+    manifest_path = ROOT / "schemas" / "starintel-doc-v0.9.0.manifest.json"
+    for path in (base_path, expansion_path, manifest_path):
+        if not path.is_file():
+            raise RuntimeError(f"missing schema bundle file: {path.relative_to(ROOT)}")
+
+    base = json.loads(base_path.read_text(encoding="utf-8"))
+    expansion = json.loads(expansion_path.read_text(encoding="utf-8"))
+    manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+
+    if base.get("$id") != SCHEMA_ID:
+        raise RuntimeError("base schema ID does not match the executable v0.9 contract")
+    if expansion.get("schema_version") != SCHEMA_VERSION:
+        raise RuntimeError("expansion registry schema_version mismatch")
+    if expansion.get("schema_revision") != SCHEMA_REVISION:
+        raise RuntimeError("expansion registry schema_revision mismatch")
+    if expansion.get("profile") != SCHEMA_PROFILE or expansion.get("profile_version") != SCHEMA_PROFILE_VERSION:
+        raise RuntimeError("expansion registry profile mismatch")
+
+    expected_dtype_fields = {name: list(fields) for name, fields in sorted(EXPANSION_FIELD_NAMES.items())}
+    if expansion.get("dtype_fields") != expected_dtype_fields:
+        raise RuntimeError("checked-in expansion dtype registry is stale")
+    if expansion.get("common_data_fields") != list(COMMON_DATA_FIELDS):
+        raise RuntimeError("checked-in common data field registry is stale")
+    if set(expansion["dtype_fields"]) != set(TYPE_FIELDS):
+        raise RuntimeError("expansion registry does not cover every canonical dtype")
+
+    expansion_hash = canonical_json_hash(expansion)
+    if manifest.get("expansion_content_hash") != expansion_hash:
+        raise RuntimeError("schema manifest expansion hash mismatch")
+    if manifest.get("schema_revision") != SCHEMA_REVISION:
+        raise RuntimeError("schema manifest revision mismatch")
+    if manifest.get("dtype_count") != len(TYPE_FIELDS):
+        raise RuntimeError("schema manifest dtype count mismatch")
+
+    generated = document_schema()
+    if generated.get("x-starintel-schema-revision") != SCHEMA_REVISION:
+        raise RuntimeError("materialized schema revision mismatch")
+    if generated.get("x-starintel-profile") != SCHEMA_PROFILE:
+        raise RuntimeError("materialized schema profile mismatch")
+    if "reference" not in generated.get("$defs", {}):
+        raise RuntimeError("materialized schema is missing reusable definitions")
+
+    for dtype, fields in TYPE_FIELDS.items():
+        expected = set(COMMON_DATA_FIELDS) | set(EXPANSION_FIELD_NAMES[dtype])
+        missing = sorted(expected - set(fields))
+        if missing:
+            raise RuntimeError(f"materialized {dtype} schema is missing fields: {missing}")
+
+    # Ensure the complete materialized schema is serializable and deterministic.
+    first = json.dumps(generated, ensure_ascii=False, indent=2, sort_keys=True) + "\n"
+    second = json.dumps(document_schema(), ensure_ascii=False, indent=2, sort_keys=True) + "\n"
+    if first != second:
+        raise RuntimeError("materialized schema is nondeterministic")
 
 
 def validate_corpus() -> None:
@@ -103,7 +156,7 @@ def main(argv: list[str] | None = None) -> int:
         run([sys.executable, "-m", "compileall", "-q", "starintel_doc", "scripts"])
         run([sys.executable, "-m", "unittest", "discover", "-s", "tests", "-v"])
         validate_javascript()
-        validate_generated_schema()
+        validate_schema_bundle()
         validate_corpus()
         if args.site:
             validate_site()
