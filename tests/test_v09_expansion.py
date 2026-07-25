@@ -12,6 +12,7 @@ from starintel_doc import (
     TYPE_FIELDS,
     Document,
     document_schema,
+    stable_id,
     validate_document,
 )
 from starintel_doc.v09_expansion import EXPANSION_FIELD_NAMES
@@ -45,6 +46,16 @@ class StarIntelV09ExpansionTests(unittest.TestCase):
         self.assertEqual(
             manifest["expansion_content_hash"],
             hashlib.sha256(canonical.encode("utf-8")).hexdigest(),
+        )
+
+    def test_cross_runtime_deterministic_id_vector(self) -> None:
+        self.assertEqual(
+            stable_id("org", "Example Org", {"jurisdiction": "US-OH"}),
+            "starintel:org:example-org-13147a8a0592d28131cf",
+        )
+        self.assertEqual(
+            stable_id("organization", "Example Org", {"jurisdiction": "US-OH"}),
+            "starintel:org:example-org-13147a8a0592d28131cf",
         )
 
     def test_generated_schema_exposes_revision_and_defs(self) -> None:
