@@ -1,8 +1,8 @@
 {
-  "documents": 107,
+  "documents": 94,
   "receipts": 83,
-  "refunds": 21,
+  "refunds": 8,
   "gross": 281300.0,
-  "refund_total": 8877.0,
-  "net": 272423.0
+  "refund_total": 11655.0,
+  "net": 269645.0
 }

@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-25T18:13:21+00:00",
+  "generated_at": "2026-07-25T18:16:04+00:00",
   "query_urls": [
     "https://api.open.fec.gov/v1/schedules/schedule_a/?contributor_name=FINK%2C+LARRY&is_individual=true&sort=-contribution_receipt_date&api_key=REDACTED&per_page=100&page=1",
     "https://api.open.fec.gov/v1/schedules/schedule_a/?contributor_name=FINK%2C+LARRY&is_individual=true&sort=-contribution_receipt_date&api_key=REDACTED&per_page=100&page=10",
@@ -22,14 +22,14 @@
   "receipt_candidates": 210,
   "refund_candidates": 25,
   "accepted_receipt_versions": 83,
-  "accepted_refund_versions": 21,
+  "accepted_refund_versions": 8,
   "rejected_candidates": [
     {
       "kind": "receipt",
       "score": 0.45,
       "reasons": [
-        "exact first-name/surname variant",
-        "other employer: THE UNIVERSITY OF TOLEDO"
+        "exact FINK surname token and Laurence/Larry first name",
+        "other employer: OF THE TOLEDO UNIVERSITY"
       ],
       "record": {
         "sub_id": "4121720241084423288",
@@ -58,8 +58,8 @@
       "kind": "receipt",
       "score": 0.45,
       "reasons": [
-        "exact first-name/surname variant",
-        "other employer: THE UNIVERSITY OF TOLEDO"
+        "exact FINK surname token and Laurence/Larry first name",
+        "other employer: OF THE TOLEDO UNIVERSITY"
       ],
       "record": {
         "sub_id": "4051420251196700747",
@@ -89,8 +89,8 @@
       "kind": "receipt",
       "score": 0.45,
       "reasons": [
-        "exact first-name/surname variant",
-        "other employer: THE UNIVERSITY OF TOLEDO"
+        "exact FINK surname token and Laurence/Larry first name",
+        "other employer: OF THE TOLEDO UNIVERSITY"
       ],
       "record": {
         "sub_id": "4110720241055560779",
@@ -119,7 +119,7 @@
       "kind": "receipt",
       "score": 0.52,
       "reasons": [
-        "exact first-name/surname variant",
+        "exact FINK surname token and Laurence/Larry first name",
         "New York state",
         "consistent New York locality"
       ],
@@ -147,7 +147,7 @@
       "kind": "receipt",
       "score": 0.52,
       "reasons": [
-        "exact first-name/surname variant",
+        "exact FINK surname token and Laurence/Larry first name",
         "New York state",
         "consistent New York locality"
       ],
@@ -175,8 +175,8 @@
       "kind": "receipt",
       "score": 0.45,
       "reasons": [
-        "exact first-name/surname variant",
-        "other employer: THE UNIVERSITY OF TOLEDO"
+        "exact FINK surname token and Laurence/Larry first name",
+        "other employer: OF THE TOLEDO UNIVERSITY"
       ],
       "record": {
         "sub_id": "4103120241022104853",
@@ -205,8 +205,8 @@
       "kind": "receipt",
       "score": 0.45,
       "reasons": [
-        "exact first-name/surname variant",
-        "other employer: THE UNIVERSITY OF TOLEDO"
+        "exact FINK surname token and Laurence/Larry first name",
+        "other employer: OF THE TOLEDO UNIVERSITY"
       ],
       "record": {
         "sub_id": "4100120242049056906",
@@ -235,8 +235,8 @@
       "kind": "receipt",
       "score": 0.45,
       "reasons": [
-        "exact first-name/surname variant",
-        "other employer: THE UNIVERSITY OF TOLEDO"
+        "exact FINK surname token and Laurence/Larry first name",
+        "other employer: OF THE TOLEDO UNIVERSITY"
       ],
       "record": {
         "sub_id": "4020620251149388788",
@@ -265,8 +265,8 @@
       "kind": "receipt",
       "score": 0.45,
       "reasons": [
-        "exact first-name/surname variant",
-        "other employer: THE UNIVERSITY OF TOLEDO"
+        "exact FINK surname token and Laurence/Larry first name",
+        "other employer: OF THE TOLEDO UNIVERSITY"
       ],
       "record": {
         "sub_id": "4080520242001954848",
@@ -295,8 +295,8 @@
       "kind": "receipt",
       "score": 0.45,
       "reasons": [
-        "exact first-name/surname variant",
-        "other employer: THE UNIVERSITY OF TOLEDO"
+        "exact FINK surname token and Laurence/Larry first name",
+        "other employer: OF THE TOLEDO UNIVERSITY"
       ],
       "record": {
         "sub_id": "4080520242001954847",
@@ -325,7 +325,7 @@
       "kind": "receipt",
       "score": 0.45,
       "reasons": [
-        "exact first-name/surname variant"
+        "exact FINK surname token and Laurence/Larry first name"
       ],
       "record": {
         "sub_id": "4073120241984064900",
@@ -353,8 +353,8 @@
       "kind": "receipt",
       "score": 0.45,
       "reasons": [
-        "exact first-name/surname variant",
-        "other employer: THE UNIVERSITY OF TOLEDO"
+        "exact FINK surname token and Laurence/Larry first name",
+        "other employer: OF THE TOLEDO UNIVERSITY"
       ],
       "record": {
         "sub_id": "4042520241914039018",
@@ -383,9 +383,9 @@
       "kind": "receipt",
       "score": 0.5700000000000001,
       "reasons": [
-        "exact first-name/surname variant",
-        "other employer: THE UNIVERSITY OF TOLEDO",
-        "executive/finance occupation"
+        "exact FINK surname token and Laurence/Larry first name",
+        "other employer: OF THE TOLEDO UNIVERSITY",
+        "executive or finance occupation"
       ],
       "record": {
         "sub_id": "4022720241842365725",
@@ -414,7 +414,7 @@
       "kind": "receipt",
       "score": 0.52,
       "reasons": [
-        "exact first-name/surname variant",
+        "exact FINK surname token and Laurence/Larry first name",
         "New York state",
         "consistent New York locality"
       ],
@@ -442,9 +442,9 @@
       "kind": "receipt",
       "score": 0.5700000000000001,
       "reasons": [
-        "exact first-name/surname variant",
-        "other employer: THE UNIVERSITY OF TOLEDO",
-        "executive/finance occupation"
+        "exact FINK surname token and Laurence/Larry first name",
+        "other employer: OF THE TOLEDO UNIVERSITY",
+        "executive or finance occupation"
       ],
       "record": {
         "sub_id": "4081020231770070555",
@@ -473,9 +473,9 @@
       "kind": "receipt",
       "score": 0.5700000000000001,
       "reasons": [
-        "exact first-name/surname variant",
-        "other employer: THE UNIVERSITY OF TOLEDO",
-        "executive/finance occupation"
+        "exact FINK surname token and Laurence/Larry first name",
+        "other employer: OF THE TOLEDO UNIVERSITY",
+        "executive or finance occupation"
       ],
       "record": {
         "sub_id": "4010420231649788057",
@@ -504,9 +504,9 @@
       "kind": "receipt",
       "score": 0.5700000000000001,
       "reasons": [
-        "exact first-name/surname variant",
-        "other employer: THE UNIVERSITY OF TOLEDO",
-        "executive/finance occupation"
+        "exact FINK surname token and Laurence/Larry first name",
+        "other employer: OF THE TOLEDO UNIVERSITY",
+        "executive or finance occupation"
       ],
       "record": {
         "sub_id": "4010420231649788056",
@@ -535,9 +535,9 @@
       "kind": "receipt",
       "score": 0.5700000000000001,
       "reasons": [
-        "exact first-name/surname variant",
-        "other employer: THE UNIVERSITY OF TOLEDO",
-        "executive/finance occupation"
+        "exact FINK surname token and Laurence/Larry first name",
+        "other employer: OF THE TOLEDO UNIVERSITY",
+        "executive or finance occupation"
       ],
       "record": {
         "sub_id": "4010420231649788055",
@@ -566,9 +566,9 @@
       "kind": "receipt",
       "score": 0.5700000000000001,
       "reasons": [
-        "exact first-name/surname variant",
-        "other employer: THE UNIVERSITY OF TOLEDO",
-        "executive/finance occupation"
+        "exact FINK surname token and Laurence/Larry first name",
+        "other employer: OF THE TOLEDO UNIVERSITY",
+        "executive or finance occupation"
       ],
       "record": {
         "sub_id": "4110720221607988678",
@@ -597,9 +597,9 @@
       "kind": "receipt",
       "score": 0.5700000000000001,
       "reasons": [
-        "exact first-name/surname variant",
-        "other employer: THE UNIVERSITY OF TOLEDO",
-        "executive/finance occupation"
+        "exact FINK surname token and Laurence/Larry first name",
+        "other employer: OF THE TOLEDO UNIVERSITY",
+        "executive or finance occupation"
       ],
       "record": {
         "sub_id": "4110720221607988677",
@@ -628,8 +628,8 @@
       "kind": "receipt",
       "score": 0.45,
       "reasons": [
-        "exact first-name/surname variant",
-        "other employer: THE UNIVERSITY OF TOLEDO"
+        "exact FINK surname token and Laurence/Larry first name",
+        "other employer: OF THE TOLEDO UNIVERSITY"
       ],
       "record": {
         "sub_id": "4061520221511434065",
@@ -658,7 +658,7 @@
       "kind": "receipt",
       "score": 0.45,
       "reasons": [
-        "exact first-name/surname variant"
+        "exact FINK surname token and Laurence/Larry first name"
       ],
       "record": {
         "sub_id": "4022420211182837924",
@@ -686,7 +686,7 @@
       "kind": "receipt",
       "score": 0.45,
       "reasons": [
-        "exact first-name/surname variant"
+        "exact FINK surname token and Laurence/Larry first name"
       ],
       "record": {
         "sub_id": "4022420211180595614",
@@ -714,7 +714,7 @@
       "kind": "receipt",
       "score": 0.45,
       "reasons": [
-        "exact first-name/surname variant"
+        "exact FINK surname token and Laurence/Larry first name"
       ],
       "record": {
         "sub_id": "4022420211180363378",
@@ -742,7 +742,7 @@
       "kind": "receipt",
       "score": 0.45,
       "reasons": [
-        "exact first-name/surname variant"
+        "exact FINK surname token and Laurence/Larry first name"
       ],
       "record": {
         "sub_id": "4022420211179876310",
@@ -770,7 +770,7 @@
       "kind": "receipt",
       "score": 0.45,
       "reasons": [
-        "exact first-name/surname variant"
+        "exact FINK surname token and Laurence/Larry first name"
       ],
       "record": {
         "sub_id": "4070720261525372415",
@@ -799,7 +799,7 @@
       "kind": "receipt",
       "score": 0.45,
       "reasons": [
-        "exact first-name/surname variant"
+        "exact FINK surname token and Laurence/Larry first name"
       ],
       "record": {
         "sub_id": "4060220261513676638",
@@ -826,9 +826,9 @@
     },
     {
       "kind": "receipt",
-      "score": 0.45,
+      "score": 0.0,
       "reasons": [
-        "exact first-name/surname variant"
+        "surname was not exactly FINK or first name did not match"
       ],
       "record": {
         "sub_id": "4052020261510929370",
@@ -856,7 +856,7 @@
       "kind": "receipt",
       "score": 0.45,
       "reasons": [
-        "exact first-name/surname variant"
+        "exact FINK surname token and Laurence/Larry first name"
       ],
       "record": {
         "sub_id": "4050520261501669641",
@@ -885,7 +885,7 @@
       "kind": "receipt",
       "score": 0.45,
       "reasons": [
-        "exact first-name/surname variant"
+        "exact FINK surname token and Laurence/Larry first name"
       ],
       "record": {
         "sub_id": "4032620261427162381",
@@ -914,7 +914,7 @@
       "kind": "receipt",
       "score": 0.45,
       "reasons": [
-        "exact first-name/surname variant"
+        "exact FINK surname token and Laurence/Larry first name"
       ],
       "record": {
         "sub_id": "4030920261413485822",
@@ -943,8 +943,8 @@
       "kind": "receipt",
       "score": 0.45,
       "reasons": [
-        "exact first-name/surname variant",
-        "other employer: N A"
+        "exact FINK surname token and Laurence/Larry first name",
+        "other employer: A N"
       ],
       "record": {
         "sub_id": "4021120261305840259",
@@ -973,7 +973,7 @@
       "kind": "receipt",
       "score": 0.45,
       "reasons": [
-        "exact first-name/surname variant"
+        "exact FINK surname token and Laurence/Larry first name"
       ],
       "record": {
         "sub_id": "4042220261445805396",
@@ -1002,7 +1002,7 @@
       "kind": "receipt",
       "score": 0.45,
       "reasons": [
-        "exact first-name/surname variant"
+        "exact FINK surname token and Laurence/Larry first name"
       ],
       "record": {
         "sub_id": "4042220261458133706",
@@ -1031,8 +1031,8 @@
       "kind": "receipt",
       "score": 0.45,
       "reasons": [
-        "exact first-name/surname variant",
-        "other employer: N A"
+        "exact FINK surname token and Laurence/Larry first name",
+        "other employer: A N"
       ],
       "record": {
         "sub_id": "4011420261301733134",
@@ -1059,9 +1059,9 @@
     },
     {
       "kind": "receipt",
-      "score": 0.45,
+      "score": 0.0,
       "reasons": [
-        "exact first-name/surname variant"
+        "surname was not exactly FINK or first name did not match"
       ],
       "record": {
         "sub_id": "4042220261461063131",
@@ -1090,7 +1090,7 @@
       "kind": "receipt",
       "score": 0.45,
       "reasons": [
-        "exact first-name/surname variant"
+        "exact FINK surname token and Laurence/Larry first name"
       ],
       "record": {
         "sub_id": "4042220261451083428",
@@ -1119,8 +1119,8 @@
       "kind": "receipt",
       "score": 0.45,
       "reasons": [
-        "exact first-name/surname variant",
-        "other employer: N A"
+        "exact FINK surname token and Laurence/Larry first name",
+        "other employer: A N"
       ],
       "record": {
         "sub_id": "4011420261301587327",
@@ -1149,8 +1149,8 @@
       "kind": "receipt",
       "score": 0.45,
       "reasons": [
-        "exact first-name/surname variant",
-        "other employer: N A"
+        "exact FINK surname token and Laurence/Larry first name",
+        "other employer: A N"
       ],
       "record": {
         "sub_id": "4011220261300888127",
@@ -1179,7 +1179,7 @@
       "kind": "receipt",
       "score": 0.45,
       "reasons": [
-        "exact first-name/surname variant"
+        "exact FINK surname token and Laurence/Larry first name"
       ],
       "record": {
         "sub_id": "4042220261437490720",
@@ -1206,9 +1206,9 @@
     },
     {
       "kind": "receipt",
-      "score": 0.45,
+      "score": 0.0,
       "reasons": [
-        "exact first-name/surname variant"
+        "surname was not exactly FINK or first name did not match"
       ],
       "record": {
         "sub_id": "4042220261437127951",
@@ -1237,8 +1237,8 @@
       "kind": "receipt",
       "score": 0.45,
       "reasons": [
-        "exact first-name/surname variant",
-        "other employer: N A"
+        "exact FINK surname token and Laurence/Larry first name",
+        "other employer: A N"
       ],
       "record": {
         "sub_id": "4092420251292287542",
@@ -1267,7 +1267,7 @@
       "kind": "receipt",
       "score": 0.45,
       "reasons": [
-        "exact first-name/surname variant"
+        "exact FINK surname token and Laurence/Larry first name"
       ],
       "record": {
         "sub_id": "4042220261436960514",
@@ -1296,7 +1296,7 @@
       "kind": "receipt",
       "score": 0.45,
       "reasons": [
-        "exact first-name/surname variant"
+        "exact FINK surname token and Laurence/Larry first name"
       ],
       "record": {
         "sub_id": "4042220261443045245",
@@ -1325,7 +1325,7 @@
       "kind": "receipt",
       "score": 0.45,
       "reasons": [
-        "exact first-name/surname variant"
+        "exact FINK surname token and Laurence/Larry first name"
       ],
       "record": {
         "sub_id": "4082820251267484784",
@@ -1354,7 +1354,7 @@
       "kind": "receipt",
       "score": 0.45,
       "reasons": [
-        "exact first-name/surname variant"
+        "exact FINK surname token and Laurence/Larry first name"
       ],
       "record": {
         "sub_id": "4082820251263674616",
@@ -1383,7 +1383,7 @@
       "kind": "receipt",
       "score": 0.45,
       "reasons": [
-        "exact first-name/surname variant"
+        "exact FINK surname token and Laurence/Larry first name"
       ],
       "record": {
         "sub_id": "4082820251259430521",
@@ -1412,7 +1412,7 @@
       "kind": "receipt",
       "score": 0.45,
       "reasons": [
-        "exact first-name/surname variant"
+        "exact FINK surname token and Laurence/Larry first name"
       ],
       "record": {
         "sub_id": "4082820251254338596",
@@ -1441,7 +1441,7 @@
       "kind": "receipt",
       "score": 0.45,
       "reasons": [
-        "exact first-name/surname variant"
+        "exact FINK surname token and Laurence/Larry first name"
       ],
       "record": {
         "sub_id": "4082820251249482775",
@@ -1470,7 +1470,7 @@
       "kind": "receipt",
       "score": 0.45,
       "reasons": [
-        "exact first-name/surname variant"
+        "exact FINK surname token and Laurence/Larry first name"
       ],
       "record": {
         "sub_id": "4082820251245765216",
@@ -1499,7 +1499,7 @@
       "kind": "receipt",
       "score": 0.45,
       "reasons": [
-        "exact first-name/surname variant"
+        "exact FINK surname token and Laurence/Larry first name"
       ],
       "record": {
         "sub_id": "4021120251167967091",
@@ -1528,7 +1528,7 @@
       "kind": "receipt",
       "score": 0.45,
       "reasons": [
-        "exact first-name/surname variant"
+        "exact FINK surname token and Laurence/Larry first name"
       ],
       "record": {
         "sub_id": "4121720241084423284",
@@ -1555,9 +1555,9 @@
     },
     {
       "kind": "receipt",
-      "score": 0.45,
+      "score": 0.0,
       "reasons": [
-        "exact first-name/surname variant"
+        "surname was not exactly FINK or first name did not match"
       ],
       "record": {
         "sub_id": "4121720241084427809",
@@ -1584,9 +1584,9 @@
     },
     {
       "kind": "receipt",
-      "score": 0.45,
+      "score": 0.0,
       "reasons": [
-        "exact first-name/surname variant"
+        "surname was not exactly FINK or first name did not match"
       ],
       "record": {
         "sub_id": "4051420251198264901",
@@ -1614,9 +1614,9 @@
     },
     {
       "kind": "receipt",
-      "score": 0.45,
+      "score": 0.0,
       "reasons": [
-        "exact first-name/surname variant"
+        "surname was not exactly FINK or first name did not match"
       ],
       "record": {
         "sub_id": "4121720241084427808",
@@ -1643,9 +1643,9 @@
     },
     {
       "kind": "receipt",
-      "score": 0.45,
+      "score": 0.0,
       "reasons": [
-        "exact first-name/surname variant"
+        "surname was not exactly FINK or first name did not match"
       ],
       "record": {
         "sub_id": "4011620251132435262",
@@ -1675,7 +1675,7 @@
       "kind": "receipt",
       "score": 0.45,
       "reasons": [
-        "exact first-name/surname variant"
+        "exact FINK surname token and Laurence/Larry first name"
       ],
       "record": {
         "sub_id": "4121720241084423283",
@@ -1702,9 +1702,9 @@
     },
     {
       "kind": "receipt",
-      "score": 0.45,
+      "score": 0.0,
       "reasons": [
-        "exact first-name/surname variant"
+        "surname was not exactly FINK or first name did not match"
       ],
       "record": {
         "sub_id": "4121720241084427807",
@@ -1731,9 +1731,9 @@
     },
     {
       "kind": "receipt",
-      "score": 0.45,
+      "score": 0.0,
       "reasons": [
-        "exact first-name/surname variant"
+        "surname was not exactly FINK or first name did not match"
       ],
       "record": {
         "sub_id": "4121720241084427806",
@@ -1760,9 +1760,9 @@
     },
     {
       "kind": "receipt",
-      "score": 0.45,
+      "score": 0.0,
       "reasons": [
-        "exact first-name/surname variant"
+        "surname was not exactly FINK or first name did not match"
       ],
       "record": {
         "sub_id": "4121720241084427805",
@@ -1789,9 +1789,9 @@
     },
     {
       "kind": "receipt",
-      "score": 0.45,
+      "score": 0.0,
       "reasons": [
-        "exact first-name/surname variant"
+        "surname was not exactly FINK or first name did not match"
       ],
       "record": {
         "sub_id": "4121720241084427804",
@@ -1818,9 +1818,9 @@
     },
     {
       "kind": "receipt",
-      "score": 0.45,
+      "score": 0.0,
       "reasons": [
-        "exact first-name/surname variant"
+        "surname was not exactly FINK or first name did not match"
       ],
       "record": {
         "sub_id": "4041120251183753980",
@@ -1848,9 +1848,9 @@
     },
     {
       "kind": "receipt",
-      "score": 0.45,
+      "score": 0.0,
       "reasons": [
-        "exact first-name/surname variant"
+        "surname was not exactly FINK or first name did not match"
       ],
       "record": {
         "sub_id": "4011620251132435260",
@@ -1878,9 +1878,9 @@
     },
     {
       "kind": "receipt",
-      "score": 0.45,
+      "score": 0.0,
       "reasons": [
-        "exact first-name/surname variant"
+        "surname was not exactly FINK or first name did not match"
       ],
       "record": {
         "sub_id": "4051420251197032530",
@@ -1910,7 +1910,7 @@
       "kind": "receipt",
       "score": 0.45,
       "reasons": [
-        "exact first-name/surname variant"
+        "exact FINK surname token and Laurence/Larry first name"
       ],
       "record": {
         "sub_id": "4121720241084423282",
@@ -1939,7 +1939,7 @@
       "kind": "receipt",
       "score": 0.45,
       "reasons": [
-        "exact first-name/surname variant"
+        "exact FINK surname token and Laurence/Larry first name"
       ],
       "record": {
         "sub_id": "4121720241084423281",
@@ -1968,7 +1968,7 @@
       "kind": "receipt",
       "score": 0.45,
       "reasons": [
-        "exact first-name/surname variant"
+        "exact FINK surname token and Laurence/Larry first name"
       ],
       "record": {
         "sub_id": "4121720241084423280",
@@ -1995,9 +1995,9 @@
     },
     {
       "kind": "receipt",
-      "score": 0.45,
+      "score": 0.0,
       "reasons": [
-        "exact first-name/surname variant"
+        "surname was not exactly FINK or first name did not match"
       ],
       "record": {
         "sub_id": "4121920241110301630",
@@ -2023,9 +2023,9 @@
     },
     {
       "kind": "receipt",
-      "score": 0.45,
+      "score": 0.0,
       "reasons": [
-        "exact first-name/surname variant"
+        "surname was not exactly FINK or first name did not match"
       ],
       "record": {
         "sub_id": "4051420251196700759",
@@ -2053,9 +2053,9 @@
     },
     {
       "kind": "receipt",
-      "score": 0.45,
+      "score": 0.0,
       "reasons": [
-        "exact first-name/surname variant"
+        "surname was not exactly FINK or first name did not match"
       ],
       "record": {
         "sub_id": "4110120241045231466",
@@ -2081,9 +2081,9 @@
     },
     {
       "kind": "receipt",
-      "score": 0.45,
+      "score": 0.0,
       "reasons": [
-        "exact first-name/surname variant"
+        "surname was not exactly FINK or first name did not match"
       ],
       "record": {
         "sub_id": "4120520241074637970",
@@ -2111,9 +2111,9 @@
     },
     {
       "kind": "receipt",
-      "score": 0.45,
+      "score": 0.0,
       "reasons": [
-        "exact first-name/surname variant"
+        "surname was not exactly FINK or first name did not match"
       ],
       "record": {
         "sub_id": "4110720241055563278",
@@ -2140,9 +2140,9 @@
     },
     {
       "kind": "receipt",
-      "score": 0.45,
+      "score": 0.0,
       "reasons": [
-        "exact first-name/surname variant"
+        "surname was not exactly FINK or first name did not match"
       ],
       "record": {
         "sub_id": "4110720241055563277",
@@ -2169,9 +2169,9 @@
     },
     {
       "kind": "receipt",
-      "score": 0.45,
+      "score": 0.0,
       "reasons": [
-        "exact first-name/surname variant"
+        "surname was not exactly FINK or first name did not match"
       ],
       "record": {
         "sub_id": "4110720241055563275",
@@ -2200,7 +2200,7 @@
       "kind": "receipt",
       "score": 0.45,
       "reasons": [
-        "exact first-name/surname variant"
+        "exact FINK surname token and Laurence/Larry first name"
       ],
       "record": {
         "sub_id": "4110720241055560772",
@@ -2227,9 +2227,9 @@
     },
     {
       "kind": "receipt",
-      "score": 0.45,
+      "score": 0.0,
       "reasons": [
-        "exact first-name/surname variant"
+        "surname was not exactly FINK or first name did not match"
       ],
       "record": {
         "sub_id": "4103120241039836910",
@@ -2257,9 +2257,9 @@
     },
     {
       "kind": "receipt",
-      "score": 0.45,
+      "score": 0.0,
       "reasons": [
-        "exact first-name/surname variant"
+        "surname was not exactly FINK or first name did not match"
       ],
       "record": {
         "sub_id": "4051420251201586936",
@@ -2289,7 +2289,7 @@
       "kind": "receipt",
       "score": 0.45,
       "reasons": [
-        "exact first-name/surname variant"
+        "exact FINK surname token and Laurence/Larry first name"
       ],
       "record": {
         "sub_id": "4110720241055560771",
@@ -2318,7 +2318,7 @@
       "kind": "receipt",
       "score": 0.45,
       "reasons": [
-        "exact first-name/surname variant"
+        "exact FINK surname token and Laurence/Larry first name"
       ],
       "record": {
         "sub_id": "4110720241055560770",
@@ -2345,9 +2345,9 @@
     },
     {
       "kind": "receipt",
-      "score": 0.45,
+      "score": 0.0,
       "reasons": [
-        "exact first-name/surname variant"
+        "surname was not exactly FINK or first name did not match"
       ],
       "record": {
         "sub_id": "4051420251202236265",
@@ -2375,9 +2375,9 @@
     },
     {
       "kind": "receipt",
-      "score": 0.45,
+      "score": 0.0,
       "reasons": [
-        "exact first-name/surname variant"
+        "surname was not exactly FINK or first name did not match"
       ],
       "record": {
         "sub_id": "4120520241074637968",
@@ -2405,9 +2405,9 @@
     },
     {
       "kind": "receipt",
-      "score": 0.45,
+      "score": 0.0,
       "reasons": [
-        "exact first-name/surname variant"
+        "surname was not exactly FINK or first name did not match"
       ],
       "record": {
         "sub_id": "4110720241055563274",
@@ -2434,9 +2434,9 @@
     },
     {
       "kind": "receipt",
-      "score": 0.45,
+      "score": 0.0,
       "reasons": [
-        "exact first-name/surname variant"
+        "surname was not exactly FINK or first name did not match"
       ],
       "record": {
         "sub_id": "4110720241055563273",
@@ -2463,9 +2463,9 @@
     },
     {
       "kind": "receipt",
-      "score": 0.45,
+      "score": 0.0,
       "reasons": [
-        "exact first-name/surname variant"
+        "surname was not exactly FINK or first name did not match"
       ],
       "record": {
         "sub_id": "4110720241055563271",
@@ -2492,9 +2492,9 @@
     },
     {
       "kind": "receipt",
-      "score": 0.45,
+      "score": 0.0,
       "reasons": [
-        "exact first-name/surname variant"
+        "surname was not exactly FINK or first name did not match"
       ],
       "record": {
         "sub_id": "4110720241055563270",
@@ -2521,9 +2521,9 @@
     },
     {
       "kind": "receipt",
-      "score": 0.45,
+      "score": 0.0,
       "reasons": [
-        "exact first-name/surname variant"
+        "surname was not exactly FINK or first name did not match"
       ],
       "record": {
         "sub_id": "4110720241055563269",
@@ -2550,9 +2550,9 @@
     },
     {
       "kind": "receipt",
-      "score": 0.45,
+      "score": 0.0,
       "reasons": [
-        "exact first-name/surname variant"
+        "surname was not exactly FINK or first name did not match"
       ],
       "record": {
         "sub_id": "4103120241039836908",
@@ -2580,9 +2580,9 @@
     },
     {
       "kind": "receipt",
-      "score": 0.45,
+      "score": 0.0,
       "reasons": [
-        "exact first-name/surname variant"
+        "surname was not exactly FINK or first name did not match"
       ],
       "record": {
         "sub_id": "4051020251189960146",
@@ -2610,9 +2610,9 @@
     },
     {
       "kind": "receipt",
-      "score": 0.45,
+      "score": 0.0,
       "reasons": [
-        "exact first-name/surname variant"
+        "surname was not exactly FINK or first name did not match"
       ],
       "record": {
         "sub_id": "4111820241070101835",
@@ -2640,9 +2640,9 @@
     },
     {
       "kind": "receipt",
-      "score": 0.45,
+      "score": 0.0,
       "reasons": [
-        "exact first-name/surname variant"
+        "surname was not exactly FINK or first name did not match"
       ],
       "record": {
         "sub_id": "4103120241022109191",
@@ -2669,9 +2669,9 @@
     },
     {
       "kind": "receipt",
-      "score": 0.45,
+      "score": 0.0,
       "reasons": [
-        "exact first-name/surname variant"
+        "surname was not exactly FINK or first name did not match"
       ],
       "record": {
         "sub_id": "4111820241070101833",
@@ -2699,9 +2699,9 @@
     },
     {
       "kind": "receipt",
-      "score": 0.45,
+      "score": 0.0,
       "reasons": [
-        "exact first-name/surname variant"
+        "surname was not exactly FINK or first name did not match"
       ],
       "record": {
         "sub_id": "4103120241022109190",
@@ -2728,9 +2728,9 @@
     },
     {
       "kind": "receipt",
-      "score": 0.45,
+      "score": 0.0,
       "reasons": [
-        "exact first-name/surname variant"
+        "surname was not exactly FINK or first name did not match"
       ],
       "record": {
         "sub_id": "4103120241039055386",
@@ -2758,9 +2758,9 @@
     },
     {
       "kind": "receipt",
-      "score": 0.45,
+      "score": 0.0,
       "reasons": [
-        "exact first-name/surname variant"
+        "surname was not exactly FINK or first name did not match"
       ],
       "record": {
         "sub_id": "4103120241022109189",
@@ -2787,9 +2787,9 @@
     },
     {
       "kind": "receipt",
-      "score": 0.45,
+      "score": 0.0,
       "reasons": [
-        "exact first-name/surname variant"
+        "surname was not exactly FINK or first name did not match"
       ],
       "record": {
         "sub_id": "4103120241022109188",
@@ -2816,9 +2816,9 @@
     },
     {
       "kind": "receipt",
-      "score": 0.45,
+      "score": 0.0,
       "reasons": [
-        "exact first-name/surname variant"
+        "surname was not exactly FINK or first name did not match"
       ],
       "record": {
         "sub_id": "4112720241073782943",
@@ -2844,9 +2844,9 @@
     },
     {
       "kind": "receipt",
-      "score": 0.45,
+      "score": 0.0,
       "reasons": [
-        "exact first-name/surname variant"
+        "surname was not exactly FINK or first name did not match"
       ],
       "record": {
         "sub_id": "4103120241022109187",
@@ -2875,7 +2875,7 @@
       "kind": "receipt",
       "score": 0.45,
       "reasons": [
-        "exact first-name/surname variant"
+        "exact FINK surname token and Laurence/Larry first name"
       ],
       "record": {
         "sub_id": "4103120241022104848",
@@ -2902,9 +2902,9 @@
     },
     {
       "kind": "receipt",
-      "score": 0.45,
+      "score": 0.0,
       "reasons": [
-        "exact first-name/surname variant"
+        "surname was not exactly FINK or first name did not match"
       ],
       "record": {
         "sub_id": "4103120241022108370",
@@ -2931,9 +2931,9 @@
     },
     {
       "kind": "receipt",
-      "score": 0.45,
+      "score": 0.0,
       "reasons": [
-        "exact first-name/surname variant"
+        "surname was not exactly FINK or first name did not match"
       ],
       "record": {
         "sub_id": "4103120241022109185",
@@ -2960,9 +2960,9 @@
     },
     {
       "kind": "receipt",
-      "score": 0.45,
+      "score": 0.0,
       "reasons": [
-        "exact first-name/surname variant"
+        "surname was not exactly FINK or first name did not match"
       ],
       "record": {
         "sub_id": "4102320242079091201",
@@ -2992,8 +2992,8 @@
       "kind": "receipt",
       "score": 0.45,
       "reasons": [
-        "exact first-name/surname variant",
-        "other employer: ND REQUEST MADE"
+        "exact FINK surname token and Laurence/Larry first name",
+        "other employer: MADE REQUEST ND"
       ],
       "record": {
         "sub_id": "4110720241066528400",
@@ -3018,10 +3018,9 @@
     },
     {
       "kind": "receipt",
-      "score": 0.45,
+      "score": 0.0,
       "reasons": [
-        "exact first-name/surname variant",
-        "other employer: CELADON DESIGNS"
+        "surname was not exactly FINK or first name did not match"
       ],
       "record": {
         "sub_id": "4100120242049061405",
@@ -3048,9 +3047,9 @@
     },
     {
       "kind": "receipt",
-      "score": 0.45,
+      "score": 0.0,
       "reasons": [
-        "exact first-name/surname variant"
+        "surname was not exactly FINK or first name did not match"
       ],
       "record": {
         "sub_id": "4102820242092931561",
@@ -3076,9 +3075,9 @@
     },
     {
       "kind": "receipt",
-      "score": 0.45,
+      "score": 0.0,
       "reasons": [
-        "exact first-name/surname variant"
+        "surname was not exactly FINK or first name did not match"
       ],
       "record": {
         "sub_id": "4100120242067728312",
@@ -3106,9 +3105,9 @@
     },
     {
       "kind": "receipt",
-      "score": 0.45,
+      "score": 0.0,
       "reasons": [
-        "exact first-name/surname variant"
+        "surname was not exactly FINK or first name did not match"
       ],
       "record": {
         "sub_id": "4100120242049059151",
@@ -3135,9 +3134,9 @@
     },
     {
       "kind": "receipt",
-      "score": 0.45,
+      "score": 0.0,
       "reasons": [
-        "exact first-name/surname variant"
+        "surname was not exactly FINK or first name did not match"
       ],
       "record": {
         "sub_id": "4100120242049059150",
@@ -3166,7 +3165,7 @@
       "kind": "receipt",
       "score": 0.45,
       "reasons": [
-        "exact first-name/surname variant"
+        "exact FINK surname token and Laurence/Larry first name"
       ],
       "record": {
         "sub_id": "4100120242049056902",
@@ -3193,9 +3192,9 @@
     },
     {
       "kind": "receipt",
-      "score": 0.45,
+      "score": 0.0,
       "reasons": [
-        "exact first-name/surname variant"
+        "surname was not exactly FINK or first name did not match"
       ],
       "record": {
         "sub_id": "4111820241070101831",
@@ -3223,9 +3222,9 @@
     },
     {
       "kind": "receipt",
-      "score": 0.45,
+      "score": 0.0,
       "reasons": [
-        "exact first-name/surname variant"
+        "surname was not exactly FINK or first name did not match"
       ],
       "record": {
         "sub_id": "4100120242049059749",
@@ -3252,9 +3251,9 @@
     },
     {
       "kind": "receipt",
-      "score": 0.45,
+      "score": 0.0,
       "reasons": [
-        "exact first-name/surname variant"
+        "surname was not exactly FINK or first name did not match"
       ],
       "record": {
         "sub_id": "4111820241070101829",
@@ -3282,9 +3281,9 @@
     },
     {
       "kind": "receipt",
-      "score": 0.45,
+      "score": 0.0,
       "reasons": [
-        "exact first-name/surname variant"
+        "surname was not exactly FINK or first name did not match"
       ],
       "record": {
         "sub_id": "4100120242049059748",
@@ -3311,9 +3310,9 @@
     },
     {
       "kind": "receipt",
-      "score": 0.45,
+      "score": 0.0,
       "reasons": [
-        "exact first-name/surname variant"
+        "surname was not exactly FINK or first name did not match"
       ],
       "record": {
         "sub_id": "4103120241039055384",
@@ -3341,9 +3340,9 @@
     },
     {
       "kind": "receipt",
-      "score": 0.45,
+      "score": 0.0,
       "reasons": [
-        "exact first-name/surname variant"
+        "surname was not exactly FINK or first name did not match"
       ],
       "record": {
         "sub_id": "4100120242049059747",
@@ -3370,9 +3369,9 @@
     },
     {
       "kind": "receipt",
-      "score": 0.45,
+      "score": 0.0,
       "reasons": [
-        "exact first-name/surname variant"
+        "surname was not exactly FINK or first name did not match"
       ],
       "record": {
         "sub_id": "4100120242049059746",
@@ -3399,9 +3398,9 @@
     },
     {
       "kind": "receipt",
-      "score": 0.45,
+      "score": 0.0,
       "reasons": [
-        "exact first-name/surname variant"
+        "surname was not exactly FINK or first name did not match"
       ],
       "record": {
         "sub_id": "4100120242066693783",
@@ -3429,9 +3428,9 @@
     },
     {
       "kind": "receipt",
-      "score": 0.45,
+      "score": 0.0,
       "reasons": [
-        "exact first-name/surname variant"
+        "surname was not exactly FINK or first name did not match"
       ],
       "record": {
         "sub_id": "4100120242066693781",
@@ -3459,9 +3458,9 @@
     },
     {
       "kind": "receipt",
-      "score": 0.45,
+      "score": 0.0,
       "reasons": [
-        "exact first-name/surname variant"
+        "surname was not exactly FINK or first name did not match"
       ],
       "record": {
         "sub_id": "4100120242049059745",
@@ -3488,9 +3487,9 @@
     },
     {
       "kind": "receipt",
-      "score": 0.45,
+      "score": 0.0,
       "reasons": [
-        "exact first-name/surname variant"
+        "surname was not exactly FINK or first name did not match"
       ],
       "record": {
         "sub_id": "4100120242049059744",
@@ -3517,9 +3516,9 @@
     },
     {
       "kind": "receipt",
-      "score": 0.45,
+      "score": 0.0,
       "reasons": [
-        "exact first-name/surname variant"
+        "surname was not exactly FINK or first name did not match"
       ],
       "record": {
         "sub_id": "4020620251149391102",
@@ -3546,9 +3545,9 @@
     },
     {
       "kind": "receipt",
-      "score": 0.45,
+      "score": 0.0,
       "reasons": [
-        "exact first-name/surname variant"
+        "surname was not exactly FINK or first name did not match"
       ],
       "record": {
         "sub_id": "4102320242077252794",
@@ -3576,9 +3575,9 @@
     },
     {
       "kind": "receipt",
-      "score": 0.45,
+      "score": 0.0,
       "reasons": [
-        "exact first-name/surname variant"
+        "surname was not exactly FINK or first name did not match"
       ],
       "record": {
         "sub_id": "4020620251149391735",
@@ -3605,9 +3604,9 @@
     },
     {
       "kind": "receipt",
-      "score": 0.45,
+      "score": 0.0,
       "reasons": [
-        "exact first-name/surname variant"
+        "surname was not exactly FINK or first name did not match"
       ],
       "record": {
         "sub_id": "4020620251149391734",
@@ -3634,9 +3633,9 @@
     },
     {
       "kind": "receipt",
-      "score": 0.45,
+      "score": 0.0,
       "reasons": [
-        "exact first-name/surname variant"
+        "surname was not exactly FINK or first name did not match"
       ],
       "record": {
         "sub_id": "4020620251149391733",
@@ -3663,10 +3662,9 @@
     },
     {
       "kind": "receipt",
-      "score": 0.45,
+      "score": 0.0,
       "reasons": [
-        "exact first-name/surname variant",
-        "other employer: COMCAST"
+        "surname was not exactly FINK or first name did not match"
       ],
       "record": {
         "sub_id": "4020620251149391732",
@@ -3695,7 +3693,7 @@
       "kind": "receipt",
       "score": 0.0,
       "reasons": [
-        "name did not match Laurence/Larry Fink"
+        "surname was not exactly FINK or first name did not match"
       ],
       "record": {
         "sub_id": "4082720081094432877",
@@ -3723,7 +3721,7 @@
       "kind": "receipt",
       "score": 0.0,
       "reasons": [
-        "name did not match Laurence/Larry Fink"
+        "surname was not exactly FINK or first name did not match"
       ],
       "record": {
         "sub_id": "3061920110005379608",
@@ -3745,11 +3743,39 @@
     },
     {
       "kind": "disbursement",
-      "score": 0.53,
+      "score": 0.0,
       "reasons": [
-        "exact first-name/surname variant",
+        "exact FINK surname token and Laurence/Larry first name",
+        "non-positive Schedule B adjustment"
+      ],
+      "record": {
+        "sub_id": "4020520241819532921",
+        "committee_id": "C00486563",
+        "recipient_name": "FINK, LAURENCE",
+        "recipient_city": "NEW YORK",
+        "recipient_state": "NY",
+        "recipient_zip": "100550002",
+        "disbursement_date": "2023-12-20",
+        "disbursement_amount": -2900.0,
+        "disbursement_description": "REFUND",
+        "memoed_subtotal": false,
+        "line_number": "20A",
+        "image_number": "202401319619552013",
+        "file_number": 1753611,
+        "transaction_id": "500901549",
+        "amendment_indicator": "A",
+        "report_type": "YE",
+        "two_year_transaction_period": 2024,
+        "load_date": "2024-02-06T02:36:34"
+      }
+    },
+    {
+      "kind": "disbursement",
+      "score": 0.7000000000000001,
+      "reasons": [
+        "exact FINK surname token and Laurence/Larry first name",
         "New York state",
-        "consistent New York locality",
+        "known Fink New York locality",
         "consistent New York ZIP prefix"
       ],
       "record": {
@@ -3774,9 +3800,152 @@
     },
     {
       "kind": "disbursement",
+      "score": 0.0,
+      "reasons": [
+        "surname was not exactly FINK or first name did not match"
+      ],
+      "record": {
+        "sub_id": "4110720241067604430",
+        "committee_id": "C00401224",
+        "recipient_name": "FINKELSTEIN, LARRY",
+        "recipient_city": "NEWTON CENTRE",
+        "recipient_state": "MA",
+        "recipient_zip": "02459",
+        "disbursement_date": "2024-10-16",
+        "disbursement_amount": 50.0,
+        "disbursement_description": "CONTRIBUTION REFUND",
+        "memo_text": "REFUND OF CONTRIBUTION, INITIALLY EARMARKED FOR ACTBLUE FEDERAL TIPS (C00401224)",
+        "memoed_subtotal": false,
+        "line_number": "28A",
+        "image_number": "202410249719154983",
+        "file_number": 1841874,
+        "transaction_id": "SB28A_641273917",
+        "amendment_indicator": "A",
+        "report_type": "12G",
+        "two_year_transaction_period": 2024,
+        "load_date": "2024-11-08T03:42:39"
+      }
+    },
+    {
+      "kind": "disbursement",
+      "score": 0.0,
+      "reasons": [
+        "surname was not exactly FINK or first name did not match"
+      ],
+      "record": {
+        "sub_id": "4103120241041697302",
+        "committee_id": "C00412304",
+        "recipient_name": "FINKELSTEIN, LARRY",
+        "recipient_city": "NEWTON CENTER",
+        "recipient_state": "MA",
+        "recipient_zip": "024591821",
+        "disbursement_date": "2024-08-04",
+        "disbursement_amount": 100.0,
+        "disbursement_description": "CONTRIBUTION REFUND",
+        "memoed_subtotal": false,
+        "line_number": "20A",
+        "image_number": "202410159686327979",
+        "file_number": 1827306,
+        "transaction_id": "500364430",
+        "amendment_indicator": "A",
+        "report_type": "Q3",
+        "two_year_transaction_period": 2024,
+        "load_date": "2024-11-01T05:41:13"
+      }
+    },
+    {
+      "kind": "disbursement",
+      "score": 0.0,
+      "reasons": [
+        "surname was not exactly FINK or first name did not match"
+      ],
+      "record": {
+        "sub_id": "4100120242068174638",
+        "committee_id": "C00401224",
+        "recipient_name": "FINKELSTEIN, LARRY",
+        "recipient_city": "NEWTON CENTRE",
+        "recipient_state": "MA",
+        "recipient_zip": "02459",
+        "disbursement_date": "2024-08-01",
+        "disbursement_amount": 100.0,
+        "disbursement_description": "CONTRIBUTION REFUND",
+        "memo_text": "REFUND OF CONTRIBUTION, INITIALLY EARMARKED FOR MONTANANS FOR TESTER (C00412304)",
+        "memoed_subtotal": false,
+        "line_number": "28A",
+        "image_number": "202409209683343199",
+        "file_number": 1817884,
+        "transaction_id": "SB28A_606154263",
+        "amendment_indicator": "A",
+        "report_type": "M9",
+        "two_year_transaction_period": 2024,
+        "load_date": "2024-10-02T05:08:00"
+      }
+    },
+    {
+      "kind": "disbursement",
+      "score": 0.0,
+      "reasons": [
+        "surname was not exactly FINK or first name did not match"
+      ],
+      "record": {
+        "sub_id": "4022720241844965586",
+        "committee_id": "C00401224",
+        "recipient_committee_id": "C00834218",
+        "candidate_id": "S4MI00470",
+        "recipient_name": "FINKELSTEIN, LARRY",
+        "recipient_city": "NEWTON CENTRE",
+        "recipient_state": "MA",
+        "recipient_zip": "02459",
+        "disbursement_date": "2023-08-04",
+        "disbursement_amount": 125.0,
+        "disbursement_description": "CONTRIBUTION REFUND",
+        "memo_text": "REFUND OF CONTRIBUTION, INITIALLY EARMARKED FOR ELISSA SLOTKIN FOR MICHIGAN (C00834218)",
+        "memoed_subtotal": false,
+        "line_number": "28A",
+        "image_number": "202401319618310205",
+        "file_number": 1752852,
+        "transaction_id": "SB28A_539812235",
+        "amendment_indicator": "A",
+        "report_type": "YE",
+        "two_year_transaction_period": 2024,
+        "load_date": "2024-02-28T03:16:27"
+      }
+    },
+    {
+      "kind": "disbursement",
+      "score": 0.0,
+      "reasons": [
+        "surname was not exactly FINK or first name did not match"
+      ],
+      "record": {
+        "sub_id": "4110920221625794367",
+        "committee_id": "C00401224",
+        "recipient_committee_id": "C00784959",
+        "candidate_id": "S2WI00441",
+        "recipient_name": "FINKELSTEIN, LARRY",
+        "recipient_city": "NEWTON CENTRE",
+        "recipient_state": "MA",
+        "recipient_zip": "02459",
+        "disbursement_date": "2022-10-19",
+        "disbursement_amount": -3.0,
+        "disbursement_description": "CONTRIBUTION REFUND",
+        "memo_text": "REFUND OF CONTRIBUTION, INITIALLY EARMARKED FOR MANDELA BARNES FOR WISCONSIN (C00784959)",
+        "memoed_subtotal": false,
+        "line_number": "28A",
+        "image_number": "202210279546335557",
+        "file_number": 1654436,
+        "transaction_id": "SB28A_494205890",
+        "amendment_indicator": "A",
+        "report_type": "12G",
+        "two_year_transaction_period": 2022,
+        "load_date": "2022-11-10T08:07:03"
+      }
+    },
+    {
+      "kind": "disbursement",
       "score": 0.45,
       "reasons": [
-        "exact first-name/surname variant"
+        "exact FINK surname token and Laurence/Larry first name"
       ],
       "record": {
         "sub_id": "4110620211378011579",
@@ -3803,9 +3972,160 @@
     },
     {
       "kind": "disbursement",
-      "score": 0.45,
+      "score": 0.0,
       "reasons": [
-        "exact first-name/surname variant"
+        "exact FINK surname token and Laurence/Larry first name",
+        "non-positive Schedule B adjustment"
+      ],
+      "record": {
+        "sub_id": "4100220181598232585",
+        "committee_id": "C00401224",
+        "recipient_committee_id": "C00678839",
+        "recipient_name": "FINK, LARRY",
+        "recipient_city": "HOLLYWOOD",
+        "recipient_state": "FL",
+        "recipient_zip": "33019",
+        "disbursement_date": "2018-08-21",
+        "disbursement_amount": -125.0,
+        "disbursement_description": "CONTRIBUTION REFUND",
+        "memo_text": "REFUND OF CONTRIBUTION, INITIALLY EARMARKED FOR INDIVISIBLE ACTION (NON-CONTRIBUTION ACCOUNT) (C0067",
+        "memoed_subtotal": false,
+        "line_number": "28A",
+        "image_number": "201809209123909646",
+        "file_number": 1263179,
+        "transaction_id": "SB28A_122362087",
+        "amendment_indicator": "A",
+        "report_type": "M9",
+        "two_year_transaction_period": 2018,
+        "load_date": "2018-10-03T04:18:44.622000"
+      }
+    },
+    {
+      "kind": "disbursement",
+      "score": 0.0,
+      "reasons": [
+        "exact FINK surname token and Laurence/Larry first name",
+        "non-positive Schedule B adjustment"
+      ],
+      "record": {
+        "sub_id": "4030820171378951752",
+        "committee_id": "C00401224",
+        "recipient_committee_id": "C00424713",
+        "candidate_id": "H6FL08213",
+        "recipient_name": "FINK, LARRY",
+        "recipient_city": "HOLLYWOOD",
+        "recipient_state": "FL",
+        "recipient_zip": "330192416",
+        "disbursement_date": "2016-03-26",
+        "disbursement_amount": -250.0,
+        "disbursement_description": "CONTRIBUTION REFUND",
+        "memo_text": "REFUND OF CONTRIBUTION, INITIALLY EARMARKED FOR COMMITTEE TO ELECT ALAN GRAYSON (C00424713)",
+        "memoed_subtotal": false,
+        "line_number": "28A",
+        "image_number": "201702069044293081",
+        "file_number": 1147747,
+        "transaction_id": "SB28A_43556270",
+        "amendment_indicator": "N",
+        "report_type": "M4",
+        "two_year_transaction_period": 2016,
+        "load_date": "2017-05-31T21:38:23.424343"
+      }
+    },
+    {
+      "kind": "disbursement",
+      "score": 0.0,
+      "reasons": [
+        "exact FINK surname token and Laurence/Larry first name",
+        "non-positive Schedule B adjustment"
+      ],
+      "record": {
+        "sub_id": "4091920151254056416",
+        "committee_id": "C00401224",
+        "recipient_committee_id": "C00000935",
+        "recipient_name": "FINK, LARRY",
+        "recipient_city": "MARTINS CREEK",
+        "recipient_state": "PA",
+        "recipient_zip": "18063",
+        "disbursement_date": "2015-03-02",
+        "disbursement_amount": -25.0,
+        "disbursement_description": "CONTRIBUTION REFUND",
+        "memo_text": "REFUND OF CONTRIBUTION, INITIALLY EARMARKED FOR DEMOCRATIC CONGRESSIONAL CAMPAIGN COMMITTEE (C000009",
+        "memoed_subtotal": false,
+        "line_number": "28A",
+        "image_number": "201509149002290791",
+        "file_number": 1024649,
+        "transaction_id": "SB28A_25111429",
+        "amendment_indicator": "N",
+        "report_type": "M4",
+        "two_year_transaction_period": 2016,
+        "load_date": "2017-05-31T21:38:23.424343"
+      }
+    },
+    {
+      "kind": "disbursement",
+      "score": 0.0,
+      "reasons": [
+        "exact FINK surname token and Laurence/Larry first name",
+        "non-positive Schedule B adjustment"
+      ],
+      "record": {
+        "sub_id": "4091920151254056415",
+        "committee_id": "C00401224",
+        "recipient_committee_id": "C00000935",
+        "recipient_name": "FINK, LARRY",
+        "recipient_city": "MARTINS CREEK",
+        "recipient_state": "PA",
+        "recipient_zip": "18063",
+        "disbursement_date": "2015-03-02",
+        "disbursement_amount": -25.0,
+        "disbursement_description": "CONTRIBUTION REFUND",
+        "memo_text": "REFUND OF CONTRIBUTION, INITIALLY EARMARKED FOR DEMOCRATIC CONGRESSIONAL CAMPAIGN COMMITTEE (C000009",
+        "memoed_subtotal": false,
+        "line_number": "28A",
+        "image_number": "201509149002290790",
+        "file_number": 1024649,
+        "transaction_id": "SB28A_25601097",
+        "amendment_indicator": "N",
+        "report_type": "M4",
+        "two_year_transaction_period": 2016,
+        "load_date": "2017-05-31T21:38:23.424343"
+      }
+    },
+    {
+      "kind": "disbursement",
+      "score": 0.0,
+      "reasons": [
+        "exact FINK surname token and Laurence/Larry first name",
+        "non-positive Schedule B adjustment"
+      ],
+      "record": {
+        "sub_id": "4091920151254056414",
+        "committee_id": "C00401224",
+        "recipient_committee_id": "C00000935",
+        "recipient_name": "FINK, LARRY",
+        "recipient_city": "MARTINS CREEK",
+        "recipient_state": "PA",
+        "recipient_zip": "18063",
+        "disbursement_date": "2015-03-02",
+        "disbursement_amount": -25.0,
+        "disbursement_description": "CONTRIBUTION REFUND",
+        "memo_text": "REFUND OF CONTRIBUTION, INITIALLY EARMARKED FOR DEMOCRATIC CONGRESSIONAL CAMPAIGN COMMITTEE (C000009",
+        "memoed_subtotal": false,
+        "line_number": "28A",
+        "image_number": "201509149002290790",
+        "file_number": 1024649,
+        "transaction_id": "SB28A_24722322",
+        "amendment_indicator": "N",
+        "report_type": "M4",
+        "two_year_transaction_period": 2016,
+        "load_date": "2017-05-31T21:38:23.424343"
+      }
+    },
+    {
+      "kind": "disbursement",
+      "score": 0.0,
+      "reasons": [
+        "surname was not exactly FINK or first name did not match"
       ],
       "record": {
         "sub_id": "4053120131190560635",
@@ -3830,9 +4150,63 @@
     },
     {
       "kind": "disbursement",
+      "score": 0.0,
+      "reasons": [
+        "surname was not exactly FINK or first name did not match"
+      ],
+      "record": {
+        "sub_id": "4121920121176440249",
+        "committee_id": "C00494740",
+        "recipient_name": "FINKEL, LARRY",
+        "recipient_city": "ENGLEWOOD",
+        "recipient_state": "NJ",
+        "recipient_zip": "07631",
+        "disbursement_date": "2012-10-29",
+        "disbursement_amount": 100.0,
+        "disbursement_description": "CONTRIBUTION REFUND",
+        "memoed_subtotal": false,
+        "line_number": "28A",
+        "image_number": "12962931648",
+        "file_number": 839903,
+        "transaction_id": "D78387",
+        "amendment_indicator": "A",
+        "report_type": "30G",
+        "two_year_transaction_period": 2012,
+        "load_date": "2017-05-31T20:12:38.059660"
+      }
+    },
+    {
+      "kind": "disbursement",
+      "score": 0.0,
+      "reasons": [
+        "surname was not exactly FINK or first name did not match"
+      ],
+      "record": {
+        "sub_id": "4121920121176440248",
+        "committee_id": "C00494740",
+        "recipient_name": "FINKEL, LARRY",
+        "recipient_city": "ENGLEWOOD",
+        "recipient_state": "NJ",
+        "recipient_zip": "07631",
+        "disbursement_date": "2012-10-29",
+        "disbursement_amount": 100.0,
+        "disbursement_description": "CONTRIBUTION REFUND",
+        "memoed_subtotal": false,
+        "line_number": "28A",
+        "image_number": "12962931647",
+        "file_number": 839903,
+        "transaction_id": "D80662",
+        "amendment_indicator": "A",
+        "report_type": "30G",
+        "two_year_transaction_period": 2012,
+        "load_date": "2017-05-31T20:12:38.059660"
+      }
+    },
+    {
+      "kind": "disbursement",
       "score": 0.45,
       "reasons": [
-        "exact first-name/surname variant"
+        "exact FINK surname token and Laurence/Larry first name"
       ],
       "record": {
         "sub_id": "4032520041036884257",
