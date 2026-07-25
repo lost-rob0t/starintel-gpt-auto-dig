@@ -5,16 +5,21 @@ import shutil
 from collections import defaultdict
 from pathlib import Path
 
+from .dashboard import annotate_graph, dashboard_page, document_index, documents_page, graph_page
 from .model import discover, graph, org_index, render_org, slug
-from .render import node, packet, page, source_inventory
+from .render import node, page, source_inventory
 
 
 def themed(markup: str, prefix: str) -> str:
     stylesheet = f'<link rel="stylesheet" href="{prefix}assets/style.css">'
+    explorer_stylesheet = f'<link rel="stylesheet" href="{prefix}assets/explorer.css">'
     theme_script = f'<script src="{prefix}assets/theme.js"></script>'
-    if theme_script in markup:
-        return markup
-    return markup.replace(stylesheet, stylesheet + theme_script, 1)
+    additions = ""
+    if explorer_stylesheet not in markup:
+        additions += explorer_stylesheet
+    if theme_script not in markup:
+        additions += theme_script
+    return markup.replace(stylesheet, stylesheet + additions, 1)
 
 
 def build_site(input_root: Path, output: Path, org_output: Path, config_path: Path, assets: Path) -> None:
@@ -27,13 +32,17 @@ def build_site(input_root: Path, output: Path, org_output: Path, config_path: Pa
     asset_output = output / "assets"
     asset_output.mkdir()
     shutil.copy2(assets / "style.css", asset_output / "style.css")
+    shutil.copy2(assets / "explorer.css", asset_output / "explorer.css")
     shutil.copy2(assets / "theme.js", asset_output / "theme.js")
+    shutil.copy2(assets / "dashboard.js", asset_output / "dashboard.js")
     shutil.copy2(assets / "graph.js", asset_output / "graph.js")
     shutil.copy2(assets / "graph-core.mjs", asset_output / "graph-core.mjs")
     shutil.copy2(assets / "graph-model.mjs", asset_output / "graph-model.mjs")
     shutil.copy2(assets / "graph-render.mjs", asset_output / "graph-render.mjs")
+    shutil.copy2(assets / "graph-render-scaled.mjs", asset_output / "graph-render-scaled.mjs")
     shutil.copy2(assets / "graph-ui.mjs", asset_output / "graph-ui.mjs")
     shutil.copy2(assets / "graph-controller.mjs", asset_output / "graph-controller.mjs")
+    shutil.copy2(assets / "graph-explorer.mjs", asset_output / "graph-explorer.mjs")
     shutil.copy2(assets / "graph-touch.js", asset_output / "graph-touch.js")
     (output / ".nojekyll").write_text("")
 
@@ -60,23 +69,12 @@ def build_site(input_root: Path, output: Path, org_output: Path, config_path: Pa
         for directory in (target_out, node_out, org_out, public_org, downloads):
             directory.mkdir(parents=True, exist_ok=True)
 
-        network = graph(docs)
+        network = annotate_graph(docs, graph(docs))
         (target_out / "graph.json").write_text(json.dumps(network, ensure_ascii=False, separators=(",", ":")))
-        graph_markup = (
-            '<div class="controls"><input id="graph-search" type="search" placeholder="Search nodes…">'
-            '<select id="graph-filter"><option value="">All record types</option></select>'
-            '<button id="graph-reset" type="button">Fit</button></div>'
-            '<div id="graph-shell"><canvas id="graph-canvas"></canvas><aside id="graph-detail">Select a node.</aside></div>'
-            '<script type="module">import { mount } from "../assets/graph-controller.mjs"; '
-            'mount("graph-canvas","graph-detail","graph.json");</script>'
-            '<script src="../assets/graph-touch.js"></script>'
-        )
-        packet_html = packet(target, docs, config, network).replace(
-            '<div id="graph"></div><script src="../assets/graph.js"></script><script>renderGraph("graph.json")</script>',
-            graph_markup,
-            1,
-        )
-        (target_out / "index.html").write_text(themed(packet_html, "../"))
+        (target_out / "documents.json").write_text(json.dumps(document_index(docs), ensure_ascii=False, separators=(",", ":")))
+        (target_out / "index.html").write_text(themed(dashboard_page(target, docs, config, network), "../"))
+        (target_out / "graph.html").write_text(themed(graph_page(target, config, network), "../"))
+        (target_out / "documents.html").write_text(themed(documents_page(target, docs, config), "../"))
         (target_out / "sources.html").write_text(themed(source_inventory(target, docs), "../"))
         index = org_index(target, docs)
         (org_out / "index.org").write_text(index)
@@ -115,14 +113,14 @@ def build_site(input_root: Path, output: Path, org_output: Path, config_path: Pa
         cfg = config.get("packets", {}).get(target, {})
         cards.append(
             f'<article><span>{len(docs)} records</span><h2><a href="{target}/index.html">{cfg.get("title") or target.replace("-", " ").title()}</a></h2>'
-            f'<p>{cfg.get("subtitle") or "StarIntel public-record research"}</p><a href="{target}/index.html">Explore research →</a></article>'
+            f'<p>{cfg.get("subtitle") or "StarIntel public-record research"}</p><a href="{target}/index.html">Open dashboard →</a></article>'
         )
 
     (output / "search-index.json").write_text(json.dumps(search, ensure_ascii=False, separators=(",", ":")))
     body = (
         "<h1>StarIntel GPT Auto Dig</h1>"
-        '<p class="lede">Source-backed research transformed into Org-roam nodes, source inventories, neutral narratives, and interactive exploration graphs.</p>'
-        '<div class="notice"><strong>Canonical-data rule:</strong> only StarIntel packets are committed. Org, graph, and HTML are generated. Incremental packets are merged by stable document ID.</div>'
+        '<p class="lede">Source-backed research transformed into dashboards, Org-roam nodes, source inventories, and progressive graph explorers.</p>'
+        '<div class="notice"><strong>Canonical-data rule:</strong> only StarIntel packets are committed. Generated dashboards default to reviewed records while preserving explicit access to unreviewed material.</div>'
         '<section class="packets">' + "".join(cards) + "</section>"
     )
     (output / "index.html").write_text(themed(page(config.get("site_title", "StarIntel GPT Auto Dig"), body), ""))
