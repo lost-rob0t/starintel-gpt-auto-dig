@@ -5,10 +5,13 @@ import csv
 import hashlib
 import json
 import re
+import sys
 import urllib.request
 from collections import Counter
 from pathlib import Path
 from urllib.parse import urlparse
+
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 from starintel_doc.validation import validate_document
 
