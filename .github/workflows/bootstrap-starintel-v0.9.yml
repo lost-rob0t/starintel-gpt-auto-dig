@@ -79,7 +79,7 @@ jobs:
           set -euo pipefail
           git config user.name "starintel-auto-migrator"
           git config user.email "starintel-auto-migrator@users.noreply.github.com"
-          rm -f migration-error.log
+          rm -f migration-error.log .github/workflows/starintel-v0.9-migrate.yml
           git restore .github/workflows
           git add -A
           if git diff --cached --quiet; then
