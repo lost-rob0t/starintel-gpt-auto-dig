@@ -1,5 +1,5 @@
 {
-  "$id": "https://starintel.dev/schema/starintel-doc-v0.9.0.json",
+  "$id": "https://spec.starintel.actor/schema/starintel-doc-v0.9.0.json",
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "additionalProperties": false,
   "allOf": [

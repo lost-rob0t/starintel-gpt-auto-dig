@@ -4,7 +4,7 @@ from copy import deepcopy
 from typing import Any
 
 SCHEMA_VERSION = "0.9.0"
-SCHEMA_ID = "https://starintel.dev/schema/starintel-doc-v0.9.0.json"
+SCHEMA_ID = "https://spec.starintel.actor/schema/starintel-doc-v0.9.0.json"
 
 
 def string(*, enum: list[str] | None = None, pattern: str | None = None) -> dict[str, Any]:
