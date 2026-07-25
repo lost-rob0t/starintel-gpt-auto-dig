@@ -4,11 +4,13 @@ Evidence-first StarIntel research packets published as generated Org-roam corpor
 
 ## Canonical data rule
 
-Each dig keeps one committed source of truth:
+Each dig keeps one committed logical source of truth below:
 
 ```text
 digs/<target>/<YYYY-MM-DD>-<loop-slug>/starintel-documents.jsonl
 ```
+
+A large stream may be stored as a gzip-compressed, base64-encoded `starintel-documents.jsonl.gz.b64` file or an ordered `.parts` manifest. These are transport forms of the same single JSONL dataset, not duplicate research copies.
 
 `Org` nodes, graph data, source indexes, and the HTML site are derived by `scripts/build_research_site.py`. Generated output is not committed, preventing the research from being duplicated across formats.
 
