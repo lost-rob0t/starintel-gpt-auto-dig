@@ -4,14 +4,13 @@ on:
   push:
     branches: [main]
     paths:
-      - "bootstrap/repository.tar.gz.b64"
+      - "bootstrap/**"
       - ".github/workflows/bootstrap-repository.yml"
   pull_request:
     branches: [main]
     paths:
-      - "bootstrap/repository.tar.gz.b64"
+      - "bootstrap/**"
       - ".github/workflows/bootstrap-repository.yml"
-      - "bootstrap/trigger"
   workflow_dispatch:
 
 permissions:
@@ -31,19 +30,33 @@ jobs:
           fetch-depth: 0
           ref: ${{ github.event.pull_request.head.ref || github.ref_name }}
 
-      - name: Materialize repository tree
+      - name: Reconstruct and verify repository archive
         shell: bash
         run: |
           set -euo pipefail
-          test -s bootstrap/repository.tar.gz.b64
-          base64 --decode bootstrap/repository.tar.gz.b64 | tar --extract --gzip
-          rm -rf bootstrap
+          test "$(find bootstrap -maxdepth 1 -name 'archive.b64.*' | wc -l)" -eq 6
+          cat bootstrap/archive.b64.* | base64 --decode > /tmp/starintel-repository.tar.xz
+          echo "28e1c6291deb4a51b09e8f71f62a0081a2c9968ad01659be56374f73eb71fba6  /tmp/starintel-repository.tar.xz" | sha256sum --check --strict
+          tar --extract --xz --file /tmp/starintel-repository.tar.xz
+          rm -rf bootstrap /tmp/starintel-repository.tar.xz
 
       - name: Validate database
         run: python3 scripts/validate-db.py
 
       - name: Validate browser JavaScript
         run: node --check pages/static/site.js
+
+      - name: Install Emacs publishing dependencies
+        run: |
+          sudo apt-get update -qq
+          sudo DEBIAN_FRONTEND=noninteractive apt-get install --yes --quiet emacs-nox sqlite3
+          emacs --version | head -1
+
+      - name: Build Org-roam publication
+        run: bash scripts/publish-pages
+
+      - name: Validate published links
+        run: python3 scripts/check-pages-links.py _site
 
       - name: Commit materialized tree
         shell: bash
