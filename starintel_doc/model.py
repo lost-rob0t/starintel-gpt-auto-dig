@@ -7,7 +7,15 @@ from dataclasses import dataclass
 from datetime import datetime, timezone
 from typing import Any
 
-from .spec import DTYPE_ALIASES, SCHEMA_VERSION, TYPE_FIELDS
+from .spec import (
+    DTYPE_ALIASES,
+    SCHEMA_ID,
+    SCHEMA_PROFILE,
+    SCHEMA_PROFILE_VERSION,
+    SCHEMA_REVISION,
+    SCHEMA_VERSION,
+    TYPE_FIELDS,
+)
 from .validation import validate_document
 
 
@@ -39,6 +47,10 @@ def empty_document(dtype: str, dataset: str, doc_id: str | None = None) -> dict[
         "dataset": dataset,
         "dtype": canonical,
         "schema_version": SCHEMA_VERSION,
+        "schema_revision": SCHEMA_REVISION,
+        "schema_uri": SCHEMA_ID,
+        "profile": SCHEMA_PROFILE,
+        "profile_version": SCHEMA_PROFILE_VERSION,
         "version": 1,
         "date_added": now,
         "date_updated": now,
@@ -59,12 +71,15 @@ def empty_document(dtype: str, dataset: str, doc_id: str | None = None) -> dict[
         "assessment": {},
         "verification": {"status": "unverified", "verified": False},
         "handling": {"visibility": "public", "sensitive": False, "pii": False},
-        "lineage": {},
+        "lineage": {"schema_revision": SCHEMA_REVISION},
         "quality": {},
         "workflow": {},
         "geospatial": {},
         "attachments": [],
         "related_ids": [],
+        "object_marking_ids": [],
+        "revoked": False,
+        "deleted": False,
         "notes": [],
         "data": {},
         "extensions": {},
@@ -110,6 +125,9 @@ class Document:
     def touch(self, *, updated_by: str = "") -> "Document":
         self.value["version"] = int(self.value["version"]) + 1
         self.value["date_updated"] = utc_now()
+        self.value["schema_revision"] = SCHEMA_REVISION
+        self.value["schema_uri"] = SCHEMA_ID
+        self.value.setdefault("lineage", {})["schema_revision"] = SCHEMA_REVISION
         if updated_by:
             self.value.setdefault("provenance", {})["updated_by"] = updated_by
         return self.validate()
