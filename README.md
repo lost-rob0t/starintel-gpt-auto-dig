@@ -1,62 +1,54 @@
 # StarIntel GPT Auto Dig
 
-Evidence-first research packets produced through GPT-assisted StarIntel loops.
+Evidence-first StarIntel research packets published as generated Org-roam corpora, source inventories, neutral narratives, and interactive exploration graphs.
 
-This repository stores bounded dig outputs, source inventories, and machine-readable StarIntel documents. It does not replace the canonical design and implementation records in `starintel-auto-research`.
+## Canonical data rule
 
-## Repository layout
-
-Each completed loop belongs under:
+Each dig keeps one committed source of truth:
 
 ```text
-digs/<target>/<YYYY-MM-DD>-<loop-slug>/
-├── README.md
-├── sources.md
-└── starintel-documents.jsonl
+digs/<target>/<YYYY-MM-DD>-<loop-slug>/starintel-documents.jsonl
 ```
 
-A packet may add supporting fixtures or exports when the dig requires them. Generated files must stay beside the packet that produced them.
+`Org` nodes, graph data, source indexes, and the HTML site are derived by `scripts/build_research_site.py`. Generated output is not committed, preventing the research from being duplicated across formats.
+
+## Build locally
+
+```bash
+python3 scripts/build_research_site.py \
+  --input digs \
+  --output _site \
+  --org-output .generated/org
+```
+
+Open `_site/index.html`.
+
+## Published research
+
+The GitHub Pages workflow validates pull requests and deploys `main`. Each target page contains:
+
+- a neutral evidence-based narrative;
+- an interactive exploration graph;
+- typed StarIntel record pages;
+- generated Org-roam nodes;
+- a generated source inventory;
+- the canonical JSONL download.
 
 ## Git flow
 
-Use the same branch-first workflow as `starintel-auto-research`:
-
 1. Start from `main`.
 2. Create `agent/<description>`.
-3. Commit only the current dig packet and its required validation changes.
-4. Open a pull request into `main`.
-5. Validate structured documents and inspect the complete diff.
-6. Squash-merge when the packet is internally consistent and evidence links resolve.
+3. Commit one bounded dig or publishing-system change.
+4. Open a pull request.
+5. Validate JSONL, Org generation, graph generation, and the complete diff.
+6. Squash-merge after checks pass.
 
-Do not publish a research packet directly to `main`. The initial repository bootstrap is the sole exception because an empty Git repository has no commit from which a branch can be created.
+## Analytical rules
 
-## Evidence rules
-
-- Separate observed facts, analysis, and recommendations.
+- Separate observed facts, allegations, estimates, analysis, and open probes.
 - Preserve exact source URLs and retrieval dates.
-- Do not convert an inference into a fact.
-- Do not fabricate sources, confidence, test results, commits, or workflow status.
-- Use stable document IDs.
-- Relation records must declare a predicate plus source and destination document IDs.
-- Record conflicting evidence instead of flattening it away.
-
-## StarIntel document baseline
-
-`starintel-documents.jsonl` contains one JSON object per line. Every object must include:
-
-- `_id`
-- `dataset`
-- `dtype`
-- `version`
-- `sources`
-- `date_added`
-- `date_updated`
-
-Relation documents must also include:
-
-- `predicate`
-- `source_id`
-- `destination_id`
-- `confidence`
-
-The current packet controls any additional fields required for its target.
+- Do not infer control from board membership, contracts, or association alone.
+- Do not describe assets under management as personal ownership.
+- Use political labels only against explicit defining criteria.
+- Record contrary evidence and missing criteria, not only similarities.
+- Do not commit credentials, private evidence, home addresses, or unnecessary personal data.
