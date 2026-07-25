@@ -61,14 +61,22 @@ jobs:
         run: |
           test -s _site/index.html
           test -s _site/search-index.json
-          test -s _site/assets/graph-controller.mjs
           test -s _site/assets/graph-core.mjs
+          test -s _site/assets/graph-explorer.mjs
+          test -s _site/assets/graph-render-scaled.mjs
+          test -s _site/assets/dashboard.js
+          test -s _site/assets/explorer.css
           test -s _site/larry-fink/index.html
           test -s _site/palantir/index.html
+          test -s _site/palantir/graph.html
+          test -s _site/palantir/documents.html
+          test -s _site/palantir/documents.json
           test -s _site/palantir/graph.json
           test -s _site/palantir/downloads/starintel-documents.jsonl
           test -s .generated/org/palantir/index.org
-          grep -q 'graph-controller.mjs' _site/palantir/index.html
+          grep -q 'graph-launch-card' _site/palantir/index.html
+          grep -q 'graph-explorer.mjs' _site/palantir/graph.html
+          grep -q 'documents.json' _site/palantir/documents.html
           python - <<'PY'
           import json
           from pathlib import Path
@@ -76,12 +84,18 @@ jobs:
           graph = json.loads(Path("_site/palantir/graph.json").read_text())
           assert graph["nodes"]
           assert graph["edges"]
+          assert graph["meta"]["reviewed_nodes"] >= 0
+          assert all("reviewed" in node for node in graph["nodes"])
+          assert all("reviewed" in edge for edge in graph["edges"])
           assert any(
-            edge["source"] == "starintel:person:alex-karp"
-            and edge["target"] == "starintel:org:palantir-technologies-inc"
-            and edge["label"] == "founded"
-            for edge in graph["edges"]
+              edge["source"] == "starintel:person:alex-karp"
+              and edge["target"] == "starintel:org:palantir-technologies-inc"
+              and edge["label"] == "founded"
+              for edge in graph["edges"]
           )
+          documents = json.loads(Path("_site/palantir/documents.json").read_text())
+          assert documents
+          assert all(record["review"] in {"reviewed", "unreviewed"} for record in documents)
           search = json.loads(Path("_site/search-index.json").read_text())
           assert any(record["id"] == "starintel:org:palantir-technologies-inc" for record in search)
           PY
