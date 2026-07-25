@@ -1,6 +1,9 @@
 from __future__ import annotations
 
+import hashlib
+import json
 import unittest
+from pathlib import Path
 
 from starintel_doc import (
     COMMON_DATA_FIELDS,
@@ -11,7 +14,10 @@ from starintel_doc import (
     document_schema,
     validate_document,
 )
+from starintel_doc.v09_expansion import EXPANSION_FIELD_NAMES
 from starintel_doc.validation import ValidationError
+
+ROOT = Path(__file__).resolve().parents[1]
 
 
 class StarIntelV09ExpansionTests(unittest.TestCase):
@@ -21,6 +27,25 @@ class StarIntelV09ExpansionTests(unittest.TestCase):
             with self.subTest(dtype=dtype):
                 self.assertTrue(set(COMMON_DATA_FIELDS).issubset(fields))
                 self.assertTrue(set(FIELD_EXPANSIONS[dtype]).issubset(fields))
+
+    def test_portable_registry_matches_executable_registry(self) -> None:
+        registry = json.loads(
+            (ROOT / "schemas" / "starintel-doc-v0.9.0.expansion.json").read_text(encoding="utf-8")
+        )
+        manifest = json.loads(
+            (ROOT / "schemas" / "starintel-doc-v0.9.0.manifest.json").read_text(encoding="utf-8")
+        )
+        self.assertEqual(registry["schema_revision"], SCHEMA_REVISION)
+        self.assertEqual(registry["common_data_fields"], list(COMMON_DATA_FIELDS))
+        self.assertEqual(
+            registry["dtype_fields"],
+            {name: list(fields) for name, fields in sorted(EXPANSION_FIELD_NAMES.items())},
+        )
+        canonical = json.dumps(registry, ensure_ascii=False, sort_keys=True, separators=(",", ":"))
+        self.assertEqual(
+            manifest["expansion_content_hash"],
+            hashlib.sha256(canonical.encode("utf-8")).hexdigest(),
+        )
 
     def test_generated_schema_exposes_revision_and_defs(self) -> None:
         schema = document_schema()
