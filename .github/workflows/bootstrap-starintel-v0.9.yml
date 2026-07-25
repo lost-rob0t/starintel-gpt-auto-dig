@@ -43,10 +43,27 @@ jobs:
           python -m compileall -q starintel_doc scripts
           python -m unittest discover -s tests -v
       - name: Generate schema and migrate complete corpus
+        shell: bash
         run: |
-          python scripts/starintel.py schema --output schemas/starintel-doc-v0.9.0.schema.json
-          python scripts/migrate-starintel-v0.9.py --write
-          python scripts/validate-db.py
+          set -o pipefail
+          {
+            python scripts/starintel.py schema --output schemas/starintel-doc-v0.9.0.schema.json
+            python scripts/migrate-starintel-v0.9.py --write
+            python scripts/validate-db.py
+          } 2>&1 | tee migration-error.log
+      - name: Preserve migration failure
+        if: failure()
+        shell: bash
+        env:
+          TARGET_BRANCH: ${{ github.event.pull_request.head.ref || github.ref_name }}
+        run: |
+          set -euo pipefail
+          git config user.name "starintel-auto-migrator"
+          git config user.email "starintel-auto-migrator@users.noreply.github.com"
+          test -s migration-error.log
+          git add migration-error.log
+          git commit -m "Record StarIntel migration failure"
+          git push origin "HEAD:${TARGET_BRANCH}"
       - name: Validate generated research site
         run: |
           python scripts/build_research_site.py \
@@ -65,6 +82,7 @@ jobs:
           set -euo pipefail
           git config user.name "starintel-auto-migrator"
           git config user.email "starintel-auto-migrator@users.noreply.github.com"
+          rm -f migration-error.log
           git add -A
           if git diff --cached --quiet; then
             echo "No migration changes"
