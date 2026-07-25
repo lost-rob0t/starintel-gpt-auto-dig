@@ -5,6 +5,7 @@ on:
     branches: [main]
     paths:
       - "scripts/fetch_larry_fink_fec.py"
+      - "scripts/fetch_larry_fink_fec_fast.py"
       - ".github/workflows/fetch-larry-fink-fec.yml"
   workflow_dispatch:
 
@@ -39,8 +40,8 @@ jobs:
           # Schedule B does not contain employer/occupation fields; exact name,
           # New York locality, and an explicit REFUND purpose provide the match.
           sed -i 's/score >= 0.70 and "REFUND" in purpose/score >= 0.45 and "REFUND" in purpose/' scripts/fetch_larry_fink_fec.py
-          python scripts/fetch_larry_fink_fec.py
-          python -m compileall -q scripts/fetch_larry_fink_fec.py
+          python scripts/fetch_larry_fink_fec_fast.py
+          python -m compileall -q scripts/fetch_larry_fink_fec.py scripts/fetch_larry_fink_fec_fast.py
           python scripts/build_research_site.py --input digs --output _site --org-output .generated/org
           test -s digs/larry-fink/2026-07-25-fec-personal-ledger/starintel-documents.jsonl
           test -s digs/larry-fink/2026-07-25-fec-personal-ledger/query-audit.json
@@ -53,7 +54,7 @@ jobs:
           set -euo pipefail
           git config user.name "starintel-auto-publisher"
           git config user.email "actions@users.noreply.github.com"
-          git add scripts/fetch_larry_fink_fec.py digs/larry-fink/2026-07-25-fec-personal-ledger
+          git add scripts/fetch_larry_fink_fec.py scripts/fetch_larry_fink_fec_fast.py digs/larry-fink/2026-07-25-fec-personal-ledger
           if git diff --cached --quiet; then
             exit 0
           fi
