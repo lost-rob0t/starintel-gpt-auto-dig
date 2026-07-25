@@ -1,0 +1,36 @@
+{
+  "counts": {
+    "org": 34,
+    "person": 22,
+    "relation": 84,
+    "target": 11
+  },
+  "dataset": "flock-safety-columbus-local-government-2026-07-25",
+  "files": [
+    "README.md",
+    "sources.md",
+    "starintel-documents.jsonl"
+  ],
+  "generated_at": "2026-07-25T12:37:47-04:00",
+  "predicates": [
+    "administers",
+    "contractor-for",
+    "employed-by",
+    "member-of",
+    "operates",
+    "related-to",
+    "works-with"
+  ],
+  "source_retrieved_at": "2026-07-25",
+  "total": 151,
+  "validation": {
+    "confidence_ranges": "passed",
+    "json_parse": "passed",
+    "predicate_allowlist": "passed",
+    "relation_references": "passed",
+    "source_urls": "passed",
+    "target_references": "passed",
+    "unique_ids": "passed"
+  },
+  "version": "0.8.0"
+}
