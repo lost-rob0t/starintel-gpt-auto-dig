@@ -1,0 +1,48 @@
+name: Generate Flock national seed
+
+on:
+  push:
+    branches:
+      - agent/flock-national-state-locality-seed
+    paths:
+      - scripts/generate-flock-national-seed.py
+      - .github/workflows/generate-flock-national-seed.yml
+
+permissions:
+  contents: write
+
+concurrency:
+  group: generate-flock-national-state-locality-seed
+  cancel-in-progress: false
+
+jobs:
+  generate-and-validate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out branch
+        uses: actions/checkout@v4
+        with:
+          ref: agent/flock-national-state-locality-seed
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Generate packet
+        run: python3 scripts/generate-flock-national-seed.py
+
+      - name: Run mandatory merge gate
+        run: python3 scripts/validate-for-merge.py --site
+
+      - name: Commit generated packet
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          rm .github/workflows/generate-flock-national-seed.yml
+          git add scripts/generate-flock-national-seed.py \
+            digs/flock-safety/2026-07-25-national-state-locality-seed \
+            .github/workflows/generate-flock-national-seed.yml
+          git commit -m "Seed Flock national state locality research"
+          git push origin HEAD:agent/flock-national-state-locality-seed
