@@ -6,23 +6,30 @@ on:
     paths:
       - "bootstrap/repository.tar.gz.b64"
       - ".github/workflows/bootstrap-repository.yml"
+  pull_request:
+    branches: [main]
+    paths:
+      - "bootstrap/repository.tar.gz.b64"
+      - ".github/workflows/bootstrap-repository.yml"
+      - "bootstrap/trigger"
   workflow_dispatch:
 
 permissions:
   contents: write
 
 concurrency:
-  group: bootstrap-repository
+  group: bootstrap-repository-${{ github.ref }}
   cancel-in-progress: false
 
 jobs:
   materialize:
     runs-on: ubuntu-latest
     steps:
-      - name: Check out repository
+      - name: Check out writable branch
         uses: actions/checkout@v6
         with:
           fetch-depth: 0
+          ref: ${{ github.event.pull_request.head.ref || github.ref_name }}
 
       - name: Materialize repository tree
         shell: bash
@@ -40,6 +47,8 @@ jobs:
 
       - name: Commit materialized tree
         shell: bash
+        env:
+          TARGET_BRANCH: ${{ github.event.pull_request.head.ref || github.ref_name }}
         run: |
           set -euo pipefail
           git config user.name "starintel-auto-publisher"
@@ -50,4 +59,4 @@ jobs:
             exit 0
           fi
           git commit -m "Publish Palantir StarIntel dataset and roam corpus"
-          git push origin HEAD:main
+          git push origin "HEAD:${TARGET_BRANCH}"
