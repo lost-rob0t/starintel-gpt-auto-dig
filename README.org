@@ -1,18 +1,20 @@
 #+title: StarIntel GPT Auto Dig
-#+description: Git-backed StarIntel research database and Org-roam publishing corpus produced by GPT research passes.
+#+description: Git-backed StarIntel research database and Python-published research corpus produced by GPT research passes.
 
 * Purpose
 
 This repository is the publication target for StarIntel documents emitted by GPT-assisted auto research.
 
-The repository has two canonical trees:
+It supports two canonical research forms:
 
-- =db/= contains machine-readable StarIntel documents, one newline-delimited JSON record per file.
-- =roam/= contains human-readable Org-roam research and index nodes published through the same isolated Emacs and GitHub Pages workflow used by =starintel-auto-research=.
+- =digs/= contains packet-oriented research with JSONL documents and supporting files.
+- =db/= contains normalized StarIntel documents, one newline-delimited JSON record per file.
+
+Optional Org files beneath =roam/= are durable research notes and indexes. They are not the deployment engine.
 
 * Database Contract
 
-Every document is stored at:
+Every normalized document is stored at:
 
 #+begin_example
 db/<dtype>/<_id>.ndjson
@@ -22,74 +24,46 @@ Rules:
 
 1. The directory name is the document's exact =dtype=.
 2. The filename is the document's exact =_id= followed by =.ndjson=.
-3. Each file contains exactly one compact JSON object and exactly one terminating newline.
+3. Each file contains exactly one compact JSON object and one terminating newline.
 4. The object's =dtype= and =_id= must agree with its path.
-5. Existing documents are replaced only when the incoming record has the same =_id= and is intentionally newer or corrected.
+5. Existing documents are replaced only for an intentional correction or newer version.
 6. Sources, provenance, confidence, timestamps, analysis notes, and uncertainty are preserved.
 7. Contract ceilings, potential values, obligations, outlays, and recognized revenue remain separate measurements.
 8. Public claims, corporate statements, advocacy claims, and analytical inferences retain their source labels.
 
-The initial dataset is =palantir-deep-dive-2026-07-25=.
-
 * Repository Shape
 
 #+begin_example
+digs/                         Packet-oriented research
 db/                           StarIntel NDJSON documents grouped by dtype
 manifests/                    Dataset manifests and integrity hashes
 reports/                      Human-readable research reports
-roam/research/                Org-roam research nodes
-roam/indexes/                 Org-roam project and publication indexes
-lisp/starintel/               Org-roam Pages exporter
-pages/static/                 Static site assets
-scripts/publish-pages         Reproducible batch publisher
-scripts/check-pages-links.py  Internal-link validator
-scripts/configure-pages       One-time GitHub Pages configuration
-.github/workflows/pages.yml   Build, validate, and deploy workflow
+roam/research/                Optional Org research notes
+roam/indexes/                 Optional Org indexes
+scripts/build_research_site.py Python site entry point
+scripts/starintel_site/       Python site generator
+.github/workflows/publish-pages.yml
 #+end_example
 
 There is deliberately no =roam/implement/= workflow in this repository. It publishes research and indexes; it does not select or track software implementation designs.
 
-* Org-roam Publishing
-
-Every persistent Org file beneath =roam/= must include:
-
-- a stable file-level =ID= property
-- =#+title=
-- =#+description=
-- durable =id:= links for graph relationships when possible
+* Python Publishing
 
 Build locally:
 
 #+begin_src sh
-bash scripts/publish-pages
-python3 scripts/check-pages-links.py _site
+python3 scripts/build_research_site.py \
+  --input digs \
+  --output _site \
+  --org-output .generated/org
 #+end_src
 
-The publisher:
+The Python publisher merges packet records by stable document ID and =date_updated=, emits HTML and graph data, generates source and packet indexes, and produces canonical JSONL downloads.
 
-1. stages a normalized copy of =roam/=
-2. creates an isolated Org-roam database under =.cache/=
-3. exports one HTML page per Org file
-4. resolves =id:= links
-5. adds backlinks
-6. emits index, search, and graph data
-7. copies referenced non-Org assets
-8. fails on unresolved identifiers or broken internal links
-
-GitHub Actions validates pull requests and deploys pushes to =main=. Enable Pages workflow publishing once with:
-
-#+begin_src sh
-bash scripts/configure-pages
-#+end_src
+GitHub Actions validates pull requests and deploys pushes to =main=. The repository does not use an Emacs-based Pages workflow.
 
 * Research Publication Rule
 
-A research pass is complete only when:
-
-1. machine-readable documents are present under =db/<dtype>/=
-2. the dataset manifest and hashes are updated
-3. a readable Org research node or index is added or updated
-4. path/document consistency validation passes
-5. the commit is pushed to =main= or merged after checks
+A research pass is complete when the applicable packet or normalized database records are present, supporting manifests or reports are updated, validation passes, and the change is merged after green CI/CD.
 
 Do not commit credentials, private evidence, restricted personal data, or material not intended to live in this repository.
