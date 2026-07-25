@@ -45,8 +45,8 @@ jobs:
           )
           html = urlopen(request, timeout=60).read().decode("utf-8", "replace")
           patterns = {
-              "FEC_API_KEY": r"window\.API_KEY_PUBLIC\s*=\s*'([^']+)'",
-              "FEC_API_KEY_SCHEDULE_A": r"window\.API_KEY_PUBLIC_SCHEDULE_A\s*=\s*'([^']+)'",
+              "FEC_API_KEY": r"(?:window\.)?API_KEY_PUBLIC\s*=\s*'([^']+)'",
+              "FEC_API_KEY_SCHEDULE_A": r"(?:window\.)?API_KEY_PUBLIC_SCHEDULE_A\s*=\s*'([^']+)'",
           }
           values = {}
           for name, pattern in patterns.items():
