@@ -1,97 +1,99 @@
 # StarIntel GPT Auto Dig
 
-Evidence-first research packets produced through GPT-assisted StarIntel loops and published as generated Org-roam corpora, source inventories, neutral narratives, agent research ledgers, and interactive exploration graphs.
+Evidence-first research packets and a Git-backed JSON database using the repository-local **`starintel_doc` v0.9.0 fork** as the only document specification.
 
-This repository stores bounded dig outputs and machine-readable StarIntel documents. It does not replace the canonical design and implementation records in `starintel-auto-research`.
+## Canonical rule
+
+`starintel_doc/` is the sole schema implementation. Scripts, skills, validation, migration, recursive target selection, imports, the static explorer, and generated JSON Schema all import it directly. Do not create a second schema, a prompt-only “style,” or undocumented top-level fields.
+
+Every document uses the v0.9.0 envelope:
+
+```text
+_id, dataset, dtype, schema_version, version,
+date_added, date_updated,
+title, summary, description, status, language,
+tags, labels, aliases, keywords, identifiers,
+sources, evidence, temporal, provenance, assessment,
+verification, handling, lineage, quality, workflow,
+geospatial, attachments, related_ids, notes,
+data, extensions
+```
+
+`data` is strictly selected by `dtype`. `extensions` is the declared, namespaced escape hatch for metadata that cannot yet be represented without data loss. Undeclared top-level fields and undeclared `data` fields fail validation.
 
 ## Repository layout
 
-Each completed loop belongs under:
-
 ```text
-digs/<target>/<YYYY-MM-DD>-<loop-slug>/
-├── README.md
-└── starintel-documents.jsonl
+starintel_doc/                 Canonical v0.9.0 schema fork and runtime
+schemas/                       Generated JSON Schema
+skills/                        Auto-dig operating skills
+scripts/starintel.py           Unified CLI
+scripts/validate-db.py         Strict corpus validator
+scripts/migrate-starintel-v0.9.py
+scripts/search-db.py
+scripts/select-targets.py
+db/<dtype>/<_id>.ndjson        One compact document per file
+digs/<target>/<run>/starintel-documents.jsonl
+manifests/                     Corpus and migration manifests
 ```
 
-A packet may add supporting fixtures, manifests, or exports when required. A large canonical stream may be stored as a gzip-compressed, base64-encoded `starintel-documents.jsonl.gz.b64` file or an ordered `.parts` manifest. These are transport forms of one logical JSONL dataset, not duplicate research copies.
-
-Multiple packets may exist for the same target. The generator merges them by stable document ID and `date_updated`, preserving the target's complete history. The generated canonical download contains the merged target corpus rather than only the newest incremental packet.
-
-## Agent research ledger
-
-An agent may publish its synthesis as a `research-pass` document inside a later packet. A research pass should expose:
-
-- the research question;
-- method and classification rules;
-- findings with confidence;
-- supporting record IDs;
-- counterevidence or competing interpretations;
-- unresolved investigation-target IDs;
-- source records and retrieval dates;
-- the agent identity and narrative role.
-
-Research passes are append-only. A later pass supplements or challenges earlier analysis instead of silently replacing it. The site renders these passes as an evidence-linked narrative ledger.
-
-## Generated research site
-
-`Org` nodes, graph data, source indexes, and HTML are derived by `scripts/build_research_site.py`. Generated output is not committed.
+## CLI
 
 ```bash
-python3 scripts/build_research_site.py \
-  --input digs \
-  --output _site \
-  --org-output .generated/org
+python3 scripts/starintel.py types
+python3 scripts/starintel.py schema --output schemas/starintel-doc-v0.9.0.schema.json
+python3 scripts/starintel.py create org \
+  --dataset example \
+  --id starintel:org:example \
+  --title "Example Org" \
+  --data '{"name":"Example Org","org_type":"company"}'
+python3 scripts/starintel.py validate
+python3 scripts/starintel.py search palantir --dtype org --with-location
+python3 scripts/starintel.py select-targets \
+  --query palantir \
+  --limit 10 \
+  --emit-documents \
+  --output recursive-targets.jsonl
 ```
 
-Open `_site/index.html`. The GitHub Pages workflow validates pull requests and deploys `main`. Each target page can contain:
+## Full migration
 
-- a neutral evidence-based narrative;
-- an append-only agent research ledger;
-- an evidence-posture summary;
-- an interactive exploration graph;
-- typed StarIntel record pages;
-- generated Org-roam nodes;
-- a generated source inventory;
-- the merged canonical JSONL download;
-- the ordered research-packet history.
+```bash
+python3 scripts/migrate-starintel-v0.9.py --write
+python3 scripts/validate-db.py
+python3 -m unittest discover -s tests -v
+```
+
+The migration traverses every normalized DB record and every dig packet, converts old metadata into the v0.9.0 envelope, preserves unrecognized legacy values beneath `extensions.legacy.v0`, rewrites packets as plain canonical JSONL, removes old compressed transport fragments, and emits a migration manifest.
+
+## Document creation
+
+Creation must go through `Document.create`, `python -m starintel_doc create`, or `scripts/starintel.py create`. Direct JSON authored by an agent must still pass `validate_document` before publication.
+
+```python
+from starintel_doc import Document
+
+record = Document.create(
+    "relation",
+    "example-dataset",
+    doc_id="starintel:relation:alice-founded-example",
+    data={
+        "subject": "starintel:person:alice",
+        "predicate": "founded",
+        "object": "starintel:org:example",
+        "confidence": 0.97,
+    },
+    sources=[{"kind": "filing", "url": "https://example.test", "credibility": 0.99}],
+)
+```
 
 ## Git flow
 
-Use the same branch-first workflow as `starintel-auto-research`:
-
 1. Start from `main`.
 2. Create `agent/<description>`.
-3. Commit only the current dig packet and its required publishing or validation changes.
-4. Open a pull request into `main`.
-5. Validate structured documents, generated Org, graph output, and the complete diff.
-6. Squash-merge when the packet is internally consistent and evidence links resolve.
+3. Commit one coherent schema, tooling, or research transaction.
+4. Validate Python, tests, the complete JSON corpus, generated schema, graph, and site.
+5. Open a pull request into `main`.
+6. Squash-merge after checks pass.
 
-Do not publish a research packet directly to `main`.
-
-## Evidence and analytical rules
-
-- Separate observed facts, allegations, estimates, analysis, recommendations, and open probes.
-- Preserve exact source URLs and retrieval dates.
-- Do not convert an inference into a fact.
-- Do not infer control from board membership, contracts, or association alone.
-- Do not describe assets under management as personal ownership.
-- Use political labels only against explicit defining criteria.
-- Record contrary evidence and missing criteria, not only similarities.
-- Do not fabricate sources, confidence, test results, commits, or workflow status.
-- Use stable document IDs and preserve conflicting evidence.
-- Do not commit credentials, private evidence, home addresses, or unnecessary personal data.
-
-## StarIntel document baseline
-
-Every logical JSONL record must include:
-
-- `_id`
-- `dataset`
-- `dtype`
-- `version`
-- `sources`
-- `date_added`
-- `date_updated`
-
-Relation records must preserve their predicate, endpoints, sources, and confidence using the schema version declared by the packet.
+Do not publish research packets directly to `main`.
