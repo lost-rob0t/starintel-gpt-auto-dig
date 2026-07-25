@@ -32,28 +32,40 @@ jobs:
         with:
           python-version: "3.13"
 
+      - name: Load FEC public browser credentials
+        run: |
+          python - <<'PY'
+          import os
+          import re
+          from urllib.request import Request, urlopen
+
+          request = Request(
+              "https://www.fec.gov/data/individual-contributions/",
+              headers={"User-Agent": "starintel-gpt-auto-dig/1.0"},
+          )
+          html = urlopen(request, timeout=60).read().decode("utf-8", "replace")
+          patterns = {
+              "FEC_API_KEY": r"window\.API_KEY_PUBLIC\s*=\s*'([^']+)'",
+              "FEC_API_KEY_SCHEDULE_A": r"window\.API_KEY_PUBLIC_SCHEDULE_A\s*=\s*'([^']+)'",
+          }
+          values = {}
+          for name, pattern in patterns.items():
+              match = re.search(pattern, html)
+              if not match or not match.group(1):
+                  raise SystemExit(f"{name} was not present in the official FEC page")
+              values[name] = match.group(1)
+              print(f"::add-mask::{values[name]}")
+          with open(os.environ["GITHUB_ENV"], "a", encoding="utf-8") as env:
+              for name, value in values.items():
+                  env.write(f"{name}={value}\n")
+          PY
+
       - name: Resolve FEC ledger
         id: resolve
         continue-on-error: true
         run: |
           set -o pipefail
           mkdir -p digs/larry-fink/2026-07-25-fec-personal-ledger
-          FEC_API_KEY="$(python - <<'PY'
-          import re
-          from urllib.request import Request, urlopen
-          request = Request(
-              'https://www.fec.gov/data/individual-contributions/',
-              headers={'User-Agent': 'starintel-gpt-auto-dig/1.0'},
-          )
-          html = urlopen(request, timeout=60).read().decode('utf-8', 'replace')
-          match = re.search(r"window\.API_KEY_PUBLIC\s*=\s*'([^']+)'", html)
-          if not match:
-              raise SystemExit('FEC public API key was not present in the official page')
-          print(match.group(1))
-          PY
-          )"
-          echo "::add-mask::${FEC_API_KEY}"
-          export FEC_API_KEY
           sed -i 's/score >= 0.70 and "REFUND" in purpose/score >= 0.45 and "REFUND" in purpose/' scripts/fetch_larry_fink_fec.py
           python scripts/fetch_larry_fink_fec_fast.py > digs/larry-fink/2026-07-25-fec-personal-ledger/fetch-transcript.txt 2>&1
           python -m compileall -q scripts/fetch_larry_fink_fec.py scripts/fetch_larry_fink_fec_fast.py
