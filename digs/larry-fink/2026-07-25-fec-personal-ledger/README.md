@@ -1,6 +1,6 @@
 # Larry Fink personal FEC ledger
 
-Generated from live OpenFEC Schedule A and Schedule B data at `2026-07-25T18:17:39+00:00`.
+Generated from live OpenFEC Schedule A and Schedule B data at `2026-07-25T18:19:37+00:00`.
 
 - Counted receipts: 68
 - Memo entries excluded from gross totals: 15

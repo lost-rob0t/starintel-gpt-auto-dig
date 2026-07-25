@@ -1,6 +1,51 @@
 {
-  "generated_at": "2026-07-25T18:17:39+00:00",
+  "generated_at": "2026-07-25T18:19:37+00:00",
   "query_urls": [
+    "https://api.open.fec.gov/v1/committee/C00010603/?api_key=REDACTED&per_page=100&page=1",
+    "https://api.open.fec.gov/v1/committee/C00075820/?api_key=REDACTED&per_page=100&page=1",
+    "https://api.open.fec.gov/v1/committee/C00174862/?api_key=REDACTED&per_page=100&page=1",
+    "https://api.open.fec.gov/v1/committee/C00193623/?api_key=REDACTED&per_page=100&page=1",
+    "https://api.open.fec.gov/v1/committee/C00260547/?api_key=REDACTED&per_page=100&page=1",
+    "https://api.open.fec.gov/v1/committee/C00273169/?api_key=REDACTED&per_page=100&page=1",
+    "https://api.open.fec.gov/v1/committee/C00280206/?api_key=REDACTED&per_page=100&page=1",
+    "https://api.open.fec.gov/v1/committee/C00308676/?api_key=REDACTED&per_page=100&page=1",
+    "https://api.open.fec.gov/v1/committee/C00311043/?api_key=REDACTED&per_page=100&page=1",
+    "https://api.open.fec.gov/v1/committee/C00330894/?api_key=REDACTED&per_page=100&page=1",
+    "https://api.open.fec.gov/v1/committee/C00331439/?api_key=REDACTED&per_page=100&page=1",
+    "https://api.open.fec.gov/v1/committee/C00335448/?api_key=REDACTED&per_page=100&page=1",
+    "https://api.open.fec.gov/v1/committee/C00344473/?api_key=REDACTED&per_page=100&page=1",
+    "https://api.open.fec.gov/v1/committee/C00346312/?api_key=REDACTED&per_page=100&page=1",
+    "https://api.open.fec.gov/v1/committee/C00383653/?api_key=REDACTED&per_page=100&page=1",
+    "https://api.open.fec.gov/v1/committee/C00384529/?api_key=REDACTED&per_page=100&page=1",
+    "https://api.open.fec.gov/v1/committee/C00393652/?api_key=REDACTED&per_page=100&page=1",
+    "https://api.open.fec.gov/v1/committee/C00412304/?api_key=REDACTED&per_page=100&page=1",
+    "https://api.open.fec.gov/v1/committee/C00431445/?api_key=REDACTED&per_page=100&page=1",
+    "https://api.open.fec.gov/v1/committee/C00438713/?api_key=REDACTED&per_page=100&page=1",
+    "https://api.open.fec.gov/v1/committee/C00457622/?api_key=REDACTED&per_page=100&page=1",
+    "https://api.open.fec.gov/v1/committee/C00458398/?api_key=REDACTED&per_page=100&page=1",
+    "https://api.open.fec.gov/v1/committee/C00458463/?api_key=REDACTED&per_page=100&page=1",
+    "https://api.open.fec.gov/v1/committee/C00459255/?api_key=REDACTED&per_page=100&page=1",
+    "https://api.open.fec.gov/v1/committee/C00469924/?api_key=REDACTED&per_page=100&page=1",
+    "https://api.open.fec.gov/v1/committee/C00479246/?api_key=REDACTED&per_page=100&page=1",
+    "https://api.open.fec.gov/v1/committee/C00486563/?api_key=REDACTED&per_page=100&page=1",
+    "https://api.open.fec.gov/v1/committee/C00495358/?api_key=REDACTED&per_page=100&page=1",
+    "https://api.open.fec.gov/v1/committee/C00503052/?api_key=REDACTED&per_page=100&page=1",
+    "https://api.open.fec.gov/v1/committee/C00508416/?api_key=REDACTED&per_page=100&page=1",
+    "https://api.open.fec.gov/v1/committee/C00521153/?api_key=REDACTED&per_page=100&page=1",
+    "https://api.open.fec.gov/v1/committee/C00545749/?api_key=REDACTED&per_page=100&page=1",
+    "https://api.open.fec.gov/v1/committee/C00545947/?api_key=REDACTED&per_page=100&page=1",
+    "https://api.open.fec.gov/v1/committee/C00551275/?api_key=REDACTED&per_page=100&page=1",
+    "https://api.open.fec.gov/v1/committee/C00573949/?api_key=REDACTED&per_page=100&page=1",
+    "https://api.open.fec.gov/v1/committee/C00575795/?api_key=REDACTED&per_page=100&page=1",
+    "https://api.open.fec.gov/v1/committee/C00586537/?api_key=REDACTED&per_page=100&page=1",
+    "https://api.open.fec.gov/v1/committee/C00617803/?api_key=REDACTED&per_page=100&page=1",
+    "https://api.open.fec.gov/v1/committee/C00633859/?api_key=REDACTED&per_page=100&page=1",
+    "https://api.open.fec.gov/v1/committee/C00640623/?api_key=REDACTED&per_page=100&page=1",
+    "https://api.open.fec.gov/v1/committee/C00677286/?api_key=REDACTED&per_page=100&page=1",
+    "https://api.open.fec.gov/v1/committee/C00768200/?api_key=REDACTED&per_page=100&page=1",
+    "https://api.open.fec.gov/v1/committee/C00800623/?api_key=REDACTED&per_page=100&page=1",
+    "https://api.open.fec.gov/v1/committee/C00851980/?api_key=REDACTED&per_page=100&page=1",
+    "https://api.open.fec.gov/v1/committee/C00882910/?api_key=REDACTED&per_page=100&page=1",
     "https://api.open.fec.gov/v1/schedules/schedule_a/?contributor_name=FINK%2C+LARRY&is_individual=true&sort=-contribution_receipt_date&api_key=REDACTED&per_page=100&page=1",
     "https://api.open.fec.gov/v1/schedules/schedule_a/?contributor_name=FINK%2C+LARRY&is_individual=true&sort=-contribution_receipt_date&api_key=REDACTED&per_page=100&page=10",
     "https://api.open.fec.gov/v1/schedules/schedule_a/?contributor_name=FINK%2C+LARRY&is_individual=true&sort=-contribution_receipt_date&api_key=REDACTED&per_page=100&page=11",
@@ -29,7 +74,7 @@
       "score": 0.45,
       "reasons": [
         "exact FINK surname token and Laurence/Larry first name",
-        "other employer: TOLEDO OF THE UNIVERSITY"
+        "other employer: UNIVERSITY TOLEDO OF THE"
       ],
       "record": {
         "sub_id": "4121720241084423288",
@@ -59,7 +104,7 @@
       "score": 0.45,
       "reasons": [
         "exact FINK surname token and Laurence/Larry first name",
-        "other employer: TOLEDO OF THE UNIVERSITY"
+        "other employer: UNIVERSITY TOLEDO OF THE"
       ],
       "record": {
         "sub_id": "4051420251196700747",
@@ -90,7 +135,7 @@
       "score": 0.45,
       "reasons": [
         "exact FINK surname token and Laurence/Larry first name",
-        "other employer: TOLEDO OF THE UNIVERSITY"
+        "other employer: UNIVERSITY TOLEDO OF THE"
       ],
       "record": {
         "sub_id": "4110720241055560779",
@@ -176,7 +221,7 @@
       "score": 0.45,
       "reasons": [
         "exact FINK surname token and Laurence/Larry first name",
-        "other employer: TOLEDO OF THE UNIVERSITY"
+        "other employer: UNIVERSITY TOLEDO OF THE"
       ],
       "record": {
         "sub_id": "4103120241022104853",
@@ -206,7 +251,7 @@
       "score": 0.45,
       "reasons": [
         "exact FINK surname token and Laurence/Larry first name",
-        "other employer: TOLEDO OF THE UNIVERSITY"
+        "other employer: UNIVERSITY TOLEDO OF THE"
       ],
       "record": {
         "sub_id": "4100120242049056906",
@@ -236,7 +281,7 @@
       "score": 0.45,
       "reasons": [
         "exact FINK surname token and Laurence/Larry first name",
-        "other employer: TOLEDO OF THE UNIVERSITY"
+        "other employer: UNIVERSITY TOLEDO OF THE"
       ],
       "record": {
         "sub_id": "4020620251149388788",
@@ -266,7 +311,7 @@
       "score": 0.45,
       "reasons": [
         "exact FINK surname token and Laurence/Larry first name",
-        "other employer: TOLEDO OF THE UNIVERSITY"
+        "other employer: UNIVERSITY TOLEDO OF THE"
       ],
       "record": {
         "sub_id": "4080520242001954848",
@@ -296,7 +341,7 @@
       "score": 0.45,
       "reasons": [
         "exact FINK surname token and Laurence/Larry first name",
-        "other employer: TOLEDO OF THE UNIVERSITY"
+        "other employer: UNIVERSITY TOLEDO OF THE"
       ],
       "record": {
         "sub_id": "4080520242001954847",
@@ -354,7 +399,7 @@
       "score": 0.45,
       "reasons": [
         "exact FINK surname token and Laurence/Larry first name",
-        "other employer: TOLEDO OF THE UNIVERSITY"
+        "other employer: UNIVERSITY TOLEDO OF THE"
       ],
       "record": {
         "sub_id": "4042520241914039018",
@@ -384,7 +429,7 @@
       "score": 0.5700000000000001,
       "reasons": [
         "exact FINK surname token and Laurence/Larry first name",
-        "other employer: TOLEDO OF THE UNIVERSITY",
+        "other employer: UNIVERSITY TOLEDO OF THE",
         "executive or finance occupation"
       ],
       "record": {
@@ -443,7 +488,7 @@
       "score": 0.5700000000000001,
       "reasons": [
         "exact FINK surname token and Laurence/Larry first name",
-        "other employer: TOLEDO OF THE UNIVERSITY",
+        "other employer: UNIVERSITY TOLEDO OF THE",
         "executive or finance occupation"
       ],
       "record": {
@@ -474,7 +519,7 @@
       "score": 0.5700000000000001,
       "reasons": [
         "exact FINK surname token and Laurence/Larry first name",
-        "other employer: TOLEDO OF THE UNIVERSITY",
+        "other employer: UNIVERSITY TOLEDO OF THE",
         "executive or finance occupation"
       ],
       "record": {
@@ -505,7 +550,7 @@
       "score": 0.5700000000000001,
       "reasons": [
         "exact FINK surname token and Laurence/Larry first name",
-        "other employer: TOLEDO OF THE UNIVERSITY",
+        "other employer: UNIVERSITY TOLEDO OF THE",
         "executive or finance occupation"
       ],
       "record": {
@@ -536,7 +581,7 @@
       "score": 0.5700000000000001,
       "reasons": [
         "exact FINK surname token and Laurence/Larry first name",
-        "other employer: TOLEDO OF THE UNIVERSITY",
+        "other employer: UNIVERSITY TOLEDO OF THE",
         "executive or finance occupation"
       ],
       "record": {
@@ -567,7 +612,7 @@
       "score": 0.5700000000000001,
       "reasons": [
         "exact FINK surname token and Laurence/Larry first name",
-        "other employer: TOLEDO OF THE UNIVERSITY",
+        "other employer: UNIVERSITY TOLEDO OF THE",
         "executive or finance occupation"
       ],
       "record": {
@@ -598,7 +643,7 @@
       "score": 0.5700000000000001,
       "reasons": [
         "exact FINK surname token and Laurence/Larry first name",
-        "other employer: TOLEDO OF THE UNIVERSITY",
+        "other employer: UNIVERSITY TOLEDO OF THE",
         "executive or finance occupation"
       ],
       "record": {
@@ -629,7 +674,7 @@
       "score": 0.45,
       "reasons": [
         "exact FINK surname token and Laurence/Larry first name",
-        "other employer: TOLEDO OF THE UNIVERSITY"
+        "other employer: UNIVERSITY TOLEDO OF THE"
       ],
       "record": {
         "sub_id": "4061520221511434065",
