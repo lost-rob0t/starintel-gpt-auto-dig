@@ -1,66 +1,45 @@
 # Repository contract
 
+## Canonical schema
+
+`starintel_doc/` is the sole schema implementation. `schemas/starintel-doc-v0.9.0.schema.json` is generated from it. Skills and scripts may not duplicate the field registry.
+
 ## Canonical paths
 
 ```text
-digs/<target>/<YYYY-MM-DD>-<loop-slug>/
+starintel_doc/
+schemas/starintel-doc-v0.9.0.schema.json
+digs/<target>/<YYYY-MM-DD>-<loop-slug>/starintel-documents.jsonl
 db/<dtype>/<_id>.ndjson
-roam/research/<project>/<node>.org
-roam/indexes/<project>/<index>.org
 manifests/<dataset>.json
 reports/<dataset>.md
+skills/<skill>/SKILL.md
 ```
 
 ## Research transaction
 
-A research publication is one logical transaction containing the applicable combination of:
-
-1. packet-oriented or normalized StarIntel records;
-2. a manifest with counts and hashes when using the normalized database form;
-3. a readable report or packet README;
-4. optional Org research and index nodes;
-5. validation results.
-
-The Git commit is the durable transaction boundary.
+A publication is one logical Git transaction containing the applicable combination of validated records, a packet README/report, manifests, generated-schema changes, and tests. The Git commit is the durable transaction boundary.
 
 ## Filename policy
 
-The requested filename for normalized records is the literal StarIntel `_id`. Colons are therefore retained, for example:
+The literal StarIntel `_id` remains the normalized filename, including colons:
 
 ```text
 db/org/starintel:org:palantir-technologies-inc.ndjson
 ```
 
-This is valid in Git and on GitHub, but Windows filesystems cannot check out colon-containing names. Consumers on Windows should use sparse/API access or a path-mapping importer.
-
 ## Update policy
 
-Records are immutable by identity but replaceable by correction or version:
+- same `_id`, newer integer `version`: intentional replacement;
+- same `_id`, same version, changed bytes: documented correction;
+- different `_id`: new record;
+- deletion: documented reason;
+- schema change: migration plus full-corpus validation.
 
-- same `_id`, newer `version`: replace intentionally;
-- same `_id`, same `version`, changed bytes: treat as a correction and document it in the commit;
-- different `_id`: add a new file;
-- deletions require a documented reason.
+## Packet policy
 
-## Evidence policy
+Plain `starintel-documents.jsonl` is canonical. Legacy gzip/base64 and `.parts` transports are migrated to plain JSONL and removed.
 
-The repository records what a source supports. It does not treat:
+## Validation boundary
 
-- lobbying as corruption;
-- former public employment as misconduct;
-- a contract ceiling as paid revenue;
-- an advocacy characterization as neutral fact;
-- a corporate statement as independent verification.
-
-## Publishing
-
-The canonical publication workflow is the Python site generator on `main`:
-
-```bash
-python3 scripts/build_research_site.py \
-  --input digs \
-  --output _site \
-  --org-output .generated/org
-```
-
-The workflow validates generated HTML, graph output, source indexes, and canonical JSONL downloads before GitHub Pages deployment. Org files may remain as durable research notes, but the repository does not use an Emacs-based Pages workflow.
+A record is publishable only when `starintel_doc.validate_document` accepts it. A corpus is publishable only when path consistency, duplicate IDs, relation endpoints, tests, generated schema, graph, and site generation pass.

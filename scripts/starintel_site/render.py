@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import html
 import json
-from collections import Counter, defaultdict
+from collections import Counter
 from typing import Any
 from urllib.parse import quote
 
@@ -16,7 +16,7 @@ def page(title: str, body: str, prefix: str = "") -> str:
 <link rel="stylesheet" href="{prefix}assets/style.css"></head><body>
 <header><a class="brand" href="{prefix}index.html">StarIntel GPT Auto Dig</a>
 <nav><a href="{prefix}index.html">Research</a></nav></header>
-<main>{body}</main><footer>Generated from canonical StarIntel data. Org and HTML are derived artifacts.</footer>
+<main>{body}</main><footer>Generated from canonical StarIntel v0.9.0 data.</footer>
 </body></html>"""
 
 
@@ -30,6 +30,8 @@ def value(data: Any) -> str:
             f"<dt>{html.escape(str(key).replace('_', ' ').title())}</dt><dd>{value(item)}</dd>"
             for key, item in data.items()
         ) + "</dl>"
+    if data is None:
+        return "<code>null</code>"
     return f"<code>{html.escape(str(data))}</code>"
 
 
@@ -38,66 +40,67 @@ def sources(items: list[Any]) -> str:
     for raw_source in items:
         source = source_record(raw_source)
         title = source.get("title") or source.get("publisher") or source.get("url") or "Source"
-        heading = f'<a href="{html.escape(source["url"])}">{html.escape(title)}</a>' if source.get("url") else html.escape(title)
-        meta = " · ".join(str(x) for x in (
-            source.get("publisher"),
-            f"reliability {source['reliability']}" if source.get("reliability") is not None else None,
-            f"accessed {source['accessed']}" if source.get("accessed") else None,
-        ) if x and x != title)
+        heading = f'<a href="{html.escape(source["url"])}">{html.escape(str(title))}</a>' if source.get("url") else html.escape(str(title))
+        meta = " · ".join(
+            str(item)
+            for item in (
+                source.get("publisher"),
+                f"credibility {source['credibility']}" if source.get("credibility") is not None else None,
+                f"retrieved {source.get('retrieved_at') or source.get('accessed_at')}" if source.get("retrieved_at") or source.get("accessed_at") else None,
+            )
+            if item and item != title
+        )
         rows.append(f"<li>{heading}<span>{html.escape(meta)}</span></li>")
     return '<ul class="sources">' + "".join(rows) + "</ul>"
 
 
 def node(doc: dict[str, Any], target: str, known: set[str]) -> str:
-    title = doc.get("title") or doc.get("name") or doc["_id"]
-    badges = "".join(f'<span class="badge">{html.escape(str(x))}</span>' for x in (
-        doc["dtype"], doc.get("verification", {}).get("status"),
-        f"confidence {doc['confidence']}" if doc.get("confidence") is not None else None,
-    ) if x)
+    data = doc.get("data", {})
+    title = doc.get("title") or data.get("name") or data.get("full_name") or doc["_id"]
+    confidence = doc.get("assessment", {}).get("confidence")
+    badges = "".join(
+        f'<span class="badge">{html.escape(str(item))}</span>'
+        for item in (
+            doc["dtype"],
+            doc.get("verification", {}).get("status"),
+            f"confidence {confidence}" if confidence is not None else None,
+            f"schema {doc.get('schema_version')}",
+        )
+        if item
+    )
     body = [
         f'<div class="crumb"><a href="../index.html">← {html.escape(target.replace("-", " ").title())}</a></div>',
-        f"<h1>{html.escape(title)}</h1><div class=\"badges\">{badges}</div>",
+        f'<h1>{html.escape(str(title))}</h1><div class="badges">{badges}</div>',
         f'<p class="lede">{html.escape(summary(doc))}</p>',
         "<section><h2>Metadata</h2><table>",
         f"<tr><th>StarIntel ID</th><td><code>{html.escape(doc['_id'])}</code></td></tr>",
         f"<tr><th>Dataset</th><td>{html.escape(str(doc['dataset']))}</td></tr>",
+        f"<tr><th>Schema</th><td>{html.escape(str(doc['schema_version']))}</td></tr>",
         f"<tr><th>Version</th><td>{html.escape(str(doc['version']))}</td></tr>",
         f"<tr><th>Updated</th><td>{html.escape(str(doc['date_updated']))}</td></tr></table></section>",
     ]
-    if doc.get("predicates"):
-        body.append("<section><h2>Predicates</h2>")
-        for pred in doc["predicates"]:
-            if isinstance(pred, dict):
-                body += [f"<article><h3>{html.escape(str(pred.get('predicate', 'predicate')).replace('_', ' '))}</h3>",
-                         value(pred.get("object")), "</article>"]
-        body.append("</section>")
-    omitted = {
-        "_id", "dataset", "dtype", "version", "date_added", "date_updated", "title",
-        "summary", "description", "definition", "sources", "predicates", "tags",
-        "confidence", "verification", "subject",
-    }
-    for key, item in doc.items():
-        if key not in omitted:
+    if data:
+        body.append(f"<section><h2>Type-specific data</h2>{value(data)}</section>")
+    for key in (
+        "assessment", "verification", "temporal", "provenance", "handling",
+        "lineage", "quality", "workflow", "geospatial", "evidence", "attachments", "extensions",
+    ):
+        item = doc.get(key)
+        if item not in (None, {}, []):
             body.append(f"<section><h2>{html.escape(key.replace('_', ' ').title())}</h2>{value(item)}</section>")
     related = links(doc, known)
     if related:
-        body.append("<section><h2>Related records</h2><ul>" + "".join(
-            f'<li><a href="{slug(record)}.html">{html.escape(record)}</a></li>' for record in related
-        ) + "</ul></section>")
+        body.append(
+            "<section><h2>Related records</h2><ul>"
+            + "".join(f'<li><a href="{slug(record)}.html">{html.escape(record)}</a></li>' for record in related)
+            + "</ul></section>"
+        )
     body += [
         f"<section><h2>Sources</h2>{sources(doc.get('sources', []))}</section>",
         f'<section><h2>Generated Org node</h2><a href="../../org/{quote(target)}/{slug(doc["_id"])}.org">Download Org source</a></section>',
         "<details><summary>Raw JSON</summary><pre>" + html.escape(json.dumps(doc, ensure_ascii=False, indent=2)) + "</pre></details>",
     ]
-    return page(title, "".join(body), "../../")
-
-
-def comparison(rows: list[dict[str, Any]]) -> str:
-    keys = ("dimension", "observed_record", "corporatist_comparison", "fascist_comparison", "assessment")
-    labels = ("Dimension", "Observed record", "Corporatist comparison", "Fascist comparison", "Assessment")
-    head = "<tr>" + "".join(f"<th>{x}</th>" for x in labels) + "</tr>"
-    body = "".join("<tr>" + "".join(f"<td>{html.escape(str(row.get(key, '')))}</td>" for key in keys) + "</tr>" for row in rows)
-    return f'<div class="table-wrap"><table class="comparison">{head}{body}</table></div>'
+    return page(str(title), "".join(body), "../../")
 
 
 def record_refs(values: Any, known: set[str]) -> str:
@@ -117,12 +120,12 @@ def record_refs(values: Any, known: set[str]) -> str:
 
 
 def evidence_posture(docs: list[dict[str, Any]]) -> str:
-    statuses = Counter()
-    confidence = Counter()
-    source_types = Counter()
+    statuses: Counter[str] = Counter()
+    confidence: Counter[str] = Counter()
+    source_types: Counter[str] = Counter()
     for doc in docs:
         statuses[str(doc.get("verification", {}).get("status", "unclassified"))] += 1
-        score = doc.get("confidence")
+        score = doc.get("assessment", {}).get("confidence")
         if isinstance(score, (int, float)):
             if score >= 0.97:
                 confidence["very high"] += 1
@@ -136,17 +139,18 @@ def evidence_posture(docs: list[dict[str, Any]]) -> str:
             confidence["unassigned"] += 1
         for raw_source in doc.get("sources", []):
             source = source_record(raw_source)
-            source_types[str(source.get("source_type") or "unspecified")] += 1
-    def chips(counter: Counter) -> str:
+            source_types[str(source.get("kind") or source.get("type") or "unspecified")] += 1
+
+    def chips(counter: Counter[str]) -> str:
         return '<div class="chips">' + "".join(
             f'<span>{html.escape(label)} <strong>{count}</strong></span>' for label, count in sorted(counter.items())
         ) + "</div>"
+
     return (
         "<section><h2>Evidence posture</h2>"
-        '<p>This describes the corpus, not the subject. A high-confidence relationship still does not prove control, wrongdoing, or ideological alignment.</p>'
-        "<h3>Verification status</h3>" + chips(statuses) +
-        "<h3>Confidence bands</h3>" + chips(confidence) +
-        "<h3>Source types</h3>" + chips(source_types) + "</section>"
+        "<h3>Verification status</h3>" + chips(statuses)
+        + "<h3>Confidence bands</h3>" + chips(confidence)
+        + "<h3>Source types</h3>" + chips(source_types) + "</section>"
     )
 
 
@@ -159,43 +163,29 @@ def research_ledger(docs: list[dict[str, Any]]) -> str:
     if not passes:
         return ""
     known = {doc["_id"] for doc in docs}
-    body = [
-        "<section><h2>Agent research ledger</h2>",
-        '<div class="notice"><strong>Append-only analysis:</strong> each pass publishes its question, method, evidence links, counterevidence, open targets, and confidence. Later passes supplement rather than silently replace earlier work.</div>',
-    ]
+    body = ["<section><h2>Agent research ledger</h2>"]
     for research in passes:
+        data = research.get("data", {})
         title = research.get("title") or research["_id"]
-        author = research.get("author", {})
+        confidence = research.get("assessment", {}).get("confidence", "unassigned")
         body += [
             '<article class="research-pass">',
             f'<span>{html.escape(str(research.get("date_updated", "")))}</span>',
-            f'<h3><a href="nodes/{slug(research["_id"])}.html">{html.escape(title)}</a></h3>',
+            f'<h3><a href="nodes/{slug(research["_id"])}.html">{html.escape(str(title))}</a></h3>',
             f'<p class="lede">{html.escape(summary(research))}</p>',
-            f'<p><strong>Research question:</strong> {html.escape(str(research.get("research_question", "Not recorded")))}</p>',
-            f'<p><strong>Author:</strong> {html.escape(str(author.get("name", "agent")))} · <strong>Confidence:</strong> {html.escape(str(research.get("confidence", "unassigned")))}</p>',
+            f'<p><strong>Research question:</strong> {html.escape(str(data.get("research_question", "Not recorded")))}</p>',
+            f'<p><strong>Agent:</strong> {html.escape(str(data.get("agent_identity", research.get("provenance", {}).get("agent", "agent"))))} · <strong>Confidence:</strong> {html.escape(str(confidence))}</p>',
         ]
-        if research.get("method"):
-            body += ["<h4>Method</h4>", value(research["method"])]
-        findings = research.get("findings", [])
-        if findings:
-            body.append("<h4>Findings</h4><ol>")
-            for finding in findings:
-                if not isinstance(finding, dict):
-                    body.append(f"<li>{html.escape(str(finding))}</li>")
-                    continue
-                body.append("<li>")
-                body.append(f'<p>{html.escape(str(finding.get("finding", "")))}</p>')
-                body.append(f'<p><strong>Confidence:</strong> {html.escape(str(finding.get("confidence", "unassigned")))}</p>')
-                if finding.get("support_ids"):
-                    body.append(f'<p><strong>Support:</strong> {record_refs(finding["support_ids"], known)}</p>')
-                if finding.get("counterevidence_ids"):
-                    body.append(f'<p><strong>Counterevidence:</strong> {record_refs(finding["counterevidence_ids"], known)}</p>')
-                if finding.get("open_target"):
-                    body.append(f'<p><strong>Open target:</strong> {record_refs(finding["open_target"], known)}</p>')
-                body.append("</li>")
-            body.append("</ol>")
-        if research.get("open_targets"):
-            body.append(f'<p><strong>Open investigation targets:</strong> {record_refs(research["open_targets"], known)}</p>')
+        if data.get("method"):
+            body += ["<h4>Method</h4>", value(data["method"])]
+        if data.get("findings"):
+            body += ["<h4>Findings</h4>", value(data["findings"])]
+        if data.get("supporting_record_ids"):
+            body.append(f'<p><strong>Support:</strong> {record_refs(data["supporting_record_ids"], known)}</p>')
+        if data.get("counterevidence_ids"):
+            body.append(f'<p><strong>Counterevidence:</strong> {record_refs(data["counterevidence_ids"], known)}</p>')
+        if data.get("unresolved_target_ids"):
+            body.append(f'<p><strong>Open targets:</strong> {record_refs(data["unresolved_target_ids"], known)}</p>')
         body.append("</article>")
     body.append("</section>")
     return "".join(body)
@@ -204,7 +194,6 @@ def research_ledger(docs: list[dict[str, Any]]) -> str:
 def packet(target: str, docs: list[dict[str, Any]], config: dict[str, Any], graph: dict[str, Any]) -> str:
     cfg = config.get("packets", {}).get(target, {})
     title = cfg.get("title") or target.replace("-", " ").title()
-    narrative = next((doc for doc in docs if doc["_id"] == cfg.get("narrative_document_id")), None)
     unique_sources = {
         source_record(source).get("url") or json.dumps(source_record(source), sort_keys=True)
         for doc in docs for source in doc.get("sources", [])
@@ -213,71 +202,53 @@ def packet(target: str, docs: list[dict[str, Any]], config: dict[str, Any], grap
     body = [
         f"<h1>{html.escape(title)}</h1>",
         f'<p class="lede">{html.escape(cfg.get("subtitle") or "StarIntel public-record research")}</p>',
-        '<div class="notice"><strong>Method:</strong> Facts, allegations, estimates, analysis, and open probes remain separate record types. The graph is navigation, not guilt by association.</div>',
+        '<div class="notice"><strong>Canonical schema:</strong> all records validate against the embedded StarIntel v0.9.0 fork.</div>',
         '<section class="stats">',
         f"<div><strong>{len(docs)}</strong><span>records</span></div>",
         f"<div><strong>{len(unique_sources)}</strong><span>sources</span></div>",
         f"<div><strong>{len(graph['nodes'])}</strong><span>graph nodes</span></div>",
         f"<div><strong>{len(graph['edges'])}</strong><span>graph edges</span></div></section>",
+        research_ledger(docs),
+        evidence_posture(docs),
+        '<section><div class="section-head"><div><h2>Record types</h2></div></div><div class="chips">',
+        "".join(f"<span>{html.escape(dtype)} <strong>{count}</strong></span>" for dtype, count in sorted(counts.items())),
+        "</div></section>",
+        '<section><div class="section-head"><div><h2>Relationship graph</h2></div></div><div id="graph"></div>',
+        '<script src="../assets/graph.js"></script><script>renderGraph("graph.json")</script></section>',
+        '<section><div class="section-head"><div><h2>Documents</h2></div></div><div class="record-grid">',
     ]
-    if narrative:
-        assessment = narrative.get("assessment", {})
-        body += [
-            "<section><h2>Neutral analytical narrative</h2>",
-            f'<p class="lede">{html.escape(narrative.get("summary", ""))}</p>',
-            '<div class="verdicts">',
-            f"<div><span>Corporatism fit</span><strong>{html.escape(str(assessment.get('corporatism_fit')))}</strong></div>",
-            f"<div><span>Fascism fit</span><strong>{html.escape(str(assessment.get('fascism_fit')))}</strong></div>",
-            f"<div><span>Confidence</span><strong>{html.escape(str(assessment.get('confidence')))}</strong></div></div>",
-            f"<blockquote>{html.escape(str(assessment.get('bottom_line', '')))}</blockquote>",
-        ]
-        for section in narrative.get("narrative", []):
-            body.append(f"<h3>{html.escape(section.get('heading', 'Analysis'))}</h3>")
-            body += [f"<p>{html.escape(text)}</p>" for text in section.get("paragraphs", [])]
-        body += ["<h3>Governance failure modes</h3>", value(narrative.get("governance_flaws", [])),
-                 "<h3>Corporatism and fascism comparison matrix</h3>", comparison(narrative.get("comparison", [])),
-                 "<h3>Limits and falsification conditions</h3>", value(narrative.get("limitations", [])), "</section>"]
-    body.append(research_ledger(docs))
-    body.append(evidence_posture(docs))
-    body += [
-        '<section><div class="section-head"><div><h2>Exploration graph</h2><p>Search, filter, drag, zoom, and open records.</p></div><a href="graph.json">graph.json</a></div>',
-        '<div class="controls"><input id="graph-search" type="search" placeholder="Search nodes…"><select id="graph-filter"><option value="">All record types</option></select><button id="graph-reset">Reset</button></div>',
-        '<div id="graph-shell"><canvas id="graph-canvas"></canvas><aside id="graph-detail">Select a node.</aside></div>',
-        '<script src="../assets/graph.js"></script><script>StarIntelGraph.mount("graph-canvas","graph-detail","graph.json");</script></section>',
-        '<section><h2>Record inventory</h2><div class="chips">',
-    ]
-    body += [f'<span>{html.escape(kind)} <strong>{count}</strong></span>' for kind, count in sorted(counts.items())]
-    body.append('</div><div class="records">')
-    for doc in sorted(docs, key=lambda d: (d["dtype"], d.get("title") or d.get("name") or d["_id"])):
-        record_title = doc.get("title") or doc.get("name") or doc["_id"]
+    for doc in sorted(docs, key=lambda item: (item["dtype"], item.get("title") or item["_id"])):
         body.append(
-            f'<article><span>{html.escape(doc["dtype"])}</span><h3><a href="nodes/{slug(doc["_id"])}.html">{html.escape(record_title)}</a></h3>'
+            f'<article><span>{html.escape(doc["dtype"])}</span><h3><a href="nodes/{slug(doc["_id"])}.html">{html.escape(str(doc.get("title") or doc["_id"]))}</a></h3>'
             f'<p>{html.escape(summary(doc))}</p><code>{html.escape(doc["_id"])}</code></article>'
         )
     body += [
-        "</div></section><section><h2>Generated formats</h2><ul>",
-        '<li><a href="downloads/starintel-documents.jsonl">Merged canonical JSONL</a></li>',
-        '<li><a href="downloads/research-history.json">Research packet history</a></li>',
-        f'<li><a href="../org/{quote(target)}/index.org">Generated Org-roam index</a></li>',
-        '<li><a href="sources.html">Generated source inventory</a></li></ul></section>',
+        "</div></section>",
+        '<section><h2>Downloads</h2><p><a href="downloads/starintel-documents.jsonl">Merged canonical JSONL</a> · '
+        '<a href="downloads/research-history.json">Research packet history</a> · <a href="sources.html">Source inventory</a></p></section>',
     ]
     return page(title, "".join(body), "../")
 
 
 def source_inventory(target: str, docs: list[dict[str, Any]]) -> str:
-    by_key, support = {}, defaultdict(list)
+    rows: dict[str, dict[str, Any]] = {}
+    refs: Counter[str] = Counter()
     for doc in docs:
-        for raw_source in doc.get("sources", []):
-            source = source_record(raw_source)
+        for raw in doc.get("sources", []):
+            source = source_record(raw)
             key = source.get("url") or source.get("source_id") or json.dumps(source, sort_keys=True)
-            by_key.setdefault(key, source)
-            support[key].append(doc["_id"])
-    rows = []
-    for key, source in sorted(by_key.items(), key=lambda item: (item[1].get("publisher", ""), item[1].get("title", ""))):
-        title = source.get("title") or source.get("url") or "Source"
-        heading = f'<a href="{html.escape(source.get("url", "#"))}">{html.escape(title)}</a>'
-        refs = " ".join(f'<a class="mini" href="nodes/{slug(record)}.html">{html.escape(record)}</a>' for record in sorted(set(support[key])))
-        rows.append(f"<tr><td>{heading}</td><td>{html.escape(source.get('publisher', ''))}</td><td>{html.escape(str(source.get('source_type', '')))}</td><td>{refs}</td></tr>")
-    body = f'<div class="crumb"><a href="index.html">← {html.escape(target.replace("-", " ").title())}</a></div><h1>Source inventory</h1>'
-    body += '<div class="table-wrap"><table><tr><th>Source</th><th>Publisher</th><th>Type</th><th>Records</th></tr>' + "".join(rows) + "</table></div>"
-    return page("Source inventory", body, "../")
+            rows[key] = source
+            refs[key] += 1
+    body = [
+        f'<div class="crumb"><a href="index.html">← {html.escape(target.replace("-", " ").title())}</a></div>',
+        "<h1>Source inventory</h1><table><tr><th>Source</th><th>Kind</th><th>Credibility</th><th>Records</th></tr>",
+    ]
+    for key, source in sorted(rows.items(), key=lambda item: str(item[1].get("title") or item[0])):
+        title = source.get("title") or source.get("name") or source.get("url") or key
+        link = f'<a href="{html.escape(source["url"])}">{html.escape(str(title))}</a>' if source.get("url") else html.escape(str(title))
+        body.append(
+            f"<tr><td>{link}</td><td>{html.escape(str(source.get('kind') or source.get('type') or ''))}</td>"
+            f"<td>{html.escape(str(source.get('credibility', '')))}</td><td>{refs[key]}</td></tr>"
+        )
+    body.append("</table>")
+    return page("Source inventory", "".join(body), "../")

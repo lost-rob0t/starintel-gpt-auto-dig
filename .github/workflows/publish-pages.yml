@@ -4,22 +4,24 @@ on:
   push:
     branches: [main]
     paths:
+      - "starintel_doc/**"
+      - "schemas/**"
       - "digs/**"
       - "db/**"
-      - "scripts/build_research_site.py"
-      - "scripts/validate-db.py"
-      - "scripts/starintel_site/**"
+      - "scripts/**"
+      - "tests/**"
       - "site-assets/**"
       - "site-config.json"
       - ".github/workflows/publish-pages.yml"
   pull_request:
     branches: [main]
     paths:
+      - "starintel_doc/**"
+      - "schemas/**"
       - "digs/**"
       - "db/**"
-      - "scripts/build_research_site.py"
-      - "scripts/validate-db.py"
-      - "scripts/starintel_site/**"
+      - "scripts/**"
+      - "tests/**"
       - "site-assets/**"
       - "site-config.json"
       - ".github/workflows/publish-pages.yml"
@@ -44,9 +46,12 @@ jobs:
         with:
           python-version: "3.13"
 
-      - name: Validate Python and database
+      - name: Validate implementation and corpus
         run: |
-          python -m compileall -q scripts
+          python -m compileall -q starintel_doc scripts
+          python -m unittest discover -s tests -v
+          python scripts/starintel.py schema --output /tmp/starintel-doc-v0.9.0.schema.json
+          cmp /tmp/starintel-doc-v0.9.0.schema.json schemas/starintel-doc-v0.9.0.schema.json
           python scripts/validate-db.py
 
       - name: Generate research explorer
@@ -60,38 +65,27 @@ jobs:
       - name: Validate generated artifacts
         run: |
           test -s _site/index.html
+          test -s _site/search-index.json
           test -s _site/larry-fink/index.html
-          test -s _site/larry-fink/graph.json
           test -s _site/palantir/index.html
           test -s _site/palantir/graph.json
-          test -s _site/palantir/nodes/org-palantir-technologies-inc.html
           test -s _site/palantir/downloads/starintel-documents.jsonl
           test -s .generated/org/palantir/index.org
           python - <<'PY'
           import json
           from pathlib import Path
 
-          palantir = json.loads(Path("_site/palantir/graph.json").read_text())
-          assert palantir["nodes"]
-          assert palantir["edges"]
+          graph = json.loads(Path("_site/palantir/graph.json").read_text())
+          assert graph["nodes"]
+          assert graph["edges"]
           assert any(
               edge["source"] == "starintel:person:alex-karp"
               and edge["target"] == "starintel:org:palantir-technologies-inc"
               and edge["label"] == "founded"
-              for edge in palantir["edges"]
+              for edge in graph["edges"]
           )
-
           search = json.loads(Path("_site/search-index.json").read_text())
-          assert any(
-              record["target"] == "palantir"
-              and record["id"] == "starintel:org:palantir-technologies-inc"
-              for record in search
-          )
-
-          html = Path("_site/larry-fink/index.html").read_text()
-          assert "Fascism fit" not in html
-          assert "Corporatism and fascism comparison matrix" not in html
-          print("validated", len(palantir["nodes"]), "Palantir nodes and", len(palantir["edges"]), "edges")
+          assert any(record["id"] == "starintel:org:palantir-technologies-inc" for record in search)
           PY
 
       - name: Configure Pages

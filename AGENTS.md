@@ -1,68 +1,81 @@
 # StarIntel GPT Auto-Dig Agent Instructions
 
-## Mission
+## Canonical implementation
 
-Publish evidence-preserving StarIntel research as machine-readable documents, readable research material, and Python-generated exploration pages.
+The repository-local `starintel_doc/` package is the only StarIntel document specification. Never create a parallel JSON shape, “StarIntel style,” prompt-only schema, validator-specific schema, or renderer-specific schema.
+
+All agents must:
+
+1. select a dtype from `starintel_doc.TYPE_FIELDS`;
+2. place common metadata in the v0.9.0 envelope;
+3. place dtype-specific metadata in `data`;
+4. place unavoidable noncanonical metadata in a namespaced `extensions` entry;
+5. validate before writing;
+6. preserve exact sources, evidence, uncertainty, lineage, and migration provenance.
 
 ## Required output
 
-Every completed research pass must update at least one canonical machine-readable surface:
+Every completed research pass updates at least one canonical machine-readable surface:
 
-1. a packet beneath `digs/<target>/<date>-<slug>/`; or
-2. normalized records beneath `db/<dtype>/<_id>.ndjson` with the required manifest and report material.
+- `digs/<target>/<date>-<slug>/starintel-documents.jsonl`; or
+- `db/<dtype>/<_id>.ndjson`.
 
-Optional Org research notes may be stored beneath `roam/research/` or `roam/indexes/`, but they are source material rather than the deployment engine.
+A normalized NDJSON file contains exactly one compact JSON object and one terminating newline. `dtype` must equal its directory and `_id` must equal its filename without `.ndjson`.
 
-## Database rules
+## Document creation
 
-- Each normalized NDJSON file contains exactly one compact JSON object plus a terminating newline.
-- `dtype` must equal the directory name.
-- `_id` must equal the filename without `.ndjson`.
-- Preserve exact source URLs, source type, evidence, timestamps, confidence, and analytical notes.
-- Never collapse contract ceiling, potential value, current award amount, obligation, outlay, and recognized revenue into one field.
-- Never convert lobbying, prior government work, political relationships, or vendor concentration into an allegation of illegality without evidence.
-- Never fabricate sources, confidence, quotations, dates, relationships, tests, commits, or workflow status.
-- Updating an existing `_id` requires an intentional correction or a newer document version.
+Use:
 
-## Research-note rules
+```bash
+python3 scripts/starintel.py create <dtype> --dataset <dataset> --data '<json>'
+```
 
-The repository is research-only. Do not create `roam/implement/`.
+or import `starintel_doc.Document`. Do not manually invent fields. Query the schema first when uncertain:
 
-Every persistent Org file must:
+```bash
+python3 scripts/starintel.py schema --dtype <dtype>
+```
 
-- live beneath `roam/`
-- have a stable file-level `ID`
-- include `#+title` and `#+description`
-- use durable `id:` links where practical
-- link to its project index
-- define non-obvious terms where needed
-- remain readable without loading the entire repository
+## Search
+
+Use the repository search engine instead of grepping individual files when selecting evidence:
+
+```bash
+python3 scripts/starintel.py search '<terms>' --dtype relation --predicate founded --with-location
+```
+
+Search results are JSONL and may be piped into other tools.
+
+## Recursive target selection
+
+Use the deterministic selector after a pass:
+
+```bash
+python3 scripts/starintel.py select-targets \
+  --query '<current subject>' \
+  --limit 20 \
+  --emit-documents \
+  --output recursive-targets.jsonl
+```
+
+The selector scores referenced entities, graph degree, source/evidence coverage, analytical metadata, and unresolved gaps. It emits schema-valid `investigation-target` documents with selection provenance and recursion depth.
 
 ## Validation
 
-For packet-oriented research, run:
+Run all checks before publication:
 
 ```bash
-python -m compileall -q scripts
-python3 scripts/build_research_site.py \
-  --input digs \
-  --output _site \
-  --org-output .generated/org
-```
-
-For normalized database records, also run:
-
-```bash
+python3 -m compileall -q starintel_doc scripts
+python3 -m unittest discover -s tests -v
+python3 scripts/starintel.py schema --output schemas/starintel-doc-v0.9.0.schema.json
 python3 scripts/validate-db.py
+python3 scripts/build_research_site.py --input digs --db db --output _site --org-output .generated/org
 ```
 
-Generated state belongs under `_site/`, `.generated/`, and cache directories; never commit it.
+Generated `_site/`, `.generated/`, caches, and bytecode are never committed.
 
-## Publishing
+## Migration and updates
 
-- The Python research-site generator is the canonical publisher.
-- Pull requests validate but do not deploy.
-- Pushes to `main` build the Python-generated site and deploy it through GitHub Pages.
-- Do not add an Emacs-based Pages workflow.
-- The user has authorized automatic merge or direct publication for assistant-generated research updates when checks are clean.
-- Do not commit secrets, credentials, restricted evidence, or personal data that is not intended to be published in this repository.
+Legacy records must be migrated with `scripts/migrate-starintel-v0.9.py --write`. The migrator preserves unknown legacy values in `extensions.legacy.v0`; it does not silently discard them.
+
+Existing IDs are stable. Replace an existing `_id` only for an intentional correction or newer record version. Keep contract ceilings, potential value, obligations, outlays, and recognized revenue as separate fields.

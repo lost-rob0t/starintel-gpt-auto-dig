@@ -1,69 +1,28 @@
 #+title: StarIntel GPT Auto Dig
-#+description: Git-backed StarIntel research database and Python-published research corpus produced by GPT research passes.
+#+description: Git-backed StarIntel research using the repository-local starintel_doc v0.9.0 fork.
 
-* Purpose
+* Canonical schema
 
-This repository is the publication target for StarIntel documents emitted by GPT-assisted auto research.
+The =starintel_doc/= Python package is the repository's only document specification. The JSON Schema under =schemas/= is generated from that package. Skills, scripts, renderers, and research packets must not define parallel document shapes.
 
-It supports two canonical research forms:
+* Canonical data
 
-- =digs/= contains packet-oriented research with JSONL documents and supporting files.
-- =db/= contains normalized StarIntel documents, one newline-delimited JSON record per file.
+- =db/<dtype>/<_id>.ndjson= stores one normalized document per file.
+- =digs/<target>/<run>/starintel-documents.jsonl= stores packet-oriented research.
+- Common metadata lives in the v0.9.0 envelope.
+- Dtype-specific metadata lives in the strict =data= object.
+- Unrepresentable legacy values are preserved under namespaced =extensions=.
 
-Optional Org files beneath =roam/= are durable research notes and indexes. They are not the deployment engine.
-
-* Database Contract
-
-Every normalized document is stored at:
-
-#+begin_example
-db/<dtype>/<_id>.ndjson
-#+end_example
-
-Rules:
-
-1. The directory name is the document's exact =dtype=.
-2. The filename is the document's exact =_id= followed by =.ndjson=.
-3. Each file contains exactly one compact JSON object and one terminating newline.
-4. The object's =dtype= and =_id= must agree with its path.
-5. Existing documents are replaced only for an intentional correction or newer version.
-6. Sources, provenance, confidence, timestamps, analysis notes, and uncertainty are preserved.
-7. Contract ceilings, potential values, obligations, outlays, and recognized revenue remain separate measurements.
-8. Public claims, corporate statements, advocacy claims, and analytical inferences retain their source labels.
-
-* Repository Shape
-
-#+begin_example
-digs/                         Packet-oriented research
-db/                           StarIntel NDJSON documents grouped by dtype
-manifests/                    Dataset manifests and integrity hashes
-reports/                      Human-readable research reports
-roam/research/                Optional Org research notes
-roam/indexes/                 Optional Org indexes
-scripts/build_research_site.py Python site entry point
-scripts/starintel_site/       Python site generator
-.github/workflows/publish-pages.yml
-#+end_example
-
-There is deliberately no =roam/implement/= workflow in this repository. It publishes research and indexes; it does not select or track software implementation designs.
-
-* Python Publishing
-
-Build locally:
+* Commands
 
 #+begin_src sh
-python3 scripts/build_research_site.py \
-  --input digs \
-  --output _site \
-  --org-output .generated/org
+python3 scripts/starintel.py types
+python3 scripts/starintel.py schema --dtype relation
+python3 scripts/starintel.py search palantir --with-location
+python3 scripts/starintel.py select-targets --query palantir --emit-documents
+python3 scripts/validate-db.py
 #+end_src
 
-The Python publisher merges packet records by stable document ID and =date_updated=, emits HTML and graph data, generates source and packet indexes, and produces canonical JSONL downloads.
+* Publishing
 
-GitHub Actions validates pull requests and deploys pushes to =main=. The repository does not use an Emacs-based Pages workflow.
-
-* Research Publication Rule
-
-A research pass is complete when the applicable packet or normalized database records are present, supporting manifests or reports are updated, validation passes, and the change is merged after green CI/CD.
-
-Do not commit credentials, private evidence, restricted personal data, or material not intended to live in this repository.
+Use an =agent/<description>= branch, run tests and full-corpus validation, build the Python research explorer, and squash-merge after checks pass.

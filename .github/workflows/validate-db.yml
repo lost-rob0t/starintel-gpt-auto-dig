@@ -4,20 +4,33 @@ on:
   push:
     branches: [main]
     paths:
+      - "starintel_doc/**"
+      - "schemas/**"
+      - "skills/**"
       - "db/**"
+      - "digs/**"
       - "imports/**"
       - "manifests/**"
       - "scripts/import-jsonl.py"
+      - "scripts/migrate-starintel-v0.9.py"
+      - "scripts/search-db.py"
+      - "scripts/select-targets.py"
+      - "scripts/starintel.py"
       - "scripts/validate-db.py"
+      - "tests/**"
       - ".github/workflows/validate-db.yml"
   pull_request:
     branches: [main]
     paths:
+      - "starintel_doc/**"
+      - "schemas/**"
+      - "skills/**"
       - "db/**"
+      - "digs/**"
       - "imports/**"
       - "manifests/**"
-      - "scripts/import-jsonl.py"
-      - "scripts/validate-db.py"
+      - "scripts/**"
+      - "tests/**"
       - ".github/workflows/validate-db.yml"
   workflow_dispatch:
 
@@ -32,5 +45,10 @@ jobs:
       - uses: actions/setup-python@v6
         with:
           python-version: "3.13"
-      - name: Validate database paths and relations
-        run: python3 scripts/validate-db.py
+      - name: Validate canonical schema, code, tests, and corpus
+        run: |
+          python -m compileall -q starintel_doc scripts
+          python -m unittest discover -s tests -v
+          python scripts/starintel.py schema --output /tmp/starintel-doc-v0.9.0.schema.json
+          cmp /tmp/starintel-doc-v0.9.0.schema.json schemas/starintel-doc-v0.9.0.schema.json
+          python scripts/validate-db.py
