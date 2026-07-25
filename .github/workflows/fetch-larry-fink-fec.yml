@@ -66,6 +66,7 @@ jobs:
         run: |
           set -euo pipefail
           mkdir -p digs/larry-fink/2026-07-25-fec-personal-ledger
+          sed -i 's/score >= 0.45 and "REFUND" in purpose/score >= 0.70 and "REFUND" in purpose/' scripts/fetch_larry_fink_fec.py
           python scripts/fetch_larry_fink_fec_fast.py > digs/larry-fink/2026-07-25-fec-personal-ledger/fetch-transcript.txt 2>&1
           python -m compileall -q scripts/fetch_larry_fink_fec.py scripts/fetch_larry_fink_fec_fast.py
           python scripts/build_research_site.py --input digs --output _site --org-output .generated/org
