@@ -3,6 +3,7 @@
 ## Canonical paths
 
 ```text
+digs/<target>/<YYYY-MM-DD>-<loop-slug>/
 db/<dtype>/<_id>.ndjson
 roam/research/<project>/<node>.org
 roam/indexes/<project>/<index>.org
@@ -12,19 +13,19 @@ reports/<dataset>.md
 
 ## Research transaction
 
-A research publication is one logical transaction containing:
+A research publication is one logical transaction containing the applicable combination of:
 
-1. normalized StarIntel records;
-2. a manifest with counts and hashes;
-3. a readable report;
-4. Org-roam research and index nodes;
+1. packet-oriented or normalized StarIntel records;
+2. a manifest with counts and hashes when using the normalized database form;
+3. a readable report or packet README;
+4. optional Org research and index nodes;
 5. validation results.
 
 The Git commit is the durable transaction boundary.
 
 ## Filename policy
 
-The requested filename is the literal StarIntel `_id`. Colons are therefore retained, for example:
+The requested filename for normalized records is the literal StarIntel `_id`. Colons are therefore retained, for example:
 
 ```text
 db/org/starintel:org:palantir-technologies-inc.ndjson
@@ -51,15 +52,15 @@ The repository records what a source supports. It does not treat:
 - an advocacy characterization as neutral fact;
 - a corporate statement as independent verification.
 
-## Org-roam publication
+## Publishing
 
-The publication workflow follows the same model as `starintel-auto-research`:
+The canonical publication workflow is the Python site generator on `main`:
 
-- isolated `emacs --batch -Q`;
-- dependencies installed under `.cache/emacs`;
-- staged copy of `roam/`;
-- Org-roam database generated under `.cache/pages`;
-- one HTML page per Org file;
-- backlinks, search index and graph index;
-- internal-link validation;
-- GitHub Pages deployment from `main`.
+```bash
+python3 scripts/build_research_site.py \
+  --input digs \
+  --output _site \
+  --org-output .generated/org
+```
+
+The workflow validates generated HTML, graph output, source indexes, and canonical JSONL downloads before GitHub Pages deployment. Org files may remain as durable research notes, but the repository does not use an Emacs-based Pages workflow.
