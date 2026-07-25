@@ -8,6 +8,7 @@ from pathlib import Path
 from starintel_doc.migration import migrate_document
 from starintel_doc.model import Document
 from starintel_doc.schema_org import DTYPE_SCHEMA_ORG_TYPES, SCHEMA_ORG_CONTEXT, to_schema_org
+from starintel_doc.schema_org_migration import enrich_schema_org
 from starintel_doc.selectors import candidate_documents, select_candidates
 from starintel_doc.spec import TYPE_FIELDS
 from starintel_doc.store import LocatedDocument, migrate_repository, validate_repository
@@ -74,6 +75,16 @@ class StarIntelDocumentTests(unittest.TestCase):
         doc["schema_org"]["invented"] = True
         with self.assertRaises(ValidationError):
             validate_document(doc)
+
+    def test_schema_org_enrichment_is_idempotent(self) -> None:
+        doc = Document.create("org", "test", doc_id="starintel:org:a", data={"name": "A"}).to_dict()
+        doc.pop("schema_org")
+        first = enrich_schema_org(doc)
+        second = enrich_schema_org(first)
+        self.assertEqual(first, second)
+        self.assertEqual(first["schema_org"]["@type"], "Organization")
+        self.assertEqual(first["schema_org"]["@id"], doc["_id"])
+        validate_document(first)
 
     def test_rejects_undeclared_top_level_field(self) -> None:
         doc = Document.create("org", "test", doc_id="starintel:org:a", data={"name": "A"}).to_dict()
@@ -197,6 +208,8 @@ class StarIntelDocumentTests(unittest.TestCase):
             path.write_text(json.dumps(legacy) + "\n", encoding="utf-8")
             result = migrate_repository(root, write=True)
             self.assertEqual(result["record_count"], 1)
+            migrated = json.loads(path.read_text(encoding="utf-8"))
+            self.assertEqual(migrated["schema_org"]["@type"], "Organization")
             validation = validate_repository(root)
             self.assertTrue(validation["ok"], validation["errors"])
 
