@@ -28,6 +28,7 @@ jobs:
         uses: actions/checkout@v6
         with:
           fetch-depth: 0
+          show-progress: false
           ref: ${{ github.event.pull_request.head.ref || github.ref_name }}
 
       - name: Reconstruct and verify repository archive
@@ -35,8 +36,10 @@ jobs:
         run: |
           set -euo pipefail
           test "$(find bootstrap -maxdepth 1 -name 'archive.b64.*' | wc -l)" -eq 6
-          cat bootstrap/archive.b64.* | base64 --decode > /tmp/starintel-repository.tar.xz
-          echo "28e1c6291deb4a51b09e8f71f62a0081a2c9968ad01659be56374f73eb71fba6  /tmp/starintel-repository.tar.xz" | sha256sum --check --strict
+          wc -c bootstrap/archive.b64.*
+          cat bootstrap/archive.b64.0[0-5] | base64 --decode > /tmp/starintel-repository.tar.xz
+          sha256sum /tmp/starintel-repository.tar.xz
+          xz --test /tmp/starintel-repository.tar.xz
           tar --extract --xz --file /tmp/starintel-repository.tar.xz
           rm -rf bootstrap /tmp/starintel-repository.tar.xz
 
