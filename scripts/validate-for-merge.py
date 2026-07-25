@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import shutil
 import subprocess
 import sys
 import tempfile
@@ -44,6 +45,19 @@ def validate_corpus() -> None:
     raise RuntimeError(f"StarIntel corpus validation failed with {len(result['errors'])} error(s)")
 
 
+def validate_javascript() -> None:
+    modules = sorted((ROOT / "site-assets").glob("*.mjs"))
+    test = ROOT / "tests" / "test_graph_pathfinding.mjs"
+    if not modules and not test.exists():
+        return
+    if shutil.which("node") is None:
+        raise RuntimeError("node is required to validate graph modules")
+    for module in modules:
+        run(["node", "--check", str(module.relative_to(ROOT))])
+    if test.is_file():
+        run(["node", str(test.relative_to(ROOT))])
+
+
 def validate_site() -> None:
     with tempfile.TemporaryDirectory(prefix="starintel-merge-") as directory:
         temporary = Path(directory)
@@ -63,7 +77,12 @@ def validate_site() -> None:
                 str(org),
             ]
         )
-        required = [site / "index.html", site / "search-index.json"]
+        required = [
+            site / "index.html",
+            site / "search-index.json",
+            site / "assets" / "graph-controller.mjs",
+            site / "assets" / "graph-core.mjs",
+        ]
         missing = [str(path) for path in required if not path.is_file() or path.stat().st_size == 0]
         if missing:
             raise RuntimeError(f"site validation failed; missing generated artifacts: {missing}")
@@ -83,6 +102,7 @@ def main(argv: list[str] | None = None) -> int:
     try:
         run([sys.executable, "-m", "compileall", "-q", "starintel_doc", "scripts"])
         run([sys.executable, "-m", "unittest", "discover", "-s", "tests", "-v"])
+        validate_javascript()
         validate_generated_schema()
         validate_corpus()
         if args.site:
