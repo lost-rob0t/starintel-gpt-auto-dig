@@ -24,14 +24,17 @@ def utc_now() -> str:
 
 
 def slug(value: str) -> str:
-    return re.sub(r"[^a-z0-9]+", "-", value.lower()).strip("-") or "record"
+    return re.sub(r"[^a-z0-9._:-]+", "-", value.lower()).strip("-") or "record"
 
 
 def stable_id(dtype: str, *identity: Any) -> str:
     canonical = DTYPE_ALIASES.get(dtype, dtype)
     if canonical not in TYPE_FIELDS:
         raise ValueError(f"unknown dtype: {dtype}")
-    raw = "\x1f".join(json.dumps(item, ensure_ascii=False, sort_keys=True) for item in identity)
+    raw = "\x1f".join(
+        json.dumps(item, ensure_ascii=False, sort_keys=True, separators=(",", ":"))
+        for item in identity
+    )
     digest = hashlib.sha256(raw.encode("utf-8")).hexdigest()[:20]
     label = slug(str(identity[0]))[:64] if identity else digest
     return f"starintel:{canonical}:{label}-{digest}"
