@@ -59,6 +59,20 @@ class StarIntelDocumentTests(unittest.TestCase):
         self.assertEqual(migrated["sources"][0]["url"], "https://example.test")
         validate_document(migrated)
 
+    def test_creates_unresolved_relation_endpoint(self) -> None:
+        doc = Document.create(
+            "relation",
+            "test",
+            doc_id="starintel:relation:unresolved-direct",
+            data={
+                "subject": {"label": "Unknown intermediary", "unresolved": True},
+                "predicate": "related_to",
+                "object": "starintel:org:example",
+            },
+        )
+        self.assertTrue(doc.to_dict()["data"]["subject"]["unresolved"])
+        validate_document(doc.to_dict())
+
     def test_migrates_relation_entity_id_endpoint(self) -> None:
         legacy = {
             "_id": "starintel:relation:embedded-a-b",
