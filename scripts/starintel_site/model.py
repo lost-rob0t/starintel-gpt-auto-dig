@@ -102,6 +102,14 @@ def summary(doc: dict[str, Any]) -> str:
     return doc.get("title") or doc["_id"]
 
 
+def source_record(source: Any) -> dict[str, Any]:
+    if isinstance(source, dict):
+        return source
+    if isinstance(source, str):
+        return {"url": source, "title": source}
+    return {"title": str(source)}
+
+
 def strings(value: Any) -> Iterable[str]:
     if isinstance(value, str):
         yield value
@@ -245,7 +253,8 @@ def render_org(doc: dict[str, Any], known: set[str]) -> str:
         for key, value in content:
             out += [f"** {key.replace('_', ' ').title()}", "", org_value(value), ""]
     out += ["* Sources", ""]
-    for source in doc.get("sources", []):
+    for raw_source in doc.get("sources", []):
+        source = source_record(raw_source)
         title = source.get("title") or source.get("publisher") or source.get("url") or "Source"
         citation = f"[[{source['url']}][{title}]]" if source.get("url") else title
         out.append(f"- {citation}")
