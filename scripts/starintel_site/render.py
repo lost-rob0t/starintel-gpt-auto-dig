@@ -6,7 +6,7 @@ from collections import Counter, defaultdict
 from typing import Any
 from urllib.parse import quote
 
-from .model import links, slug, summary
+from .model import links, slug, source_record, summary
 
 
 def page(title: str, body: str, prefix: str = "") -> str:
@@ -33,9 +33,10 @@ def value(data: Any) -> str:
     return f"<code>{html.escape(str(data))}</code>"
 
 
-def sources(items: list[dict[str, Any]]) -> str:
+def sources(items: list[Any]) -> str:
     rows = []
-    for source in items:
+    for raw_source in items:
+        source = source_record(raw_source)
         title = source.get("title") or source.get("publisher") or source.get("url") or "Source"
         heading = f'<a href="{html.escape(source["url"])}">{html.escape(title)}</a>' if source.get("url") else html.escape(title)
         meta = " · ".join(str(x) for x in (
@@ -48,7 +49,7 @@ def sources(items: list[dict[str, Any]]) -> str:
 
 
 def node(doc: dict[str, Any], target: str, known: set[str]) -> str:
-    title = doc.get("title") or doc["_id"]
+    title = doc.get("title") or doc.get("name") or doc["_id"]
     badges = "".join(f'<span class="badge">{html.escape(str(x))}</span>' for x in (
         doc["dtype"], doc.get("verification", {}).get("status"),
         f"confidence {doc['confidence']}" if doc.get("confidence") is not None else None,
@@ -67,7 +68,8 @@ def node(doc: dict[str, Any], target: str, known: set[str]) -> str:
         body.append("<section><h2>Predicates</h2>")
         for pred in doc["predicates"]:
             if isinstance(pred, dict):
-                body += [f"<article><h3>{html.escape(str(pred.get('predicate', 'predicate')).replace('_', ' '))}</h3>", value(pred.get("object")), "</article>"]
+                body += [f"<article><h3>{html.escape(str(pred.get('predicate', 'predicate')).replace('_', ' '))}</h3>",
+                         value(pred.get("object")), "</article>"]
         body.append("</section>")
     omitted = {
         "_id", "dataset", "dtype", "version", "date_added", "date_updated", "title",
@@ -102,7 +104,10 @@ def packet(target: str, docs: list[dict[str, Any]], config: dict[str, Any], grap
     cfg = config.get("packets", {}).get(target, {})
     title = cfg.get("title") or target.replace("-", " ").title()
     narrative = next((doc for doc in docs if doc["_id"] == cfg.get("narrative_document_id")), None)
-    unique_sources = {source.get("url") or json.dumps(source, sort_keys=True) for doc in docs for source in doc.get("sources", [])}
+    unique_sources = {
+        source_record(source).get("url") or json.dumps(source_record(source), sort_keys=True)
+        for doc in docs for source in doc.get("sources", [])
+    }
     counts = Counter(doc["dtype"] for doc in docs)
     body = [
         f"<h1>{html.escape(title)}</h1>",
@@ -140,9 +145,10 @@ def packet(target: str, docs: list[dict[str, Any]], config: dict[str, Any], grap
     ]
     body += [f'<span>{html.escape(kind)} <strong>{count}</strong></span>' for kind, count in sorted(counts.items())]
     body.append('</div><div class="records">')
-    for doc in sorted(docs, key=lambda d: (d["dtype"], d.get("title", d["_id"]))):
+    for doc in sorted(docs, key=lambda d: (d["dtype"], d.get("title") or d.get("name") or d["_id"])):
+        record_title = doc.get("title") or doc.get("name") or doc["_id"]
         body.append(
-            f'<article><span>{html.escape(doc["dtype"])}</span><h3><a href="nodes/{slug(doc["_id"])}.html">{html.escape(doc.get("title") or doc["_id"])}</a></h3>'
+            f'<article><span>{html.escape(doc["dtype"])}</span><h3><a href="nodes/{slug(doc["_id"])}.html">{html.escape(record_title)}</a></h3>'
             f'<p>{html.escape(summary(doc))}</p><code>{html.escape(doc["_id"])}</code></article>'
         )
     body += [
@@ -157,7 +163,8 @@ def packet(target: str, docs: list[dict[str, Any]], config: dict[str, Any], grap
 def source_inventory(target: str, docs: list[dict[str, Any]]) -> str:
     by_key, support = {}, defaultdict(list)
     for doc in docs:
-        for source in doc.get("sources", []):
+        for raw_source in doc.get("sources", []):
+            source = source_record(raw_source)
             key = source.get("url") or source.get("source_id") or json.dumps(source, sort_keys=True)
             by_key.setdefault(key, source)
             support[key].append(doc["_id"])
