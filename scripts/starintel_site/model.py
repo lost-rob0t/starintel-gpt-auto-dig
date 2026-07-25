@@ -166,8 +166,10 @@ def graph(docs: list[dict[str, Any]]) -> dict[str, Any]:
         data = doc.get("data", {})
         return doc.get("title") or data.get("display_name") or data.get("name") or data.get("full_name") or node_id
 
-    def add_node(node_id: str, group: str | None = None) -> None:
+    def add_node(node_id: str, group: str | None = None) -> bool:
         doc = by_id.get(node_id)
+        if doc and doc.get("dtype") == "relation":
+            return False
         actual_group = group or (doc.get("dtype") if doc else "entity")
         nodes.setdefault(
             node_id,
@@ -180,15 +182,17 @@ def graph(docs: list[dict[str, Any]]) -> dict[str, Any]:
                 "detail": summary(doc) if doc else "Referenced entity",
             },
         )
+        return True
 
     def add_edge(source: str, target: str, label: str) -> None:
         key = (source, target, label)
-        if source and target and source != target and key not in edge_keys:
+        if source in nodes and target in nodes and source != target and key not in edge_keys:
             edge_keys.add(key)
             edges.append({"source": source, "target": target, "label": label})
 
     for doc in docs:
-        add_node(doc["_id"])
+        if doc.get("dtype") != "relation":
+            add_node(doc["_id"])
 
     for doc in docs:
         if doc.get("dtype") == "relation":
