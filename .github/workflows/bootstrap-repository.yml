@@ -126,6 +126,8 @@ jobs:
           set -euo pipefail
           git config user.name "starintel-auto-publisher"
           git config user.email "starintel-auto-publisher@users.noreply.github.com"
+          git checkout HEAD -- .github/workflows
+          git clean -fd -- .github/workflows
           git add -A
           if git diff --cached --quiet; then
             echo "Repository tree is already materialized"
