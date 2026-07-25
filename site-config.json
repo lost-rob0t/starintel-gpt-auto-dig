@@ -1,0 +1,11 @@
+{
+  "site_title": "StarIntel GPT Auto Dig",
+  "packets": {
+    "larry-fink": {
+      "title": "Larry Fink",
+      "subtitle": "Institutions, government ties, lobbying, stewardship, infrastructure, and neutral political-economy analysis",
+      "narrative_document_id": "starintel:analysis:fink-corporatism-fascism-comparison",
+      "central_entity_id": "starintel:person:laurence-d-fink"
+    }
+  }
+}
