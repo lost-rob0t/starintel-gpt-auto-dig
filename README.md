@@ -1,20 +1,24 @@
 # StarIntel GPT Auto Dig
 
-Evidence-first StarIntel research packets published as generated Org-roam corpora, source inventories, neutral narratives, and interactive exploration graphs.
+Evidence-first research packets produced through GPT-assisted StarIntel loops and published as generated Org-roam corpora, source inventories, neutral narratives, and interactive exploration graphs.
 
-## Canonical data rule
+This repository stores bounded dig outputs and machine-readable StarIntel documents. It does not replace the canonical design and implementation records in `starintel-auto-research`.
 
-Each dig keeps one committed logical source of truth below:
+## Repository layout
+
+Each completed loop belongs under:
 
 ```text
-digs/<target>/<YYYY-MM-DD>-<loop-slug>/starintel-documents.jsonl
+digs/<target>/<YYYY-MM-DD>-<loop-slug>/
+├── README.md
+└── starintel-documents.jsonl
 ```
 
-A large stream may be stored as a gzip-compressed, base64-encoded `starintel-documents.jsonl.gz.b64` file or an ordered `.parts` manifest. These are transport forms of the same single JSONL dataset, not duplicate research copies.
+A packet may add supporting fixtures, manifests, or exports when required. A large canonical stream may be stored as a gzip-compressed, base64-encoded `starintel-documents.jsonl.gz.b64` file or an ordered `.parts` manifest. These are transport forms of one logical JSONL dataset, not duplicate research copies.
 
-`Org` nodes, graph data, source indexes, and the HTML site are derived by `scripts/build_research_site.py`. Generated output is not committed, preventing the research from being duplicated across formats.
+## Generated research site
 
-## Build locally
+`Org` nodes, graph data, source indexes, and HTML are derived by `scripts/build_research_site.py`. Generated output is not committed.
 
 ```bash
 python3 scripts/build_research_site.py \
@@ -23,34 +27,51 @@ python3 scripts/build_research_site.py \
   --org-output .generated/org
 ```
 
-Open `_site/index.html`.
-
-## Published research
-
-The GitHub Pages workflow validates pull requests and deploys `main`. Each target page contains:
+Open `_site/index.html`. The GitHub Pages workflow validates pull requests and deploys `main`. Each target page can contain:
 
 - a neutral evidence-based narrative;
 - an interactive exploration graph;
 - typed StarIntel record pages;
 - generated Org-roam nodes;
 - a generated source inventory;
-- the canonical JSONL download.
+- the decoded canonical JSONL download.
 
 ## Git flow
 
+Use the same branch-first workflow as `starintel-auto-research`:
+
 1. Start from `main`.
 2. Create `agent/<description>`.
-3. Commit one bounded dig or publishing-system change.
-4. Open a pull request.
-5. Validate JSONL, Org generation, graph generation, and the complete diff.
-6. Squash-merge after checks pass.
+3. Commit only the current dig packet and its required publishing or validation changes.
+4. Open a pull request into `main`.
+5. Validate structured documents, generated Org, graph output, and the complete diff.
+6. Squash-merge when the packet is internally consistent and evidence links resolve.
 
-## Analytical rules
+Do not publish a research packet directly to `main`.
 
-- Separate observed facts, allegations, estimates, analysis, and open probes.
+## Evidence and analytical rules
+
+- Separate observed facts, allegations, estimates, analysis, recommendations, and open probes.
 - Preserve exact source URLs and retrieval dates.
+- Do not convert an inference into a fact.
 - Do not infer control from board membership, contracts, or association alone.
 - Do not describe assets under management as personal ownership.
 - Use political labels only against explicit defining criteria.
 - Record contrary evidence and missing criteria, not only similarities.
+- Do not fabricate sources, confidence, test results, commits, or workflow status.
+- Use stable document IDs and preserve conflicting evidence.
 - Do not commit credentials, private evidence, home addresses, or unnecessary personal data.
+
+## StarIntel document baseline
+
+Every logical JSONL record must include:
+
+- `_id`
+- `dataset`
+- `dtype`
+- `version`
+- `sources`
+- `date_added`
+- `date_updated`
+
+Relation records must preserve their predicate, endpoints, sources, and confidence using the schema version declared by the packet.
