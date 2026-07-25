@@ -1,5 +1,5 @@
 Traceback (most recent call last):
-  File "/home/runner/work/starintel-gpt-auto-dig/starintel-gpt-auto-dig/scripts/fetch_larry_fink_fec_fast.py", line 29, in <module>
+  File "/home/runner/work/starintel-gpt-auto-dig/starintel-gpt-auto-dig/scripts/fetch_larry_fink_fec_fast.py", line 63, in <module>
     ledger.main()
     ~~~~~~~~~~~^^
   File "/home/runner/work/starintel-gpt-auto-dig/starintel-gpt-auto-dig/scripts/fetch_larry_fink_fec.py", line 199, in main
@@ -12,9 +12,7 @@ Traceback (most recent call last):
         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
     })
     ^^
-  File "/home/runner/work/starintel-gpt-auto-dig/starintel-gpt-auto-dig/scripts/fetch_larry_fink_fec_fast.py", line 18, in lean_api_get
-    return _original_api_get(endpoint, query)
-  File "/home/runner/work/starintel-gpt-auto-dig/starintel-gpt-auto-dig/scripts/fetch_larry_fink_fec.py", line 52, in api_get
+  File "/home/runner/work/starintel-gpt-auto-dig/starintel-gpt-auto-dig/scripts/fetch_larry_fink_fec_fast.py", line 40, in endpoint_api_get
     with urlopen(request, timeout=60) as response:
          ~~~~~~~^^^^^^^^^^^^^^^^^^^^^
   File "/opt/hostedtoolcache/Python/3.13.14/x64/lib/python3.13/urllib/request.py", line 189, in urlopen
@@ -32,4 +30,4 @@ Traceback (most recent call last):
     result = func(*args)
   File "/opt/hostedtoolcache/Python/3.13.14/x64/lib/python3.13/urllib/request.py", line 613, in http_error_default
     raise HTTPError(req.full_url, code, msg, hdrs, fp)
-urllib.error.HTTPError: HTTP Error 429: Too Many Requests
+urllib.error.HTTPError: HTTP Error 403: Forbidden
