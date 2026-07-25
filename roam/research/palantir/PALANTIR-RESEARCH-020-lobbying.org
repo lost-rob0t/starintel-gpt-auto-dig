@@ -1,0 +1,88 @@
+:PROPERTIES:
+:ID:       starintel-palantir-lobbying
+:END:
+#+title: Palantir Lobbying and Influence Network
+#+description: Federal lobbying expenditures, outside firms, issue areas and revolving-door nodes connected to Palantir.
+#+filetags: :research:palantir:lobbying:influence:
+
+* First-half 2026 minimum
+
+The normalized federal total for the first half of 2026 is a disclosed minimum:
+
+| Component | Amount |
+|-
+| Palantir in-house lobbying | $4.06 million |
+| Known outside-firm income | $1.85 million |
+| Combined minimum | $5.91 million |
+
+The calculation uses the latest amended Lobbying Disclosure Act[fn:lda] records found by the research cutoff. Avoq registered during the second quarter but no normalized Palantir second-quarter income report was located. Northern Compass Group was treated as a Brownstein subcontractor and excluded from spend totals to avoid double counting.
+
+* Registered network
+
+The mapped network includes:
+
+- Alpine Group Partners
+- Anchor & Arrow
+- Ballard Partners
+- Brownstein Hyatt Farber Schreck
+- Cornerstone Government Affairs
+- Ferox Strategies
+- Invariant
+- J.A. Green and Company
+- Miller Strategies
+- Penn Avenue Partners
+- Red+Blue Strategies
+- Avoq
+- Northern Compass Group as a disclosed subcontractor
+
+* Issue alignment
+
+Disclosures cover:
+
+- fiscal year 2027 defense appropriations
+- National Defense Authorization Act work
+- Army intelligence and readiness
+- command and control
+- Multi-Domain Intelligence
+- Tactical Intelligence Targeting Access Node
+- Battlefield Domain Awareness
+- Joint All-Domain Command and Control
+- Department of Veterans Affairs modernization
+- public-health technology
+- aviation, air-traffic control, commercial space and satellites
+- named government data-platform initiatives
+
+The evidence supports a conclusion of issue-to-business alignment. It does not establish an improper quid pro quo or unlawful award.
+
+* Revolving-door analysis
+
+Prior public service is modeled as a relationship and access indicator. It is not modeled as misconduct. The dataset records former committee, agency, military, congressional and executive-branch positions where disclosed.
+
+* Next pass
+
+Construct a dated chronology linking:
+
+1. lobbying issue text;
+2. appropriations language;
+3. requests for information;
+4. solicitations and sole-source justifications;
+5. awards, task orders and modifications;
+6. obligations and outlays.
+
+* Related
+
+- [[id:starintel-palantir-contracts][Contracts and procurement]]
+- [[id:starintel-palantir-deep-dive][Deep-dive assessment]]
+- [[id:starintel-palantir-index][Palantir index]]
+
+* Footnotes and Glossary
+
+[fn:starintel] StarIntel: A document-centered research system that preserves entities, relationships, events, evidence, provenance, confidence and investigative questions as structured records.
+
+[fn:ndjson] Newline-delimited JSON (NDJSON): A text format in which each line is one complete JavaScript Object Notation object. This repository stores one object per file.
+
+[fn:orgroam] Org-roam: An Emacs knowledge-management system that links Org files through stable identifiers and maintains a graph database of nodes and backlinks.
+
+[fn:ceiling] Contract ceiling: The maximum amount that may be ordered under a contract vehicle. It is not the same as money obligated, paid or recognized as revenue.
+
+[fn:lda] Lobbying Disclosure Act filing: A federal disclosure reporting lobbying registrants, clients, lobbyists, issue areas and reported expenses or income.

@@ -1,0 +1,61 @@
+:PROPERTIES:
+:ID:       starintel-palantir-contracts
+:END:
+#+title: Palantir Contracts and Procurement
+#+description: Contract vehicles, task orders, modifications and accounting cautions for Palantir public-sector work.
+#+filetags: :research:palantir:contracts:procurement:
+
+* Major mapped awards
+
+| Customer or program | Headline value | Interpretation |
+|-
+| United States Army Enterprise Agreement | $10.0 billion | Ten-year not-to-exceed ceiling consolidating 75 arrangements |
+| Maven Smart System prototype | $480 million | Contract vehicle with funding determined by orders |
+| Maven modification P00005 | $795 million | Software-license modification with order-level funding |
+| Immigration and Customs Enforcement ImmigrationOS | $29.90 million reported | Reported total award value and sole-source notice |
+| Immigration and Customs Enforcement order 70CTD026FC0000012 | $86.27 million | Current award amount under a department-wide vehicle |
+| Immigration and Customs Enforcement order 70CTD026FC0000018 | $45.85 million reported | Separate call requiring live-value reconciliation |
+| National Health Service England Federated Data Platform | Up to £330 million | Seven-year maximum dependent on adoption and consumption |
+| United Kingdom Ministry of Defence enterprise agreement | £240.6 million excluding value-added tax | Follow-on enterprise agreement |
+
+Additional leads involving the Department of Veterans Affairs, Food and Drug Administration, National Institutes of Health, Department of Health and Human Services, Federal Aviation Administration, Treasury and Internal Revenue Service are preserved with conservative confidence where the underlying award still requires normalization.
+
+* Accounting rule
+
+Never add headline values until every amount is classified as one of:
+
+- ceiling[fn:ceiling]
+- potential value
+- current award amount
+- obligation
+- outlay
+- recognized revenue
+
+A single award can expose several of these measures at once. They are not interchangeable.
+
+* Procurement concentration questions
+
+1. How much has actually been obligated and paid under each vehicle?
+2. Which award profiles are aliases rather than additive recipients?
+3. What migration, termination-assistance and interoperability clauses exist?
+4. How many competitions received a single bid?
+5. Which installed platforms later became brand-name requirements?
+
+* Related
+
+- [[id:starintel-palantir-deep-dive][Deep-dive assessment]]
+- [[id:starintel-palantir-lobbying][Lobbying and influence]]
+- [[id:starintel-palantir-method][Methodology]]
+- [[id:starintel-palantir-index][Palantir index]]
+
+* Footnotes and Glossary
+
+[fn:starintel] StarIntel: A document-centered research system that preserves entities, relationships, events, evidence, provenance, confidence and investigative questions as structured records.
+
+[fn:ndjson] Newline-delimited JSON (NDJSON): A text format in which each line is one complete JavaScript Object Notation object. This repository stores one object per file.
+
+[fn:orgroam] Org-roam: An Emacs knowledge-management system that links Org files through stable identifiers and maintains a graph database of nodes and backlinks.
+
+[fn:ceiling] Contract ceiling: The maximum amount that may be ordered under a contract vehicle. It is not the same as money obligated, paid or recognized as revenue.
+
+[fn:lda] Lobbying Disclosure Act filing: A federal disclosure reporting lobbying registrants, clients, lobbyists, issue areas and reported expenses or income.

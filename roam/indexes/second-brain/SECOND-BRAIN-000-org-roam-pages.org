@@ -1,0 +1,43 @@
+:PROPERTIES:
+:ID:       starintel-gpt-second-brain-index
+:END:
+#+title: StarIntel GPT Auto Dig — Org-roam Pages
+#+description: Canonical publication index for the GPT-generated StarIntel research graph.
+#+filetags: :index:second-brain:publishing:
+
+* Publication graph
+
+This is the canonical entry point for the research-only Org-roam[fn:orgroam] corpus.
+
+- [[id:starintel-palantir-index][Palantir investigation index]]
+- [[id:starintel-palantir-deep-dive][Palantir deep-dive assessment]]
+- [[id:starintel-palantir-contracts][Palantir contracts and procurement]]
+- [[id:starintel-palantir-lobbying][Palantir lobbying and influence network]]
+- [[id:starintel-palantir-governance][Palantir governance and ownership control]]
+- [[id:starintel-palantir-method][Palantir source and accounting methodology]]
+
+* Publishing contract
+
+The machine-readable record is stored as NDJSON[fn:ndjson] under =db/<dtype>/<_id>.ndjson=. The human-readable layer lives under =roam/research/= and =roam/indexes/=.
+
+There is no =roam/implement/= tree. This repository publishes completed research and indexes rather than software implementation designs.
+
+* Build
+
+#+begin_src sh
+python3 scripts/validate-db.py
+bash scripts/publish-pages
+python3 scripts/check-pages-links.py _site
+#+end_src
+
+* Footnotes and Glossary
+
+[fn:starintel] StarIntel: A document-centered research system that preserves entities, relationships, events, evidence, provenance, confidence and investigative questions as structured records.
+
+[fn:ndjson] Newline-delimited JSON (NDJSON): A text format in which each line is one complete JavaScript Object Notation object. This repository stores one object per file.
+
+[fn:orgroam] Org-roam: An Emacs knowledge-management system that links Org files through stable identifiers and maintains a graph database of nodes and backlinks.
+
+[fn:ceiling] Contract ceiling: The maximum amount that may be ordered under a contract vehicle. It is not the same as money obligated, paid or recognized as revenue.
+
+[fn:lda] Lobbying Disclosure Act filing: A federal disclosure reporting lobbying registrants, clients, lobbyists, issue areas and reported expenses or income.

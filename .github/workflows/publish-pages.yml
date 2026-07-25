@@ -5,7 +5,9 @@ on:
     branches: [main]
     paths:
       - "digs/**"
+      - "db/**"
       - "scripts/build_research_site.py"
+      - "scripts/validate-db.py"
       - "scripts/starintel_site/**"
       - "site-assets/**"
       - "site-config.json"
@@ -14,7 +16,9 @@ on:
     branches: [main]
     paths:
       - "digs/**"
+      - "db/**"
       - "scripts/build_research_site.py"
+      - "scripts/validate-db.py"
       - "scripts/starintel_site/**"
       - "site-assets/**"
       - "site-config.json"
@@ -40,13 +44,16 @@ jobs:
         with:
           python-version: "3.13"
 
-      - name: Validate builder
-        run: python -m compileall -q scripts
+      - name: Validate Python and database
+        run: |
+          python -m compileall -q scripts
+          python scripts/validate-db.py
 
-      - name: Generate Org corpus and site
+      - name: Generate research explorer
         run: |
           python scripts/build_research_site.py \
             --input digs \
+            --db db \
             --output _site \
             --org-output .generated/org
 
@@ -55,22 +62,36 @@ jobs:
           test -s _site/index.html
           test -s _site/larry-fink/index.html
           test -s _site/larry-fink/graph.json
-          test -s .generated/org/larry-fink/index.org
+          test -s _site/palantir/index.html
+          test -s _site/palantir/graph.json
+          test -s _site/palantir/nodes/org-palantir-technologies-inc.html
+          test -s _site/palantir/downloads/starintel-documents.jsonl
+          test -s .generated/org/palantir/index.org
           python - <<'PY'
           import json
-          import sys
           from pathlib import Path
-          sys.path.insert(0, "scripts")
-          from starintel_site.model import discover
-          graph = json.loads(Path("_site/larry-fink/graph.json").read_text())
-          assert graph["nodes"]
-          assert graph["edges"]
-          packets = discover(Path("digs"))
-          assert packets
-          for packet in packets:
-              ids = [doc["_id"] for doc in packet.documents]
-              assert len(ids) == len(set(ids)), packet.path
-          print("validated", len(graph["nodes"]), "nodes and", len(graph["edges"]), "edges")
+
+          palantir = json.loads(Path("_site/palantir/graph.json").read_text())
+          assert palantir["nodes"]
+          assert palantir["edges"]
+          assert any(
+              edge["source"] == "starintel:person:alex-karp"
+              and edge["target"] == "starintel:org:palantir-technologies-inc"
+              and edge["label"] == "founded"
+              for edge in palantir["edges"]
+          )
+
+          search = json.loads(Path("_site/search-index.json").read_text())
+          assert any(
+              record["target"] == "palantir"
+              and record["id"] == "starintel:org:palantir-technologies-inc"
+              for record in search
+          )
+
+          html = Path("_site/larry-fink/index.html").read_text()
+          assert "Fascism fit" not in html
+          assert "Corporatism and fascism comparison matrix" not in html
+          print("validated", len(palantir["nodes"]), "Palantir nodes and", len(palantir["edges"]), "edges")
           PY
 
       - name: Configure Pages

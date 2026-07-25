@@ -1,0 +1,58 @@
+:PROPERTIES:
+:ID:       starintel-palantir-index
+:END:
+#+title: Palantir Investigation Index
+#+description: Index of Palantir corporate, procurement, lobbying, governance and data-governance research.
+#+filetags: :index:palantir:contracts:lobbying:
+
+* Scope
+
+This index organizes the first StarIntel[fn:starintel] dataset published in this repository: =palantir-deep-dive-2026-07-25=.
+
+* Research nodes
+
+- [[id:starintel-palantir-deep-dive][Deep-dive assessment]]
+- [[id:starintel-palantir-contracts][Contracts and procurement]]
+- [[id:starintel-palantir-lobbying][Lobbying and influence network]]
+- [[id:starintel-palantir-governance][Governance and founder control]]
+- [[id:starintel-palantir-method][Source and accounting methodology]]
+
+* Machine-readable corpus
+
+The dataset contains 254 StarIntel documents:
+
+| Document type | Count |
+|-
+| event | 23 |
+| method | 1 |
+| org | 63 |
+| person | 43 |
+| product | 4 |
+| relation | 113 |
+| target | 7 |
+
+Each record has its own path beneath =db/<dtype>/=.
+
+* Priority investigations
+
+1. Reconcile ceilings[fn:ceiling], obligations, outlays and recognized revenue for every major contract vehicle.
+2. Diff amended lobbying disclosures and align issue text with appropriations, solicitations and task orders.
+3. Trace data source systems, permissions, retention, audit and purpose expansion for sensitive deployments.
+4. Measure ontology, workflow, integration and training lock-in.
+5. Expand lobbyist covered positions into a dated personnel and committee graph.
+
+* Related
+
+- [[id:starintel-gpt-second-brain-index][Publication index]]
+
+* Footnotes and Glossary
+
+[fn:starintel] StarIntel: A document-centered research system that preserves entities, relationships, events, evidence, provenance, confidence and investigative questions as structured records.
+
+[fn:ndjson] Newline-delimited JSON (NDJSON): A text format in which each line is one complete JavaScript Object Notation object. This repository stores one object per file.
+
+[fn:orgroam] Org-roam: An Emacs knowledge-management system that links Org files through stable identifiers and maintains a graph database of nodes and backlinks.
+
+[fn:ceiling] Contract ceiling: The maximum amount that may be ordered under a contract vehicle. It is not the same as money obligated, paid or recognized as revenue.
+
+[fn:lda] Lobbying Disclosure Act filing: A federal disclosure reporting lobbying registrants, clients, lobbyists, issue areas and reported expenses or income.

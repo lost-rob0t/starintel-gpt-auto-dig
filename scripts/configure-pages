@@ -1,0 +1,20 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+cd "$root"
+
+command -v gh >/dev/null || {
+  echo "gh is required" >&2
+  exit 1
+}
+
+repo="${GITHUB_REPOSITORY:-$(gh repo view --json nameWithOwner --jq .nameWithOwner)}"
+if gh api "repos/$repo/pages" >/dev/null 2>&1; then
+  gh api --method PUT "repos/$repo/pages" -f build_type=workflow >/dev/null
+else
+  gh api --method POST "repos/$repo/pages" -f build_type=workflow >/dev/null
+fi
+
+gh workflow run pages.yml --repo "$repo"
+echo "GitHub Pages workflow publishing configured for $repo"
