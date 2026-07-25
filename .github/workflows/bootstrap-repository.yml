@@ -1,0 +1,53 @@
+name: Bootstrap Repository Tree
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "bootstrap/repository.tar.gz.b64"
+      - ".github/workflows/bootstrap-repository.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: bootstrap-repository
+  cancel-in-progress: false
+
+jobs:
+  materialize:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - name: Materialize repository tree
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -s bootstrap/repository.tar.gz.b64
+          base64 --decode bootstrap/repository.tar.gz.b64 | tar --extract --gzip
+          rm -rf bootstrap
+
+      - name: Validate database
+        run: python3 scripts/validate-db.py
+
+      - name: Validate browser JavaScript
+        run: node --check pages/static/site.js
+
+      - name: Commit materialized tree
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "starintel-auto-publisher"
+          git config user.email "starintel-auto-publisher@users.noreply.github.com"
+          git add -A
+          if git diff --cached --quiet; then
+            echo "Repository tree is already materialized"
+            exit 0
+          fi
+          git commit -m "Publish Palantir StarIntel dataset and roam corpus"
+          git push origin HEAD:main
