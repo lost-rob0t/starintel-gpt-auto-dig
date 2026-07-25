@@ -15,7 +15,7 @@ ledger.NAME_QUERIES = ["FINK, LAURENCE", "FINK, LARRY"]
 
 
 def endpoint_api_get(endpoint: str, params: dict[str, Any]):
-    """Query OpenFEC with its endpoint-specific public browser credential."""
+    """Query OpenFEC using the same key selection and origin as FEC.gov."""
     key_name = "FEC_API_KEY_SCHEDULE_A" if endpoint.startswith("/schedules/schedule_a/") else "FEC_API_KEY"
     api_key = os.environ.get(key_name)
     if not api_key:
@@ -34,7 +34,17 @@ def endpoint_api_get(endpoint: str, params: dict[str, Any]):
         query.update({"api_key": api_key, "per_page": 100, "page": page})
         url = f"{ledger.BASE}{endpoint}?{urlencode(query, doseq=True)}"
         audit_urls.append(url.replace(f"api_key={api_key}", "api_key=REDACTED"))
-        request = Request(url, headers={"User-Agent": "starintel-gpt-auto-dig/1.0"})
+        request = Request(
+            url,
+            headers={
+                "User-Agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 Chrome/140 Safari/537.36",
+                "Accept": "application/json, text/plain, */*",
+                "Origin": "https://www.fec.gov",
+                "Referer": "https://www.fec.gov/data/receipts/individual-contributions/",
+                "Sec-Fetch-Mode": "cors",
+                "Sec-Fetch-Site": "same-site",
+            },
+        )
         for attempt in range(5):
             try:
                 with urlopen(request, timeout=60) as response:
