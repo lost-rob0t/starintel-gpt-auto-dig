@@ -14,7 +14,7 @@ permissions:
 
 concurrency:
   group: larry-fink-fec-ledger-${{ github.ref }}
-  cancel-in-progress: false
+  cancel-in-progress: true
 
 jobs:
   fetch:
