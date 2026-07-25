@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-25T18:19:37+00:00",
+  "generated_at": "2026-07-25T18:22:24+00:00",
   "query_urls": [
     "https://api.open.fec.gov/v1/committee/C00010603/?api_key=REDACTED&per_page=100&page=1",
     "https://api.open.fec.gov/v1/committee/C00075820/?api_key=REDACTED&per_page=100&page=1",
@@ -74,7 +74,7 @@
       "score": 0.45,
       "reasons": [
         "exact FINK surname token and Laurence/Larry first name",
-        "other employer: UNIVERSITY TOLEDO OF THE"
+        "other employer: THE TOLEDO OF UNIVERSITY"
       ],
       "record": {
         "sub_id": "4121720241084423288",
@@ -104,7 +104,7 @@
       "score": 0.45,
       "reasons": [
         "exact FINK surname token and Laurence/Larry first name",
-        "other employer: UNIVERSITY TOLEDO OF THE"
+        "other employer: THE TOLEDO OF UNIVERSITY"
       ],
       "record": {
         "sub_id": "4051420251196700747",
@@ -135,7 +135,7 @@
       "score": 0.45,
       "reasons": [
         "exact FINK surname token and Laurence/Larry first name",
-        "other employer: UNIVERSITY TOLEDO OF THE"
+        "other employer: THE TOLEDO OF UNIVERSITY"
       ],
       "record": {
         "sub_id": "4110720241055560779",
@@ -221,7 +221,7 @@
       "score": 0.45,
       "reasons": [
         "exact FINK surname token and Laurence/Larry first name",
-        "other employer: UNIVERSITY TOLEDO OF THE"
+        "other employer: THE TOLEDO OF UNIVERSITY"
       ],
       "record": {
         "sub_id": "4103120241022104853",
@@ -251,7 +251,7 @@
       "score": 0.45,
       "reasons": [
         "exact FINK surname token and Laurence/Larry first name",
-        "other employer: UNIVERSITY TOLEDO OF THE"
+        "other employer: THE TOLEDO OF UNIVERSITY"
       ],
       "record": {
         "sub_id": "4100120242049056906",
@@ -281,7 +281,7 @@
       "score": 0.45,
       "reasons": [
         "exact FINK surname token and Laurence/Larry first name",
-        "other employer: UNIVERSITY TOLEDO OF THE"
+        "other employer: THE TOLEDO OF UNIVERSITY"
       ],
       "record": {
         "sub_id": "4020620251149388788",
@@ -311,7 +311,7 @@
       "score": 0.45,
       "reasons": [
         "exact FINK surname token and Laurence/Larry first name",
-        "other employer: UNIVERSITY TOLEDO OF THE"
+        "other employer: THE TOLEDO OF UNIVERSITY"
       ],
       "record": {
         "sub_id": "4080520242001954848",
@@ -341,7 +341,7 @@
       "score": 0.45,
       "reasons": [
         "exact FINK surname token and Laurence/Larry first name",
-        "other employer: UNIVERSITY TOLEDO OF THE"
+        "other employer: THE TOLEDO OF UNIVERSITY"
       ],
       "record": {
         "sub_id": "4080520242001954847",
@@ -399,7 +399,7 @@
       "score": 0.45,
       "reasons": [
         "exact FINK surname token and Laurence/Larry first name",
-        "other employer: UNIVERSITY TOLEDO OF THE"
+        "other employer: THE TOLEDO OF UNIVERSITY"
       ],
       "record": {
         "sub_id": "4042520241914039018",
@@ -429,7 +429,7 @@
       "score": 0.5700000000000001,
       "reasons": [
         "exact FINK surname token and Laurence/Larry first name",
-        "other employer: UNIVERSITY TOLEDO OF THE",
+        "other employer: THE TOLEDO OF UNIVERSITY",
         "executive or finance occupation"
       ],
       "record": {
@@ -488,7 +488,7 @@
       "score": 0.5700000000000001,
       "reasons": [
         "exact FINK surname token and Laurence/Larry first name",
-        "other employer: UNIVERSITY TOLEDO OF THE",
+        "other employer: THE TOLEDO OF UNIVERSITY",
         "executive or finance occupation"
       ],
       "record": {
@@ -519,7 +519,7 @@
       "score": 0.5700000000000001,
       "reasons": [
         "exact FINK surname token and Laurence/Larry first name",
-        "other employer: UNIVERSITY TOLEDO OF THE",
+        "other employer: THE TOLEDO OF UNIVERSITY",
         "executive or finance occupation"
       ],
       "record": {
@@ -550,7 +550,7 @@
       "score": 0.5700000000000001,
       "reasons": [
         "exact FINK surname token and Laurence/Larry first name",
-        "other employer: UNIVERSITY TOLEDO OF THE",
+        "other employer: THE TOLEDO OF UNIVERSITY",
         "executive or finance occupation"
       ],
       "record": {
@@ -581,7 +581,7 @@
       "score": 0.5700000000000001,
       "reasons": [
         "exact FINK surname token and Laurence/Larry first name",
-        "other employer: UNIVERSITY TOLEDO OF THE",
+        "other employer: THE TOLEDO OF UNIVERSITY",
         "executive or finance occupation"
       ],
       "record": {
@@ -612,7 +612,7 @@
       "score": 0.5700000000000001,
       "reasons": [
         "exact FINK surname token and Laurence/Larry first name",
-        "other employer: UNIVERSITY TOLEDO OF THE",
+        "other employer: THE TOLEDO OF UNIVERSITY",
         "executive or finance occupation"
       ],
       "record": {
@@ -643,7 +643,7 @@
       "score": 0.5700000000000001,
       "reasons": [
         "exact FINK surname token and Laurence/Larry first name",
-        "other employer: UNIVERSITY TOLEDO OF THE",
+        "other employer: THE TOLEDO OF UNIVERSITY",
         "executive or finance occupation"
       ],
       "record": {
@@ -674,7 +674,7 @@
       "score": 0.45,
       "reasons": [
         "exact FINK surname token and Laurence/Larry first name",
-        "other employer: UNIVERSITY TOLEDO OF THE"
+        "other employer: THE TOLEDO OF UNIVERSITY"
       ],
       "record": {
         "sub_id": "4061520221511434065",
@@ -815,7 +815,8 @@
       "kind": "receipt",
       "score": 0.45,
       "reasons": [
-        "exact FINK surname token and Laurence/Larry first name"
+        "exact FINK surname token and Laurence/Larry first name",
+        "other employer: EMPLOYED NOT"
       ],
       "record": {
         "sub_id": "4070720261525372415",
@@ -844,7 +845,8 @@
       "kind": "receipt",
       "score": 0.45,
       "reasons": [
-        "exact FINK surname token and Laurence/Larry first name"
+        "exact FINK surname token and Laurence/Larry first name",
+        "other employer: EMPLOYED NOT"
       ],
       "record": {
         "sub_id": "4060220261513676638",
@@ -901,7 +903,8 @@
       "kind": "receipt",
       "score": 0.45,
       "reasons": [
-        "exact FINK surname token and Laurence/Larry first name"
+        "exact FINK surname token and Laurence/Larry first name",
+        "other employer: EMPLOYED NOT"
       ],
       "record": {
         "sub_id": "4050520261501669641",
@@ -930,7 +933,8 @@
       "kind": "receipt",
       "score": 0.45,
       "reasons": [
-        "exact FINK surname token and Laurence/Larry first name"
+        "exact FINK surname token and Laurence/Larry first name",
+        "other employer: EMPLOYED NOT"
       ],
       "record": {
         "sub_id": "4032620261427162381",
@@ -959,7 +963,8 @@
       "kind": "receipt",
       "score": 0.45,
       "reasons": [
-        "exact FINK surname token and Laurence/Larry first name"
+        "exact FINK surname token and Laurence/Larry first name",
+        "other employer: EMPLOYED NOT"
       ],
       "record": {
         "sub_id": "4030920261413485822",
@@ -989,7 +994,7 @@
       "score": 0.45,
       "reasons": [
         "exact FINK surname token and Laurence/Larry first name",
-        "other employer: A N"
+        "other employer: N A"
       ],
       "record": {
         "sub_id": "4021120261305840259",
@@ -1018,7 +1023,8 @@
       "kind": "receipt",
       "score": 0.45,
       "reasons": [
-        "exact FINK surname token and Laurence/Larry first name"
+        "exact FINK surname token and Laurence/Larry first name",
+        "other employer: EMPLOYED NOT"
       ],
       "record": {
         "sub_id": "4042220261445805396",
@@ -1047,7 +1053,8 @@
       "kind": "receipt",
       "score": 0.45,
       "reasons": [
-        "exact FINK surname token and Laurence/Larry first name"
+        "exact FINK surname token and Laurence/Larry first name",
+        "other employer: EMPLOYED NOT"
       ],
       "record": {
         "sub_id": "4042220261458133706",
@@ -1077,7 +1084,7 @@
       "score": 0.45,
       "reasons": [
         "exact FINK surname token and Laurence/Larry first name",
-        "other employer: A N"
+        "other employer: N A"
       ],
       "record": {
         "sub_id": "4011420261301733134",
@@ -1135,7 +1142,8 @@
       "kind": "receipt",
       "score": 0.45,
       "reasons": [
-        "exact FINK surname token and Laurence/Larry first name"
+        "exact FINK surname token and Laurence/Larry first name",
+        "other employer: EMPLOYED NOT"
       ],
       "record": {
         "sub_id": "4042220261451083428",
@@ -1165,7 +1173,7 @@
       "score": 0.45,
       "reasons": [
         "exact FINK surname token and Laurence/Larry first name",
-        "other employer: A N"
+        "other employer: N A"
       ],
       "record": {
         "sub_id": "4011420261301587327",
@@ -1195,7 +1203,7 @@
       "score": 0.45,
       "reasons": [
         "exact FINK surname token and Laurence/Larry first name",
-        "other employer: A N"
+        "other employer: N A"
       ],
       "record": {
         "sub_id": "4011220261300888127",
@@ -1224,7 +1232,8 @@
       "kind": "receipt",
       "score": 0.45,
       "reasons": [
-        "exact FINK surname token and Laurence/Larry first name"
+        "exact FINK surname token and Laurence/Larry first name",
+        "other employer: EMPLOYED NOT"
       ],
       "record": {
         "sub_id": "4042220261437490720",
@@ -1283,7 +1292,7 @@
       "score": 0.45,
       "reasons": [
         "exact FINK surname token and Laurence/Larry first name",
-        "other employer: A N"
+        "other employer: N A"
       ],
       "record": {
         "sub_id": "4092420251292287542",
@@ -1312,7 +1321,8 @@
       "kind": "receipt",
       "score": 0.45,
       "reasons": [
-        "exact FINK surname token and Laurence/Larry first name"
+        "exact FINK surname token and Laurence/Larry first name",
+        "other employer: EMPLOYED NOT"
       ],
       "record": {
         "sub_id": "4042220261436960514",
@@ -1341,7 +1351,8 @@
       "kind": "receipt",
       "score": 0.45,
       "reasons": [
-        "exact FINK surname token and Laurence/Larry first name"
+        "exact FINK surname token and Laurence/Larry first name",
+        "other employer: EMPLOYED NOT"
       ],
       "record": {
         "sub_id": "4042220261443045245",
@@ -1370,7 +1381,8 @@
       "kind": "receipt",
       "score": 0.45,
       "reasons": [
-        "exact FINK surname token and Laurence/Larry first name"
+        "exact FINK surname token and Laurence/Larry first name",
+        "other employer: EMPLOYED NOT"
       ],
       "record": {
         "sub_id": "4082820251267484784",
@@ -1399,7 +1411,8 @@
       "kind": "receipt",
       "score": 0.45,
       "reasons": [
-        "exact FINK surname token and Laurence/Larry first name"
+        "exact FINK surname token and Laurence/Larry first name",
+        "other employer: EMPLOYED NOT"
       ],
       "record": {
         "sub_id": "4082820251263674616",
@@ -1428,7 +1441,8 @@
       "kind": "receipt",
       "score": 0.45,
       "reasons": [
-        "exact FINK surname token and Laurence/Larry first name"
+        "exact FINK surname token and Laurence/Larry first name",
+        "other employer: EMPLOYED NOT"
       ],
       "record": {
         "sub_id": "4082820251259430521",
@@ -1457,7 +1471,8 @@
       "kind": "receipt",
       "score": 0.45,
       "reasons": [
-        "exact FINK surname token and Laurence/Larry first name"
+        "exact FINK surname token and Laurence/Larry first name",
+        "other employer: EMPLOYED NOT"
       ],
       "record": {
         "sub_id": "4082820251254338596",
@@ -1486,7 +1501,8 @@
       "kind": "receipt",
       "score": 0.45,
       "reasons": [
-        "exact FINK surname token and Laurence/Larry first name"
+        "exact FINK surname token and Laurence/Larry first name",
+        "other employer: EMPLOYED NOT"
       ],
       "record": {
         "sub_id": "4082820251249482775",
@@ -1515,7 +1531,8 @@
       "kind": "receipt",
       "score": 0.45,
       "reasons": [
-        "exact FINK surname token and Laurence/Larry first name"
+        "exact FINK surname token and Laurence/Larry first name",
+        "other employer: EMPLOYED NOT"
       ],
       "record": {
         "sub_id": "4082820251245765216",
@@ -1544,7 +1561,8 @@
       "kind": "receipt",
       "score": 0.45,
       "reasons": [
-        "exact FINK surname token and Laurence/Larry first name"
+        "exact FINK surname token and Laurence/Larry first name",
+        "other employer: EMPLOYED NOT"
       ],
       "record": {
         "sub_id": "4021120251167967091",
@@ -1573,7 +1591,8 @@
       "kind": "receipt",
       "score": 0.45,
       "reasons": [
-        "exact FINK surname token and Laurence/Larry first name"
+        "exact FINK surname token and Laurence/Larry first name",
+        "other employer: EMPLOYED NOT"
       ],
       "record": {
         "sub_id": "4121720241084423284",
@@ -1720,7 +1739,8 @@
       "kind": "receipt",
       "score": 0.45,
       "reasons": [
-        "exact FINK surname token and Laurence/Larry first name"
+        "exact FINK surname token and Laurence/Larry first name",
+        "other employer: EMPLOYED NOT"
       ],
       "record": {
         "sub_id": "4121720241084423283",
@@ -1955,7 +1975,8 @@
       "kind": "receipt",
       "score": 0.45,
       "reasons": [
-        "exact FINK surname token and Laurence/Larry first name"
+        "exact FINK surname token and Laurence/Larry first name",
+        "other employer: EMPLOYED NOT"
       ],
       "record": {
         "sub_id": "4121720241084423282",
@@ -1984,7 +2005,8 @@
       "kind": "receipt",
       "score": 0.45,
       "reasons": [
-        "exact FINK surname token and Laurence/Larry first name"
+        "exact FINK surname token and Laurence/Larry first name",
+        "other employer: EMPLOYED NOT"
       ],
       "record": {
         "sub_id": "4121720241084423281",
@@ -2013,7 +2035,8 @@
       "kind": "receipt",
       "score": 0.45,
       "reasons": [
-        "exact FINK surname token and Laurence/Larry first name"
+        "exact FINK surname token and Laurence/Larry first name",
+        "other employer: EMPLOYED NOT"
       ],
       "record": {
         "sub_id": "4121720241084423280",
@@ -2245,7 +2268,8 @@
       "kind": "receipt",
       "score": 0.45,
       "reasons": [
-        "exact FINK surname token and Laurence/Larry first name"
+        "exact FINK surname token and Laurence/Larry first name",
+        "other employer: EMPLOYED NOT"
       ],
       "record": {
         "sub_id": "4110720241055560772",
@@ -2334,7 +2358,8 @@
       "kind": "receipt",
       "score": 0.45,
       "reasons": [
-        "exact FINK surname token and Laurence/Larry first name"
+        "exact FINK surname token and Laurence/Larry first name",
+        "other employer: EMPLOYED NOT"
       ],
       "record": {
         "sub_id": "4110720241055560771",
@@ -2363,7 +2388,8 @@
       "kind": "receipt",
       "score": 0.45,
       "reasons": [
-        "exact FINK surname token and Laurence/Larry first name"
+        "exact FINK surname token and Laurence/Larry first name",
+        "other employer: EMPLOYED NOT"
       ],
       "record": {
         "sub_id": "4110720241055560770",
@@ -2920,7 +2946,8 @@
       "kind": "receipt",
       "score": 0.45,
       "reasons": [
-        "exact FINK surname token and Laurence/Larry first name"
+        "exact FINK surname token and Laurence/Larry first name",
+        "other employer: EMPLOYED NOT"
       ],
       "record": {
         "sub_id": "4103120241022104848",
@@ -3038,7 +3065,7 @@
       "score": 0.45,
       "reasons": [
         "exact FINK surname token and Laurence/Larry first name",
-        "other employer: REQUEST MADE ND"
+        "other employer: MADE REQUEST ND"
       ],
       "record": {
         "sub_id": "4110720241066528400",
@@ -3210,7 +3237,8 @@
       "kind": "receipt",
       "score": 0.45,
       "reasons": [
-        "exact FINK surname token and Laurence/Larry first name"
+        "exact FINK surname token and Laurence/Larry first name",
+        "other employer: EMPLOYED NOT"
       ],
       "record": {
         "sub_id": "4100120242049056902",
