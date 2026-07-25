@@ -1,0 +1,3 @@
+usage: starintel [-h]
+                 {types,schema,create,validate,migrate,migrate-one,search,select-targets,import} ...
+starintel: error: $.data.subject: value did not match any allowed schema: $.data.subject: expected string, got object; $.data.subject: missing required field 'id'
