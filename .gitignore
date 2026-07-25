@@ -1,0 +1,4 @@
+_site/
+roam/generated/
+__pycache__/
+*.pyc
