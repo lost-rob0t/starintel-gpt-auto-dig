@@ -1,0 +1,92 @@
+name: Org-roam Pages
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "roam/**"
+      - "lisp/starintel/**"
+      - "pages/**"
+      - "scripts/publish-pages"
+      - "scripts/configure-pages"
+      - "scripts/check-pages-links.py"
+      - ".github/workflows/pages.yml"
+      - "AGENTS.md"
+      - "README.org"
+  pull_request:
+    branches: [main]
+    paths:
+      - "roam/**"
+      - "lisp/starintel/**"
+      - "pages/**"
+      - "scripts/publish-pages"
+      - "scripts/configure-pages"
+      - "scripts/check-pages-links.py"
+      - ".github/workflows/pages.yml"
+      - "AGENTS.md"
+      - "README.org"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v6
+
+      - name: Check browser JavaScript syntax
+        run: node --check pages/static/site.js
+
+      - name: Install Emacs
+        run: |
+          sudo apt-get update -qq
+          sudo DEBIAN_FRONTEND=noninteractive apt-get install --yes --quiet emacs-nox sqlite3
+          emacs --version | head -1
+
+      - name: Build Org-roam site
+        run: bash scripts/publish-pages
+
+      - name: Check internal links
+        run: python3 scripts/check-pages-links.py _site
+
+      - name: Upload Org-roam site build
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: org-roam-site
+          path: _site
+          if-no-files-found: error
+
+      - name: Configure GitHub Pages metadata
+        if: github.event_name != 'pull_request'
+        uses: actions/configure-pages@v5
+
+      - name: Upload GitHub Pages artifact
+        if: github.event_name != 'pull_request'
+        uses: actions/upload-pages-artifact@v4
+        with:
+          path: _site
+
+  deploy:
+    if: github.event_name != 'pull_request'
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    needs: build
+    permissions:
+      pages: write
+      id-token: write
+    steps:
+      - name: Deploy GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
