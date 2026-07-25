@@ -1,0 +1,66 @@
+name: Bootstrap StarIntel v0.9.0
+
+on:
+  push:
+    branches: [agent/starintel-v0.9.0]
+    paths:
+      - "bootstrap/starintel-v0.9.0/**"
+      - ".github/workflows/bootstrap-starintel-v0.9.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: bootstrap-starintel-v0.9-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  materialize:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.13"
+      - name: Materialize implementation
+        shell: bash
+        run: |
+          set -euo pipefail
+          cat bootstrap/starintel-v0.9.0/part-* | base64 --decode | tar --extract --gzip
+          rm -rf bootstrap
+          rm -f .github/workflows/bootstrap-starintel-v0.9.yml
+      - name: Validate implementation
+        run: |
+          python -m compileall -q starintel_doc scripts
+          python -m unittest discover -s tests -v
+      - name: Generate schema and migrate complete corpus
+        run: |
+          python scripts/starintel.py schema --output schemas/starintel-doc-v0.9.0.schema.json
+          python scripts/migrate-starintel-v0.9.py --write
+          python scripts/validate-db.py
+      - name: Validate generated research site
+        run: |
+          python scripts/build_research_site.py \
+            --input digs \
+            --db db \
+            --output _site \
+            --org-output .generated/org
+          test -s _site/index.html
+          test -s _site/search-index.json
+          git diff --check
+      - name: Commit complete migration
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "starintel-auto-migrator"
+          git config user.email "starintel-auto-migrator@users.noreply.github.com"
+          git add -A
+          if git diff --cached --quiet; then
+            echo "No migration changes"
+            exit 0
+          fi
+          git commit -m "Implement StarIntel v0.9.0 and reformat corpus [schema-migration]"
+          git push origin "HEAD:${GITHUB_REF_NAME}"
