@@ -1,8 +1,8 @@
 name: Fetch Larry Fink FEC ledger
 
 on:
-  push:
-    branches: [agent/larry-fink-fec-ledger]
+  pull_request:
+    branches: [main]
     paths:
       - "scripts/fetch_larry_fink_fec.py"
       - ".github/workflows/fetch-larry-fink-fec.yml"
@@ -20,11 +20,11 @@ jobs:
     if: github.actor != 'github-actions[bot]'
     runs-on: ubuntu-latest
     steps:
-      - name: Check out writable branch
+      - name: Check out writable PR branch
         uses: actions/checkout@v6
         with:
           fetch-depth: 0
-          ref: ${{ github.ref_name }}
+          ref: ${{ github.event.pull_request.head.ref || github.ref_name }}
 
       - name: Set up Python
         uses: actions/setup-python@v6
@@ -47,6 +47,8 @@ jobs:
           test -s _site/larry-fink/index.html
 
       - name: Commit resolved ledger
+        env:
+          TARGET_BRANCH: ${{ github.event.pull_request.head.ref || github.ref_name }}
         run: |
           set -euo pipefail
           git config user.name "starintel-auto-publisher"
@@ -56,4 +58,4 @@ jobs:
             exit 0
           fi
           git commit -m "Publish Larry Fink personal FEC ledger"
-          git push origin "HEAD:${GITHUB_REF_NAME}"
+          git push origin "HEAD:${TARGET_BRANCH}"
