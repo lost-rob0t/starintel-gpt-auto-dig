@@ -4,7 +4,8 @@ import re
 from datetime import datetime
 from typing import Any
 
-from .spec import DTYPE_ALIASES, SCHEMA_VERSION, TYPE_FIELDS, document_schema
+from .schema_org import document_schema
+from .spec import DTYPE_ALIASES, SCHEMA_VERSION, TYPE_FIELDS
 
 
 class ValidationError(ValueError):
