@@ -9,6 +9,14 @@ from .model import discover, graph, org_index, render_org, slug
 from .render import node, packet, page, source_inventory
 
 
+def themed(markup: str, prefix: str) -> str:
+    stylesheet = f'<link rel="stylesheet" href="{prefix}assets/style.css">'
+    theme_script = f'<script src="{prefix}assets/theme.js"></script>'
+    if theme_script in markup:
+        return markup
+    return markup.replace(stylesheet, stylesheet + theme_script, 1)
+
+
 def build_site(input_root: Path, output: Path, org_output: Path, config_path: Path, assets: Path) -> None:
     packets = discover(input_root)
     config = json.loads(config_path.read_text(encoding="utf-8")) if config_path.exists() else {}
@@ -19,6 +27,7 @@ def build_site(input_root: Path, output: Path, org_output: Path, config_path: Pa
     asset_output = output / "assets"
     asset_output.mkdir()
     shutil.copy2(assets / "style.css", asset_output / "style.css")
+    shutil.copy2(assets / "theme.js", asset_output / "theme.js")
     shutil.copy2(assets / "graph.js", asset_output / "graph.js")
     shutil.copy2(assets / "graph-core.mjs", asset_output / "graph-core.mjs")
     shutil.copy2(assets / "graph-model.mjs", asset_output / "graph-model.mjs")
@@ -67,8 +76,8 @@ def build_site(input_root: Path, output: Path, org_output: Path, config_path: Pa
             graph_markup,
             1,
         )
-        (target_out / "index.html").write_text(packet_html)
-        (target_out / "sources.html").write_text(source_inventory(target, docs))
+        (target_out / "index.html").write_text(themed(packet_html, "../"))
+        (target_out / "sources.html").write_text(themed(source_inventory(target, docs), "../"))
         index = org_index(target, docs)
         (org_out / "index.org").write_text(index)
         (public_org / "index.org").write_text(index)
@@ -94,7 +103,7 @@ def build_site(input_root: Path, output: Path, org_output: Path, config_path: Pa
             org = render_org(doc, known)
             (org_out / f"{name}.org").write_text(org)
             (public_org / f"{name}.org").write_text(org)
-            (node_out / f"{name}.html").write_text(node(doc, target, known))
+            (node_out / f"{name}.html").write_text(themed(node(doc, target, known), "../../"))
             search.append({
                 "target": target,
                 "id": doc["_id"],
@@ -116,4 +125,4 @@ def build_site(input_root: Path, output: Path, org_output: Path, config_path: Pa
         '<div class="notice"><strong>Canonical-data rule:</strong> only StarIntel packets are committed. Org, graph, and HTML are generated. Incremental packets are merged by stable document ID.</div>'
         '<section class="packets">' + "".join(cards) + "</section>"
     )
-    (output / "index.html").write_text(page(config.get("site_title", "StarIntel GPT Auto Dig"), body))
+    (output / "index.html").write_text(themed(page(config.get("site_title", "StarIntel GPT Auto Dig"), body), ""))
