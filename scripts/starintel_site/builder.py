@@ -34,6 +34,10 @@ def _latest_documents(documents: list[dict]) -> list[dict]:
     return sorted(by_id.values(), key=lambda doc: doc["_id"])
 
 
+def _jsonl(documents: list[dict]) -> str:
+    return "".join(json.dumps(doc, ensure_ascii=False, separators=(",", ":")) + "\n" for doc in documents)
+
+
 def _write_topic_dataset(
     *,
     topic_id: str,
@@ -75,8 +79,7 @@ def _write_topic_dataset(
     index = org_index(title, docs)
     (org_out / "index.org").write_text(index)
     (public_org / "index.org").write_text(index)
-    canonical = "".join(json.dumps(doc, ensure_ascii=False, separators=(",", ":")) + "\n" for doc in docs)
-    (downloads / "starintel-documents.jsonl").write_text(canonical)
+    (downloads / "starintel-documents.jsonl").write_text(_jsonl(docs))
     manifest = {
         "topic_dataset": topic_id,
         "title": title,
@@ -158,6 +161,11 @@ def build_site(input_root: Path, output: Path, org_output: Path, config_path: Pa
     shutil.copy2(assets / "graph-touch.js", asset_output / "graph-touch.js")
     (output / ".nojekyll").write_text("")
 
+    complete_docs = _latest_documents([doc for item in packets for doc in item.documents])
+    root_downloads = output / "downloads"
+    root_downloads.mkdir()
+    (root_downloads / "starintel-complete-corpus.jsonl").write_text(_jsonl(complete_docs))
+
     grouped = defaultdict(list)
     for item in packets:
         grouped[item.target].append(item)
@@ -192,8 +200,7 @@ def build_site(input_root: Path, output: Path, org_output: Path, config_path: Pa
         (org_out / "index.org").write_text(index)
         (public_org / "index.org").write_text(index)
 
-        canonical = "".join(json.dumps(doc, ensure_ascii=False, separators=(",", ":")) + "\n" for doc in docs)
-        (downloads / "starintel-documents.jsonl").write_text(canonical)
+        (downloads / "starintel-documents.jsonl").write_text(_jsonl(docs))
         history = [
             {
                 "run": item.run,
@@ -283,12 +290,13 @@ def build_site(input_root: Path, output: Path, org_output: Path, config_path: Pa
     body = (
         "<h1>StarIntel GPT Auto Dig</h1>"
         '<p class="lede">Source-backed research transformed into dashboards, Org-roam nodes, source inventories, and progressive graph explorers.</p>'
+        '<div class="dashboard-actions"><a class="primary-action" href="downloads/starintel-complete-corpus.jsonl" download>Download complete corpus</a></div>'
         '<div class="notice"><strong>Dataset rule:</strong> topical datasets merge related research across packets. Source datasets remain available. The obsolete daily dataset is excluded from the generated catalog.</div>'
         '<section class="stats dashboard-stats">'
         f'<div><strong>{len(grouped):,}</strong><span>research targets</span></div>'
         f'<div><strong>{len(topic_rows):,}</strong><span>topic datasets</span></div>'
         f'<div><strong>{len(dataset_rows):,}</strong><span>source datasets</span></div>'
-        f'<div><strong>{len(search):,}</strong><span>canonical records</span></div>'
+        f'<div><strong>{len(complete_docs):,}</strong><span>canonical records</span></div>'
         "</section>"
         '<section id="topic-datasets"><div class="section-head"><div><h2>Topic datasets</h2><p>Merged by subject across all matching packets and source datasets.</p></div>'
         '<a href="topic-datasets.json">Topic index JSON →</a></div><div class="packets dataset-catalog">'
