@@ -1,0 +1,42 @@
+{
+  "counts": {
+    "analysis": 6,
+    "claim": 19,
+    "contract": 2,
+    "dataset-manifest": 1,
+    "investigation-target": 9,
+    "org": 15,
+    "policy": 3,
+    "product": 6,
+    "relation": 19,
+    "research-pass": 1,
+    "source": 19
+  },
+  "dataset": "flock-shotspotter-locality-recursion-2026-07-26",
+  "files": [
+    "README.md",
+    "sources.md",
+    "starintel-documents.jsonl.gz.b64.parts",
+    "starintel-documents.jsonl.gz.b64.part-001",
+    "starintel-documents.jsonl.gz.b64.part-002",
+    "starintel-documents.jsonl.gz.b64.part-003",
+    "starintel-documents.jsonl.gz.b64.part-004"
+  ],
+  "generated_at": "2026-07-26T23:45:00-04:00",
+  "hash_algorithm": "sha256",
+  "schema_version": "0.9.0",
+  "starintel_documents_sha256": "0855dc11c9336ff8dd94a5250b75574fb3b41ffcc130ac86f5baa7fb10ffcab5",
+  "total": 100,
+  "transport": "gzip+base64 multipart",
+  "transport_part_count": 4,
+  "validation": {
+    "jsonl_parse": "passed",
+    "related_id_references": "passed",
+    "relation_endpoint_references": "passed",
+    "repository_merge_gate": "not-run-no-local-checkout",
+    "schema_field_shape": "manual-preflight-passed",
+    "source_urls": "passed",
+    "target_seed_references": "passed",
+    "unique_ids": "passed"
+  }
+}
