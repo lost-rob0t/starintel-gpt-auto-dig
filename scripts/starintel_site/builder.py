@@ -1,9 +1,11 @@
 from __future__ import annotations
 
+import html
 import json
 import shutil
 from collections import defaultdict
 from pathlib import Path
+from urllib.parse import quote
 
 from .dashboard import annotate_graph, dashboard_page, document_index, documents_page, graph_page
 from .model import discover, graph, org_index, render_org, slug
@@ -51,6 +53,7 @@ def build_site(input_root: Path, output: Path, org_output: Path, config_path: Pa
         grouped[item.target].append(item)
 
     cards = []
+    dataset_rows: list[dict[str, object]] = []
     search = []
     for target, target_packets in sorted(grouped.items()):
         by_id = {}
@@ -107,20 +110,54 @@ def build_site(input_root: Path, output: Path, org_output: Path, config_path: Pa
                 "id": doc["_id"],
                 "title": doc.get("title") or doc.get("name") or doc["_id"],
                 "dtype": doc["dtype"],
+                "dataset": doc.get("dataset", ""),
                 "summary": doc.get("summary") or doc.get("description", ""),
                 "url": f"{target}/nodes/{name}.html",
             })
+
         cfg = config.get("packets", {}).get(target, {})
+        target_title = cfg.get("title") or target.replace("-", " ").title()
         cards.append(
-            f'<article><span>{len(docs)} records</span><h2><a href="{target}/index.html">{cfg.get("title") or target.replace("-", " ").title()}</a></h2>'
-            f'<p>{cfg.get("subtitle") or "StarIntel public-record research"}</p><a href="{target}/index.html">Open dashboard →</a></article>'
+            f'<article><span>{len(docs)} records</span><h2><a href="{target}/index.html">{html.escape(str(target_title))}</a></h2>'
+            f'<p>{html.escape(str(cfg.get("subtitle") or "StarIntel public-record research"))}</p><a href="{target}/index.html">Open dashboard →</a></article>'
         )
 
+        datasets: dict[str, list[dict]] = defaultdict(list)
+        for doc in docs:
+            datasets[str(doc.get("dataset") or "unknown")].append(doc)
+        for dataset, dataset_docs in sorted(datasets.items()):
+            dataset_rows.append({
+                "dataset": dataset,
+                "target": target,
+                "target_title": target_title,
+                "record_count": len(dataset_docs),
+                "updated_through": max(str(doc.get("date_updated", "")) for doc in dataset_docs),
+                "url": f"{target}/documents.html?dataset={quote(dataset, safe='')}",
+            })
+
+    dataset_rows.sort(key=lambda row: (str(row["dataset"]).lower(), str(row["target"])))
+    (output / "datasets.json").write_text(json.dumps(dataset_rows, ensure_ascii=False, separators=(",", ":")))
     (output / "search-index.json").write_text(json.dumps(search, ensure_ascii=False, separators=(",", ":")))
+
+    dataset_cards = "".join(
+        f'<article><span>{int(row["record_count"]):,} records · {html.escape(str(row["target_title"]))}</span>'
+        f'<h2><a href="{html.escape(str(row["url"]))}">{html.escape(str(row["dataset"]))}</a></h2>'
+        f'<p>Updated through {html.escape(str(row["updated_through"]))}</p>'
+        f'<a href="{html.escape(str(row["url"]))}">Browse dataset →</a></article>'
+        for row in dataset_rows
+    )
     body = (
         "<h1>StarIntel GPT Auto Dig</h1>"
         '<p class="lede">Source-backed research transformed into dashboards, Org-roam nodes, source inventories, and progressive graph explorers.</p>'
         '<div class="notice"><strong>Canonical-data rule:</strong> only StarIntel packets are committed. Generated dashboards default to reviewed records while preserving explicit access to unreviewed material.</div>'
-        '<section class="packets">' + "".join(cards) + "</section>"
+        '<section class="stats dashboard-stats">'
+        f'<div><strong>{len(grouped):,}</strong><span>research targets</span></div>'
+        f'<div><strong>{len(dataset_rows):,}</strong><span>datasets</span></div>'
+        f'<div><strong>{len(search):,}</strong><span>canonical records</span></div>'
+        '</section>'
+        '<section><div class="section-head"><div><h2>Research targets</h2><p>Combined dashboards grouped by target.</p></div></div>'
+        '<div class="packets">' + "".join(cards) + "</div></section>"
+        '<section id="datasets"><div class="section-head"><div><h2>All datasets</h2><p>Every dataset discovered from canonical StarIntel records.</p></div>'
+        '<a href="datasets.json">Dataset index JSON →</a></div><div class="packets dataset-catalog">' + dataset_cards + "</div></section>"
     )
     (output / "index.html").write_text(themed(page(config.get("site_title", "StarIntel GPT Auto Dig"), body), ""))
