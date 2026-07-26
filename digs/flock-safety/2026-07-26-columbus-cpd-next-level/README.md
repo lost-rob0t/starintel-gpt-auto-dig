@@ -14,6 +14,8 @@ This packet reconstructs the Columbus Division of Police Flock system beyond the
 - records retention and policy gaps;
 - recursive targets for raw logs, administrators, contracts, camera maps, support tickets, and trial disposition.
 
+The retained generator reproduces this packet and validates each document against the repository-local schema.
+
 ## Counts
 
 - analysis: 3
