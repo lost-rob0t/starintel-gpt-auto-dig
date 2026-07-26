@@ -100,8 +100,13 @@ jobs:
 
       - name: Check generated schema drift
         run: |
-          python -m starintel_doc.cli schema --output /tmp/starintel-doc-v0.9.0.schema.json
-          cmp schemas/starintel-doc-v0.9.0.schema.json /tmp/starintel-doc-v0.9.0.schema.json
+          mkdir -p artifacts
+          python -m starintel_doc.cli schema --output artifacts/generated-starintel-doc-v0.9.0.schema.json
+          if ! cmp schemas/starintel-doc-v0.9.0.schema.json artifacts/generated-starintel-doc-v0.9.0.schema.json; then
+            diff -u schemas/starintel-doc-v0.9.0.schema.json artifacts/generated-starintel-doc-v0.9.0.schema.json \
+              > artifacts/schema-drift.diff || true
+            exit 1
+          fi
 
       - name: Run reference fixture tests
         run: python -m unittest tests.test_conformance
