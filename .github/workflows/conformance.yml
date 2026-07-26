@@ -1,0 +1,126 @@
+name: StarIntel conformance
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+  schedule:
+    - cron: "17 6 * * 1"
+
+permissions:
+  contents: read
+
+jobs:
+  matrix:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Checkout conformance source
+        uses: actions/checkout@v6
+
+      - name: Checkout Python implementation
+        uses: actions/checkout@v6
+        with:
+          repository: lost-rob0t/starintel-doc
+          ref: agent/starintel-v090-conformance
+          path: implementations/python
+
+      - name: Checkout JavaScript implementation
+        uses: actions/checkout@v6
+        with:
+          repository: lost-rob0t/starintel_doc.js
+          ref: agent/starintel-v090-conformance
+          path: implementations/js
+
+      - name: Checkout Common Lisp implementation
+        uses: actions/checkout@v6
+        with:
+          repository: lost-rob0t/star-cl
+          ref: agent/starintel-v090-conformance
+          path: implementations/cl
+
+      - name: Checkout Nim implementation
+        uses: actions/checkout@v6
+        with:
+          repository: lost-rob0t/starintel-doc.nim
+          ref: agent/starintel-v090-conformance
+          path: implementations/nim
+
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.13"
+          cache: pip
+
+      - uses: actions/setup-node@v6
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: implementations/js/package-lock.json
+
+      - name: Set up Nim
+        uses: jiro4989/setup-nim-action@v2
+        with:
+          nim-version: "2.2.4"
+
+      - name: Install system runtimes
+        run: |
+          sudo apt-get update
+          sudo apt-get install --yes sbcl curl
+
+      - name: Install Python and JavaScript dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install jsonschema dataclasses-json ulid-py
+          npm install --prefix implementations/js
+
+      - name: Install Quicklisp dependencies
+        shell: bash
+        run: |
+          curl --fail --silent --show-error --location https://beta.quicklisp.org/quicklisp.lisp --output /tmp/quicklisp.lisp
+          sbcl --non-interactive \
+            --load /tmp/quicklisp.lisp \
+            --eval '(quicklisp-quickstart:install :path #p"~/quicklisp/")' \
+            --eval '(quit)'
+          cat >/tmp/install-starintel-deps.lisp <<'LISP'
+          (load (merge-pathnames "quicklisp/setup.lisp" (user-homedir-pathname)))
+          (ql:quickload '(:jsown :com.inuoe.jzon :ironclad :local-time :cms-ulid :str :cl-ppcre) :silent t)
+          (quit)
+          LISP
+          sbcl --script /tmp/install-starintel-deps.lisp
+
+      - name: Build Nim adapter
+        run: |
+          nimble install --yes --depsOnly --nimbleDir:implementations/nim/.nimble implementations/nim
+          nim c -d:release \
+            --path:implementations/nim/src \
+            --nimblePath:implementations/nim/.nimble/pkgs2 \
+            --out:implementations/nim/starintel_conformance \
+            implementations/nim/src/starintel_conformance.nim
+
+      - name: Check generated schema drift
+        run: |
+          python -m starintel_doc.cli schema --output /tmp/starintel-doc-v0.9.0.schema.json
+          cmp schemas/starintel-doc-v0.9.0.schema.json /tmp/starintel-doc-v0.9.0.schema.json
+
+      - name: Run reference fixture tests
+        run: python -m unittest tests.test_conformance
+
+      - name: Run ordered language matrix
+        run: |
+          python -m conformance.runner test \
+            --adapter "python=sh -c 'cd implementations/python && python -m starintel_doc.conformance_adapter'" \
+            --adapter "js=node implementations/js/bin/starintel-conformance.js" \
+            --adapter "cl=sbcl --script implementations/cl/bin/starintel-conformance.lisp" \
+            --adapter "nim=implementations/nim/starintel_conformance"
+
+      - name: Export fixtures
+        if: always()
+        run: python -m conformance.runner dump-fixtures --output artifacts/fixtures-v0.9.0.json
+
+      - name: Upload conformance artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: starintel-conformance
+          path: artifacts/
+          if-no-files-found: error
