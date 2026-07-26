@@ -1,0 +1,92 @@
+{
+  "inventory_version": 1,
+  "spec_version": "0.9.0",
+  "source_of_truth": {
+    "repository": "lost-rob0t/starintel-gpt-auto-dig",
+    "registry": "starintel_doc/spec.py",
+    "schema": "schemas/starintel-doc-v0.9.0.schema.json",
+    "fixtures": "conformance/fixtures.py",
+    "test_command": "python -m conformance.runner test",
+    "ci": ".github/workflows/conformance.yml"
+  },
+  "implementations": [
+    {
+      "repository": "lost-rob0t/starintel-doc",
+      "language": "python",
+      "supported_spec_versions": ["0.9.0"],
+      "parser_entry_point": "starintel_doc.v090.Document.from_json",
+      "validator_entry_point": "starintel_doc.v090.validate_document",
+      "serializer_entry_point": "starintel_doc.v090.Document.to_json",
+      "adapter_entry_point": "python -m starintel_doc.conformance_adapter",
+      "existing_test_command": "python -m unittest discover -s tests",
+      "ci": ".github/workflows/conformance.yml",
+      "legacy_input_support": ["0.8.0", "0.8.2"],
+      "status": "implementation-pr"
+    },
+    {
+      "repository": "lost-rob0t/starintel_doc.js",
+      "language": "js",
+      "supported_spec_versions": ["0.9.0"],
+      "parser_entry_point": "Document.fromJSON / parseLosslessJson",
+      "validator_entry_point": "validateDocument",
+      "serializer_entry_point": "Document.toJSON / stringifyLosslessJson",
+      "adapter_entry_point": "node bin/starintel-conformance.js",
+      "existing_test_command": "npm test",
+      "ci": ".github/workflows/conformance.yml",
+      "legacy_input_support": ["0.7.3"],
+      "status": "implementation-pr"
+    },
+    {
+      "repository": "lost-rob0t/star-cl",
+      "language": "cl",
+      "supported_spec_versions": ["0.9.0"],
+      "parser_entry_point": "com.inuoe.jzon:parse",
+      "validator_entry_point": "starintel::validate-v090-document",
+      "serializer_entry_point": "com.inuoe.jzon:stringify / starintel::roundtrip-v090-document",
+      "adapter_entry_point": "sbcl --script bin/starintel-conformance.lisp",
+      "existing_test_command": "asdf:test-system :starintel-test",
+      "ci": ".github/workflows/conformance.yml",
+      "legacy_input_support": ["0.8.0"],
+      "status": "implementation-pr"
+    },
+    {
+      "repository": "lost-rob0t/starintel-doc.nim",
+      "language": "nim",
+      "supported_spec_versions": ["0.9.0"],
+      "parser_entry_point": "std/json.parseJson",
+      "validator_entry_point": "starintel_doc/v090.validateDocument",
+      "serializer_entry_point": "starintel_doc/v090.roundtrip",
+      "adapter_entry_point": "starintel_conformance",
+      "existing_test_command": "nimble test",
+      "ci": ".github/workflows/conformance.yml",
+      "legacy_input_support": ["0.7.3"],
+      "status": "implementation-pr"
+    }
+  ],
+  "superseded_repositories": [
+    {
+      "repository": "lost-rob0t/starintel_parser",
+      "state": "archived",
+      "superseded_by": "lost-rob0t/starintel-doc",
+      "matrix_participant": false,
+      "reason": "Archived parser repository; the active Python binding owns the v0.9.0 adapter."
+    }
+  ],
+  "known_consumers": [
+    {
+      "repository": "lost-rob0t/quasar-ui",
+      "role": "TypeScript/JavaScript application consumer",
+      "matrix_participant": false
+    },
+    {
+      "repository": "lost-rob0t/starintel-server",
+      "role": "Common Lisp server consumer",
+      "matrix_participant": false
+    }
+  ],
+  "pin_policy": {
+    "development": "Cross-repository branches are used only while the coordinated PR set is under test.",
+    "merge": "Replace every cross-repository branch ref with an exact commit SHA after all implementation checks are green.",
+    "release": "Tag and checksum the fixture bundle; repository-local CI consumes that immutable release."
+  }
+}
