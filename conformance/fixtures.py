@@ -59,6 +59,10 @@ def minimal_data(dtype: str) -> dict[str, Any]:
         "domain": {"domain": "example.test"},
         "url": {"url": "https://example.test/a?x=1"},
         "claim": {"claim": "A documented claim."},
+        "research-node": {
+            "objective": "Run a bounded investigation.",
+            "status": "draft",
+        },
     }
     return deepcopy(required.get(dtype, {}))
 
@@ -640,6 +644,86 @@ def all_fixtures() -> list[dict[str, Any]]:
                     "files": [{"path": "fixtures.json", "size": 123}],
                     "schema_versions": [SCHEMA_VERSION],
                     "generated_at": FIXED_UTC,
+                },
+            ),
+        )
+    )
+
+
+    values.append(
+        fixture(
+            "research-node.full.v1",
+            "research-node",
+            base_document(
+                "research-node",
+                108,
+                {
+                    "objective": "Map an organization and the people responsible for a program.",
+                    "instructions": "Prefer primary records and preserve provenance.",
+                    "status": "running",
+                    "input_ids": ["starintel:target:program"],
+                    "target_ids": ["starintel:target:program"],
+                    "actor_ids": ["quasar.actor.web-search", "quasar.actor.url-content"],
+                    "actor_selection_rules": [{"accepts": ["target"], "priority": 10}],
+                    "output_ids": ["starintel:org:example"],
+                    "artifact_ids": ["artifact:report"],
+                    "child_ids": ["starintel:research-node:child"],
+                    "dependency_ids": [],
+                    "run_ids": ["run:research:001"],
+                    "current_actor_id": "quasar.actor.url-content",
+                    "current_run_id": "run:research:001",
+                    "limits": {
+                        "max_depth": 4,
+                        "max_actor_runs": 64,
+                        "max_requests": 1024,
+                        "max_elapsed_ms": 1800000,
+                        "max_repeated_state": 3,
+                        "max_cost": 10.0,
+                        "currency": "USD",
+                    },
+                    "stop": {
+                        "when_actor_queue_empty": True,
+                        "when_no_new_documents": True,
+                        "when_objective_satisfied": False,
+                        "halt_on_actor_failure": True,
+                    },
+                    "counters": {
+                        "depth": 1,
+                        "actor_runs": 2,
+                        "requests": 8,
+                        "repeated_state": 0,
+                        "elapsed_ms": 1200,
+                        "cost": 0.25,
+                    },
+                    "history": [
+                        {
+                            "from": None,
+                            "to": "draft",
+                            "at": FIXED_UTC,
+                            "message": "Research node created",
+                            "error": "",
+                            "actor_id": "",
+                            "run_id": "",
+                            "output_ids": [],
+                            "artifact_ids": [],
+                        },
+                        {
+                            "from": "queued",
+                            "to": "running",
+                            "at": "2026-01-02T03:05:05Z",
+                            "message": "Actor queue started",
+                            "error": "",
+                            "actor_id": "quasar.actor.web-search",
+                            "run_id": "run:research:001",
+                            "output_ids": ["starintel:org:example"],
+                            "artifact_ids": ["artifact:report"],
+                        },
+                    ],
+                    "created_at": FIXED_UTC,
+                    "started_at": "2026-01-02T03:05:05Z",
+                    "completed_at": None,
+                    "last_error": "",
+                    "paused_reason": "",
                 },
             ),
         )
