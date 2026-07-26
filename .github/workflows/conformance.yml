@@ -73,7 +73,7 @@ jobs:
           python -m pip install jsonschema dataclasses-json ulid-py
           npm install --prefix implementations/js
 
-      - name: Install Quicklisp dependencies
+      - name: Install v0.9 Common Lisp dependencies
         shell: bash
         run: |
           curl --fail --silent --show-error --location https://beta.quicklisp.org/quicklisp.lisp --output /tmp/quicklisp.lisp
@@ -83,17 +83,20 @@ jobs:
             --eval '(quit)'
           cat >/tmp/install-starintel-deps.lisp <<'LISP'
           (load (merge-pathnames "quicklisp/setup.lisp" (user-homedir-pathname)))
-          (ql:quickload '(:jsown :com.inuoe.jzon :ironclad :local-time :cms-ulid :str :cl-ppcre) :silent t)
+          (ql:quickload '(:com.inuoe.jzon :cl-ppcre) :silent t)
           (quit)
           LISP
           sbcl --script /tmp/install-starintel-deps.lisp
 
       - name: Build Nim adapter
         run: |
+          mkdir -p artifacts
+          set -o pipefail
           nim c -d:release \
             --path:implementations/nim/src \
             --out:implementations/nim/starintel_conformance \
-            implementations/nim/src/starintel_conformance.nim
+            implementations/nim/src/starintel_conformance.nim \
+            2>&1 | tee artifacts/nim-build.log
 
       - name: Check generated schema drift
         run: |
@@ -113,7 +116,9 @@ jobs:
 
       - name: Export fixtures
         if: always()
-        run: python -m conformance.runner dump-fixtures --output artifacts/fixtures-v0.9.0.json
+        run: |
+          mkdir -p artifacts
+          python -m conformance.runner dump-fixtures --output artifacts/fixtures-v0.9.0.json
 
       - name: Upload conformance artifacts
         if: always()
