@@ -40,16 +40,9 @@ jobs:
   validate:
     runs-on: ubuntu-latest
     steps:
-      - name: Run diagnostic merge gate
-        shell: bash
-        env:
-          REPOSITORY: ${{ github.repository }}
-          REVISION: ${{ github.ref }}
-        run: |
-          set -o pipefail
-          git init repo >/dev/null
-          cd repo
-          git remote add origin "https://github.com/${REPOSITORY}.git"
-          git fetch --depth=1 origin "${REVISION}" >/dev/null
-          git checkout --detach FETCH_HEAD >/dev/null
-          python3 scripts/validate-for-merge.py 2>&1 | tail -n 25
+      - uses: actions/checkout@v6
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.13"
+      - name: Run mandatory StarIntel merge gate
+        run: python3 scripts/validate-for-merge.py
