@@ -1,0 +1,46 @@
+name: Regenerate research node spec
+
+on:
+  push:
+    branches: [agent/research-node-spec]
+
+permissions:
+  contents: write
+
+jobs:
+  regenerate:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          ref: agent/research-node-spec
+
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.13"
+
+      - name: Update source, fixtures, docs, and generated schema
+        run: python scripts/update-research-node-spec.py
+
+      - name: Verify generated schema imports
+        run: |
+          python -m compileall -q starintel_doc conformance
+          python - <<'PY'
+          from conformance.fixtures import all_fixtures
+          from starintel_doc.spec import TYPE_FIELDS
+
+          assert "research-node" in TYPE_FIELDS
+          assert any(item["fixture_id"] == "research-node.full.v1" for item in all_fixtures())
+          PY
+
+      - name: Commit generated files
+        run: |
+          if git diff --quiet; then
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add starintel_doc/spec.py conformance/fixtures.py docs/starintel-doc-v0.9.0.md schemas/starintel-doc-v0.9.0.schema.json
+          git commit -m "Add research-node object type"
+          git push origin HEAD:agent/research-node-spec
