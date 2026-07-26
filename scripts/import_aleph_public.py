@@ -149,10 +149,23 @@ def entity_document(entity: dict[str, Any], host: str) -> dict[str, Any] | None:
     return document.to_dict()
 
 
+def authorization_value(api_key: str) -> str:
+    value = api_key.strip()
+    if not value:
+        return ""
+    if value.lower().startswith("apikey "):
+        return value
+    return f"ApiKey {value}"
+
+
 def request_json(url: str, api_key: str) -> dict[str, Any]:
-    request = urllib.request.Request(url, headers={"Accept": "application/json", "User-Agent": "starintel-gpt-auto-dig/0.9"})
-    if api_key:
-        request.add_header("Authorization", api_key)
+    request = urllib.request.Request(
+        url,
+        headers={"Accept": "application/json", "User-Agent": "starintel-gpt-auto-dig/0.9"},
+    )
+    authorization = authorization_value(api_key)
+    if authorization:
+        request.add_header("Authorization", authorization)
     with urllib.request.urlopen(request, timeout=60) as response:
         return json.load(response)
 
@@ -162,7 +175,12 @@ def iter_entities(host: str, queries: list[str], collection: str, limit: int, ap
     for query in queries:
         offset = 0
         while emitted < limit:
-            params: dict[str, Any] = {"q": query, "limit": min(100, limit - emitted), "offset": offset}
+            params: dict[str, Any] = {
+                "q": query,
+                "filter:schemata": "Thing",
+                "limit": min(100, limit - emitted),
+                "offset": offset,
+            }
             if collection:
                 params["filter:collection_id"] = collection
             url = f"{host.rstrip('/')}/api/2/entities?{urllib.parse.urlencode(params)}"
@@ -175,8 +193,7 @@ def iter_entities(host: str, queries: list[str], collection: str, limit: int, ap
                 emitted += 1
                 if emitted >= limit:
                     return
-            next_url = payload.get("next")
-            if not next_url:
+            if not payload.get("next"):
                 break
             offset += len(results)
 
