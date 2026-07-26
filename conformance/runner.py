@@ -49,7 +49,16 @@ def semantic_diff(expected: Any, actual: Any, path: str = "$") -> list[dict[str,
     expected_type = type_name(expected)
     actual_type = type_name(actual)
     if expected_type != actual_type:
-        return [{"path": path, "kind": "type_changed", "expected_type": expected_type, "actual_type": actual_type, "expected": expected, "actual": actual}]
+        return [
+            {
+                "path": path,
+                "kind": "type_changed",
+                "expected_type": expected_type,
+                "actual_type": actual_type,
+                "expected": expected,
+                "actual": actual,
+            }
+        ]
     if isinstance(expected, dict):
         changes: list[dict[str, Any]] = []
         expected_keys = set(expected)
@@ -64,7 +73,14 @@ def semantic_diff(expected: Any, actual: Any, path: str = "$") -> list[dict[str,
     if isinstance(expected, list):
         changes = []
         if len(expected) != len(actual):
-            changes.append({"path": path, "kind": "array_length", "expected": len(expected), "actual": len(actual)})
+            changes.append(
+                {
+                    "path": path,
+                    "kind": "array_length",
+                    "expected": len(expected),
+                    "actual": len(actual),
+                }
+            )
         for index, (left, right) in enumerate(zip(expected, actual)):
             changes.extend(semantic_diff(left, right, f"{path}[{index}]"))
         return changes
@@ -129,9 +145,12 @@ def adapter_probe(language: str, command: str, root: Path) -> dict[str, Any]:
 def run_suite(args: argparse.Namespace) -> dict[str, Any]:
     root = Path(__file__).resolve().parents[1]
     commands = parse_adapter_overrides(args.adapter)
-    selected_languages = [language for language in LANGUAGES if language in commands]
-    missing = [language for language in LANGUAGES if language not in commands]
-    probes = {language: adapter_probe(language, commands[language], root) for language in selected_languages}
+    producers = [args.producer] if args.producer else list(LANGUAGES)
+    consumers = [args.consumer] if args.consumer else list(LANGUAGES)
+    required_languages = set(producers) | set(consumers)
+    missing = sorted(language for language in required_languages if language not in commands)
+    probed_languages = [language for language in LANGUAGES if language in commands]
+    probes = {language: adapter_probe(language, commands[language], root) for language in probed_languages}
 
     fixture_values = all_fixtures()
     if args.fixture:
@@ -139,10 +158,7 @@ def run_suite(args: argparse.Namespace) -> dict[str, Any]:
         if not fixture_values:
             raise ValueError(f"fixture not found: {args.fixture}")
 
-    producers = [args.producer] if args.producer else list(LANGUAGES)
-    consumers = [args.consumer] if args.consumer else list(LANGUAGES)
     pair_results: list[dict[str, Any]] = []
-
     for producer in producers:
         for consumer in consumers:
             pair = {"producer": producer, "consumer": consumer, "status": "pass", "failures": []}
@@ -160,25 +176,58 @@ def run_suite(args: argparse.Namespace) -> dict[str, Any]:
             for value in fixture_values:
                 if not value["expected_valid"]:
                     continue
-                request = {"command": "roundtrip", "spec_version": value["spec_version"], "document": value["document"]}
+                request = {
+                    "command": "roundtrip",
+                    "spec_version": value["spec_version"],
+                    "document": value["document"],
+                }
                 produced = call_adapter(commands[producer], request, root)
                 if produced.exit_code != 0 or not produced.response.get("ok"):
                     pair["status"] = "fail"
-                    pair["failures"].append({"fixture_id": value["fixture_id"], "stage": "producer", "exit_code": produced.exit_code, "response": produced.response, "stderr": produced.stderr})
+                    pair["failures"].append(
+                        {
+                            "fixture_id": value["fixture_id"],
+                            "stage": "producer",
+                            "exit_code": produced.exit_code,
+                            "response": produced.response,
+                            "stderr": produced.stderr,
+                        }
+                    )
                     continue
-                consumed = call_adapter(commands[consumer], {**request, "document": produced.response.get("document")}, root)
+                consumed = call_adapter(
+                    commands[consumer],
+                    {**request, "document": produced.response.get("document")},
+                    root,
+                )
                 if consumed.exit_code != 0 or not consumed.response.get("ok"):
                     pair["status"] = "fail"
-                    pair["failures"].append({"fixture_id": value["fixture_id"], "stage": "consumer", "exit_code": consumed.exit_code, "response": consumed.response, "stderr": consumed.stderr})
+                    pair["failures"].append(
+                        {
+                            "fixture_id": value["fixture_id"],
+                            "stage": "consumer",
+                            "exit_code": consumed.exit_code,
+                            "response": consumed.response,
+                            "stderr": consumed.stderr,
+                        }
+                    )
                     continue
                 changes = semantic_diff(value["document"], consumed.response.get("document"))
                 if changes:
                     pair["status"] = "fail"
-                    pair["failures"].append({"fixture_id": value["fixture_id"], "stage": "compare", "diff": changes, "original": value["document"], "produced": produced.response.get("document"), "consumed": consumed.response.get("document")})
+                    pair["failures"].append(
+                        {
+                            "fixture_id": value["fixture_id"],
+                            "stage": "compare",
+                            "diff": changes,
+                            "original": value["document"],
+                            "produced": produced.response.get("document"),
+                            "consumed": consumed.response.get("document"),
+                        }
+                    )
             pair_results.append(pair)
 
     invalid_results: list[dict[str, Any]] = []
-    for language in LANGUAGES:
+    for language in sorted(required_languages):
         item = {"language": language, "status": "pass", "failures": []}
         if language not in commands:
             item["status"] = "not-run"
@@ -188,27 +237,59 @@ def run_suite(args: argparse.Namespace) -> dict[str, Any]:
         for value in fixture_values:
             if value["expected_valid"]:
                 continue
-            response = call_adapter(commands[language], {"command": "validate", "spec_version": value["spec_version"], "document": value["document"]}, root)
+            response = call_adapter(
+                commands[language],
+                {
+                    "command": "validate",
+                    "spec_version": value["spec_version"],
+                    "document": value["document"],
+                },
+                root,
+            )
             expected_exit = 3 if value["expected_error"] == "unsupported_spec_version" else 1
             if response.exit_code != expected_exit or response.response.get("error") != value["expected_error"]:
                 item["status"] = "fail"
-                item["failures"].append({"fixture_id": value["fixture_id"], "expected_error": value["expected_error"], "expected_exit": expected_exit, "actual_exit": response.exit_code, "response": response.response, "stderr": response.stderr})
+                item["failures"].append(
+                    {
+                        "fixture_id": value["fixture_id"],
+                        "expected_error": value["expected_error"],
+                        "expected_exit": expected_exit,
+                        "actual_exit": response.exit_code,
+                        "response": response.response,
+                        "stderr": response.stderr,
+                    }
+                )
         invalid_results.append(item)
 
-    inventories = {language: probes[language]["inventory"] for language in selected_languages if probes[language]["ok"]}
+    inventories = {
+        language: probes[language]["inventory"]
+        for language in required_languages
+        if language in probes and probes[language]["ok"]
+    }
     inventory_failures: list[dict[str, Any]] = []
-    reference = inventories.get("python")
-    if reference is not None:
+    reference_language = "python" if "python" in inventories else next(iter(sorted(inventories)), None)
+    if reference_language is not None:
+        reference = inventories[reference_language]
         for language, inventory in inventories.items():
             changes = semantic_diff(reference, inventory)
             if changes:
-                inventory_failures.append({"language": language, "diff": changes})
+                inventory_failures.append(
+                    {"reference": reference_language, "language": language, "diff": changes}
+                )
 
-    required_dtypes = set(fixture["object_type"] for fixture in fixture_values if fixture["expected_valid"] and fixture["fixture_id"].endswith(".minimal.v1"))
-    coverage_missing = sorted(set(TYPE for TYPE in probes.get("python", {}).get("capabilities", {}).get("object_types", [])) - required_dtypes)
+    required_dtypes = {
+        value["object_type"]
+        for value in fixture_values
+        if value["expected_valid"] and value["fixture_id"].endswith(".minimal.v1")
+    }
+    coverage_reference = probes.get(reference_language or "", {}).get("capabilities", {})
+    coverage_missing = sorted(set(coverage_reference.get("object_types", [])) - required_dtypes)
+    required_probes_ok = all(
+        language in probes and probes[language]["ok"] for language in required_languages
+    )
     ok = (
         not missing
-        and all(probe["ok"] for probe in probes.values())
+        and required_probes_ok
         and all(pair["status"] == "pass" for pair in pair_results)
         and all(item["status"] == "pass" for item in invalid_results)
         and not inventory_failures
@@ -218,15 +299,24 @@ def run_suite(args: argparse.Namespace) -> dict[str, Any]:
         "ok": ok,
         "spec_version": SPEC_VERSION,
         "languages": list(LANGUAGES),
+        "required_languages": sorted(required_languages),
         "missing_adapters": missing,
-        "fixtures": {"total": len(fixture_values), "valid": sum(1 for value in fixture_values if value["expected_valid"]), "invalid": sum(1 for value in fixture_values if not value["expected_valid"]), "coverage_missing": coverage_missing},
+        "fixtures": {
+            "total": len(fixture_values),
+            "valid": sum(1 for value in fixture_values if value["expected_valid"]),
+            "invalid": sum(1 for value in fixture_values if not value["expected_valid"]),
+            "coverage_missing": coverage_missing,
+        },
         "probes": probes,
         "matrix": pair_results,
         "invalid": invalid_results,
         "schema_inventory_failures": inventory_failures,
     }
     REPORT_PATH.parent.mkdir(parents=True, exist_ok=True)
-    REPORT_PATH.write_text(json.dumps(report, ensure_ascii=False, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+    REPORT_PATH.write_text(
+        json.dumps(report, ensure_ascii=False, indent=2, sort_keys=True) + "\n",
+        encoding="utf-8",
+    )
     return report
 
 
@@ -234,7 +324,12 @@ def print_matrix(report: dict[str, Any]) -> None:
     lookup = {(item["producer"], item["consumer"]): item["status"] for item in report["matrix"]}
     print("producer\\consumer " + " ".join(f"{language:>8}" for language in LANGUAGES))
     for producer in LANGUAGES:
-        print(f"{producer:>17} " + " ".join(f"{lookup.get((producer, consumer), 'not-run'):>8}" for consumer in LANGUAGES))
+        print(
+            f"{producer:>17} "
+            + " ".join(
+                f"{lookup.get((producer, consumer), 'not-run'):>8}" for consumer in LANGUAGES
+            )
+        )
 
 
 def build_parser() -> argparse.ArgumentParser:
@@ -271,11 +366,17 @@ def main(argv: list[str] | None = None) -> int:
             print(json.dumps(report, ensure_ascii=False, indent=2, sort_keys=True))
         else:
             print_matrix(report)
-            print(f"ok={str(report['ok']).lower()} spec={report['spec_version']} fixtures={report['fixtures']['total']}")
+            print(
+                f"ok={str(report['ok']).lower()} spec={report['spec_version']} "
+                f"fixtures={report['fixtures']['total']}"
+            )
         return 0 if report["ok"] else 1
     report = run_suite(args)
     print_matrix(report)
-    print(f"ok={str(report['ok']).lower()} spec={report['spec_version']} fixtures={report['fixtures']['total']}")
+    print(
+        f"ok={str(report['ok']).lower()} spec={report['spec_version']} "
+        f"fixtures={report['fixtures']['total']}"
+    )
     return 0 if report["ok"] else 1
 
 
