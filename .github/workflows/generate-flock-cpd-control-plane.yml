@@ -6,6 +6,7 @@ on:
     types: [opened, synchronize, reopened]
     paths:
       - "scripts/.tmp-flock-cpd-control-plane.b64.*"
+      - "scripts/.tmp-flock-cpd-control-plane.transport.sha256"
       - "scripts/.tmp-generate-flock-cpd-control-plane.py"
       - ".github/workflows/generate-flock-cpd-control-plane.yml"
 
@@ -39,7 +40,6 @@ jobs:
           python-version: "3.12"
 
       - name: Generate packet
-        id: generate
         shell: bash
         run: |
           set +e
@@ -70,7 +70,8 @@ jobs:
             scripts/.tmp-flock-cpd-control-plane.b64.00 \
             scripts/.tmp-flock-cpd-control-plane.b64.01 \
             scripts/.tmp-flock-cpd-control-plane.b64.02 \
-            scripts/.tmp-flock-cpd-control-plane.b64.03
+            scripts/.tmp-flock-cpd-control-plane.b64.03 \
+            scripts/.tmp-flock-cpd-control-plane.transport.sha256
 
       - name: Run mandatory merge gate on final tree
         run: python3 scripts/validate-for-merge.py --site
@@ -87,7 +88,8 @@ jobs:
             scripts/.tmp-flock-cpd-control-plane.b64.00 \
             scripts/.tmp-flock-cpd-control-plane.b64.01 \
             scripts/.tmp-flock-cpd-control-plane.b64.02 \
-            scripts/.tmp-flock-cpd-control-plane.b64.03
+            scripts/.tmp-flock-cpd-control-plane.b64.03 \
+            scripts/.tmp-flock-cpd-control-plane.transport.sha256
           git commit -m "Publish Columbus CPD Flock control-plane packet"
           git push origin HEAD:${BRANCH}
           head_sha=$(git rev-parse HEAD)
