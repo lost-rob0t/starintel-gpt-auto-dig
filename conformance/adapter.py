@@ -16,6 +16,12 @@ EXIT_UNSUPPORTED = 3
 
 
 def error_category(message: str) -> str:
+    if "expected constant" in message:
+        if "$.schema_version" in message:
+            return "unsupported_spec_version"
+        if "$.dtype" in message:
+            return "invalid_enum"
+        return "invalid_constant"
     checks = (
         ("missing required field", "missing_required_field"),
         ("undeclared field", "undeclared_field"),
@@ -25,7 +31,6 @@ def error_category(message: str) -> str:
         ("does not match", "pattern_mismatch"),
         ("expected one of", "invalid_enum"),
         ("unknown document type", "unknown_object_type"),
-        ("expected constant", "unsupported_spec_version"),
         ("expected ", "wrong_type"),
     )
     for needle, category in checks:
