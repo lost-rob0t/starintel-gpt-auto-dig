@@ -79,7 +79,7 @@ jobs:
           curl --fail --silent --show-error --location https://beta.quicklisp.org/quicklisp.lisp --output /tmp/quicklisp.lisp
           sbcl --non-interactive \
             --load /tmp/quicklisp.lisp \
-            --eval '(quicklisp-quickstart:install :path #p"~/quicklisp/")' \
+            --eval '(quicklisp-quickstart:install :path (merge-pathnames "quicklisp/" (user-homedir-pathname)))' \
             --eval '(quit)'
           cat >/tmp/install-starintel-deps.lisp <<'LISP'
           (load (merge-pathnames "quicklisp/setup.lisp" (user-homedir-pathname)))
@@ -90,10 +90,8 @@ jobs:
 
       - name: Build Nim adapter
         run: |
-          nimble install --yes --depsOnly --nimbleDir:implementations/nim/.nimble implementations/nim
           nim c -d:release \
             --path:implementations/nim/src \
-            --nimblePath:implementations/nim/.nimble/pkgs2 \
             --out:implementations/nim/starintel_conformance \
             implementations/nim/src/starintel_conformance.nim
 
