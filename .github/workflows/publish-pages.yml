@@ -61,6 +61,7 @@ jobs:
         run: |
           test -s _site/index.html
           test -s _site/search-index.json
+          test -s _site/downloads/starintel-complete-corpus.jsonl
           test -s _site/assets/graph-core.mjs
           test -s _site/assets/graph-explorer.mjs
           test -s _site/assets/graph-render-scaled.mjs
@@ -74,6 +75,8 @@ jobs:
           test -s _site/palantir/graph.json
           test -s _site/palantir/downloads/starintel-documents.jsonl
           test -s .generated/org/palantir/index.org
+          grep -q 'Download complete corpus' _site/index.html
+          grep -q 'downloads/starintel-complete-corpus.jsonl' _site/index.html
           grep -q 'graph-launch-card' _site/palantir/index.html
           grep -q 'graph-explorer.mjs' _site/palantir/graph.html
           grep -q 'documents.json' _site/palantir/documents.html
@@ -88,16 +91,23 @@ jobs:
           assert all("reviewed" in node for node in graph["nodes"])
           assert all("reviewed" in edge for edge in graph["edges"])
           assert any(
-              edge["source"] == "starintel:person:alex-karp"
-              and edge["target"] == "starintel:org:palantir-technologies-inc"
-              and edge["label"] == "founded"
-              for edge in graph["edges"]
+            edge["source"] == "starintel:person:alex-karp"
+            and edge["target"] == "starintel:org:palantir-technologies-inc"
+            and edge["label"] == "founded"
+            for edge in graph["edges"]
           )
           documents = json.loads(Path("_site/palantir/documents.json").read_text())
           assert documents
           assert all(record["review"] in {"reviewed", "unreviewed"} for record in documents)
           search = json.loads(Path("_site/search-index.json").read_text())
           assert any(record["id"] == "starintel:org:palantir-technologies-inc" for record in search)
+
+          corpus_path = Path("_site/downloads/starintel-complete-corpus.jsonl")
+          corpus = [json.loads(line) for line in corpus_path.read_text().splitlines() if line.strip()]
+          assert corpus
+          assert len({document["_id"] for document in corpus}) == len(corpus)
+          assert corpus == sorted(corpus, key=lambda document: document["_id"])
+          assert len(corpus) <= len(search)
           PY
 
       - name: Configure Pages
