@@ -82,14 +82,7 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add "${PACKET}" \
-            .github/workflows/generate-flock-cpd-control-plane.yml \
-            scripts/.tmp-generate-flock-cpd-control-plane.py \
-            scripts/.tmp-flock-cpd-control-plane.b64.00 \
-            scripts/.tmp-flock-cpd-control-plane.b64.01 \
-            scripts/.tmp-flock-cpd-control-plane.b64.02 \
-            scripts/.tmp-flock-cpd-control-plane.b64.03 \
-            scripts/.tmp-flock-cpd-control-plane.transport.sha256
+          git add "${PACKET}"
           git commit -m "Publish Columbus CPD Flock control-plane packet"
           git push origin HEAD:${BRANCH}
           head_sha=$(git rev-parse HEAD)
