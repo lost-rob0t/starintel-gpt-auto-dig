@@ -16,6 +16,8 @@ EXIT_UNSUPPORTED = 3
 
 
 def error_category(message: str) -> str:
+    if "$.schema_version:" in message and "expected" in message:
+        return "unsupported_spec_version"
     if "expected constant" in message:
         if "$.schema_version" in message:
             return "unsupported_spec_version"
