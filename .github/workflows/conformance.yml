@@ -101,7 +101,16 @@ jobs:
       - name: Check generated schema drift
         run: |
           mkdir -p artifacts
-          python -m starintel_doc.cli schema --output artifacts/generated-starintel-doc-v0.9.0.schema.json
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          from starintel_doc.spec import document_schema
+
+          Path("artifacts/generated-starintel-doc-v0.9.0.schema.json").write_text(
+              json.dumps(document_schema(), ensure_ascii=False, indent=2, sort_keys=True) + "\n",
+              encoding="utf-8",
+          )
+          PY
           if ! cmp schemas/starintel-doc-v0.9.0.schema.json artifacts/generated-starintel-doc-v0.9.0.schema.json; then
             diff -u schemas/starintel-doc-v0.9.0.schema.json artifacts/generated-starintel-doc-v0.9.0.schema.json \
               > artifacts/schema-drift.diff || true
