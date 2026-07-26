@@ -32,3 +32,7 @@ This packet goes beneath camera counts and maps the Columbus Flock control plane
 ## Evidence boundary
 
 Vendor statements describe intended controls but are not treated as proof of Columbus configuration. News-reported audit totals remain claims until raw records and methodology are obtained. Unknown administrators and the officer under inquiry are not guessed.
+
+## Validation
+
+The packet was generated and validated against the repository-local StarIntel v0.9.0 implementation. The full merge gate and research-site build are required again on the final pull-request head before merge.
