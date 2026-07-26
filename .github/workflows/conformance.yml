@@ -22,28 +22,28 @@ jobs:
         uses: actions/checkout@v6
         with:
           repository: lost-rob0t/starintel-doc
-          ref: agent/starintel-v090-conformance
+          ref: 1b53ee39528e92625f1fcd4971a4193c033dd584
           path: implementations/python
 
       - name: Checkout JavaScript implementation
         uses: actions/checkout@v6
         with:
           repository: lost-rob0t/starintel_doc.js
-          ref: agent/starintel-v090-conformance
+          ref: b5dc62d28388b6ceb6db52e27eaa0622fda37ddb
           path: implementations/js
 
       - name: Checkout Common Lisp implementation
         uses: actions/checkout@v6
         with:
           repository: lost-rob0t/star-cl
-          ref: agent/starintel-v090-conformance
+          ref: 5132847ec5d6f2ac286b35d295958cdb10baaf72
           path: implementations/cl
 
       - name: Checkout Nim implementation
         uses: actions/checkout@v6
         with:
           repository: lost-rob0t/starintel-doc.nim
-          ref: agent/starintel-v090-conformance
+          ref: fc08a9c8fd1eaf524baba2ac918414c0e4874ab5
           path: implementations/nim
 
       - uses: actions/setup-python@v6
