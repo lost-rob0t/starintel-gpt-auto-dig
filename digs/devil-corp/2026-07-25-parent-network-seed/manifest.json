@@ -1,0 +1,38 @@
+{
+  "dataset": "devilcorp-parent-network-seed-2026-07-25",
+  "generated_at": "2026-07-25T20:15:00-04:00",
+  "schema_version": "0.9.0",
+  "record_count": 6,
+  "counts": {
+    "org": 4,
+    "investigation-target": 1,
+    "research-pass": 1
+  },
+  "parent_networks": [
+    "Smart Circle International",
+    "Cydcor",
+    "Credico",
+    "Appco Group"
+  ],
+  "uk_office_leads": 130,
+  "uk_seed_parent_counts": {
+    "Credico": 79,
+    "Appco": 51
+  },
+  "uk_seed_status_counts": {
+    "Active": 111,
+    "Active - Proposal to Strike off": 15,
+    "Liquidation": 4
+  },
+  "seed_sha256": "ac5e95764181c365ab83a43b52b1b3642e9fb07c7bead2ba32f20da40cac78fd",
+  "starintel_documents_sha256": "cd5c83c0484767fcd0cd8fc81f3d7960e671c21a3abf92c30415595083b29e66",
+  "evidence_policy": {
+    "official_company_pages": "self-description",
+    "court_records": "high-confidence allegations, procedure, findings, and outcomes",
+    "reddit": "lower-confidence testimony and discovery leads",
+    "uploaded_office_labels": "unverified investigation leads"
+  },
+  "validation": {
+    "canonical_repo_validator": "pending GitHub checks"
+  }
+}
