@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import json
-import re
 import sys
 from copy import deepcopy
 from typing import Any
@@ -126,8 +125,9 @@ def main() -> int:
         return EXIT_UNSUPPORTED
     except ValidationError as exc:
         message = str(exc)
-        print(json.dumps({"ok": False, "error": error_category(message), "message": message}, ensure_ascii=False, separators=(",", ":"), sort_keys=True))
-        return EXIT_REJECTED
+        category = error_category(message)
+        print(json.dumps({"ok": False, "error": category, "message": message}, ensure_ascii=False, separators=(",", ":"), sort_keys=True))
+        return EXIT_UNSUPPORTED if category == "unsupported_spec_version" else EXIT_REJECTED
     except Exception as exc:  # adapter boundary
         print(f"python adapter failure: {exc}", file=sys.stderr)
         print(json.dumps({"ok": False, "error": "adapter_failure", "message": str(exc)}, ensure_ascii=False, separators=(",", ":"), sort_keys=True))
