@@ -36,7 +36,7 @@ jobs:
         uses: actions/checkout@v6
         with:
           repository: lost-rob0t/star-cl
-          ref: 5132847ec5d6f2ac286b35d295958cdb10baaf72
+          ref: 20d8b560e6fbed366f56b636448302a3e7238506
           path: implementations/cl
 
       - name: Checkout Nim implementation
