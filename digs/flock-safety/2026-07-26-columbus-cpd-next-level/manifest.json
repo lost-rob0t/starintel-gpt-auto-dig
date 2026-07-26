@@ -1,0 +1,33 @@
+{
+  "counts": {
+    "analysis": 3,
+    "claim": 1,
+    "contract": 2,
+    "event": 5,
+    "grant": 2,
+    "investigation-target": 13,
+    "org": 13,
+    "person": 11,
+    "policy": 4,
+    "procurement": 1,
+    "relation": 15,
+    "research-pass": 1
+  },
+  "dataset": "flock-safety-columbus-cpd-next-level-2026-07-26",
+  "files": [
+    "README.md",
+    "sources.md",
+    "starintel-documents.jsonl"
+  ],
+  "generated_at": "2026-07-26T12:00:00-04:00",
+  "hash_algorithm": "sha256",
+  "schema_version": "0.9.0",
+  "starintel_documents_sha256": "822533e3ec66c9fac63185c6d1760857ec77a52fd6d7be2ce430f1dc7474dfe0",
+  "total": 71,
+  "validation": {
+    "related_id_references": "passed",
+    "relation_endpoints": "passed",
+    "starintel_doc_validate_document": "passed",
+    "unique_ids": "passed"
+  }
+}
