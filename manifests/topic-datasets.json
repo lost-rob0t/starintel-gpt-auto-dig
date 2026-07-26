@@ -1,0 +1,107 @@
+{
+  "version": 1,
+  "excluded_source_datasets": [
+    "daily"
+  ],
+  "topics": [
+    {
+      "id": "wef",
+      "title": "WEF",
+      "subtitle": "World Economic Forum, Global Shapers, Young Global Leaders, people, organizations, funding, and local links",
+      "match": {
+        "targets": [
+          "wef",
+          "world-economic-forum",
+          "global-shapers",
+          "young-global-leaders"
+        ],
+        "datasets": [
+          "wef",
+          "world-economic-forum",
+          "global-shapers",
+          "young-global-leaders"
+        ],
+        "terms": [
+          "world economic forum",
+          "global shapers",
+          "young global leaders"
+        ]
+      }
+    },
+    {
+      "id": "ohio",
+      "title": "Ohio",
+      "subtitle": "Ohio state and local government, Columbus, public bodies, contractors, lobbying, and connected organizations",
+      "match": {
+        "targets": [
+          "ohio",
+          "columbus",
+          "franklin-county",
+          "cota",
+          "jobsohio"
+        ],
+        "datasets": [
+          "ohio",
+          "columbus",
+          "franklin-county",
+          "cota",
+          "jobsohio"
+        ],
+        "terms": [
+          "ohio",
+          "columbus",
+          "franklin county",
+          "state of ohio"
+        ]
+      }
+    },
+    {
+      "id": "offshore-leaks",
+      "title": "Offshore Leaks",
+      "subtitle": "ICIJ Offshore Leaks, Paradise Papers, Panama Papers, Bahamas Leaks, and Pandora Papers records",
+      "match": {
+        "targets": [
+          "offshore-leaks",
+          "paradise-papers",
+          "panama-papers",
+          "bahamas-leaks",
+          "pandora-papers"
+        ],
+        "datasets": [
+          "offshore-leaks",
+          "paradise-papers",
+          "panama-papers",
+          "bahamas-leaks",
+          "pandora-papers"
+        ],
+        "terms": [
+          "icij offshore leaks",
+          "paradise papers",
+          "panama papers",
+          "bahamas leaks",
+          "pandora papers"
+        ]
+      }
+    },
+    {
+      "id": "occrp-aleph",
+      "title": "OCCRP Aleph",
+      "subtitle": "Public or authorized FollowTheMoney entities imported from OCCRP Aleph",
+      "match": {
+        "targets": [
+          "occrp",
+          "aleph"
+        ],
+        "datasets": [
+          "occrp",
+          "aleph",
+          "occrp-aleph"
+        ],
+        "terms": [
+          "occrp aleph",
+          "followthemoney"
+        ]
+      }
+    }
+  ]
+}

@@ -10,6 +10,7 @@ from urllib.parse import quote
 from .dashboard import annotate_graph, dashboard_page, document_index, documents_page, graph_page
 from .model import discover, graph, org_index, render_org, slug
 from .render import node, page, source_inventory
+from .topic_datasets import excluded_source_dataset, load_topic_config, topics_for_document
 
 
 def themed(markup: str, prefix: str) -> str:
@@ -24,9 +25,118 @@ def themed(markup: str, prefix: str) -> str:
     return markup.replace(stylesheet, stylesheet + additions, 1)
 
 
+def _latest_documents(documents: list[dict]) -> list[dict]:
+    by_id: dict[str, dict] = {}
+    for doc in documents:
+        old = by_id.get(doc["_id"])
+        if old is None or str(doc["date_updated"]) >= str(old["date_updated"]):
+            by_id[doc["_id"]] = doc
+    return sorted(by_id.values(), key=lambda doc: doc["_id"])
+
+
+def _write_topic_dataset(
+    *,
+    topic_id: str,
+    title: str,
+    subtitle: str,
+    docs: list[dict],
+    source_targets: set[str],
+    source_datasets: set[str],
+    output: Path,
+    org_output: Path,
+) -> dict[str, object]:
+    target = f"dataset-{slug(topic_id)}"
+    target_out = output / target
+    node_out = target_out / "nodes"
+    org_out = org_output / target
+    public_org = output / "org" / target
+    downloads = target_out / "downloads"
+    for directory in (target_out, node_out, org_out, public_org, downloads):
+        directory.mkdir(parents=True, exist_ok=True)
+
+    docs = _latest_documents(docs)
+    known = {doc["_id"] for doc in docs}
+    topic_config = {
+        "packets": {
+            target: {
+                "title": title,
+                "subtitle": subtitle,
+            }
+        }
+    }
+    network = annotate_graph(docs, graph(docs))
+    (target_out / "graph.json").write_text(json.dumps(network, ensure_ascii=False, separators=(",", ":")))
+    (target_out / "documents.json").write_text(json.dumps(document_index(docs), ensure_ascii=False, separators=(",", ":")))
+    (target_out / "index.html").write_text(themed(dashboard_page(target, docs, topic_config, network), "../"))
+    (target_out / "graph.html").write_text(themed(graph_page(target, topic_config, network), "../"))
+    (target_out / "documents.html").write_text(themed(documents_page(target, docs, topic_config), "../"))
+    (target_out / "sources.html").write_text(themed(source_inventory(target, docs), "../"))
+
+    index = org_index(title, docs)
+    (org_out / "index.org").write_text(index)
+    (public_org / "index.org").write_text(index)
+    canonical = "".join(json.dumps(doc, ensure_ascii=False, separators=(",", ":")) + "\n" for doc in docs)
+    (downloads / "starintel-documents.jsonl").write_text(canonical)
+    manifest = {
+        "topic_dataset": topic_id,
+        "title": title,
+        "record_count": len(docs),
+        "source_targets": sorted(source_targets),
+        "source_datasets": sorted(source_datasets),
+    }
+    (downloads / "topic-manifest.json").write_text(json.dumps(manifest, ensure_ascii=False, indent=2) + "\n")
+    (downloads / "research-history.json").write_text(json.dumps([manifest], ensure_ascii=False, indent=2) + "\n")
+
+    for doc in docs:
+        name = slug(doc["_id"])
+        org = render_org(doc, known)
+        (org_out / f"{name}.org").write_text(org)
+        (public_org / f"{name}.org").write_text(org)
+        (node_out / f"{name}.html").write_text(themed(node(doc, target, known), "../../"))
+
+    return {
+        "dataset": topic_id,
+        "title": title,
+        "record_count": len(docs),
+        "source_target_count": len(source_targets),
+        "source_dataset_count": len(source_datasets),
+        "source_targets": sorted(source_targets),
+        "source_datasets": sorted(source_datasets),
+        "updated_through": max(str(doc.get("date_updated", "")) for doc in docs),
+        "url": f"{target}/index.html",
+        "download": f"{target}/downloads/starintel-documents.jsonl",
+    }
+
+
+def _topic_card(row: dict[str, object]) -> str:
+    url = html.escape(str(row["url"]))
+    title = html.escape(str(row["title"]))
+    updated = html.escape(str(row["updated_through"]))
+    return (
+        f'<article><span>{int(row["record_count"]):,} records · {int(row["source_target_count"]):,} targets</span>'
+        f'<h2><a href="{url}">{title}</a></h2>'
+        f'<p>{int(row["source_dataset_count"]):,} source datasets · updated through {updated}</p>'
+        f'<a href="{url}">Open merged dataset →</a></article>'
+    )
+
+
+def _source_dataset_card(row: dict[str, object]) -> str:
+    url = html.escape(str(row["url"]))
+    target_title = html.escape(str(row["target_title"]))
+    dataset = html.escape(str(row["dataset"]))
+    updated = html.escape(str(row["updated_through"]))
+    return (
+        f'<article><span>{int(row["record_count"]):,} records · {target_title}</span>'
+        f'<h2><a href="{url}">{dataset}</a></h2>'
+        f'<p>Updated through {updated}</p>'
+        f'<a href="{url}">Browse source dataset →</a></article>'
+    )
+
+
 def build_site(input_root: Path, output: Path, org_output: Path, config_path: Path, assets: Path) -> None:
     packets = discover(input_root)
     config = json.loads(config_path.read_text(encoding="utf-8")) if config_path.exists() else {}
+    topic_config = load_topic_config(config_path.parent / "manifests" / "topic-datasets.json")
     for directory in (output, org_output):
         if directory.exists():
             shutil.rmtree(directory)
@@ -55,15 +165,14 @@ def build_site(input_root: Path, output: Path, org_output: Path, config_path: Pa
     cards = []
     dataset_rows: list[dict[str, object]] = []
     search = []
+    topic_documents: dict[str, dict[str, dict]] = defaultdict(dict)
+    topic_metadata: dict[str, dict[str, str]] = {}
+    topic_targets: dict[str, set[str]] = defaultdict(set)
+    topic_sources: dict[str, set[str]] = defaultdict(set)
+
     for target, target_packets in sorted(grouped.items()):
-        by_id = {}
-        for item in target_packets:
-            for doc in item.documents:
-                old = by_id.get(doc["_id"])
-                if old is None or str(doc["date_updated"]) >= str(old["date_updated"]):
-                    by_id[doc["_id"]] = doc
-        docs = sorted(by_id.values(), key=lambda doc: doc["_id"])
-        known = set(by_id)
+        docs = _latest_documents([doc for item in target_packets for doc in item.documents])
+        known = {doc["_id"] for doc in docs}
         target_out = output / target
         node_out = target_out / "nodes"
         org_out = org_output / target
@@ -83,9 +192,6 @@ def build_site(input_root: Path, output: Path, org_output: Path, config_path: Pa
         (org_out / "index.org").write_text(index)
         (public_org / "index.org").write_text(index)
 
-        # The public download is the merged target history, not merely the newest
-        # incremental packet. This keeps append-only agent research passes from
-        # hiding the underlying evidence corpus.
         canonical = "".join(json.dumps(doc, ensure_ascii=False, separators=(",", ":")) + "\n" for doc in docs)
         (downloads / "starintel-documents.jsonl").write_text(canonical)
         history = [
@@ -105,15 +211,26 @@ def build_site(input_root: Path, output: Path, org_output: Path, config_path: Pa
             (org_out / f"{name}.org").write_text(org)
             (public_org / f"{name}.org").write_text(org)
             (node_out / f"{name}.html").write_text(themed(node(doc, target, known), "../../"))
-            search.append({
-                "target": target,
-                "id": doc["_id"],
-                "title": doc.get("title") or doc.get("name") or doc["_id"],
-                "dtype": doc["dtype"],
-                "dataset": doc.get("dataset", ""),
-                "summary": doc.get("summary") or doc.get("description", ""),
-                "url": f"{target}/nodes/{name}.html",
-            })
+            search.append(
+                {
+                    "target": target,
+                    "id": doc["_id"],
+                    "title": doc.get("title") or doc.get("name") or doc["_id"],
+                    "dtype": doc["dtype"],
+                    "dataset": doc.get("dataset", ""),
+                    "summary": doc.get("summary") or doc.get("description", ""),
+                    "url": f"{target}/nodes/{name}.html",
+                }
+            )
+            for topic in topics_for_document(target, doc, topic_config):
+                topic_id = topic["id"]
+                old = topic_documents[topic_id].get(doc["_id"])
+                if old is None or str(doc["date_updated"]) >= str(old["date_updated"]):
+                    topic_documents[topic_id][doc["_id"]] = doc
+                topic_metadata[topic_id] = topic
+                topic_targets[topic_id].add(target)
+                if not excluded_source_dataset(doc.get("dataset"), topic_config):
+                    topic_sources[topic_id].add(str(doc.get("dataset") or "unknown"))
 
         cfg = config.get("packets", {}).get(target, {})
         target_title = cfg.get("title") or target.replace("-", " ").title()
@@ -124,40 +241,66 @@ def build_site(input_root: Path, output: Path, org_output: Path, config_path: Pa
 
         datasets: dict[str, list[dict]] = defaultdict(list)
         for doc in docs:
+            if excluded_source_dataset(doc.get("dataset"), topic_config):
+                continue
             datasets[str(doc.get("dataset") or "unknown")].append(doc)
         for dataset, dataset_docs in sorted(datasets.items()):
-            dataset_rows.append({
-                "dataset": dataset,
-                "target": target,
-                "target_title": target_title,
-                "record_count": len(dataset_docs),
-                "updated_through": max(str(doc.get("date_updated", "")) for doc in dataset_docs),
-                "url": f"{target}/documents.html?dataset={quote(dataset, safe='')}",
-            })
+            dataset_rows.append(
+                {
+                    "dataset": dataset,
+                    "target": target,
+                    "target_title": target_title,
+                    "record_count": len(dataset_docs),
+                    "updated_through": max(str(doc.get("date_updated", "")) for doc in dataset_docs),
+                    "url": f"{target}/documents.html?dataset={quote(dataset, safe='')}",
+                }
+            )
+
+    topic_rows = []
+    for topic_id, by_id in sorted(topic_documents.items()):
+        metadata = topic_metadata[topic_id]
+        topic_rows.append(
+            _write_topic_dataset(
+                topic_id=topic_id,
+                title=metadata["title"],
+                subtitle=metadata["subtitle"],
+                docs=list(by_id.values()),
+                source_targets=topic_targets[topic_id],
+                source_datasets=topic_sources[topic_id],
+                output=output,
+                org_output=org_output,
+            )
+        )
 
     dataset_rows.sort(key=lambda row: (str(row["dataset"]).lower(), str(row["target"])))
+    topic_rows.sort(key=lambda row: str(row["title"]).lower())
     (output / "datasets.json").write_text(json.dumps(dataset_rows, ensure_ascii=False, separators=(",", ":")))
+    (output / "topic-datasets.json").write_text(json.dumps(topic_rows, ensure_ascii=False, separators=(",", ":")))
     (output / "search-index.json").write_text(json.dumps(search, ensure_ascii=False, separators=(",", ":")))
 
-    dataset_cards = "".join(
-        f'<article><span>{int(row["record_count"]):,} records · {html.escape(str(row["target_title"]))}</span>'
-        f'<h2><a href="{html.escape(str(row["url"]))}">{html.escape(str(row["dataset"]))}</a></h2>'
-        f'<p>Updated through {html.escape(str(row["updated_through"]))}</p>'
-        f'<a href="{html.escape(str(row["url"]))}">Browse dataset →</a></article>'
-        for row in dataset_rows
-    )
+    topic_cards = "".join(_topic_card(row) for row in topic_rows)
+    dataset_cards = "".join(_source_dataset_card(row) for row in dataset_rows)
     body = (
         "<h1>StarIntel GPT Auto Dig</h1>"
         '<p class="lede">Source-backed research transformed into dashboards, Org-roam nodes, source inventories, and progressive graph explorers.</p>'
-        '<div class="notice"><strong>Canonical-data rule:</strong> only StarIntel packets are committed. Generated dashboards default to reviewed records while preserving explicit access to unreviewed material.</div>'
+        '<div class="notice"><strong>Dataset rule:</strong> topical datasets merge related research across packets. Source datasets remain available. The obsolete daily dataset is excluded from the generated catalog.</div>'
         '<section class="stats dashboard-stats">'
         f'<div><strong>{len(grouped):,}</strong><span>research targets</span></div>'
-        f'<div><strong>{len(dataset_rows):,}</strong><span>datasets</span></div>'
+        f'<div><strong>{len(topic_rows):,}</strong><span>topic datasets</span></div>'
+        f'<div><strong>{len(dataset_rows):,}</strong><span>source datasets</span></div>'
         f'<div><strong>{len(search):,}</strong><span>canonical records</span></div>'
-        '</section>'
-        '<section><div class="section-head"><div><h2>Research targets</h2><p>Combined dashboards grouped by target.</p></div></div>'
-        '<div class="packets">' + "".join(cards) + "</div></section>"
-        '<section id="datasets"><div class="section-head"><div><h2>All datasets</h2><p>Every dataset discovered from canonical StarIntel records.</p></div>'
-        '<a href="datasets.json">Dataset index JSON →</a></div><div class="packets dataset-catalog">' + dataset_cards + "</div></section>"
+        "</section>"
+        '<section id="topic-datasets"><div class="section-head"><div><h2>Topic datasets</h2><p>Merged by subject across all matching packets and source datasets.</p></div>'
+        '<a href="topic-datasets.json">Topic index JSON →</a></div><div class="packets dataset-catalog">'
+        + topic_cards
+        + "</div></section>"
+        '<section><div class="section-head"><div><h2>Research targets</h2><p>Original packet dashboards remain intact.</p></div></div>'
+        '<div class="packets">'
+        + "".join(cards)
+        + "</div></section>"
+        '<section id="datasets"><div class="section-head"><div><h2>Source datasets</h2><p>Original datasets, except the removed daily bucket.</p></div>'
+        '<a href="datasets.json">Source index JSON →</a></div><div class="packets dataset-catalog">'
+        + dataset_cards
+        + "</div></section>"
     )
     (output / "index.html").write_text(themed(page(config.get("site_title", "StarIntel GPT Auto Dig"), body), ""))
