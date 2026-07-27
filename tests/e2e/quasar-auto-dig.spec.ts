@@ -45,6 +45,7 @@ test("runs a complete local Auto-Dig investigation through embedded Quasar", asy
   const quasar = page.frameLocator("#quasar-frame");
 
   await expect(quasar.getByText("Auto-Dig graph operator")).toBeVisible();
+  await expect(quasar.getByText("Loaded Auto-Dig dataset complete-corpus")).toBeVisible();
   await quasar.getByRole("link", { name: "Add document" }).click();
   await quasar.getByRole("button", { name: "Inspect JSON" }).click();
   await quasar.getByLabel("Complete document JSON").fill(JSON.stringify(localDocument, null, 2));
@@ -74,7 +75,7 @@ test("runs a complete local Auto-Dig investigation through embedded Quasar", asy
   await quasar.getByPlaceholder("Tip title").fill("E2E related tip");
   await quasar.getByPlaceholder("Tip contents").fill("Follow up on the persisted E2E finding.");
   await quasar.getByRole("button", { name: "Save local tip" }).click();
-  await expect(quasar.getByRole("heading", { name: "E2E related tip" })).toBeVisible();
+  await expect(quasar.getByRole("heading", { name: "E2E related tip", level: 2 })).toBeVisible();
   await quasar.getByRole("button", { name: "Convert to target" }).click();
   await expect(quasar.getByText("Tip converted to a local Auto-Dig target.")).toBeVisible();
   await quasar.getByRole("button", { name: "Start Auto-Dig" }).click();
@@ -83,9 +84,10 @@ test("runs a complete local Auto-Dig investigation through embedded Quasar", asy
 
   await page.reload();
   await expect(quasar.getByText("Auto-Dig graph operator")).toBeVisible();
+  await expect(quasar.getByText("Loaded Auto-Dig dataset complete-corpus")).toBeVisible();
   await page.getByRole("button", { name: "Documents" }).click();
   await expect(quasar.getByText("E2E local finding")).toBeVisible();
   await page.getByRole("button", { name: "Tipline" }).click();
-  await expect(quasar.getByText("E2E related tip")).toBeVisible();
+  await expect(quasar.getByRole("heading", { name: "E2E related tip", level: 2 })).toBeVisible();
   await expect(quasar.getByRole("heading", { name: "Generated findings" })).toBeVisible();
 });
