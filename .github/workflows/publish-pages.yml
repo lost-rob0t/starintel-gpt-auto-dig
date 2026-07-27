@@ -10,6 +10,8 @@ on:
       - "db/**"
       - "scripts/**"
       - "tests/**"
+      - "docs/quasar-integration.md"
+      - "quasar-fork.lock.json"
       - "site-assets/**"
       - "site-config.json"
       - ".github/workflows/publish-pages.yml"
@@ -22,6 +24,8 @@ on:
       - "db/**"
       - "scripts/**"
       - "tests/**"
+      - "docs/quasar-integration.md"
+      - "quasar-fork.lock.json"
       - "site-assets/**"
       - "site-config.json"
       - ".github/workflows/publish-pages.yml"
@@ -46,8 +50,49 @@ jobs:
         with:
           python-version: "3.13"
 
+      - name: Read pinned Quasar fork
+        id: quasar-pin
+        run: |
+          test -s quasar-fork.lock.json
+          echo "fork=$(python3 -c 'import json; print(json.load(open("quasar-fork.lock.json"))["quasar_fork_commit"])')" >> "$GITHUB_OUTPUT"
+          echo "upstream=$(python3 -c 'import json; print(json.load(open("quasar-fork.lock.json"))["quasar_upstream_commit"])')" >> "$GITHUB_OUTPUT"
+          echo "auto_dig=$(python3 -c 'import json; print(json.load(open("quasar-fork.lock.json"))["auto_dig_version"])')" >> "$GITHUB_OUTPUT"
+          echo "schema=$(python3 -c 'import json; print(json.load(open("quasar-fork.lock.json"))["starintel_schema_version"])')" >> "$GITHUB_OUTPUT"
+
+      - name: Check out pinned Quasar fork
+        uses: actions/checkout@v6
+        with:
+          repository: lost-rob0t/auto-dig-quasar
+          ref: ${{ steps.quasar-pin.outputs.fork }}
+          path: .quasar-fork
+
+      - name: Set up Node
+        uses: actions/setup-node@v6
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: .quasar-fork/package-lock.json
+
+      - name: Validate and build Quasar
+        working-directory: .quasar-fork
+        env:
+          VITE_BASE_PATH: /quasar/app/
+          VITE_AUTODIG_CORRECTION_REPO: lost-rob0t/starintel-gpt-auto-dig
+          VITE_QUASAR_FORK_COMMIT: ${{ steps.quasar-pin.outputs.fork }}
+          VITE_QUASAR_UPSTREAM_COMMIT: ${{ steps.quasar-pin.outputs.upstream }}
+          VITE_AUTODIG_VERSION: ${{ steps.quasar-pin.outputs.auto_dig }}
+          VITE_STARINTEL_SCHEMA_VERSION: ${{ steps.quasar-pin.outputs.schema }}
+        run: |
+          npm ci
+          npm run check
+          npm test
+          npm run build
+
       - name: Run mandatory StarIntel merge gate
         run: python3 scripts/validate-for-merge.py
+
+      - name: Test Quasar host integration
+        run: python3 -m unittest tests.test_auto_dig_quasar
 
       - name: Generate research explorer
         run: |
@@ -56,6 +101,17 @@ jobs:
             --db db \
             --output _site \
             --org-output .generated/org
+
+      - name: Install Quasar graph editor
+        run: |
+          python3 scripts/build-auto-dig-quasar.py \
+            --auto-dig-root . \
+            --site-dir _site \
+            --quasar-dist .quasar-fork/dist \
+            --quasar-fork-commit "${{ steps.quasar-pin.outputs.fork }}" \
+            --quasar-upstream-commit "${{ steps.quasar-pin.outputs.upstream }}" \
+            --auto-dig-version "${{ steps.quasar-pin.outputs.auto_dig }}" \
+            --starintel-schema-version "${{ steps.quasar-pin.outputs.schema }}"
 
       - name: Validate generated artifacts
         run: |
@@ -67,6 +123,10 @@ jobs:
           test -s _site/assets/graph-render-scaled.mjs
           test -s _site/assets/dashboard.js
           test -s _site/assets/explorer.css
+          test -s _site/quasar/index.html
+          test -s _site/quasar/host.js
+          test -s _site/quasar/version.json
+          test -s _site/quasar/app/index.html
           test -s _site/larry-fink/index.html
           test -s _site/palantir/index.html
           test -s _site/palantir/graph.html
@@ -78,8 +138,11 @@ jobs:
           grep -q 'Download complete corpus' _site/index.html
           grep -q 'downloads/starintel-complete-corpus.jsonl' _site/index.html
           grep -q 'graph-launch-card' _site/palantir/index.html
-          grep -q 'graph-explorer.mjs' _site/palantir/graph.html
+          grep -q '../quasar/index.html?dataset=palantir' _site/palantir/graph.html
           grep -q 'documents.json' _site/palantir/documents.html
+          grep -q 'GRAPH_ROUTE = "/graph"' _site/quasar/host.js
+          ! grep -q '<header' _site/quasar/index.html
+          ! grep -q 'data-quasar-route' _site/quasar/index.html
           python - <<'PY'
           import json
           from pathlib import Path
@@ -91,10 +154,10 @@ jobs:
           assert all("reviewed" in node for node in graph["nodes"])
           assert all("reviewed" in edge for edge in graph["edges"])
           assert any(
-            edge["source"] == "starintel:person:alex-karp"
-            and edge["target"] == "starintel:org:palantir-technologies-inc"
-            and edge["label"] == "founded"
-            for edge in graph["edges"]
+              edge["source"] == "starintel:person:alex-karp"
+              and edge["target"] == "starintel:org:palantir-technologies-inc"
+              and edge["label"] == "founded"
+              for edge in graph["edges"]
           )
           documents = json.loads(Path("_site/palantir/documents.json").read_text())
           assert documents
@@ -108,6 +171,10 @@ jobs:
           assert len({document["_id"] for document in corpus}) == len(corpus)
           assert corpus == sorted(corpus, key=lambda document: document["_id"])
           assert len(corpus) <= len(search)
+
+          version = json.loads(Path("_site/quasar/version.json").read_text())
+          lock = json.loads(Path("quasar-fork.lock.json").read_text())
+          assert version == lock
           PY
 
       - name: Configure Pages
