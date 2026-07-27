@@ -1,0 +1,42 @@
+name: Generate Lattice AMI US government depth-4 records
+
+on:
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: write
+
+jobs:
+  generate:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          ref: ${{ github.event.pull_request.head.ref }}
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.13"
+      - name: Decode research packet
+        shell: bash
+        run: |
+          mkdir -p digs/wef/2026-07-27-lattice-ami-us-government-capture-risk-depth-4
+          base64 -d .github/depth4-payload/lattice-ami-us-gov-depth4.tar.gz.b64 > /tmp/depth4.tar.gz
+          test "$(sha256sum /tmp/depth4.tar.gz | cut -d' ' -f1)" = "bb77d8a7075298e75b1f0c5c70e6d7a06c504a8d48d4b71ba052e7c2730d1a79"
+          tar -xzf /tmp/depth4.tar.gz -C digs/wef/2026-07-27-lattice-ami-us-government-capture-risk-depth-4
+          test "$(sha256sum digs/wef/2026-07-27-lattice-ami-us-government-capture-risk-depth-4/starintel-documents.jsonl | cut -d' ' -f1)" = "18be23f9c5784e143bc57ea6061fdffb9e10c38ef4686f93cc7db684ca81422f"
+      - name: Run mandatory merge gate
+        run: python3 scripts/validate-for-merge.py --site
+      - name: Commit generated research packet
+        shell: bash
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add digs/wef/2026-07-27-lattice-ami-us-government-capture-risk-depth-4
+          if git diff --cached --quiet; then
+            echo "No generated changes"
+            exit 0
+          fi
+          git commit -m "data: add Lattice AMI US government capture-risk depth-4 records"
+          git push origin HEAD:${{ github.event.pull_request.head.ref }}
