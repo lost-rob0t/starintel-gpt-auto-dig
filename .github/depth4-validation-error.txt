@@ -43,7 +43,7 @@ test_schema_rejects_path_separator_in_id (test_writer.CanonicalDatabaseWriterTes
 test_writes_exact_db_convention (test_writer.CanonicalDatabaseWriterTests.test_writes_exact_db_convention) ... ok
 
 ----------------------------------------------------------------------
-Ran 41 tests in 0.119s
+Ran 41 tests in 0.058s
 
 OK
 + node --check site-assets/graph-controller.mjs
@@ -55,18 +55,5 @@ OK
 + node --check site-assets/graph-ui.mjs
 + node tests/test_graph_pathfinding.mjs
 validated 4 candidate graph paths
-ERROR: /home/runner/work/starintel-gpt-auto-dig/starintel-gpt-auto-dig/digs/wef/2026-07-27-lattice-ami-us-government-capture-risk-depth-4/starintel-documents.jsonl:24: $.dtype: unknown document type 'Vijendra “VJ” Sahi'
-ERROR: /home/runner/work/starintel-gpt-auto-dig/starintel-gpt-auto-dig/digs/wef/2026-07-27-lattice-ami-us-government-capture-risk-depth-4/starintel-documents.jsonl:25: $.dtype: unknown document type 'Thomas McCarthy'
-ERROR: /home/runner/work/starintel-gpt-auto-dig/starintel-gpt-auto-dig/digs/wef/2026-07-27-lattice-ami-us-government-capture-risk-depth-4/starintel-documents.jsonl:26: $.dtype: unknown document type 'NIST Cybersecurity Framework 2.0'
-ERROR: /home/runner/work/starintel-gpt-auto-dig/starintel-gpt-auto-dig/digs/wef/2026-07-27-lattice-ami-us-government-capture-risk-depth-4/starintel-documents.jsonl:27: $.dtype: unknown document type 'CFIUS and presidential order block proposed foreign acquisition of Lattice'
-ERROR: /home/runner/work/starintel-gpt-auto-dig/starintel-gpt-auto-dig/digs/wef/2026-07-27-lattice-ami-us-government-capture-risk-depth-4/starintel-documents.jsonl:28: $.dtype: unknown document type 'Lattice federal onshore-semiconductor funding and defense-appropriations agenda'
-ERROR: /home/runner/work/starintel-gpt-auto-dig/starintel-gpt-auto-dig/digs/wef/2026-07-27-lattice-ami-us-government-capture-risk-depth-4/starintel-documents.jsonl:30: $.data: undeclared field 'amount_usd'
-ERROR: /home/runner/work/starintel-gpt-auto-dig/starintel-gpt-auto-dig/digs/wef/2026-07-27-lattice-ami-us-government-capture-risk-depth-4/starintel-documents.jsonl:31: $.data: undeclared field 'amount_usd'
-ERROR: /home/runner/work/starintel-gpt-auto-dig/starintel-gpt-auto-dig/digs/wef/2026-07-27-lattice-ami-us-government-capture-risk-depth-4/starintel-documents.jsonl:34: $.data: undeclared field 'intermediary_id'
-ERROR: /home/runner/work/starintel-gpt-auto-dig/starintel-gpt-auto-dig/digs/wef/2026-07-27-lattice-ami-us-government-capture-risk-depth-4/starintel-documents.jsonl:38: $.data: undeclared field 'agency'
-ERROR: /home/runner/work/starintel-gpt-auto-dig/starintel-gpt-auto-dig/digs/wef/2026-07-27-lattice-ami-us-government-capture-risk-depth-4/starintel-documents.jsonl:44: $.data: undeclared field 'recommendation'
-ERROR: /home/runner/work/starintel-gpt-auto-dig/starintel-gpt-auto-dig/digs/wef/2026-07-27-lattice-ami-us-government-capture-risk-depth-4/starintel-documents.jsonl:45: $.data: undeclared field 'amount_usd_max'
-ERROR: /home/runner/work/starintel-gpt-auto-dig/starintel-gpt-auto-dig/digs/wef/2026-07-27-lattice-ami-us-government-capture-risk-depth-4/starintel-documents.jsonl:46: $.dtype: unknown document type 'Lattice–AMI U.S. government influence and regulatory-capture risk assessment'
-ERROR: /home/runner/work/starintel-gpt-auto-dig/starintel-gpt-auto-dig/digs/wef/2026-07-27-lattice-ami-us-government-capture-risk-depth-4/starintel-documents.jsonl:47: $.dtype: unknown document type 'Test Lattice–AMI federal regulatory-capture hypothesis'
-ERROR: /home/runner/work/starintel-gpt-auto-dig/starintel-gpt-auto-dig/digs/wef/2026-07-27-lattice-ami-us-government-capture-risk-depth-4/starintel-documents.jsonl:48: $.dtype: unknown document type 'Lattice–AMI U.S. government and capture-risk depth-4 pass'
-MERGE GATE: FAIL: StarIntel corpus validation failed with 14 error(s)
+ERROR: 'utf-8' codec can't decode bytes in position 47506-47507: invalid continuation byte
+MERGE GATE: FAIL: StarIntel corpus validation failed with 1 error(s)

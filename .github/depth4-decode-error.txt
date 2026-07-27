@@ -1,11 +1,16 @@
-payload_bytes=15264
-payload_sha256=38218851f2c2f337aef16a33b28da511da5747ea56ab1b2ec3d2d305c2e01180
-decoded_bytes=11446
-decoded_sha256=2bb1805af6897feafe33833b636f7abcf51c3d664342b4dedaea78f4b90af12f
-/tmp/depth4.tar.gz: gzip compressed data, from Unix, original size modulo 2^32 71680
+ 3800 .github/depth4-payload/part-00
+ 3800 .github/depth4-payload/part-01
+ 7684 .github/depth4-payload/part-02
+ 3800 .github/depth4-payload/part-03
+  120 .github/depth4-payload/part-04
+19204 total
+assembled=19204
+decoded=14399
 
-gzip: stdin: unexpected end of file
+gzip: stdin: invalid compressed data--crc error
+
+gzip: stdin: invalid compressed data--length error
 tar: Skipping to next header
 tar: Child returned status 1
 tar: Error is not recoverable: exiting now
-tar_status=failure
+tar=failure
