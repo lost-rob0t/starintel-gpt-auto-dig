@@ -4943,6 +4943,283 @@
       "if": {
         "properties": {
           "dtype": {
+            "const": "research-node"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "data": {
+            "additionalProperties": false,
+            "properties": {
+              "actor_ids": {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              "actor_selection_rules": {
+                "items": {
+                  "additionalProperties": true,
+                  "type": "object"
+                },
+                "type": "array"
+              },
+              "artifact_ids": {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              "child_ids": {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              "completed_at": {
+                "anyOf": [
+                  {
+                    "format": "date-time",
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "counters": {
+                "additionalProperties": false,
+                "properties": {
+                  "actor_runs": {
+                    "minimum": 0,
+                    "type": "integer"
+                  },
+                  "cost": {
+                    "minimum": 0.0,
+                    "type": "number"
+                  },
+                  "depth": {
+                    "minimum": 0,
+                    "type": "integer"
+                  },
+                  "elapsed_ms": {
+                    "minimum": 0,
+                    "type": "integer"
+                  },
+                  "repeated_state": {
+                    "minimum": 0,
+                    "type": "integer"
+                  },
+                  "requests": {
+                    "minimum": 0,
+                    "type": "integer"
+                  }
+                },
+                "type": "object"
+              },
+              "created_at": {
+                "anyOf": [
+                  {
+                    "format": "date-time",
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "current_actor_id": {
+                "type": "string"
+              },
+              "current_run_id": {
+                "type": "string"
+              },
+              "dependency_ids": {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              "history": {
+                "items": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "actor_id": {
+                      "type": "string"
+                    },
+                    "artifact_ids": {
+                      "items": {
+                        "type": "string"
+                      },
+                      "type": "array"
+                    },
+                    "at": {
+                      "format": "date-time",
+                      "type": "string"
+                    },
+                    "error": {
+                      "type": "string"
+                    },
+                    "from": {
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "output_ids": {
+                      "items": {
+                        "type": "string"
+                      },
+                      "type": "array"
+                    },
+                    "run_id": {
+                      "type": "string"
+                    },
+                    "to": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "to",
+                    "at"
+                  ],
+                  "type": "object"
+                },
+                "type": "array"
+              },
+              "input_ids": {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              "instructions": {
+                "type": "string"
+              },
+              "last_error": {
+                "type": "string"
+              },
+              "limits": {
+                "additionalProperties": false,
+                "properties": {
+                  "currency": {
+                    "type": "string"
+                  },
+                  "max_actor_runs": {
+                    "minimum": 1,
+                    "type": "integer"
+                  },
+                  "max_cost": {
+                    "minimum": 0.0,
+                    "type": "number"
+                  },
+                  "max_depth": {
+                    "minimum": 1,
+                    "type": "integer"
+                  },
+                  "max_elapsed_ms": {
+                    "minimum": 1,
+                    "type": "integer"
+                  },
+                  "max_repeated_state": {
+                    "minimum": 1,
+                    "type": "integer"
+                  },
+                  "max_requests": {
+                    "minimum": 1,
+                    "type": "integer"
+                  }
+                },
+                "type": "object"
+              },
+              "objective": {
+                "type": "string"
+              },
+              "output_ids": {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              "paused_reason": {
+                "type": "string"
+              },
+              "run_ids": {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              "started_at": {
+                "anyOf": [
+                  {
+                    "format": "date-time",
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "status": {
+                "enum": [
+                  "draft",
+                  "queued",
+                  "running",
+                  "paused",
+                  "blocked",
+                  "completed",
+                  "failed",
+                  "killed"
+                ],
+                "type": "string"
+              },
+              "stop": {
+                "additionalProperties": false,
+                "properties": {
+                  "halt_on_actor_failure": {
+                    "type": "boolean"
+                  },
+                  "when_actor_queue_empty": {
+                    "type": "boolean"
+                  },
+                  "when_no_new_documents": {
+                    "type": "boolean"
+                  },
+                  "when_objective_satisfied": {
+                    "type": "boolean"
+                  }
+                },
+                "type": "object"
+              },
+              "target_ids": {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              }
+            },
+            "required": [
+              "objective",
+              "status"
+            ],
+            "type": "object"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "dtype": {
             "const": "research-pass"
           }
         }
@@ -6086,6 +6363,7 @@
         "procurement",
         "product",
         "relation",
+        "research-node",
         "research-pass",
         "social-media-post",
         "source",
