@@ -76,11 +76,11 @@
 
   function localFinding(request) {
     const now = new Date().toISOString();
-    const id = `starintel:finding:auto-dig-local:${crypto.randomUUID()}`;
+    const id = `starintel:analysis:auto-dig-local:${crypto.randomUUID()}`;
     return {
       _id: id,
       dataset: request.datasetId || datasetId,
-      dtype: "finding",
+      dtype: "analysis",
       schema_version: "0.9.0",
       version: 1,
       date_added: now,
@@ -90,12 +90,15 @@
       sources: [],
       evidence: [],
       data: {
-        name: request.input?.title || "Local Auto-Dig finding",
-        finding_type: "local-actor-result",
-        severity: "informational",
-        status: "unreviewed"
+        question: request.input?.title || request.targetIds?.[0] || "Local investigation",
+        method: "auto-dig.local.investigation",
+        input_ids: request.targetIds || [],
+        findings: [request.input?.body || "Local actor run completed without external services."],
+        conclusions: [],
+        unresolved: [],
+        confidence: 0.5
       },
-      extensions: { auto_dig: { run_id: runId, tip_id: request.tipId || null, target_ids: request.targetIds || [] } }
+      extensions: { auto_dig: { kind: "finding", run_id: runId, tip_id: request.tipId || null, target_ids: request.targetIds || [] } }
     };
   }
 
