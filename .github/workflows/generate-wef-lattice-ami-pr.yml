@@ -1,0 +1,45 @@
+name: Generate WEF Lattice AMI records on PR
+
+on:
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: write
+
+jobs:
+  generate:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          ref: ${{ github.event.pull_request.head.ref }}
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.13"
+      - name: Extract source records
+        shell: bash
+        run: |
+          awk '
+            /^          H4sI/ { capture = 1 }
+            capture && /^          PAYLOAD$/ { exit }
+            capture { sub(/^          /, ""); print }
+          ' .github/workflows/generate-wef-lattice-ami.yml > /tmp/records.jsonl.gz.b64
+          base64 -d /tmp/records.jsonl.gz.b64 | gzip -d > /tmp/records.jsonl
+      - name: Import through canonical writer
+        run: python3 scripts/starintel.py import /tmp/records.jsonl
+      - name: Run mandatory merge gate
+        run: python3 scripts/validate-for-merge.py --site
+      - name: Commit generated database records
+        shell: bash
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add db
+          if git diff --cached --quiet; then
+            echo "No generated DB changes"
+            exit 0
+          fi
+          git commit -m "data: add Lattice AMI WEF link records"
+          git push origin HEAD:${{ github.event.pull_request.head.ref }}
