@@ -4,7 +4,7 @@
 **Date:** 2026-07-27  
 **Recursion depth:** 2  
 **Schema:** StarIntel v0.9.0  
-**Records:** 28
+**Records:** 9
 
 ## Core finding
 
@@ -16,7 +16,7 @@ Official sources establish that:
 - U.S. regional pilots begin in 2026, with a partner-high-school pilot scheduled for August 2026.
 - The programme connects school learning to credentials, apprenticeships, continued training and employment.
 - Workday requisition `R4203` assigns an Early Careers participant to SmartStart implementation, stakeholder coordination, funding research, student/teacher portal development, career-pathway mapping, events and Global Lighthouse Network engagement.
-- Accessible official participant records include Flex, Foxconn Industrial Internet, Arizona State University, Eskom Holdings and BetterUp.
+- Accessible official participant records include Flex, Foxconn Industrial Internet, Arizona State University, Eskom Holdings and BetterUp. These profiles are preserved as recursive leads in the analysis and are not yet normalized as organization records in this packet.
 
 ## Important boundary
 
@@ -26,10 +26,8 @@ An organization being listed in the initiative does not prove that it operates a
 
 | Dtype | Count |
 |---|---:|
-| `source` | 8 |
 | `entity` | 2 |
-| `org` | 6 |
-| `relation` | 9 |
+| `relation` | 4 |
 | `analysis` | 1 |
 | `investigation-target` | 1 |
 | `research-pass` | 1 |
