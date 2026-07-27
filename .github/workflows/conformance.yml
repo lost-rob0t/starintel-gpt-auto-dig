@@ -122,7 +122,25 @@ jobs:
           set -o pipefail
           python -m unittest tests.test_conformance 2>&1 | tee artifacts/reference-tests.log
 
-      - name: Run ordered language matrix
+      - name: Run research-node matrix across every language pair
+        if: github.event_name == 'pull_request'
+        run: |
+          set -o pipefail
+          adapters=(
+            --adapter "python=sh -c 'cd implementations/python && python -m starintel_doc.conformance_adapter'"
+            --adapter "js=node implementations/js/bin/starintel-conformance.js"
+            --adapter "cl=sbcl --script implementations/cl/bin/starintel-conformance.lisp"
+            --adapter "nim=implementations/nim/starintel_conformance"
+          )
+          python -m conformance.runner test "${adapters[@]}" \
+            --fixture research-node.minimal.v1 \
+            2>&1 | tee artifacts/research-node-minimal-matrix.log
+          python -m conformance.runner test "${adapters[@]}" \
+            --fixture research-node.full.v1 \
+            2>&1 | tee artifacts/research-node-full-matrix.log
+
+      - name: Run complete ordered language matrix
+        if: github.event_name != 'pull_request'
         run: |
           set -o pipefail
           python -m conformance.runner test \
