@@ -50,13 +50,6 @@ jobs:
         with:
           python-version: "3.13"
 
-      - name: Set up Node
-        uses: actions/setup-node@v6
-        with:
-          node-version: "22"
-          cache: npm
-          cache-dependency-path: .quasar-fork/package-lock.json
-
       - name: Read pinned Quasar fork
         id: quasar-pin
         run: |
@@ -72,6 +65,13 @@ jobs:
           repository: lost-rob0t/auto-dig-quasar
           ref: ${{ steps.quasar-pin.outputs.fork }}
           path: .quasar-fork
+
+      - name: Set up Node
+        uses: actions/setup-node@v6
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: .quasar-fork/package-lock.json
 
       - name: Validate and build Quasar
         working-directory: .quasar-fork
