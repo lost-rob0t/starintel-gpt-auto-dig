@@ -49,7 +49,7 @@ test("runs a complete local Auto-Dig investigation through embedded Quasar", asy
   await quasar.getByRole("link", { name: "Documents" }).click();
   await quasar.getByText("E2E local finding").click();
   await quasar.getByRole("button", { name: "Report incorrect data" }).click();
-  await quasar.getByLabel("Notes").fill("E2E correction payload review");
+  await quasar.getByRole("textbox", { name: "Notes", exact: true }).fill("E2E correction payload review");
   await expect(quasar.getByLabel("Exact public payload")).toContainText("E2E correction payload review");
   const popupPromise = page.waitForEvent("popup");
   await quasar.getByRole("button", { name: "Open prefilled GitHub issue" }).click();
