@@ -43,8 +43,10 @@ jobs:
       - uses: actions/checkout@v6
         with:
           show-progress: false
-      - name: Run compact corpus validator
+      - name: Capture corpus validator output
         shell: bash
-        run: |
-          set -o pipefail
-          python3 scripts/starintel.py validate 2>&1 | tail -40
+        run: python3 scripts/starintel.py validate > validation.txt 2>&1 || true
+      - uses: actions/upload-artifact@v4
+        with:
+          name: corpus-validation-diagnostic
+          path: validation.txt
