@@ -6,6 +6,7 @@ on:
       - "scripts/build-auto-dig-quasar.py"
       - "scripts/auto_dig_quasar_host.js"
       - "tests/test_auto_dig_quasar.py"
+      - "tests/e2e/**"
       - "docs/quasar-integration.md"
       - "quasar-fork.lock.json"
   workflow_dispatch:
@@ -55,3 +56,13 @@ jobs:
           test -f site/quasar/index.html
           test -f site/quasar/app/index.html
           grep -q 'sandbox=' site/quasar/index.html
+      - name: Install Chromium
+        working-directory: auto-dig-quasar
+        run: npx playwright install --with-deps chromium
+      - name: Run embedded end-to-end test
+        run: |
+          mkdir -p auto-dig-quasar/e2e-auto-dig
+          cp tests/e2e/quasar-auto-dig.spec.ts auto-dig-quasar/e2e-auto-dig/
+          cp tests/e2e/playwright.auto-dig.config.ts auto-dig-quasar/playwright.auto-dig.config.ts
+          cd auto-dig-quasar
+          npx playwright test --config=playwright.auto-dig.config.ts
