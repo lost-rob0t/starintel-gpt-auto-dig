@@ -1,0 +1,57 @@
+name: Quasar integration
+
+on:
+  pull_request:
+    paths:
+      - "scripts/build-auto-dig-quasar.py"
+      - "scripts/auto_dig_quasar_host.js"
+      - "tests/test_auto_dig_quasar.py"
+      - "docs/quasar-integration.md"
+      - "quasar-fork.lock.json"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  integration:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.13"
+      - uses: actions/setup-node@v6
+        with:
+          node-version: "22"
+      - name: Read pinned fork
+        id: pin
+        run: |
+          test -f quasar-fork.lock.json
+          echo "commit=$(python3 -c 'import json; print(json.load(open("quasar-fork.lock.json"))["quasar_fork_commit"])')" >> "$GITHUB_OUTPUT"
+      - name: Checkout pinned Auto-Dig Quasar fork
+        uses: actions/checkout@v6
+        with:
+          repository: lost-rob0t/auto-dig-quasar
+          ref: ${{ steps.pin.outputs.commit }}
+          path: auto-dig-quasar
+      - name: Build fork
+        working-directory: auto-dig-quasar
+        run: |
+          npm ci
+          VITE_BASE_PATH=/quasar/app/ npm run build
+      - name: Build Auto-Dig site with fork
+        run: |
+          python3 scripts/validate-for-merge.py --site
+          python3 scripts/build-auto-dig-quasar.py \
+            --auto-dig-root . \
+            --quasar-dist auto-dig-quasar/dist \
+            --quasar-fork-commit "${{ steps.pin.outputs.commit }}" \
+            --quasar-upstream-commit "$(python3 -c 'import json; print(json.load(open("quasar-fork.lock.json"))["quasar_upstream_commit"])')"
+      - name: Unit tests
+        run: python3 -m unittest tests.test_auto_dig_quasar
+      - name: Assert embedded artifact
+        run: |
+          test -f site/quasar/index.html
+          test -f site/quasar/app/index.html
+          grep -q 'sandbox=' site/quasar/index.html
