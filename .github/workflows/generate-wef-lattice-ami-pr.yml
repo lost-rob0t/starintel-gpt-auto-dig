@@ -18,14 +18,11 @@ jobs:
       - uses: actions/setup-python@v6
         with:
           python-version: "3.13"
-      - name: Extract source records
+      - name: Assemble source records
         shell: bash
         run: |
-          awk '
-            /^          H4sI/ { capture = 1 }
-            capture && /^          PAYLOAD$/ { exit }
-            capture { sub(/^          /, ""); print }
-          ' .github/workflows/generate-wef-lattice-ami.yml > /tmp/records.jsonl.gz.b64
+          cat .github/wef-payload/part-* > /tmp/records.jsonl.gz.b64
+          test "$(sha256sum /tmp/records.jsonl.gz.b64 | cut -d' ' -f1)" = "1b4ca3f596e5179d681f4fae88f109b1f67e7c6a6d0653c54f5e922696a3df65"
           base64 -d /tmp/records.jsonl.gz.b64 | gzip -d > /tmp/records.jsonl
       - name: Import through canonical writer
         run: python3 scripts/starintel.py import /tmp/records.jsonl
