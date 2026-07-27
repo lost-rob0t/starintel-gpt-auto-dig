@@ -1,0 +1,1 @@
+Temporary deterministic payload used by the pull-request workflow to publish the validated depth-4 research packet. Remove this directory and the generation workflow after the packet is committed.
