@@ -4,10 +4,22 @@
 **Pass:** seed / recursion depth 0  
 **Date:** 2026-07-27  
 **Schema:** StarIntel v0.9.0  
-**Records:** 58  
-**JSONL SHA-256:** `d7f178a0c716ab74d27488dd76fb40638a4bafb4b705ee05410532eb27c69fc9`
+**Records:** 34
 
 This packet seeds Auto-Dig with public World Economic Forum Early Careers Program recruitment discussions. It captures public Reddit handles, self-reported office and application-stage claims, cross-cycle account recurrence, and bounded follow-on targets.
+
+## Record inventory
+
+| Dtype | Count |
+|---|---:|
+| `source` | 3 |
+| `social-media-post` | 2 |
+| `user` | 21 |
+| `relation` | 4 |
+| `investigation-target` | 1 |
+| `analysis` | 1 |
+| `research-node` | 1 |
+| `research-pass` | 1 |
 
 ## Guardrails
 
