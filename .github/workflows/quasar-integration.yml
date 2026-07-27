@@ -1,0 +1,84 @@
+name: Quasar integration
+
+on:
+  pull_request:
+    paths:
+      - "scripts/build-auto-dig-quasar.py"
+      - "scripts/auto_dig_quasar_host.js"
+      - "tests/test_auto_dig_quasar.py"
+      - "tests/e2e/**"
+      - "docs/quasar-integration.md"
+      - "quasar-fork.lock.json"
+      - ".github/workflows/quasar-integration.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  integration:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.13"
+      - uses: actions/setup-node@v6
+        with:
+          node-version: "22"
+      - name: Read pinned fork
+        id: pin
+        run: |
+          test -f quasar-fork.lock.json
+          echo "commit=$(python3 -c 'import json; print(json.load(open("quasar-fork.lock.json"))["quasar_fork_commit"])')" >> "$GITHUB_OUTPUT"
+      - name: Checkout pinned Auto-Dig Quasar fork
+        uses: actions/checkout@v6
+        with:
+          repository: lost-rob0t/auto-dig-quasar
+          ref: ${{ steps.pin.outputs.commit }}
+          path: auto-dig-quasar
+      - name: Build fork
+        working-directory: auto-dig-quasar
+        run: |
+          npm ci
+          VITE_BASE_PATH=/quasar/app/ npm run build
+      - name: Build Auto-Dig site with fork
+        run: |
+          python3 scripts/validate-for-merge.py --site
+          python3 scripts/build_research_site.py \
+            --input digs \
+            --db db \
+            --output site \
+            --org-output org
+          python3 scripts/build-auto-dig-quasar.py \
+            --auto-dig-root . \
+            --quasar-dist auto-dig-quasar/dist \
+            --quasar-fork-commit "${{ steps.pin.outputs.commit }}" \
+            --quasar-upstream-commit "$(python3 -c 'import json; print(json.load(open("quasar-fork.lock.json"))["quasar_upstream_commit"])')"
+      - name: Unit tests
+        run: python3 -m unittest tests.test_auto_dig_quasar
+      - name: Assert embedded artifact
+        run: |
+          test -f site/quasar/index.html
+          test -f site/quasar/app/index.html
+          test -s site/downloads/starintel-complete-corpus.jsonl
+          grep -q 'sandbox=' site/quasar/index.html
+      - name: Install Chromium
+        working-directory: auto-dig-quasar
+        run: npx playwright install --with-deps chromium
+      - name: Run embedded end-to-end test
+        run: |
+          mkdir -p auto-dig-quasar/e2e-auto-dig
+          cp tests/e2e/quasar-auto-dig.spec.ts auto-dig-quasar/e2e-auto-dig/
+          cp tests/e2e/playwright.auto-dig.config.ts auto-dig-quasar/playwright.auto-dig.config.ts
+          cd auto-dig-quasar
+          npx playwright test --config=playwright.auto-dig.config.ts --reporter=line,html
+      - name: Upload embedded E2E diagnostics
+        if: failure()
+        uses: actions/upload-artifact@v7
+        with:
+          name: auto-dig-quasar-e2e-diagnostics
+          path: |
+            auto-dig-quasar/playwright-report
+            auto-dig-quasar/test-results
+          if-no-files-found: warn
