@@ -41,12 +41,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
+      - uses: actions/setup-python@v6
         with:
-          show-progress: false
-      - name: Capture corpus validator output
-        shell: bash
-        run: python3 scripts/starintel.py validate > validation.txt 2>&1 || true
-      - uses: actions/upload-artifact@v4
-        with:
-          name: corpus-validation-diagnostic
-          path: validation.txt
+          python-version: "3.13"
+      - name: Run mandatory StarIntel merge gate
+        run: python3 scripts/validate-for-merge.py
