@@ -9,6 +9,7 @@ on:
       - "tests/e2e/**"
       - "docs/quasar-integration.md"
       - "quasar-fork.lock.json"
+      - ".github/workflows/quasar-integration.yml"
   workflow_dispatch:
 
 permissions:
@@ -65,4 +66,13 @@ jobs:
           cp tests/e2e/quasar-auto-dig.spec.ts auto-dig-quasar/e2e-auto-dig/
           cp tests/e2e/playwright.auto-dig.config.ts auto-dig-quasar/playwright.auto-dig.config.ts
           cd auto-dig-quasar
-          npx playwright test --config=playwright.auto-dig.config.ts
+          npx playwright test --config=playwright.auto-dig.config.ts --reporter=line,html
+      - name: Upload embedded E2E diagnostics
+        if: failure()
+        uses: actions/upload-artifact@v7
+        with:
+          name: auto-dig-quasar-e2e-diagnostics
+          path: |
+            auto-dig-quasar/playwright-report
+            auto-dig-quasar/test-results
+          if-no-files-found: warn
