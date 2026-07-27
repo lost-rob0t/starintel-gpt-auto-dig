@@ -3,14 +3,36 @@ name: StarIntel conformance
 on:
   pull_request:
   push:
-    branches: [main]
+    branches: [main, agent/research-node-spec]
   schedule:
     - cron: "17 6 * * 1"
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
+  reorder-schema:
+    if: github.ref == 'refs/heads/agent/research-node-spec' && github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          ref: agent/research-node-spec
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.13"
+      - run: python scripts/reorder-research-node.py
+      - name: Commit ordered schema
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add starintel_doc/spec.py schemas/starintel-doc-v0.9.0.schema.json
+          if git diff --cached --quiet; then
+            exit 0
+          fi
+          git commit -m "Order research-node in dtype registry"
+          git push origin HEAD:agent/research-node-spec
+
   matrix:
     runs-on: ubuntu-latest
     timeout-minutes: 30
