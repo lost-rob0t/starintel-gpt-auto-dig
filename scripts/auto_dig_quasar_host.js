@@ -113,7 +113,6 @@
     loadDataset: async ({ datasetId: id }) => loadDataset(id),
     saveDocument: async ({ document }) => {
       await put("documents", { id: `${datasetId}:${document._id}`, datasetId, document, updatedAt: new Date().toISOString() });
-      notify("dataset-documents", { documents: [document] });
     },
     saveRelation: async ({ relation }) => handlers.saveDocument({ document: relation }),
     saveGraph: async ({ graph }) => put("graphs", { id: `${datasetId}:${graph.id}`, datasetId, graph, updatedAt: new Date().toISOString() }),
