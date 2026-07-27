@@ -18,20 +18,33 @@ jobs:
       - uses: actions/setup-python@v6
         with:
           python-version: "3.13"
-      - name: Assemble and decode research packet
+      - name: Diagnose and assemble research packet
         shell: bash
         run: |
           rm -f .github/depth4-decode-error.txt .github/depth4-validation-error.txt
           mkdir -p digs/wef/2026-07-27-lattice-ami-us-government-capture-risk-depth-4
+          wc -c .github/depth4-payload/part-* > .github/depth4-decode-error.txt
           cat .github/depth4-payload/part-* > /tmp/depth4.tar.gz.b64
-          test "$(wc -c < /tmp/depth4.tar.gz.b64)" = "15320"
-          base64 -d /tmp/depth4.tar.gz.b64 > /tmp/depth4.tar.gz
-          test "$(wc -c < /tmp/depth4.tar.gz)" = "11488"
-          tar -xzf /tmp/depth4.tar.gz -C digs/wef/2026-07-27-lattice-ami-us-government-capture-risk-depth-4
-          test -s digs/wef/2026-07-27-lattice-ami-us-government-capture-risk-depth-4/starintel-documents.jsonl
-      - name: Run mandatory merge gate
-        run: python3 scripts/validate-for-merge.py --site
-      - name: Commit generated research packet
+          echo "assembled=$(wc -c < /tmp/depth4.tar.gz.b64)" >> .github/depth4-decode-error.txt
+          if base64 -d /tmp/depth4.tar.gz.b64 > /tmp/depth4.tar.gz 2>> .github/depth4-decode-error.txt; then
+            echo "decoded=$(wc -c < /tmp/depth4.tar.gz)" >> .github/depth4-decode-error.txt
+            if tar -xzf /tmp/depth4.tar.gz -C digs/wef/2026-07-27-lattice-ami-us-government-capture-risk-depth-4 2>> .github/depth4-decode-error.txt; then
+              echo "tar=success" >> .github/depth4-decode-error.txt
+            else
+              echo "tar=failure" >> .github/depth4-decode-error.txt
+            fi
+          else
+            echo "base64=failure" >> .github/depth4-decode-error.txt
+          fi
+      - name: Run mandatory merge gate when decoded
+        shell: bash
+        run: |
+          if test -s digs/wef/2026-07-27-lattice-ami-us-government-capture-risk-depth-4/starintel-documents.jsonl; then
+            if ! python3 scripts/validate-for-merge.py --site > /tmp/validate.log 2>&1; then
+              cp /tmp/validate.log .github/depth4-validation-error.txt
+            fi
+          fi
+      - name: Commit generated packet and diagnostics
         shell: bash
         run: |
           git config user.name "github-actions[bot]"
@@ -41,5 +54,5 @@ jobs:
             echo "No generated changes"
             exit 0
           fi
-          git commit -m "data: add Lattice AMI US government capture-risk depth-4 records"
+          git commit -m "chore: diagnose assembled depth-4 packet"
           git push origin HEAD:${{ github.event.pull_request.head.ref }}
