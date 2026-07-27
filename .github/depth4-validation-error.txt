@@ -43,7 +43,7 @@ test_schema_rejects_path_separator_in_id (test_writer.CanonicalDatabaseWriterTes
 test_writes_exact_db_convention (test_writer.CanonicalDatabaseWriterTests.test_writes_exact_db_convention) ... ok
 
 ----------------------------------------------------------------------
-Ran 41 tests in 0.060s
+Ran 41 tests in 0.059s
 
 OK
 + node --check site-assets/graph-controller.mjs
