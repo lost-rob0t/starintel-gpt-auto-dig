@@ -1,16 +1,10 @@
  3800 .github/depth4-payload/part-00
  3800 .github/depth4-payload/part-01
  1900 .github/depth4-payload/part-02
+ 1900 .github/depth4-payload/part-02b
  3800 .github/depth4-payload/part-03
   120 .github/depth4-payload/part-04
-13420 total
-assembled=13420
-decoded=10063
-
-gzip: stdin: invalid compressed data--crc error
-
-gzip: stdin: invalid compressed data--length error
-tar: Unexpected EOF in archive
-tar: Unexpected EOF in archive
-tar: Error is not recoverable: exiting now
-tar=failure
+15320 total
+assembled=15320
+decoded=11488
+tar=success
