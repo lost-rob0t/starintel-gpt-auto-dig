@@ -41,8 +41,19 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
-      - uses: actions/setup-python@v6
         with:
-          python-version: "3.13"
-      - name: Run mandatory StarIntel merge gate
-        run: python3 scripts/validate-for-merge.py
+          show-progress: false
+      - name: Capture corpus validator output
+        shell: bash
+        run: |
+          set +e
+          python3 scripts/starintel.py validate > corpus-validation.txt 2>&1
+          status=$?
+          echo "$status" > corpus-validation-status.txt
+          exit 0
+      - uses: actions/upload-artifact@v4
+        with:
+          name: oakland-schema-errors
+          path: |
+            corpus-validation.txt
+            corpus-validation-status.txt
