@@ -45,6 +45,11 @@ jobs:
       - name: Build Auto-Dig site with fork
         run: |
           python3 scripts/validate-for-merge.py --site
+          python3 scripts/build_research_site.py \
+            --input digs \
+            --db db \
+            --output site \
+            --org-output org
           python3 scripts/build-auto-dig-quasar.py \
             --auto-dig-root . \
             --quasar-dist auto-dig-quasar/dist \
@@ -56,6 +61,7 @@ jobs:
         run: |
           test -f site/quasar/index.html
           test -f site/quasar/app/index.html
+          test -s site/downloads/starintel-complete-corpus.jsonl
           grep -q 'sandbox=' site/quasar/index.html
       - name: Install Chromium
         working-directory: auto-dig-quasar
