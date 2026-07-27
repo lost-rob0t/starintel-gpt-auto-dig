@@ -27,7 +27,14 @@ jobs:
           tar -xzf /tmp/depth4.tar.gz -C digs/wef/2026-07-27-lattice-ami-us-government-capture-risk-depth-4
           test "$(sha256sum digs/wef/2026-07-27-lattice-ami-us-government-capture-risk-depth-4/starintel-documents.jsonl | cut -d' ' -f1)" = "18be23f9c5784e143bc57ea6061fdffb9e10c38ef4686f93cc7db684ca81422f"
       - name: Run mandatory merge gate
-        run: python3 scripts/validate-for-merge.py --site
+        shell: bash
+        run: |
+          if ! python3 scripts/validate-for-merge.py --site > /tmp/validate.log 2>&1; then
+            echo "VALIDATION FAILURE — FINAL 120 LINES"
+            tail -n 120 /tmp/validate.log
+            exit 1
+          fi
+          tail -n 40 /tmp/validate.log
       - name: Commit generated research packet
         shell: bash
         run: |
