@@ -1,8 +1,10 @@
 import { expect, test } from "@playwright/test";
 
+const E2E_DATASET = "tech-bro";
+
 const localDocument = {
   _id: "starintel:analysis:e2e-local-finding",
-  dataset: "complete-corpus",
+  dataset: E2E_DATASET,
   dtype: "analysis",
   schema_version: "0.9.0",
   version: 1,
@@ -41,11 +43,12 @@ function issueBody(url: string) {
 }
 
 test("runs a complete local Auto-Dig investigation through embedded Quasar", async ({ page }) => {
-  await page.goto("/quasar/index.html?dataset=complete-corpus&run=e2e-run");
+  await page.goto(`/quasar/index.html?dataset=${E2E_DATASET}&run=e2e-run`);
   const quasar = page.frameLocator("#quasar-frame");
 
   await expect(quasar.getByText("Auto-Dig graph operator")).toBeVisible();
-  await expect(quasar.getByText("Loaded Auto-Dig dataset complete-corpus")).toBeVisible();
+  await expect(quasar.getByText(`Loaded Auto-Dig dataset ${E2E_DATASET}`)).toBeVisible();
+  await expect(quasar.getByText("Opening local workspace…")).toBeHidden();
   await quasar.getByRole("link", { name: "Add document" }).click();
   await quasar.getByRole("button", { name: "Inspect JSON" }).click();
   await quasar.getByLabel("Complete document JSON").fill(JSON.stringify(localDocument, null, 2));
@@ -84,7 +87,8 @@ test("runs a complete local Auto-Dig investigation through embedded Quasar", asy
 
   await page.reload();
   await expect(quasar.getByText("Auto-Dig graph operator")).toBeVisible();
-  await expect(quasar.getByText("Loaded Auto-Dig dataset complete-corpus")).toBeVisible();
+  await expect(quasar.getByText(`Loaded Auto-Dig dataset ${E2E_DATASET}`)).toBeVisible();
+  await expect(quasar.getByText("Opening local workspace…")).toBeHidden();
   await page.getByRole("button", { name: "Documents" }).click();
   await expect(quasar.getByText("E2E local finding")).toBeVisible();
   await page.getByRole("button", { name: "Tipline" }).click();
