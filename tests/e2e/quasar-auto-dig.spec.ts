@@ -28,6 +28,14 @@ const localDocument = {
   extensions: { auto_dig: { kind: "finding", e2e: true } }
 };
 
+function issueDestination(url: string) {
+  const parsed = new URL(url);
+  if (parsed.hostname === "github.com" && parsed.pathname === "/login") {
+    return parsed.searchParams.get("return_to") || "";
+  }
+  return url;
+}
+
 test("runs a complete local Auto-Dig investigation through embedded Quasar", async ({ page }) => {
   await page.goto("/quasar/index.html?dataset=complete-corpus&run=e2e-run");
   const quasar = page.frameLocator("#quasar-frame");
@@ -54,7 +62,8 @@ test("runs a complete local Auto-Dig investigation through embedded Quasar", asy
   const popupPromise = page.waitForEvent("popup");
   await quasar.getByRole("button", { name: "Open prefilled GitHub issue" }).click();
   const popup = await popupPromise;
-  await expect.poll(() => popup.url()).toContain("github.com/lost-rob0t/starintel-gpt-auto-dig/issues/new");
+  await expect.poll(() => issueDestination(popup.url())).toContain("github.com/lost-rob0t/starintel-gpt-auto-dig/issues/new");
+  await expect.poll(() => issueDestination(popup.url())).toContain("E2E%20correction%20payload%20review");
   await popup.close();
 
   await page.getByRole("button", { name: "Tipline" }).click();
