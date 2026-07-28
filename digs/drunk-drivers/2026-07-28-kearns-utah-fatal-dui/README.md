@@ -18,6 +18,6 @@ Guzman later pleaded guilty to murder and three negligent-operation injury charg
 
 - Schema: StarIntel 0.9.0
 - Records: 35
-- Canonical stream: `starintel-documents.jsonl`
+- Canonical transport: `starintel-documents.jsonl.gz.b64`
 - Manifest: `manifest.json`
 - Source inventory: `sources.md`
