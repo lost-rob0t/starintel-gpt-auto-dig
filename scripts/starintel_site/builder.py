@@ -8,6 +8,7 @@ from collections import defaultdict
 from pathlib import Path
 from urllib.parse import quote
 
+from starintel_doc.spec import SCHEMA_VERSION
 from starintel_doc.validation import validate_document
 
 from .dashboard import annotate_graph, dashboard_page, document_index, documents_page, graph_page
@@ -176,7 +177,7 @@ def build_site(input_root: Path, output: Path, org_output: Path, config_path: Pa
         "_id": "starintel:dataset-manifest:auto-dig-complete-corpus",
         "dataset": "starintel-auto-dig-complete-corpus",
         "dtype": "dataset-manifest",
-        "schema_version": "0.9.0",
+        "schema_version": SCHEMA_VERSION,
         "version": 1,
         "date_added": corpus_timestamp,
         "date_updated": corpus_timestamp,
