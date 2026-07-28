@@ -5,9 +5,9 @@
   "schema_version": "0.9.0",
   "version": 1,
   "date_added": "2026-07-26T05:10:00Z",
-  "date_updated": "2026-07-26T05:10:00Z",
+  "date_updated": "2026-07-28T19:18:00Z",
   "title": "Quasar import manifest — U.S.–Israel Military Integration",
-  "summary": "Select this manifest together with starintel-documents.jsonl in Quasar's bulk import.",
+  "summary": "Decode starintel-documents.jsonl.gz.b64 to starintel-documents.jsonl, then select the decoded JSONL together with this manifest in Quasar's bulk import.",
   "status": "complete",
   "language": "en",
   "tags": ["quasar", "auto-dig", "military-integration", "us-israel"],
@@ -15,12 +15,12 @@
   "evidence": [],
   "assessment": {
     "confidence": 1.0,
-    "caveats": ["The referenced JSONL file must be selected in the same Quasar import operation."]
+    "caveats": ["The repository stores the document packet as gzip-compressed base64 transport; decode it before importing into Quasar."]
   },
   "verification": {
     "status": "verified",
     "verified": true,
-    "methods": ["sha256", "record-count"]
+    "methods": ["base64", "gzip", "sha256", "record-count"]
   },
   "handling": {
     "visibility": "public",
@@ -107,13 +107,19 @@
     "hash_algorithm": "sha256",
     "content_hash": "1fe129d9c7ea77183601a4b7282bd6121888b3c5023bd536594f884b0b284470",
     "files": [{
-      "path": "starintel-documents.jsonl",
-      "name": "starintel-documents.jsonl",
-      "role": "documents",
-      "media_type": "application/x-ndjson",
+      "path": "starintel-documents.jsonl.gz.b64",
+      "name": "starintel-documents.jsonl.gz.b64",
+      "role": "documents-transport",
+      "media_type": "text/plain",
+      "encoding": "base64",
+      "compression": "gzip",
+      "decoded_name": "starintel-documents.jsonl",
+      "decoded_media_type": "application/x-ndjson",
       "record_count": 52,
       "hash_algorithm": "sha256",
-      "content_hash": "1fe129d9c7ea77183601a4b7282bd6121888b3c5023bd536594f884b0b284470"
+      "decoded_content_hash": "1fe129d9c7ea77183601a4b7282bd6121888b3c5023bd536594f884b0b284470",
+      "transport_hash_algorithm": "sha256",
+      "transport_content_hash": "60b216da812e26cd046dccd6dfcfd6ccecf32c6aa49a7e37666ff6c3e1c2a6e1"
     }],
     "schema_versions": ["0.9.0"],
     "generated_at": "2026-07-26T05:10:00Z"
