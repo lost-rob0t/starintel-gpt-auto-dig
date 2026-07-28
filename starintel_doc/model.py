@@ -7,6 +7,7 @@ from dataclasses import dataclass
 from datetime import datetime, timezone
 from typing import Any
 
+from .schema_org import schema_org_metadata
 from .spec import DTYPE_ALIASES, SCHEMA_VERSION, TYPE_FIELDS
 from .validation import validate_document
 
@@ -34,8 +35,9 @@ def empty_document(dtype: str, dataset: str, doc_id: str | None = None) -> dict[
     if canonical not in TYPE_FIELDS:
         raise ValueError(f"unknown dtype: {dtype}")
     now = utc_now()
+    document_id = doc_id or stable_id(canonical, now)
     return {
-        "_id": doc_id or stable_id(canonical, now),
+        "_id": document_id,
         "dataset": dataset,
         "dtype": canonical,
         "schema_version": SCHEMA_VERSION,
@@ -66,6 +68,7 @@ def empty_document(dtype: str, dataset: str, doc_id: str | None = None) -> dict[
         "attachments": [],
         "related_ids": [],
         "notes": [],
+        "schema_org": schema_org_metadata(canonical, document_id),
         "data": {},
         "extensions": {},
     }

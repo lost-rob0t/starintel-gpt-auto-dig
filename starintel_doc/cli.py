@@ -8,8 +8,9 @@ from typing import Any
 
 from .migration import migrate_document
 from .model import Document
+from .schema_org import document_schema, to_schema_org
 from .selectors import candidate_documents, select_candidates
-from .spec import SCHEMA_VERSION, TYPE_FIELDS, document_schema
+from .spec import SCHEMA_VERSION, TYPE_FIELDS
 from .store import (
     LocatedDocument,
     compact,
@@ -55,6 +56,16 @@ def cmd_schema(args: argparse.Namespace) -> int:
         output.write_text(payload, encoding="utf-8")
     else:
         print(payload, end="")
+    return 0
+
+
+def cmd_jsonld(args: argparse.Namespace) -> int:
+    source = Path(args.source)
+    raw = json.loads(source.read_text(encoding="utf-8") if source.exists() else args.source)
+    if not isinstance(raw, dict):
+        raise ValueError("JSON-LD source must be one StarIntel document object")
+    validate_document(raw)
+    _emit(to_schema_org(raw), pretty=args.pretty)
     return 0
 
 
@@ -230,6 +241,11 @@ def build_parser() -> argparse.ArgumentParser:
     p.add_argument("--output")
     p.set_defaults(func=cmd_schema)
 
+    p = sub.add_parser("jsonld", help="export one StarIntel document as Schema.org JSON-LD")
+    p.add_argument("source", help="JSON object or path")
+    p.add_argument("--pretty", action="store_true")
+    p.set_defaults(func=cmd_jsonld)
+
     p = sub.add_parser("create", help="create one schema-valid document")
     p.add_argument("dtype", choices=sorted(TYPE_FIELDS))
     p.add_argument("--dataset", required=True)
@@ -258,51 +274,47 @@ def build_parser() -> argparse.ArgumentParser:
     p.add_argument("--pretty", action="store_true")
     p.set_defaults(func=cmd_migrate_one)
 
-    p = sub.add_parser("search", help="search the JSON DB and dig packets")
+    p = sub.add_parser("search", help="search canonical DB and packet documents")
     p.add_argument("query", nargs="?", default="")
     p.add_argument("--root", default=".")
-    p.add_argument("--dtype", action="append", choices=sorted(TYPE_FIELDS))
-    p.add_argument("--dataset", default="")
-    p.add_argument("--predicate", default="")
-    p.add_argument("--id", default="")
-    p.add_argument("--source", default="")
+    p.add_argument("--dtype", action="append")
+    p.add_argument("--dataset")
+    p.add_argument("--predicate")
+    p.add_argument("--id")
+    p.add_argument("--source")
     p.add_argument("--min-confidence", type=float)
-    p.add_argument("--limit", type=int, default=100)
+    p.add_argument("--limit", type=int, default=50)
+    p.add_argument("--with-location", action="store_true")
     p.add_argument("--db-only", action="store_true")
     p.add_argument("--packets-only", action="store_true")
-    p.add_argument("--with-location", action="store_true")
     p.set_defaults(func=cmd_search)
 
-    p = sub.add_parser("select-targets", help="rank entities for recursive auto-dig")
+    p = sub.add_parser("select-targets", help="select recursive research targets from canonical documents")
     p.add_argument("--root", default=".")
     p.add_argument("--query", default="")
-    p.add_argument("--dtype", action="append", choices=sorted(TYPE_FIELDS))
-    p.add_argument("--dataset", default="")
-    p.add_argument("--limit", type=int, default=20)
-    p.add_argument("--depth", type=int, default=1)
-    p.add_argument("--max-depth", type=int, default=3)
-    p.add_argument("--root-target-id", default="")
-    p.add_argument("--output-dataset", default="")
+    p.add_argument("--dtype", action="append")
+    p.add_argument("--dataset")
+    p.add_argument("--limit", type=int, default=10)
     p.add_argument("--emit-documents", action="store_true")
     p.add_argument("--output")
+    p.add_argument("--output-dataset")
+    p.add_argument("--root-target-id", default="")
+    p.add_argument("--depth", type=int, default=0)
+    p.add_argument("--max-depth", type=int, default=5)
     p.add_argument("--db-only", action="store_true")
     p.add_argument("--packets-only", action="store_true")
     p.set_defaults(func=cmd_select)
 
-    p = sub.add_parser("import", help="import validated JSONL into db/<dtype>/<_id>.ndjson")
+    p = sub.add_parser("import", help="transactionally import canonical JSONL into db/")
     p.add_argument("source")
     p.add_argument("--root", default=".")
     p.add_argument("--replace", action="store_true")
     p.add_argument("--migrate", action="store_true")
     p.set_defaults(func=cmd_import)
+
     return parser
 
 
 def main(argv: list[str] | None = None) -> int:
-    parser = build_parser()
-    args = parser.parse_args(argv)
-    try:
-        return int(args.func(args))
-    except (ValueError, TypeError, KeyError, json.JSONDecodeError) as exc:
-        parser.error(str(exc))
-    return 2
+    args = build_parser().parse_args(argv)
+    return int(args.func(args))
