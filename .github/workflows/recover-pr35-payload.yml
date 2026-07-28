@@ -4,6 +4,9 @@ on:
   push:
     branches:
       - agent/us-israel-military-integration
+  pull_request:
+    branches:
+      - main
 
 permissions:
   contents: read
