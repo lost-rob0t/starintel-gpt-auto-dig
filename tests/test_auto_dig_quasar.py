@@ -101,13 +101,18 @@ class AutoDigQuasarBuildTest(unittest.TestCase):
             self.assertIn("../quasar/index.html?dataset=example", redirect)
             self.assertNotIn("old graph UI", redirect)
 
-    def test_host_seeds_quasar_and_forces_graph_route(self):
+    def test_host_seeds_quasar_and_navigates_after_runtime_subscription(self):
         host = (Path(__file__).parents[1] / "scripts" / "auto_dig_quasar_host.js").read_text(
             encoding="utf-8"
         )
 
         self.assertIn('const GRAPH_ROUTE = "/graph"', host)
-        self.assertIn('notify("navigate", { route: GRAPH_ROUTE })', host)
+        self.assertIn("navigateToGraphAfterDatasetLoad();", host)
+        self.assertIn("const dataset = await loadDataset(id);", host)
+        handshake = host.split("handshake: async", 1)[1].split(
+            "getActiveDatasetId", 1
+        )[0]
+        self.assertNotIn('notify("navigate"', handshake)
         self.assertIn("starintel-complete-corpus.jsonl", host)
         self.assertIn("starintel-documents.jsonl", host)
         self.assertNotIn("indexedDB.open", host)
