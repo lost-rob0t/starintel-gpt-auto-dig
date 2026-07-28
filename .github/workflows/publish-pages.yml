@@ -118,6 +118,7 @@ jobs:
           test -s _site/index.html
           test -s _site/search-index.json
           test -s _site/downloads/starintel-complete-corpus.jsonl
+          test -s _site/downloads/starintel-complete-corpus.manifest.json
           test -s _site/assets/graph-core.mjs
           test -s _site/assets/graph-explorer.mjs
           test -s _site/assets/graph-render-scaled.mjs
@@ -137,6 +138,7 @@ jobs:
           test -s .generated/org/palantir/index.org
           grep -q 'Download complete corpus' _site/index.html
           grep -q 'downloads/starintel-complete-corpus.jsonl' _site/index.html
+          grep -q 'downloads/starintel-complete-corpus.manifest.json' _site/index.html
           grep -q 'graph-launch-card' _site/palantir/index.html
           grep -q '../quasar/index.html?dataset=palantir' _site/palantir/graph.html
           grep -q 'documents.json' _site/palantir/documents.html
@@ -144,8 +146,11 @@ jobs:
           ! grep -q '<header' _site/quasar/index.html
           ! grep -q 'data-quasar-route' _site/quasar/index.html
           python - <<'PY'
+          import hashlib
           import json
           from pathlib import Path
+
+          from starintel_doc.validation import validate_document
 
           graph = json.loads(Path("_site/palantir/graph.json").read_text())
           assert graph["nodes"]
@@ -171,6 +176,24 @@ jobs:
           assert len({document["_id"] for document in corpus}) == len(corpus)
           assert corpus == sorted(corpus, key=lambda document: document["_id"])
           assert len(corpus) <= len(search)
+
+          corpus_bytes = corpus_path.read_bytes()
+          manifest = json.loads(Path("_site/downloads/starintel-complete-corpus.manifest.json").read_text())
+          validate_document(manifest)
+          assert manifest["dtype"] == "dataset-manifest"
+          assert manifest["data"]["record_count"] == len(corpus)
+          assert manifest["data"]["counts_by_dtype"] == {
+              dtype: sum(document["dtype"] == dtype for document in corpus)
+              for dtype in sorted({document["dtype"] for document in corpus})
+          }
+          assert manifest["data"]["schema_versions"] == sorted({document["schema_version"] for document in corpus})
+          assert manifest["data"]["files"] == [{
+              "path": "starintel-complete-corpus.jsonl",
+              "media_type": "application/x-ndjson",
+              "size_bytes": len(corpus_bytes),
+          }]
+          assert manifest["data"]["hash_algorithm"] == "sha256"
+          assert manifest["data"]["content_hash"] == hashlib.sha256(corpus_bytes).hexdigest()
 
           version = json.loads(Path("_site/quasar/version.json").read_text())
           lock = json.loads(Path("quasar-fork.lock.json").read_text())
