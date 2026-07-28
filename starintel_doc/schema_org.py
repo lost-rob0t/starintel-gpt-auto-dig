@@ -59,6 +59,7 @@ DTYPE_SCHEMA_ORG_TYPES: dict[str, tuple[str, ...]] = {
     "procurement": ("DigitalDocument",),
     "product": ("Product",),
     "relation": ("Role",),
+    "research-node": ("Action",),
     "research-pass": ("CreativeWork",),
     "social-media-post": ("SocialMediaPosting",),
     "source": ("CreativeWork",),
