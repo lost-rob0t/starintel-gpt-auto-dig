@@ -1,0 +1,24 @@
+name: Recover PR35 payload
+
+on:
+  push:
+    branches:
+      - agent/us-israel-military-integration
+
+permissions:
+  contents: read
+
+jobs:
+  recover:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out branch
+        uses: actions/checkout@v6
+
+      - name: Upload exact payload
+        uses: actions/upload-artifact@v4
+        with:
+          name: pr35-payload
+          path: digs/us-israel-military-integration/2026-07-26/starintel-documents.jsonl.gz.b64
+          if-no-files-found: error
+          retention-days: 1
