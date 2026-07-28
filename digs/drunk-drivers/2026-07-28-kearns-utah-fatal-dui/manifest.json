@@ -15,12 +15,12 @@
   "files": [
     "README.md",
     "sources.md",
-    "starintel-documents.jsonl"
+    "starintel-documents.jsonl.gz.b64"
   ],
   "generated_at": "2026-07-28T16:21:09-04:00",
   "hash_algorithm": "sha256",
   "schema_version": "0.9.0",
-  "starintel_documents_sha256": "c4b5f5dbb0174eae76b53f3af9b00d79dd6a33ee5a68c7256f686bf8e8f22413",
+  "starintel_documents_sha256": "8073f1d58c51577b157075752a09bdfdea913c014f232ab110e548e891dc14a1",
   "total": 35,
   "validation": {
     "source_urls": "passed",
