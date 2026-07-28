@@ -1,27 +1,63 @@
-name: Recover PR35 payload
+name: Repair PR35 payload
 
 on:
   push:
     branches:
       - agent/us-israel-military-integration
-  pull_request:
-    branches:
-      - main
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
-  recover:
+  repair:
     runs-on: ubuntu-latest
     steps:
       - name: Check out branch
         uses: actions/checkout@v6
-
-      - name: Upload exact payload
-        uses: actions/upload-artifact@v4
         with:
-          name: pr35-payload
-          path: digs/us-israel-military-integration/2026-07-26/starintel-documents.jsonl.gz.b64
-          if-no-files-found: error
-          retention-days: 1
+          ref: agent/us-israel-military-integration
+          fetch-depth: 0
+
+      - name: Repair and validate payload
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          from pathlib import Path
+          import base64
+          import gzip
+          import hashlib
+          import json
+
+          path = Path("digs/us-israel-military-integration/2026-07-26/starintel-documents.jsonl.gz.b64")
+          encoded = "".join(path.read_text(encoding="utf-8").split())
+          expected_hash = "1fe129d9c7ea77183601a4b7282bd6121888b3c5023bd536594f884b0b284470"
+
+          try:
+              decoded = gzip.decompress(base64.b64decode(encoded, validate=True))
+          except Exception:
+              encoded = encoded[:3024] + "l" + encoded[3024:]
+              decoded = gzip.decompress(base64.b64decode(encoded, validate=True))
+
+          if hashlib.sha256(decoded).hexdigest() != expected_hash:
+              raise SystemExit("repaired payload hash does not match manifest")
+
+          records = [json.loads(line) for line in decoded.decode("utf-8").splitlines() if line.strip()]
+          if len(records) != 52:
+              raise SystemExit(f"expected 52 records, found {len(records)}")
+          if len({record["_id"] for record in records}) != len(records):
+              raise SystemExit("duplicate StarIntel document IDs")
+
+          path.write_text(encoded + "\n", encoding="utf-8")
+          PY
+
+      - name: Commit repair and remove recovery workflow
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm .github/workflows/recover-pr35-payload.yml
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add digs/us-israel-military-integration/2026-07-26/starintel-documents.jsonl.gz.b64 .github/workflows/recover-pr35-payload.yml
+          git commit -m "fix malformed StarIntel transport payload"
+          git push origin HEAD:agent/us-israel-military-integration
