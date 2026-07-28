@@ -104,7 +104,7 @@ jobs:
           python - <<'PY'
           import json
           from pathlib import Path
-          from starintel_doc.spec import document_schema
+          from starintel_doc.schema_org import document_schema
 
           Path("artifacts/generated-starintel-doc-v0.9.0.schema.json").write_text(
               json.dumps(document_schema(), ensure_ascii=False, indent=2, sort_keys=True) + "\n",
