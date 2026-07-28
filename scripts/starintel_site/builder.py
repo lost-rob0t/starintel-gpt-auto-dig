@@ -1,11 +1,15 @@
 from __future__ import annotations
 
+import hashlib
 import html
 import json
 import shutil
 from collections import defaultdict
 from pathlib import Path
 from urllib.parse import quote
+
+from starintel_doc.spec import SCHEMA_VERSION
+from starintel_doc.validation import validate_document
 
 from .dashboard import annotate_graph, dashboard_page, document_index, documents_page, graph_page
 from .model import discover, graph, org_index, render_org, slug
@@ -164,7 +168,47 @@ def build_site(input_root: Path, output: Path, org_output: Path, config_path: Pa
     complete_docs = _latest_documents([doc for item in packets for doc in item.documents])
     root_downloads = output / "downloads"
     root_downloads.mkdir()
-    (root_downloads / "starintel-complete-corpus.jsonl").write_text(_jsonl(complete_docs))
+    corpus_name = "starintel-complete-corpus.jsonl"
+    corpus_text = _jsonl(complete_docs)
+    (root_downloads / corpus_name).write_text(corpus_text)
+
+    corpus_timestamp = max(str(doc["date_updated"]) for doc in complete_docs)
+    corpus_manifest = {
+        "_id": "starintel:dataset-manifest:auto-dig-complete-corpus",
+        "dataset": "starintel-auto-dig-complete-corpus",
+        "dtype": "dataset-manifest",
+        "schema_version": SCHEMA_VERSION,
+        "version": 1,
+        "date_added": corpus_timestamp,
+        "date_updated": corpus_timestamp,
+        "title": "StarIntel Auto Dig complete corpus",
+        "sources": [],
+        "evidence": [],
+        "data": {
+            "manifest_type": "dataset",
+            "name": "StarIntel Auto Dig complete corpus",
+            "counts_by_dtype": {
+                dtype: sum(doc["dtype"] == dtype for doc in complete_docs)
+                for dtype in sorted({str(doc["dtype"]) for doc in complete_docs})
+            },
+            "record_count": len(complete_docs),
+            "hash_algorithm": "sha256",
+            "content_hash": hashlib.sha256(corpus_text.encode("utf-8")).hexdigest(),
+            "files": [
+                {
+                    "path": corpus_name,
+                    "media_type": "application/x-ndjson",
+                    "size_bytes": len(corpus_text.encode("utf-8")),
+                }
+            ],
+            "schema_versions": sorted({str(doc["schema_version"]) for doc in complete_docs}),
+            "generated_at": corpus_timestamp,
+        },
+    }
+    validate_document(corpus_manifest)
+    (root_downloads / "starintel-complete-corpus.manifest.json").write_text(
+        json.dumps(corpus_manifest, ensure_ascii=False, indent=2) + "\n"
+    )
 
     grouped = defaultdict(list)
     for item in packets:
@@ -290,7 +334,8 @@ def build_site(input_root: Path, output: Path, org_output: Path, config_path: Pa
     body = (
         "<h1>StarIntel GPT Auto Dig</h1>"
         '<p class="lede">Source-backed research transformed into dashboards, Org-roam nodes, source inventories, and progressive graph explorers.</p>'
-        '<div class="dashboard-actions"><a class="primary-action" href="downloads/starintel-complete-corpus.jsonl" download>Download complete corpus</a></div>'
+        '<div class="dashboard-actions"><a class="primary-action" href="downloads/starintel-complete-corpus.jsonl" download>Download complete corpus</a>'
+        '<a href="downloads/starintel-complete-corpus.manifest.json" download>Download corpus manifest</a></div>'
         '<div class="notice"><strong>Dataset rule:</strong> topical datasets merge related research across packets. Source datasets remain available. The obsolete daily dataset is excluded from the generated catalog.</div>'
         '<section class="stats dashboard-stats">'
         f'<div><strong>{len(grouped):,}</strong><span>research targets</span></div>'
