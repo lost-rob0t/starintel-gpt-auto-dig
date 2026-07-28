@@ -1,0 +1,37 @@
+{
+  "counts": {
+    "analysis": 7,
+    "claim": 8,
+    "contract": 3,
+    "dataset-manifest": 1,
+    "event": 9,
+    "grant": 2,
+    "investigation-target": 18,
+    "org": 23,
+    "person": 10,
+    "policy": 5,
+    "product": 3,
+    "relation": 39,
+    "research-pass": 1,
+    "source": 26
+  },
+  "dataset": "flock-safety-columbus-cpd-control-plane-2026-07-26",
+  "files": [
+    "README.md",
+    "sources.md",
+    "starintel-documents.jsonl"
+  ],
+  "generated_at": "2026-07-26T11:30:00-04:00",
+  "hash_algorithm": "sha256",
+  "schema_version": "0.9.0",
+  "starintel_documents_sha256": "9c7479346498383f3ad2ef1cfec337129b5ba0734163d0f2514e989a8e15aaac",
+  "total": 155,
+  "validation": {
+    "related_id_references": "passed",
+    "relation_endpoint_references": "passed",
+    "source_urls": "passed",
+    "starintel_doc_validate_document": "passed",
+    "target_seed_references": "passed",
+    "unique_ids": "passed"
+  }
+}

@@ -7,7 +7,10 @@ from pathlib import Path
 
 from starintel_doc.migration import migrate_document
 from starintel_doc.model import Document
+from starintel_doc.schema_org import DTYPE_SCHEMA_ORG_TYPES, SCHEMA_ORG_CONTEXT, to_schema_org
+from starintel_doc.schema_org_migration import enrich_schema_org
 from starintel_doc.selectors import candidate_documents, select_candidates
+from starintel_doc.spec import TYPE_FIELDS
 from starintel_doc.store import LocatedDocument, migrate_repository, validate_repository
 from starintel_doc.validation import ValidationError, validate_document
 
@@ -26,6 +29,62 @@ class StarIntelDocumentTests(unittest.TestCase):
         ).to_dict()
         self.assertEqual(doc["schema_version"], "0.9.0")
         validate_document(doc)
+
+    def test_schema_org_defaults_cover_every_dtype(self) -> None:
+        self.assertEqual(set(DTYPE_SCHEMA_ORG_TYPES), set(TYPE_FIELDS))
+        doc = Document.create(
+            "org",
+            "test",
+            doc_id="starintel:org:schema-org",
+            title="Schema Org",
+            data={"name": "Schema Org", "org_type": "company"},
+        ).to_dict()
+        self.assertEqual(doc["schema_org"]["@context"], SCHEMA_ORG_CONTEXT)
+        self.assertEqual(doc["schema_org"]["@type"], "Organization")
+        self.assertEqual(doc["schema_org"]["@id"], doc["_id"])
+        validate_document(doc)
+
+    def test_schema_org_accepts_json_ld_metadata(self) -> None:
+        doc = Document.create(
+            "person",
+            "test",
+            doc_id="starintel:person:example",
+            title="Example Person",
+            aliases=["E. Person"],
+            identifiers=[{"scheme": "wikidata", "value": "Q42", "url": "https://www.wikidata.org/wiki/Q42"}],
+            schema_org={
+                "@context": "https://schema.org/",
+                "@type": ["Person", "Thing"],
+                "@id": "starintel:person:example",
+                "sameAs": ["https://example.test/person"],
+                "additionalProperty": [
+                    {"@type": "PropertyValue", "name": "source rank", "value": 1}
+                ],
+                "properties": {"award": "Example Award"},
+            },
+            data={"full_name": "Example Person"},
+        ).to_dict()
+        validate_document(doc)
+        jsonld = to_schema_org(doc)
+        self.assertEqual(jsonld["name"], "Example Person")
+        self.assertEqual(jsonld["sameAs"], ["https://example.test/person"])
+        self.assertEqual(jsonld["identifier"][0]["propertyID"], "wikidata")
+
+    def test_schema_org_rejects_undeclared_direct_field(self) -> None:
+        doc = Document.create("org", "test", doc_id="starintel:org:a", data={"name": "A"}).to_dict()
+        doc["schema_org"]["invented"] = True
+        with self.assertRaises(ValidationError):
+            validate_document(doc)
+
+    def test_schema_org_enrichment_is_idempotent(self) -> None:
+        doc = Document.create("org", "test", doc_id="starintel:org:a", data={"name": "A"}).to_dict()
+        doc.pop("schema_org")
+        first = enrich_schema_org(doc)
+        second = enrich_schema_org(first)
+        self.assertEqual(first, second)
+        self.assertEqual(first["schema_org"]["@type"], "Organization")
+        self.assertEqual(first["schema_org"]["@id"], doc["_id"])
+        validate_document(first)
 
     def test_rejects_undeclared_top_level_field(self) -> None:
         doc = Document.create("org", "test", doc_id="starintel:org:a", data={"name": "A"}).to_dict()
@@ -57,6 +116,7 @@ class StarIntelDocumentTests(unittest.TestCase):
         self.assertEqual(migrated["data"]["subject"], "starintel:person:a")
         self.assertEqual(migrated["data"]["object"], "starintel:org:b")
         self.assertEqual(migrated["sources"][0]["url"], "https://example.test")
+        self.assertEqual(migrated["schema_org"]["@type"], "Role")
         validate_document(migrated)
 
     def test_creates_unresolved_relation_endpoint(self) -> None:
@@ -148,6 +208,8 @@ class StarIntelDocumentTests(unittest.TestCase):
             path.write_text(json.dumps(legacy) + "\n", encoding="utf-8")
             result = migrate_repository(root, write=True)
             self.assertEqual(result["record_count"], 1)
+            migrated = json.loads(path.read_text(encoding="utf-8"))
+            self.assertEqual(migrated["schema_org"]["@type"], "Organization")
             validation = validate_repository(root)
             self.assertTrue(validation["ok"], validation["errors"])
 

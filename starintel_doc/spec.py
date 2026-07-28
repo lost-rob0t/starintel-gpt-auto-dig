@@ -863,6 +863,91 @@ RESEARCH_PASS_FIELDS = {
     "iteration": INT,
 }
 
+
+RESEARCH_NODE_LIMITS = obj(
+    {
+        "max_depth": integer(minimum=1),
+        "max_actor_runs": integer(minimum=1),
+        "max_requests": integer(minimum=1),
+        "max_elapsed_ms": integer(minimum=1),
+        "max_repeated_state": integer(minimum=1),
+        "max_cost": number(minimum=0.0),
+        "currency": STR,
+    }
+)
+
+RESEARCH_NODE_STOP = obj(
+    {
+        "when_actor_queue_empty": BOOL,
+        "when_no_new_documents": BOOL,
+        "when_objective_satisfied": BOOL,
+        "halt_on_actor_failure": BOOL,
+    }
+)
+
+RESEARCH_NODE_COUNTERS = obj(
+    {
+        "depth": integer(minimum=0),
+        "actor_runs": integer(minimum=0),
+        "requests": integer(minimum=0),
+        "repeated_state": integer(minimum=0),
+        "elapsed_ms": integer(minimum=0),
+        "cost": number(minimum=0.0),
+    }
+)
+
+RESEARCH_NODE_HISTORY_ENTRY = obj(
+    {
+        "from": NULLABLE_STRING,
+        "to": STR,
+        "at": DATE_TIME,
+        "message": STR,
+        "error": STR,
+        "actor_id": STR,
+        "run_id": STR,
+        "output_ids": STRS,
+        "artifact_ids": STRS,
+    },
+    required=("to", "at"),
+)
+
+RESEARCH_NODE_FIELDS = {
+    "objective": STR,
+    "instructions": STR,
+    "status": string(
+        enum=[
+            "draft",
+            "queued",
+            "running",
+            "paused",
+            "blocked",
+            "completed",
+            "failed",
+            "killed",
+        ]
+    ),
+    "input_ids": STRS,
+    "target_ids": STRS,
+    "actor_ids": STRS,
+    "actor_selection_rules": array(JSON_MAP),
+    "output_ids": STRS,
+    "artifact_ids": STRS,
+    "child_ids": STRS,
+    "dependency_ids": STRS,
+    "run_ids": STRS,
+    "current_actor_id": STR,
+    "current_run_id": STR,
+    "limits": RESEARCH_NODE_LIMITS,
+    "stop": RESEARCH_NODE_STOP,
+    "counters": RESEARCH_NODE_COUNTERS,
+    "history": array(RESEARCH_NODE_HISTORY_ENTRY),
+    "created_at": NULLABLE_DATE_TIME,
+    "started_at": NULLABLE_DATE_TIME,
+    "completed_at": NULLABLE_DATE_TIME,
+    "last_error": STR,
+    "paused_reason": STR,
+}
+
 MANIFEST_FIELDS = {
     "manifest_type": STR,
     "name": STR,
@@ -935,6 +1020,7 @@ TYPE_FIELDS: dict[str, dict[str, Any]] = {
     "source": SOURCE["properties"],
     "evidence-record": EVIDENCE["properties"],
     "research-pass": RESEARCH_PASS_FIELDS,
+    "research-node": RESEARCH_NODE_FIELDS,
     "actor-manifest": MANIFEST_FIELDS,
     "dataset-manifest": MANIFEST_FIELDS,
     "alert": {"alert_type": STR, "subject_ids": STRS, "condition": STR, "threshold": NUM, "triggered_at": NULLABLE_DATE_TIME, "severity": NUM, "status": STR, "acknowledged_by": STRS},
@@ -942,6 +1028,7 @@ TYPE_FIELDS: dict[str, dict[str, Any]] = {
 }
 
 REQUIRED_DATA_FIELDS: dict[str, tuple[str, ...]] = {
+    "research-node": ("objective", "status"),
     "relation": ("subject", "predicate", "object"),
     "target": ("target",),
     "investigation-target": ("target",),
@@ -960,6 +1047,7 @@ DTYPE_ALIASES = {
     "email_message": "email-message",
     "financial_observation": "financial-observation",
     "research_pass": "research-pass",
+    "research_node": "research-node",
     "dataset_manifest": "dataset-manifest",
     "actor_manifest": "actor-manifest",
     "legal_case": "legal-case",

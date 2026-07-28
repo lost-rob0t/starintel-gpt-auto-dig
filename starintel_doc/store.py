@@ -10,6 +10,7 @@ from pathlib import Path
 from typing import Any, Iterable, Iterator
 
 from .migration import migrate_document
+from .schema_org_migration import enrich_schema_org
 from .validation import ValidationError, validate_document
 
 
@@ -199,7 +200,9 @@ def migrate_repository(root: Path, *, write: bool = False) -> dict[str, Any]:
 
     db_items = list(iter_db(root))
     for located in db_items:
-        migrated = migrate_document(located.document, original_path=str(located.path.relative_to(root)))
+        migrated = enrich_schema_org(
+            migrate_document(located.document, original_path=str(located.path.relative_to(root)))
+        )
         validate_document(migrated)
         target = root / "db" / migrated["dtype"] / f"{migrated['_id']}.ndjson"
         payload = compact(migrated) + "\n"
@@ -230,7 +233,9 @@ def migrate_repository(root: Path, *, write: bool = False) -> dict[str, Any]:
         docs: list[dict[str, Any]] = []
         seen: set[str] = set()
         for located in iter_jsonl(source_path, surface="packet"):
-            migrated = migrate_document(located.document, original_path=str(source_path.relative_to(root)))
+            migrated = enrich_schema_org(
+                migrate_document(located.document, original_path=str(source_path.relative_to(root)))
+            )
             validate_document(migrated)
             if migrated["_id"] in seen:
                 raise ValueError(f"{source_path}: duplicate _id {migrated['_id']}")
@@ -254,7 +259,7 @@ def migrate_repository(root: Path, *, write: bool = False) -> dict[str, Any]:
 
     manifest = {
         "schema_version": "0.9.0",
-        "migration": "starintel_doc v0.9.0 canonical envelope",
+        "migration": "starintel_doc v0.9.0 canonical envelope with Schema.org JSON-LD metadata",
         "record_count": migrated_total,
         "counts_by_dtype": dict(sorted(counts.items())),
         "changed_paths": sorted(set(changed)),

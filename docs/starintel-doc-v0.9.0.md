@@ -50,11 +50,18 @@ The registry covers the original package types and the later auto-dig corpus:
 - Network/web: `domain`, `network`, `host`, `url`.
 - Location/contact: `geo`, `address`, `location`, `phone`, `email`, `email-message`.
 - Social: `user`, `message`, `social-media-post`.
-- Research: `source`, `evidence-record`, `claim`, `observation`, `analysis`, `concept`, `research-pass`.
+- Research: `source`, `evidence-record`, `claim`, `observation`, `analysis`, `concept`, `research-pass`, `research-node`.
 - Institutional/economic: `product`, `event`, `meeting`, `financial-observation`, `contract`, `procurement`, `grant`, `lobbying-filing`, `campaign-finance`, `legal-case`, `policy`, `education`, `employment`, `ownership`, `asset`.
 - Operations: `actor-manifest`, `dataset-manifest`, `alert`, `task`, `media`, `file`, `breach`.
 
 The executable registry in `starintel_doc/spec.py` is authoritative. The generated `schemas/starintel-doc-v0.9.0.schema.json` is derived from it and must not be edited independently.
+
+
+## Research nodes
+
+`research-node` is the executable investigation-plan object type. It records an objective, instructions, corpus inputs and targets, an ordered actor queue or actor-selection rules, bounded execution limits, stop conditions, counters, lifecycle history, outputs, artifacts, child nodes, dependencies, and run identifiers.
+
+Research nodes remain ordinary StarIntel documents. Runtime-specific details may be namespaced in `extensions`, but portable execution state belongs in the declared `data` fields and validates identically in Python, JavaScript, Common Lisp, and Nim.
 
 ## Relations
 

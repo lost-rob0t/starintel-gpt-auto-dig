@@ -1,0 +1,55 @@
+# External data imports
+
+## Topic datasets
+
+The generated site builds two dataset layers:
+
+- **topic datasets** merge records from every matching research target and source dataset;
+- **source datasets** preserve the original `dataset` values and target-specific browsers.
+
+`manifests/topic-datasets.json` defines umbrella topics such as `wef`, `ohio`, `offshore-leaks`, and `occrp-aleph`. A research target that matches no umbrella rule gets its own topic dataset automatically. Records may belong to more than one topic when the evidence is genuinely cross-topic.
+
+The obsolete `daily` source dataset is excluded from the generated source catalog. Its records remain available through their research targets and are assigned to topical datasets by the same rules.
+
+Generated outputs:
+
+```text
+_site/topic-datasets.json
+_site/dataset-<topic>/index.html
+_site/dataset-<topic>/downloads/starintel-documents.jsonl
+_site/dataset-<topic>/downloads/topic-manifest.json
+```
+
+The topical JSONL preserves the original canonical documents and their source `dataset` values. It is a merged view, not a duplicate normalized corpus.
+
+## ICIJ Offshore Leaks
+
+The importer reads the official ICIJ CSV archive and emits validated StarIntel JSONL. By default it selects Paradise Papers and Offshore Leaks records.
+
+```bash
+python3 scripts/import_icij_offshore_leaks.py \
+  --download \
+  --output imports/icij-paradise-offshore.jsonl
+
+python3 scripts/starintel.py import imports/icij-paradise-offshore.jsonl
+```
+
+Use `--all` for every investigation in the archive, or repeat `--investigation` to select specific source datasets. Use `--limit` for a bounded test import.
+
+The importer preserves ICIJ node IDs, source investigation names, original CSV rows in provenance metadata, official source attribution, and ICIJ's identity-matching caveat.
+
+## OCCRP Aleph
+
+The Aleph importer queries entities visible to the current account and converts FollowTheMoney entities into validated StarIntel JSONL.
+
+```bash
+ALEPH_API_KEY='...' python3 scripts/import_aleph_public.py \
+  --query 'World Economic Forum' \
+  --query 'Ohio' \
+  --limit 1000 \
+  --output imports/occrp-aleph.jsonl
+
+python3 scripts/starintel.py import imports/occrp-aleph.jsonl
+```
+
+Use `--collection <id>` to restrict a query to one accessible Aleph collection. The importer does not bypass Aleph access controls. When the public endpoint exposes no matching entities, an API key or a different public collection/query is required.

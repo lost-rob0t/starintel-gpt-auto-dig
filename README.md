@@ -16,10 +16,12 @@ tags, labels, aliases, keywords, identifiers,
 sources, evidence, temporal, provenance, assessment,
 verification, handling, lineage, quality, workflow,
 geospatial, attachments, related_ids, notes,
-data, extensions
+schema_org, data, extensions
 ```
 
-`data` is strictly selected by `dtype`. `extensions` is the declared, namespaced escape hatch for metadata that cannot yet be represented without data loss. Undeclared top-level fields and undeclared `data` fields fail validation.
+`schema_org` is the declared Schema.org JSON-LD metadata block. Constructors populate `@context`, `@type`, `@id`, and `additionalType`; explicit JSON-LD metadata may add identity links, identifiers, agents, places, dates, citations, licensing, media, actions, and structured `PropertyValue` records. Vocabulary not represented by a declared direct field belongs in `schema_org.additionalProperty` or `schema_org.properties`.
+
+`data` is strictly selected by `dtype`. `extensions` is the declared, namespaced escape hatch for metadata that cannot yet be represented without data loss. Undeclared top-level fields, undeclared `schema_org` direct fields, and undeclared `data` fields fail validation.
 
 ## Repository layout
 
@@ -81,6 +83,7 @@ The directory must equal `dtype`; the literal `_id`, including colons, must equa
 python3 scripts/starintel.py types
 python3 scripts/starintel.py schema --dtype relation
 python3 scripts/starintel.py schema --output schemas/starintel-doc-v0.9.0.schema.json
+python3 scripts/starintel.py jsonld db/org/starintel:org:example.ndjson --pretty
 python3 scripts/starintel.py validate
 python3 scripts/starintel.py search palantir --dtype org --with-location
 python3 scripts/starintel.py select-targets \
@@ -97,7 +100,7 @@ python3 scripts/migrate-starintel-v0.9.py --write
 python3 scripts/validate-for-merge.py --site
 ```
 
-The migration traverses every normalized DB record and dig packet, converts old metadata into the v0.9.0 envelope, preserves unrecognized legacy values beneath `extensions.legacy.v0`, rewrites packets as plain canonical JSONL, removes old compressed transport fragments, and emits a migration manifest.
+The migration traverses every normalized DB record and dig packet, converts old metadata into the v0.9.0 envelope, enriches existing v0.9 records with deterministic Schema.org defaults, preserves explicit JSON-LD metadata, preserves unrecognized legacy values beneath `extensions.legacy.v0`, rewrites packets as plain canonical JSONL, removes old compressed transport fragments, and emits a migration manifest.
 
 ## Mandatory merge gate
 

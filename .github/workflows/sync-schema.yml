@@ -1,0 +1,46 @@
+name: Sync canonical schema
+
+on:
+  push:
+    branches:
+      - "agent/**"
+    paths:
+      - "starintel_doc/**"
+      - "scripts/starintel.py"
+      - ".github/workflows/sync-schema.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: starintel-schema-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  sync:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          ref: ${{ github.ref_name }}
+          fetch-depth: 0
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+      - name: Generate expanded v0.9 schema
+        run: python3 scripts/starintel.py schema --output schemas/starintel-doc-v0.9.0.schema.json
+      - name: Commit generated schema
+        shell: bash
+        run: |
+          set -euo pipefail
+          git add schemas/starintel-doc-v0.9.0.schema.json
+          if git diff --cached --quiet; then
+            echo "Schema already current"
+            exit 0
+          fi
+          git config user.name "starintel-schema-bot"
+          git config user.email "starintel-schema-bot@users.noreply.github.com"
+          git commit -m "Sync Schema.org-expanded StarIntel schema"
+          git push origin "HEAD:${GITHUB_REF_NAME}"
