@@ -54,6 +54,10 @@
     };
   }
 
+  function navigateToGraphAfterDatasetLoad() {
+    setTimeout(() => notify("navigate", { route: GRAPH_ROUTE }), 0);
+  }
+
   function localFinding(request) {
     const now = new Date().toISOString();
     return {
@@ -102,7 +106,6 @@
         throw new Error("Bridge origin mismatch");
       }
       childOrigin = request.childOrigin;
-      setTimeout(() => notify("navigate", { route: GRAPH_ROUTE }), 0);
       return {
         protocol: PROTOCOL,
         datasetId,
@@ -113,7 +116,11 @@
     },
     getActiveDatasetId: async () => datasetId,
     getActiveRunId: async () => runId,
-    loadDataset: async ({ datasetId: id }) => loadDataset(id),
+    loadDataset: async ({ datasetId: id }) => {
+      const dataset = await loadDataset(id);
+      navigateToGraphAfterDatasetLoad();
+      return dataset;
+    },
 
     // Quasar owns persistence. The host only supplies generated dataset records.
     saveDocument: async () => undefined,
