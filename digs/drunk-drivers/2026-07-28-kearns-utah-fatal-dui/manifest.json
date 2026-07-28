@@ -1,0 +1,30 @@
+{
+  "counts": {
+    "asset": 2,
+    "claim": 5,
+    "dataset-manifest": 1,
+    "event": 2,
+    "legal-case": 1,
+    "location": 1,
+    "person": 3,
+    "relation": 13,
+    "research-pass": 1,
+    "source": 6
+  },
+  "dataset": "drunk-drivers-kearns-utah-2024-01-14",
+  "files": [
+    "README.md",
+    "sources.md",
+    "starintel-documents.jsonl.gz.b64"
+  ],
+  "generated_at": "2026-07-28T16:21:09-04:00",
+  "hash_algorithm": "sha256",
+  "schema_version": "0.9.0",
+  "starintel_documents_sha256": "8073f1d58c51577b157075752a09bdfdea913c014f232ab110e548e891dc14a1",
+  "total": 35,
+  "validation": {
+    "source_urls": "passed",
+    "starintel_doc_validate_document": "schema-shaped local validation passed; CI is authoritative",
+    "unique_ids": "passed"
+  }
+}
