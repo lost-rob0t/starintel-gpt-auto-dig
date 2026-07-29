@@ -22,21 +22,34 @@ def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         description="Search, resolve, and traverse canonical StarIntel DB links"
     )
-    parser.add_argument("--root", default=str(ROOT))
-    parser.add_argument("--dataset", default="")
-    parser.add_argument("--db-only", action="store_true")
+    common = argparse.ArgumentParser(add_help=False)
+    common.add_argument("--root", default=str(ROOT))
+    common.add_argument("--dataset", default="")
+    common.add_argument("--db-only", action="store_true")
     sub = parser.add_subparsers(dest="command", required=True)
 
-    search = sub.add_parser("search", help="rank matching canonical records")
+    search = sub.add_parser(
+        "search",
+        parents=[common],
+        help="rank matching canonical records",
+    )
     search.add_argument("query")
     search.add_argument("--dtype", action="append")
     search.add_argument("--limit", type=int, default=20)
 
-    resolve = sub.add_parser("resolve", help="resolve exactly one canonical record")
+    resolve = sub.add_parser(
+        "resolve",
+        parents=[common],
+        help="resolve exactly one canonical record",
+    )
     resolve.add_argument("query")
     resolve.add_argument("--dtype", action="append")
 
-    neighbors = sub.add_parser("neighbors", help="list relations touching one record")
+    neighbors = sub.add_parser(
+        "neighbors",
+        parents=[common],
+        help="list relations touching one record",
+    )
     neighbors.add_argument("query")
     neighbors.add_argument("--direction", choices=("both", "in", "out"), default="both")
     neighbors.add_argument("--limit", type=int, default=100)
