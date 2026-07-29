@@ -4,7 +4,7 @@
 **Date:** 2026-07-29  
 **Recursion depth:** 0  
 **Schema:** StarIntel v0.9.0  
-**Records:** 16
+**Records:** 3
 
 ## Research question
 
