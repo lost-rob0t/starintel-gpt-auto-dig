@@ -1,0 +1,24 @@
+{
+  "counts": {
+    "email-message": 1,
+    "investigation-target": 1,
+    "source": 1
+  },
+  "dataset": "hunter-biden",
+  "files": [
+    "README.md",
+    "sources.md",
+    "starintel-documents.jsonl"
+  ],
+  "generated_at": "2026-07-30T23:12:00Z",
+  "hash_algorithm": "sha256",
+  "schema_version": "0.9.0",
+  "source_artifact_sha256": "a4096daeb377886c4a128fc3ad623bd72de942680d963a7b9e7b3583669993a4",
+  "starintel_documents_sha256": "b18df0a6c6719625791bc4db1af407677d2f68cab581a7cc0dc55545a44fc569",
+  "total": 3,
+  "validation": {
+    "jsonl": "syntax checked",
+    "source_artifact": "user-verified",
+    "schema": "pending repository CI"
+  }
+}
