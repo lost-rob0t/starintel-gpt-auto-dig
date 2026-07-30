@@ -102,6 +102,29 @@
           "followthemoney"
         ]
       }
+    },
+    {
+      "id": "hunter-biden",
+      "title": "Hunter Biden",
+      "subtitle": "Hunter Biden emails, communications, business relationships, public records, source provenance, and connected people and organizations",
+      "match": {
+        "targets": [
+          "hunter-biden",
+          "hunter-biden-emails",
+          "biden-family"
+        ],
+        "datasets": [
+          "hunter-biden",
+          "hunter-biden-emails",
+          "biden-family"
+        ],
+        "terms": [
+          "hunter biden",
+          "robert hunter biden",
+          "hunter biden emails",
+          "rhbdbc@icloud.com"
+        ]
+      }
     }
   ]
 }
