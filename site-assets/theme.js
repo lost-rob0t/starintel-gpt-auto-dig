@@ -46,6 +46,7 @@
     }
   ]);
   const THEME_MAP = new Map(THEMES.map((theme) => [theme.id, theme]));
+  const currentScript = document.currentScript;
 
   function storedTheme() {
     try {
@@ -138,7 +139,18 @@
     nav.appendChild(label);
   }
 
+  function loadCommunityFooter() {
+    if (document.querySelector("script[data-starintel-community-footer]")) return;
+    const script = document.createElement("script");
+    const assetBase = currentScript?.src ? new URL(".", currentScript.src) : new URL(".", document.baseURI);
+    script.src = new URL("starintel-community-footer.js", assetBase).href;
+    script.defer = true;
+    script.dataset.starintelCommunityFooter = "true";
+    document.head.appendChild(script);
+  }
+
   const activeTheme = applyTheme(storedTheme());
+  loadCommunityFooter();
   window.StarIntelThemes = Object.freeze({
     themes: THEMES,
     active: () => document.documentElement.dataset.theme || activeTheme,
