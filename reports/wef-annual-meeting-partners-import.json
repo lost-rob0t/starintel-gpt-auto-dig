@@ -1,0 +1,87 @@
+{
+  "canonical_wef_id": "starintel:org:world-economic-forum",
+  "counts_by_dtype": {
+    "org": 167,
+    "relation": 826,
+    "research-pass": 1
+  },
+  "coverage_by_year": {
+    "2015": {
+      "coverage_status": "roster_exposed",
+      "partner_count": 95,
+      "source_url": "https://www.weforum.org/meetings/world-economic-forum-annual-meeting-2015/partners/"
+    },
+    "2016": {
+      "coverage_status": "partial_current_archive",
+      "partner_count": 7,
+      "source_url": "https://www.weforum.org/meetings/world-economic-forum-annual-meeting-2016/partners/"
+    },
+    "2017": {
+      "coverage_status": "empty_current_archive",
+      "partner_count": 0,
+      "source_url": "https://www.weforum.org/meetings/world-economic-forum-annual-meeting-2017/partners/"
+    },
+    "2018": {
+      "coverage_status": "empty_current_archive",
+      "partner_count": 0,
+      "source_url": "https://www.weforum.org/meetings/world-economic-forum-annual-meeting-2018/partners/"
+    },
+    "2019": {
+      "coverage_status": "empty_current_archive",
+      "partner_count": 0,
+      "source_url": "https://www.weforum.org/meetings/world-economic-forum-annual-meeting-2019/partners/"
+    },
+    "2020": {
+      "coverage_status": "roster_exposed",
+      "partner_count": 113,
+      "source_url": "https://www.weforum.org/meetings/world-economic-forum-annual-meeting-2020/partners/"
+    },
+    "2021": {
+      "coverage_status": "route_unavailable",
+      "partner_count": 0,
+      "source_url": "https://www.weforum.org/meetings/world-economic-forum-annual-meeting-2021/partners/"
+    },
+    "2022": {
+      "coverage_status": "roster_exposed",
+      "partner_count": 121,
+      "source_url": "https://www.weforum.org/meetings/world-economic-forum-annual-meeting-2022/partners/"
+    },
+    "2023": {
+      "coverage_status": "roster_exposed_on_about_page",
+      "partner_count": 119,
+      "source_url": "https://www.weforum.org/meetings/world-economic-forum-annual-meeting-2023/about/"
+    },
+    "2024": {
+      "coverage_status": "roster_exposed_on_about_page",
+      "partner_count": 122,
+      "source_url": "https://www.weforum.org/meetings/world-economic-forum-annual-meeting-2024/about/"
+    },
+    "2025": {
+      "coverage_status": "roster_exposed",
+      "partner_count": 123,
+      "source_url": "https://www.weforum.org/meetings/world-economic-forum-annual-meeting-2025/partners/"
+    },
+    "2026": {
+      "coverage_status": "roster_exposed",
+      "partner_count": 126,
+      "source_url": "https://www.weforum.org/meetings/world-economic-forum-annual-meeting-2026/partners/"
+    }
+  },
+  "created_org_documents": 167,
+  "created_relation_documents": 826,
+  "dataset": "wef",
+  "existing_relation_observations": 0,
+  "import_executed": true,
+  "normalized_partner_names": 169,
+  "organization_resolution_methods": {
+    "exact_name": 1,
+    "explicit_alias": 1,
+    "new_org": 167
+  },
+  "packet_documents": 994,
+  "packet_sha256": "87b06cc8ae39484160c7115e6f565ea2192d78f12a2d8fbd49e5899328e54b16",
+  "relation_id_collisions": [],
+  "reused_org_documents": 2,
+  "schema_version": "0.9.0",
+  "source_partner_observations": 826
+}
