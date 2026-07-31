@@ -8,6 +8,13 @@ on:
       - "imports/wef-annual-meeting-partners/importer.py.gz.b64"
       - "digs/wef/2026-07-31-annual-meeting-partners-2015-2026/partners-by-year.json"
       - ".github/workflows/import-wef-annual-meeting-partners.yml"
+  pull_request:
+    branches:
+      - main
+    paths:
+      - "imports/wef-annual-meeting-partners/importer.py.gz.b64"
+      - "digs/wef/2026-07-31-annual-meeting-partners-2015-2026/partners-by-year.json"
+      - ".github/workflows/import-wef-annual-meeting-partners.yml"
   workflow_dispatch:
 
 permissions:
@@ -24,7 +31,7 @@ jobs:
     steps:
       - uses: actions/checkout@v6
         with:
-          ref: ${{ github.ref_name }}
+          ref: ${{ github.head_ref || github.ref_name }}
           fetch-depth: 0
 
       - uses: actions/setup-python@v6
@@ -53,7 +60,7 @@ jobs:
           rmdir imports/wef-annual-meeting-partners 2>/dev/null || true
           rmdir imports 2>/dev/null || true
 
-          git add -A \
+          git add -A -- \
             scripts/import_wef_annual_meeting_partners.py \
             imports \
             db/org \
@@ -71,4 +78,5 @@ jobs:
           git config user.name "starintel-import-bot"
           git config user.email "starintel-import-bot@users.noreply.github.com"
           git commit -m "Import WEF Annual Meeting partners"
-          git push origin "HEAD:${GITHUB_REF_NAME}"
+          BRANCH="${GITHUB_HEAD_REF:-$GITHUB_REF_NAME}"
+          git push origin "HEAD:${BRANCH}"
