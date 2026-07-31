@@ -3,7 +3,6 @@ from __future__ import annotations
 
 import argparse
 import hashlib
-import html
 import json
 import random
 import re
@@ -14,8 +13,11 @@ import urllib.error
 import urllib.parse
 import urllib.request
 from collections import Counter
+from datetime import datetime
 from pathlib import Path
-from typing import Any, Iterator
+from typing import Any
+
+from bs4 import BeautifulSoup
 
 ROOT = Path(__file__).resolve().parents[1]
 if str(ROOT) not in sys.path:
@@ -25,18 +27,31 @@ from starintel_doc.validation import validate_document
 
 DATASET = "dnc"
 DNC_ID = "starintel:org:dnc"
-GENERATED_AT = "2026-07-31T07:10:00Z"
+GENERATED_AT = "2026-07-31T22:02:00Z"
 OUTPUT = Path("digs/dnc/2026-07-31-official-press-archive")
-API_ROOT = "https://democrats.org/wp-json/"
-TERMS_ENDPOINT = "https://democrats.org/wp-json/wp/v2/dnc_news_type"
-POSTS_ENDPOINT = "https://democrats.org/wp-json/wp/v2/posts"
 ARCHIVE_URL = "https://democrats.org/news-type/press-release/"
 USER_AGENT = "StarIntel-AutoDig/0.9 (+https://github.com/lost-rob0t/starintel-gpt-auto-dig)"
-PER_PAGE = 100
-MAX_PAGES = 250
-MAX_POSTS = 25_000
-REQUEST_DELAY = 0.25
-FIELDS = "id,date_gmt,modified_gmt,slug,link,title,type,status,dnc_news_type,lang"
+MAX_PAGES = 1_500
+MAX_RECORDS = 20_000
+REQUEST_DELAY = 0.12
+DATE_RE = re.compile(
+    r"\b(?:January|February|March|April|May|June|July|August|September|October|November|December)\s+\d{1,2},\s+\d{4}\b"
+)
+PAGE_RE = re.compile(r"/news-type/press-release/page/(\d+)/?$")
+SKIP_PATH_PREFIXES = (
+    "/about/",
+    "/act/",
+    "/careers/",
+    "/contact/",
+    "/donate/",
+    "/leadership/",
+    "/news-type/",
+    "/privacy-policy/",
+    "/shop/",
+    "/submission-terms/",
+    "/terms-of-service/",
+    "/trainings/",
+)
 
 
 def parse_args() -> argparse.Namespace:
@@ -44,191 +59,282 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--output", type=Path, default=OUTPUT)
     parser.add_argument("--generated-at", default=GENERATED_AT)
     parser.add_argument("--delay", type=float, default=REQUEST_DELAY)
-    parser.add_argument("--offline-jsonl", type=Path)
+    parser.add_argument("--max-pages", type=int, default=MAX_PAGES)
+    parser.add_argument("--offline-dir", type=Path)
     return parser.parse_args()
 
 
-def request_json(url: str, *, retries: int = 5, delay: float = REQUEST_DELAY) -> tuple[Any, dict[str, str]]:
+def request_text(url: str, *, retries: int = 6) -> str:
     last_error: Exception | None = None
     for attempt in range(retries):
         request = urllib.request.Request(
             url,
             headers={
-                "Accept": "application/json",
+                "Accept": "text/html,application/xhtml+xml",
+                "Accept-Language": "en-US,en;q=0.9",
                 "User-Agent": USER_AGENT,
             },
         )
         try:
             with urllib.request.urlopen(request, timeout=90) as response:
-                body = response.read(50_000_001)
-                if len(body) > 50_000_000:
-                    raise RuntimeError(f"response exceeds 50 MB: {url}")
-                headers = {key.lower(): value for key, value in response.headers.items()}
-                return json.loads(body.decode("utf-8")), headers
-        except (urllib.error.HTTPError, urllib.error.URLError, TimeoutError, json.JSONDecodeError) as exc:
+                body = response.read(20_000_001)
+                if len(body) > 20_000_000:
+                    raise RuntimeError(f"response exceeds 20 MB: {url}")
+                content_type = response.headers.get_content_charset() or "utf-8"
+                return body.decode(content_type, errors="replace")
+        except (urllib.error.HTTPError, urllib.error.URLError, TimeoutError) as exc:
             last_error = exc
-            if isinstance(exc, urllib.error.HTTPError) and exc.code not in {429, 500, 502, 503, 504}:
+            if isinstance(exc, urllib.error.HTTPError) and exc.code not in {408, 425, 429, 500, 502, 503, 504}:
                 raise
-            time.sleep(min(20.0, (2 ** attempt) + random.random()))
+            time.sleep(min(30.0, (2**attempt) + random.random()))
     raise RuntimeError(f"failed after {retries} attempts: {url}") from last_error
 
 
-def press_release_term(delay: float) -> tuple[int, dict[str, Any]]:
-    query = urllib.parse.urlencode({"per_page": 100, "_fields": "id,name,slug,count,taxonomy"})
-    terms, _ = request_json(f"{TERMS_ENDPOINT}?{query}", delay=delay)
-    if not isinstance(terms, list):
-        raise RuntimeError("unexpected dnc_news_type response")
-    matches = [term for term in terms if str(term.get("slug", "")).lower() == "press-release"]
-    if len(matches) != 1:
-        raise RuntimeError(f"expected one press-release taxonomy term, found {len(matches)}")
-    return int(matches[0]["id"]), matches[0]
+def clean_text(value: str) -> str:
+    return re.sub(r"\s+", " ", value).strip()
 
 
-def normalize_post(post: dict[str, Any]) -> dict[str, Any]:
-    post_id = int(post["id"])
-    title_raw = post.get("title")
-    title_rendered = title_raw.get("rendered") if isinstance(title_raw, dict) else title_raw
-    title = re.sub(r"\s+", " ", html.unescape(str(title_rendered or ""))).strip()
-    link = str(post.get("link") or "").strip()
-    date_gmt = str(post.get("date_gmt") or "").strip()
-    modified_gmt = str(post.get("modified_gmt") or "").strip()
-    slug = str(post.get("slug") or "").strip()
-    if not title or not link or not date_gmt or not slug:
-        raise RuntimeError(f"press-release post {post_id} is missing title, link, date, or slug")
-    if urllib.parse.urlparse(link).netloc.lower() not in {"democrats.org", "www.democrats.org"}:
-        raise RuntimeError(f"post {post_id} has unexpected host: {link}")
-    return {
-        "id": post_id,
-        "date_gmt": date_gmt,
-        "modified_gmt": modified_gmt,
-        "slug": slug,
-        "link": link,
-        "title": title,
-        "type": str(post.get("type") or "post"),
-        "status": str(post.get("status") or "publish"),
-        "dnc_news_type": [int(value) for value in post.get("dnc_news_type", [])],
-        "lang": str(post.get("lang") or "en"),
+def canonical_url(base: str, href: str) -> str | None:
+    value = urllib.parse.urljoin(base, href.strip())
+    parsed = urllib.parse.urlparse(value)
+    host = parsed.netloc.lower().removeprefix("www.")
+    if parsed.scheme not in {"http", "https"} or host != "democrats.org":
+        return None
+    path = re.sub(r"/{2,}", "/", parsed.path or "/")
+    if path == "/" or path.startswith(SKIP_PATH_PREFIXES):
+        return None
+    if PAGE_RE.search(path):
+        return None
+    return urllib.parse.urlunparse(("https", "democrats.org", path.rstrip("/") + "/", "", "", ""))
+
+
+def parse_date(text: str) -> str | None:
+    match = DATE_RE.search(text)
+    if not match:
+        return None
+    return datetime.strptime(match.group(0), "%B %d, %Y").date().isoformat()
+
+
+def nearby_card_text(heading: Any) -> str:
+    candidates: list[str] = []
+    node = heading
+    for _ in range(7):
+        node = getattr(node, "parent", None)
+        if node is None:
+            break
+        text = clean_text(node.get_text(" ", strip=True))
+        if len(text) <= 4_000:
+            candidates.append(text)
+        if parse_date(text) and "Press Release" in text:
+            return text
+    return min(candidates, key=len) if candidates else ""
+
+
+def nearby_date(heading: Any, card_text: str) -> str | None:
+    date = parse_date(card_text)
+    if date:
+        return date
+    count = 0
+    for previous in heading.find_all_previous(string=True):
+        text = clean_text(str(previous))
+        if not text:
+            continue
+        count += 1
+        date = parse_date(text)
+        if date:
+            return date
+        if count >= 20:
+            break
+    return None
+
+
+def parse_archive_page(html_text: str, page_url: str, page_number: int) -> tuple[list[dict[str, Any]], int]:
+    soup = BeautifulSoup(html_text, "html.parser")
+    pages = {1, page_number}
+    for anchor in soup.find_all("a", href=True):
+        href = urllib.parse.urljoin(page_url, str(anchor.get("href") or ""))
+        match = PAGE_RE.search(urllib.parse.urlparse(href).path)
+        if match:
+            pages.add(int(match.group(1)))
+
+    records: list[dict[str, Any]] = []
+    seen_urls: set[str] = set()
+    for heading in soup.find_all(["h2", "h3", "h4"]):
+        anchor = heading.find("a", href=True)
+        if anchor is None:
+            continue
+        url = canonical_url(page_url, str(anchor.get("href") or ""))
+        if not url or url in seen_urls:
+            continue
+        title = clean_text(anchor.get_text(" ", strip=True))
+        if len(title) < 8 or title.lower() in {"read now", "read more", "press release"}:
+            continue
+        card_text = nearby_card_text(heading)
+        published_date = nearby_date(heading, card_text)
+        if not published_date:
+            continue
+        if "Press Release" not in card_text:
+            sibling_text = " ".join(
+                clean_text(str(value))
+                for value in heading.find_all_next(string=True, limit=8)
+                if clean_text(str(value))
+            )
+            if "Press Release" not in sibling_text:
+                continue
+        slug = urllib.parse.urlparse(url).path.strip("/").split("/")[-1]
+        records.append(
+            {
+                "archive_page": page_number,
+                "link": url,
+                "published_date": published_date,
+                "slug": slug,
+                "title": title,
+            }
+        )
+        seen_urls.add(url)
+    return records, max(pages)
+
+
+def page_url(page: int) -> str:
+    return ARCHIVE_URL if page == 1 else f"{ARCHIVE_URL}page/{page}/"
+
+
+def crawl(delay: float, max_pages: int, offline_dir: Path | None) -> tuple[list[dict[str, Any]], dict[str, Any]]:
+    if max_pages < 1 or max_pages > MAX_PAGES:
+        raise RuntimeError(f"max-pages must be between 1 and {MAX_PAGES}")
+
+    def load(page: int) -> str:
+        if offline_dir:
+            path = offline_dir / f"page-{page:04d}.html"
+            if not path.exists():
+                raise RuntimeError(f"missing offline archive page: {path}")
+            return path.read_text(encoding="utf-8")
+        return request_text(page_url(page))
+
+    first_html = load(1)
+    first_records, declared_pages = parse_archive_page(first_html, page_url(1), 1)
+    if not first_records:
+        raise RuntimeError("first archive page yielded no press-release records")
+    if declared_pages > max_pages:
+        raise RuntimeError(f"archive declares {declared_pages} pages, exceeding cap {max_pages}")
+
+    records_by_url: dict[str, dict[str, Any]] = {record["link"]: record for record in first_records}
+    page_counts = {1: len(first_records)}
+    for page in range(2, declared_pages + 1):
+        html_text = load(page)
+        page_records, observed_pages = parse_archive_page(html_text, page_url(page), page)
+        if observed_pages > declared_pages:
+            declared_pages = min(observed_pages, max_pages)
+        if not page_records:
+            raise RuntimeError(f"archive page {page} yielded no press-release records")
+        page_counts[page] = len(page_records)
+        for record in page_records:
+            existing = records_by_url.get(record["link"])
+            if existing and existing != record:
+                earlier_page = min(int(existing["archive_page"]), int(record["archive_page"]))
+                existing["archive_page"] = earlier_page
+                continue
+            records_by_url[record["link"]] = record
+        if len(records_by_url) > MAX_RECORDS:
+            raise RuntimeError(f"archive record count exceeds safety cap: {len(records_by_url)}")
+        if not offline_dir:
+            time.sleep(max(0.0, delay))
+
+    records = sorted(
+        records_by_url.values(),
+        key=lambda item: (item["published_date"], item["link"]),
+    )
+    return records, {
+        "archive_pages": declared_pages,
+        "page_counts": page_counts,
+        "unique_records": len(records),
     }
 
 
-def fetch_posts(term_id: int, delay: float) -> tuple[list[dict[str, Any]], dict[str, Any]]:
-    records: list[dict[str, Any]] = []
-    seen_ids: set[int] = set()
-    total_expected: int | None = None
-    total_pages: int | None = None
-    for page in range(1, MAX_PAGES + 1):
-        query = urllib.parse.urlencode(
-            {
-                "context": "view",
-                "dnc_news_type": term_id,
-                "order": "asc",
-                "orderby": "id",
-                "page": page,
-                "per_page": PER_PAGE,
-                "status": "publish",
-                "_fields": FIELDS,
-            }
-        )
-        result, headers = request_json(f"{POSTS_ENDPOINT}?{query}", delay=delay)
-        if not isinstance(result, list):
-            raise RuntimeError(f"unexpected posts response on page {page}")
-        if page == 1:
-            total_expected = int(headers.get("x-wp-total", len(result)))
-            total_pages = int(headers.get("x-wp-totalpages", 1))
-            if total_expected > MAX_POSTS:
-                raise RuntimeError(f"press-release total exceeds safety cap: {total_expected}")
-            if total_pages > MAX_PAGES:
-                raise RuntimeError(f"press-release pages exceed safety cap: {total_pages}")
-        for raw_post in result:
-            post = normalize_post(raw_post)
-            if term_id not in post["dnc_news_type"]:
-                raise RuntimeError(f"post {post['id']} lacks requested press-release taxonomy term")
-            if post["id"] in seen_ids:
-                raise RuntimeError(f"duplicate WordPress post ID: {post['id']}")
-            seen_ids.add(post["id"])
-            records.append(post)
-        if total_pages is not None and page >= total_pages:
-            break
-        if not result:
-            raise RuntimeError(f"empty page {page} before declared final page {total_pages}")
-        time.sleep(max(0.0, delay))
-    if total_expected is None or total_pages is None:
-        raise RuntimeError("missing WordPress pagination headers")
-    if len(records) != total_expected:
-        raise RuntimeError(f"expected {total_expected} posts, received {len(records)}")
-    return records, {"total": total_expected, "total_pages": total_pages, "term_id": term_id}
+def iso_midnight(date_value: str) -> str:
+    return f"{date_value}T00:00:00Z"
 
 
-def read_offline(path: Path) -> tuple[list[dict[str, Any]], dict[str, Any]]:
-    records = [normalize_post(json.loads(line)) for line in path.read_text(encoding="utf-8").splitlines() if line.strip()]
-    ids = [record["id"] for record in records]
-    if len(ids) != len(set(ids)):
-        raise RuntimeError("offline archive contains duplicate post IDs")
-    if not records:
-        raise RuntimeError("offline archive is empty")
-    return sorted(records, key=lambda item: item["id"]), {"total": len(records), "total_pages": None, "term_id": None}
+def source_id(record: dict[str, Any]) -> str:
+    digest = hashlib.sha256(record["link"].encode("utf-8")).hexdigest()
+    return f"starintel:source:dnc-press-release-{digest[:32]}"
 
 
-def dt(value: str) -> str:
-    value = value.strip()
-    if not value:
-        raise RuntimeError("empty WordPress date")
-    return value + "Z" if not value.endswith("Z") and "+" not in value[-6:] else value
-
-
-def relation_id(source_id: str) -> str:
-    raw = f"{DNC_ID}\x1fpublished\x1f{source_id}".encode("utf-8")
+def relation_id(object_id: str) -> str:
+    raw = f"{DNC_ID}\x1fpublished\x1f{object_id}".encode("utf-8")
     return "starintel:relation:" + hashlib.sha256(raw).hexdigest()
 
 
-def source_doc(post: dict[str, Any], when: str) -> dict[str, Any]:
-    source_id = f"starintel:source:dnc-press-release-wp-{post['id']}"
+def source_doc(record: dict[str, Any], when: str) -> dict[str, Any]:
+    document_id = source_id(record)
+    published_at = iso_midnight(record["published_date"])
+    url_digest = hashlib.sha256(record["link"].encode("utf-8")).hexdigest()
     return {
-        "_id": source_id,
+        "_id": document_id,
         "data": {
             "accessed_at": when,
+            "archive_page": record["archive_page"],
             "credibility": 0.99,
-            "kind": "official_press_release",
-            "language": post["lang"],
-            "published_at": dt(post["date_gmt"]),
+            "kind": "official_press_release_archive_record",
+            "language": "en",
+            "published_at": published_at,
             "publisher": "Democratic National Committee",
-            "uri": post["link"],
+            "uri": record["link"],
         },
         "dataset": DATASET,
         "date_added": when,
         "date_updated": when,
         "dtype": "source",
         "evidence": [],
-        "handling": {"handling": "public-source-only", "pii": False, "sensitive": False, "visibility": "public"},
+        "handling": {
+            "handling": "public-source-only",
+            "pii": False,
+            "sensitive": False,
+            "visibility": "public",
+        },
         "identifiers": [
-            {"canonical": True, "issuer": "Democratic National Committee", "scheme": "wordpress_post_id", "value": str(post["id"])},
-            {"canonical": False, "issuer": "Democratic National Committee", "scheme": "wordpress_slug", "value": post["slug"]},
+            {
+                "canonical": True,
+                "issuer": "Democratic National Committee",
+                "scheme": "canonical_url_sha256",
+                "value": url_digest,
+            },
+            {
+                "canonical": False,
+                "issuer": "Democratic National Committee",
+                "scheme": "press_release_slug",
+                "value": record["slug"],
+            },
         ],
         "schema_version": "0.9.0",
         "sources": [],
         "status": "recorded",
-        "summary": f"Official DNC press release published {post['date_gmt'][:10]}.",
-        "tags": ["dnc", "press-release", "official-source"],
-        "temporal": {"modified_at": dt(post["modified_gmt"]) if post["modified_gmt"] else None, "published_at": dt(post["date_gmt"])},
-        "title": post["title"],
-        "verification": {"last_reviewed_at": when, "status": "official-source-record", "verified": True},
+        "summary": f"Official DNC press-release archive entry dated {record['published_date']}.",
+        "tags": ["dnc", "press-release", "official-source", "archive-index"],
+        "temporal": {"published_at": published_at},
+        "title": record["title"],
+        "verification": {
+            "last_reviewed_at": when,
+            "status": "official-archive-record",
+            "verified": True,
+        },
         "version": 1,
     }
 
 
-def publication_relation(post: dict[str, Any], source_id: str, when: str) -> dict[str, Any]:
+def publication_relation(record: dict[str, Any], object_id: str, when: str) -> dict[str, Any]:
+    published_at = iso_midnight(record["published_date"])
     return {
-        "_id": relation_id(source_id),
+        "_id": relation_id(object_id),
         "data": {
             "confidence": 0.99,
             "directed": True,
-            "object": source_id,
+            "object": object_id,
             "predicate": "published",
             "qualifiers": {
-                "language": post["lang"],
-                "published_at": dt(post["date_gmt"]),
-                "wordpress_post_id": post["id"],
-                "wordpress_slug": post["slug"],
+                "archive_page": record["archive_page"],
+                "published_at": published_at,
+                "press_release_slug": record["slug"],
             },
             "subject": DNC_ID,
         },
@@ -237,24 +343,33 @@ def publication_relation(post: dict[str, Any], source_id: str, when: str) -> dic
         "date_updated": when,
         "dtype": "relation",
         "evidence": [],
-        "handling": {"handling": "public-source-only", "pii": False, "sensitive": False, "visibility": "public"},
+        "handling": {
+            "handling": "public-source-only",
+            "pii": False,
+            "sensitive": False,
+            "visibility": "public",
+        },
         "schema_version": "0.9.0",
-        "sources": [{"source_id": source_id}],
+        "sources": [{"source_id": object_id}],
         "status": "recorded",
-        "summary": "The Democratic National Committee published this official press release.",
-        "tags": ["dnc", "press-release", "publication", "relation"],
-        "title": f"DNC published: {post['title']}",
-        "verification": {"last_reviewed_at": when, "status": "official-source-record", "verified": True},
+        "summary": "The Democratic National Committee lists this item in its official press-release archive.",
+        "tags": ["dnc", "press-release", "publication", "relation", "archive-index"],
+        "title": f"DNC published: {record['title']}",
+        "verification": {
+            "last_reviewed_at": when,
+            "status": "official-archive-record",
+            "verified": True,
+        },
         "version": 1,
     }
 
 
-def build(posts: list[dict[str, Any]], when: str) -> list[dict[str, Any]]:
+def build(records: list[dict[str, Any]], when: str) -> list[dict[str, Any]]:
     documents: list[dict[str, Any]] = []
     seen: set[str] = set()
-    for post in posts:
-        source = source_doc(post, when)
-        relation = publication_relation(post, source["_id"], when)
+    for record in records:
+        source = source_doc(record, when)
+        relation = publication_relation(record, source["_id"], when)
         for document in (source, relation):
             validate_document(document)
             if document["_id"] in seen:
@@ -264,42 +379,62 @@ def build(posts: list[dict[str, Any]], when: str) -> list[dict[str, Any]]:
     return sorted(documents, key=lambda document: document["_id"])
 
 
-def write(output: Path, posts: list[dict[str, Any]], documents: list[dict[str, Any]], metadata: dict[str, Any], when: str) -> None:
+def write(
+    output: Path,
+    records: list[dict[str, Any]],
+    documents: list[dict[str, Any]],
+    metadata: dict[str, Any],
+    when: str,
+) -> None:
     if output.exists():
         shutil.rmtree(output)
     (output / "source").mkdir(parents=True)
-    inventory = "".join(json.dumps(post, ensure_ascii=False, separators=(",", ":")) + "\n" for post in posts).encode("utf-8")
-    (output / "source/wordpress-posts.jsonl").write_bytes(inventory)
-    jsonl = "".join(json.dumps(document, ensure_ascii=False, separators=(",", ":")) + "\n" for document in documents).encode("utf-8")
+    inventory = "".join(
+        json.dumps(record, ensure_ascii=False, separators=(",", ":")) + "\n"
+        for record in records
+    ).encode("utf-8")
+    (output / "source/archive-records.jsonl").write_bytes(inventory)
+    jsonl = "".join(
+        json.dumps(document, ensure_ascii=False, separators=(",", ":")) + "\n"
+        for document in documents
+    ).encode("utf-8")
     (output / "starintel-documents.jsonl").write_bytes(jsonl)
     counts = Counter(document["dtype"] for document in documents)
+    dates = [record["published_date"] for record in records]
     manifest = {
-        "api_root": API_ROOT,
         "archive_url": ARCHIVE_URL,
         "counts": dict(sorted(counts.items())),
         "dataset": DATASET,
         "document_sha256": hashlib.sha256(jsonl).hexdigest(),
+        "first_published_date": min(dates),
         "generated_at": when,
         "inventory_sha256": hashlib.sha256(inventory).hexdigest(),
+        "last_published_date": max(dates),
         "schema_version": "0.9.0",
         "total_documents": len(documents),
-        "total_press_releases": len(posts),
-        "wordpress": metadata,
+        "total_press_releases": len(records),
+        "crawl": metadata,
     }
-    (output / "manifest.json").write_text(json.dumps(manifest, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+    (output / "manifest.json").write_text(
+        json.dumps(manifest, indent=2, sort_keys=True) + "\n",
+        encoding="utf-8",
+    )
     (output / "README.md").write_text(
         f"""# Official DNC press-release archive
 
-API-first import from the DNC's public WordPress REST API, filtered by the official `press-release` term in the `dnc_news_type` taxonomy.
+Archive-page crawl of the DNC's public press-release index.
 
-- press releases: {len(posts):,}
+- archive pages: {metadata['archive_pages']:,}
+- unique press releases: {len(records):,}
 - StarIntel documents: {len(documents):,}
 - source records: {counts.get('source', 0):,}
 - publication relations: {counts.get('relation', 0):,}
+- date range: {min(dates)} through {max(dates)}
 
-The importer requests 100 records per page, follows WordPress pagination headers, validates the declared total, retries transient failures, rate-limits requests, and stores a compact source inventory. It records titles, canonical links, publication and modification dates, WordPress IDs, slugs, and language; it does not duplicate article bodies.
+The importer follows the official archive's pagination, extracts each listed title, canonical URL, publication date, slug, and source page, deduplicates canonical URLs, validates every StarIntel v0.9.0 document, and stores a compact source inventory. It indexes archive metadata rather than copying article bodies.
 
 ```bash
+python3 -m pip install 'beautifulsoup4>=4.12,<5'
 python3 scripts/import_dnc_press_archive.py
 python3 scripts/validate-for-merge.py --site
 ```
@@ -312,15 +447,19 @@ def main() -> int:
     ns = parse_args()
     if ns.delay < 0:
         raise RuntimeError("delay cannot be negative")
-    if ns.offline_jsonl:
-        posts, metadata = read_offline(ns.offline_jsonl)
-    else:
-        term_id, term = press_release_term(ns.delay)
-        posts, metadata = fetch_posts(term_id, ns.delay)
-        metadata["term"] = term
-    documents = build(posts, ns.generated_at)
-    write(ns.output, posts, documents, metadata, ns.generated_at)
-    print(json.dumps({"documents": len(documents), "output": str(ns.output), "press_releases": len(posts)}))
+    records, metadata = crawl(ns.delay, ns.max_pages, ns.offline_dir)
+    documents = build(records, ns.generated_at)
+    write(ns.output, records, documents, metadata, ns.generated_at)
+    print(
+        json.dumps(
+            {
+                "archive_pages": metadata["archive_pages"],
+                "documents": len(documents),
+                "output": str(ns.output),
+                "press_releases": len(records),
+            }
+        )
+    )
     return 0
 
 
