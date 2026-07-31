@@ -132,7 +132,22 @@ jobs:
           rmdir imports 2>/dev/null || true
 
       - name: Validate corpus and site
-        run: python3 scripts/validate-for-merge.py --site
+        shell: bash
+        run: |
+          set +e
+          python3 scripts/validate-for-merge.py --site > /tmp/gop-depth3-validation.log 2>&1
+          status=$?
+          cat /tmp/gop-depth3-validation.log
+          if [ "$status" -ne 0 ]; then
+            mkdir -p reports
+            cp /tmp/gop-depth3-validation.log reports/gop-fec-wef-depth-3-validation.log
+            git add reports/gop-fec-wef-depth-3-validation.log
+            git config user.name "starintel-auto-dig-bot"
+            git config user.email "starintel-auto-dig-bot@users.noreply.github.com"
+            git commit -m "Capture GOP depth-3 validation failure"
+            git push origin "HEAD:${TARGET_BRANCH}"
+          fi
+          exit "$status"
 
       - name: Commit resolved depth-3 corpus
         shell: bash
