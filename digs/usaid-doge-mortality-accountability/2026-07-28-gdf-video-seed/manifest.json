@@ -1,17 +1,13 @@
 {
   "counts": {
-    "analysis": 1,
-    "claim": 14,
+    "claim": 8,
     "dataset-manifest": 1,
-    "event": 6,
-    "legal-case": 1,
-    "media": 2,
-    "org": 10,
-    "person": 12,
-    "policy": 2,
-    "relation": 43,
+    "event": 5,
+    "org": 4,
+    "person": 7,
+    "relation": 7,
     "research-pass": 1,
-    "source": 16
+    "source": 9
   },
   "dataset": "usaid-doge-mortality-accountability",
   "files": [
@@ -22,15 +18,17 @@
   "generated_at": "2026-07-30T23:30:00-04:00",
   "hash_algorithm": "sha256",
   "schema_version": "0.9.0",
-  "starintel_documents_sha256": "ededfe8fe106167f11ad691d8b02690b7d706c6c8fb96de45ada237733a9bbbf",
-  "total": 109,
+  "starintel_documents_git_blob_sha1": "0729b9abb1d5d8106dd0db2daf163703adfedd48",
+  "starintel_documents_sha256": "ef60aafbdfa3bcb6027fffcd83de5739536ecb88581d5297d4fbb47789c33659",
+  "total": 42,
   "validation": {
-    "json_parse": "passed",
-    "unique_ids": "passed",
-    "strict_dtype_data_keys": "passed",
-    "relation_subject_shape": "passed",
+    "git_blob_match": "passed",
     "internal_references": "passed",
-    "source_urls": "classified",
+    "json_parse": "passed",
+    "relation_subject_shape": "passed",
+    "required_common_fields": "passed",
+    "strict_dtype_data_keys": "passed",
+    "unique_ids": "passed",
     "validate_for_merge": "not run locally; GitHub CI is authoritative"
   }
 }
