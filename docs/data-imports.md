@@ -68,3 +68,31 @@ python3 scripts/starintel.py import imports/occrp-aleph.jsonl
 ```
 
 Use `--collection <id>` to restrict a query to one accessible Aleph collection. The importer does not bypass Aleph access controls. When the public endpoint exposes no matching entities, an API key or a different public collection/query is required.
+
+## InfluenceWatch
+
+`scripts/import_influencewatch.py` converts InfluenceWatch person, organization, nonprofit, labor-union, government-agency, political-party, and influence-network profiles into validated StarIntel v0.9 JSONL under the `influence-watch-db` dataset. It emits typed profile records, a source record, publisher-attributed internal-link relations, and a dataset manifest.
+
+InfluenceWatch's Terms of Use effective May 1, 2026 prohibit scraping, crawling, automated harvesting, and systematic downloading without express written consent. Network collection is therefore disabled unless authorization is explicitly acknowledged with `--authorized` or `INFLUENCEWATCH_AUTHORIZED=1`. The importer also enforces `robots.txt`, throttles requests, retries transient failures, and caps response sizes.
+
+After obtaining written authorization, run a bounded crawl first:
+
+```bash
+INFLUENCEWATCH_AUTHORIZED=1 python3 scripts/import_influencewatch.py \
+  --crawl \
+  --limit 100 \
+  --delay 2 \
+  --output imports/influence-watch-db.jsonl
+
+python3 scripts/starintel.py import imports/influence-watch-db.jsonl
+```
+
+Use `--url` or `--url-file` for authorized targeted imports. Existing HTML acquired through an authorized channel can be normalized without network access:
+
+```bash
+python3 scripts/import_influencewatch.py \
+  --input imports/influencewatch/example-profile.html \
+  --output imports/influence-watch-db.jsonl
+```
+
+Profile claims, ideological characterizations, and internal links remain explicitly attributed to InfluenceWatch until independently corroborated. The importer does not treat an internal link as proof of a substantive relationship.
