@@ -109,6 +109,19 @@ jobs:
             git push origin "HEAD:${GITHUB_REF_NAME}"
           fi
 
+      - name: Commit crawl diagnostics after failure
+        if: failure()
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add \
+            reports/global-shapers-complete-directory.json \
+            reports/global-shapers-complete-directory.md || true
+          if ! git diff --cached --quiet; then
+            git commit -m "Record incomplete Global Shapers crawl diagnostics"
+            git push origin "HEAD:${GITHUB_REF_NAME}"
+          fi
+
       - name: Upload crawl report
         if: always()
         uses: actions/upload-artifact@v4
