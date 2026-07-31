@@ -37,40 +37,61 @@ jobs:
         with:
           python-version: "3.12"
 
-      - name: Close invalid tickets from superseded classifier
+      - name: Drain invalid tickets from superseded classifier
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
           python - <<'PY'
-          import json, os, re, subprocess
+          import json, os, re, subprocess, time
           from urllib.parse import urlsplit
 
           repo = os.environ["GITHUB_REPOSITORY"]
-          issues = json.loads(subprocess.run([
-              "gh", "issue", "list", "--repo", repo, "--state", "open",
-              "--search", '"membership-list-url-sha256:" in:body',
-              "--limit", "1000", "--json", "number,title,body"
-          ], check=True, text=True, capture_output=True).stdout or "[]")
           profile_roots = {"people", "experts", "members", "fellows", "staff", "team", "advisers", "advisors", "trustees", "participants"}
           list_roots = profile_roots | {"leadership", "board", "boards", "committee", "committees", "directory", "membership", "roster", "attendees", "delegates"}
-          closed = []
-          for issue in issues:
-              if not issue["title"].startswith("Scrape membership list:"):
-                  continue
-              match = re.search(r"^- \*\*URL:\*\*\s+(https?://\S+)", issue.get("body") or "", re.M)
-              if not match:
-                  continue
-              parts = [re.sub(r"\.(?:html?|php|aspx?)$", "", p.lower()) for p in urlsplit(match.group(1)).path.split("/") if p]
-              invalid = not parts or parts == ["news"] or (len(parts) >= 2 and parts[-2] in profile_roots and parts[-1] not in list_roots)
+          total_closed = []
+          stable_passes = 0
+
+          for pass_number in range(20):
+              raw = subprocess.run([
+                  "gh", "issue", "list", "--repo", repo, "--state", "open",
+                  "--limit", "1000", "--json", "number,title,body"
+              ], check=True, text=True, capture_output=True).stdout
+              issues = json.loads(raw or "[]")
+              invalid = []
+              for issue in issues:
+                  if not issue["title"].startswith("Scrape membership list:"):
+                      continue
+                  body = issue.get("body") or ""
+                  if "membership-list-url-sha256:" not in body:
+                      continue
+                  match = re.search(r"^- \*\*URL:\*\*\s+(https?://\S+)", body, re.M)
+                  if not match:
+                      continue
+                  parts = [re.sub(r"\.(?:html?|php|aspx?)$", "", p.lower()) for p in urlsplit(match.group(1)).path.split("/") if p]
+                  bad = not parts or parts == ["news"] or (len(parts) >= 2 and parts[-2] in profile_roots and parts[-1] not in list_roots)
+                  if bad:
+                      invalid.append(issue["number"])
+
               if not invalid:
+                  stable_passes += 1
+                  print(json.dumps({"pass": pass_number + 1, "invalid": 0, "stable_passes": stable_passes}))
+                  if stable_passes >= 2:
+                      break
+                  time.sleep(10)
                   continue
-              subprocess.run([
-                  "gh", "issue", "close", str(issue["number"]), "--repo", repo,
-                  "--reason", "not planned",
-                  "--comment", "Closed after classifier correction: this is a homepage, individual profile, or non-roster page rather than a membership-list surface."
-              ], check=True)
-              closed.append(issue["number"])
-          print(json.dumps({"closed": closed}, indent=2))
+
+              stable_passes = 0
+              print(json.dumps({"pass": pass_number + 1, "closing": len(invalid), "first": invalid[0], "last": invalid[-1]}))
+              for number in invalid:
+                  subprocess.run([
+                      "gh", "issue", "close", str(number), "--repo", repo,
+                      "--reason", "not planned",
+                      "--comment", "Closed after classifier correction: this URL is a homepage, individual profile, or non-roster page rather than a membership-list surface."
+                  ], check=True, stdout=subprocess.DEVNULL)
+              total_closed.extend(invalid)
+              time.sleep(5)
+
+          print(json.dumps({"closed_count": len(total_closed), "closed": total_closed}, indent=2))
           PY
 
       - name: Restore wave-three scraper and targets
