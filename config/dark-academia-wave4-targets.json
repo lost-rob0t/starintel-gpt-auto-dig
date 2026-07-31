@@ -1,0 +1,183 @@
+{
+  "version": 1,
+  "wave": "wave-4",
+  "run_id": "dark-academia-rosters-wave-4-2026-07-31",
+  "max_pages_per_organization": 18,
+  "request_delay_seconds": 0.35,
+  "organizations": [
+    {
+      "dataset": "council-on-foreign-relations",
+      "name": "Council on Foreign Relations",
+      "org_id": "starintel:org:council-on-foreign-relations",
+      "roots": [
+        "https://www.cfr.org/experts",
+        "https://www.cfr.org/about"
+      ]
+    },
+    {
+      "dataset": "brookings",
+      "name": "Brookings Institution",
+      "org_id": "starintel:org:brookings-institution",
+      "roots": [
+        "https://www.brookings.edu/experts/",
+        "https://www.brookings.edu/about-us/"
+      ]
+    },
+    {
+      "dataset": "chatham-house",
+      "name": "Chatham House",
+      "org_id": "starintel:org:chatham-house",
+      "roots": [
+        "https://www.chathamhouse.org/about-us/our-people",
+        "https://www.chathamhouse.org/about-us/our-people/role/member-council-104",
+        "https://www.chathamhouse.org/about-us/our-people/role/executive-leadership-491"
+      ]
+    },
+    {
+      "dataset": "csis",
+      "name": "Center for Strategic and International Studies",
+      "org_id": "starintel:org:center-for-strategic-and-international-studies",
+      "roots": [
+        "https://www.csis.org/about/people/experts",
+        "https://www.csis.org/about"
+      ]
+    },
+    {
+      "dataset": "carnegie-endowment",
+      "name": "Carnegie Endowment for International Peace",
+      "org_id": "starintel:org:carnegie-endowment-for-international-peace",
+      "roots": [
+        "https://carnegieendowment.org/experts",
+        "https://carnegieendowment.org/about"
+      ]
+    },
+    {
+      "dataset": "aspen-institute",
+      "name": "The Aspen Institute",
+      "org_id": "starintel:org:aspen-institute",
+      "roots": [
+        "https://www.aspeninstitute.org/people/",
+        "https://www.aspeninstitute.org/people/board-of-trustees/",
+        "https://www.aspeninstitute.org/people/executive-leadership/"
+      ]
+    },
+    {
+      "dataset": "group-of-thirty",
+      "name": "Group of Thirty",
+      "org_id": "starintel:org:group-of-thirty",
+      "roots": [
+        "https://www.group30.org/members",
+        "https://www.group30.org/about"
+      ]
+    },
+    {
+      "dataset": "bretton-woods-committee",
+      "name": "The Bretton Woods Committee",
+      "org_id": "starintel:org:bretton-woods-committee",
+      "roots": [
+        "https://brettonwoods.org/category/membership/members/corporate/",
+        "https://brettonwoods.org/meet-our-new-members/",
+        "https://brettonwoods.org/join-us/"
+      ]
+    },
+    {
+      "dataset": "iiss",
+      "name": "International Institute for Strategic Studies",
+      "org_id": "starintel:org:international-institute-for-strategic-studies",
+      "roots": [
+        "https://www.iiss.org/people/",
+        "https://www.iiss.org/about-us/"
+      ]
+    },
+    {
+      "dataset": "ecfr",
+      "name": "European Council on Foreign Relations",
+      "org_id": "starintel:org:european-council-on-foreign-relations",
+      "roots": [
+        "https://ecfr.eu/council/members/",
+        "https://ecfr.eu/experts/"
+      ]
+    },
+    {
+      "dataset": "wilson-center",
+      "name": "Wilson Center",
+      "org_id": "starintel:org:wilson-center",
+      "roots": [
+        "https://www.wilsoncenter.org/experts",
+        "https://www.wilsoncenter.org/about"
+      ]
+    },
+    {
+      "dataset": "cnas",
+      "name": "Center for a New American Security",
+      "org_id": "starintel:org:center-for-a-new-american-security",
+      "roots": [
+        "https://www.cnas.org/people",
+        "https://www.cnas.org/about"
+      ]
+    },
+    {
+      "dataset": "aei",
+      "name": "American Enterprise Institute",
+      "org_id": "starintel:org:american-enterprise-institute",
+      "roots": [
+        "https://www.aei.org/scholars/",
+        "https://www.aei.org/about/"
+      ]
+    },
+    {
+      "dataset": "piie",
+      "name": "Peterson Institute for International Economics",
+      "org_id": "starintel:org:peterson-institute-for-international-economics",
+      "roots": [
+        "https://www.piie.com/experts",
+        "https://www.piie.com/about"
+      ]
+    },
+    {
+      "dataset": "bruegel",
+      "name": "Bruegel",
+      "org_id": "starintel:org:bruegel",
+      "roots": [
+        "https://www.bruegel.org/people",
+        "https://www.bruegel.org/about"
+      ]
+    },
+    {
+      "dataset": "german-marshall-fund",
+      "name": "German Marshall Fund of the United States",
+      "org_id": "starintel:org:german-marshall-fund-of-the-united-states",
+      "roots": [
+        "https://www.gmfus.org/experts",
+        "https://www.gmfus.org/about"
+      ]
+    },
+    {
+      "dataset": "milken-institute",
+      "name": "Milken Institute",
+      "org_id": "starintel:org:milken-institute",
+      "roots": [
+        "https://milkeninstitute.org/experts",
+        "https://milkeninstitute.org/about"
+      ]
+    },
+    {
+      "dataset": "concordia",
+      "name": "Concordia",
+      "org_id": "starintel:org:concordia",
+      "roots": [
+        "https://www.concordia.net/about/leadership/",
+        "https://www.concordia.net/about/"
+      ]
+    },
+    {
+      "dataset": "boao-forum",
+      "name": "Boao Forum for Asia",
+      "org_id": "starintel:org:boao-forum-for-asia",
+      "roots": [
+        "https://english.boaoforum.org/about/",
+        "https://english.boaoforum.org/"
+      ]
+    }
+  ]
+}
