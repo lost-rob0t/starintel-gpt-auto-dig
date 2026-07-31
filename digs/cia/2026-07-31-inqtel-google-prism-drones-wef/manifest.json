@@ -1,13 +1,14 @@
 {
   "dataset": "cia",
   "schema_version": "0.9.0",
-  "generated_at": "2026-07-31T03:34:00-04:00",
+  "generated_at": "2026-07-31T04:12:00-04:00",
   "consumer_path": "digs/cia/2026-07-31-inqtel-google-prism-drones-wef/",
   "files": [
     "README.md",
     "sources.md",
     "starintel-documents.jsonl.gz.b64",
     "prism-engineering-pass-6.jsonl.gz.b64",
+    "prism-ditu-engineers-pass-7.jsonl.gz.b64",
     "entity-roster.csv",
     "drone-people.csv",
     "wef-edges.csv",
@@ -16,16 +17,16 @@
     "prism-engineering-sources.md"
   ],
   "counts": {
-    "claim": 13,
+    "claim": 15,
     "dataset-manifest": 1,
-    "event": 14,
-    "org": 27,
-    "person": 30,
-    "relation": 75,
-    "research-pass": 6,
-    "source": 47
+    "event": 15,
+    "org": 28,
+    "person": 32,
+    "relation": 81,
+    "research-pass": 7,
+    "source": 51
   },
-  "total": 213,
+  "total": 230,
   "transports": [
     {
       "path": "starintel-documents.jsonl.gz.b64",
@@ -46,6 +47,16 @@
       "decoded_sha256": "0cb4d9e3e4930e3849842401e6025411cb04079d28e0d56e02489e16b3ca910c",
       "decoded_bytes": 29419,
       "encoded_bytes": 5505
+    },
+    {
+      "path": "prism-ditu-engineers-pass-7.jsonl.gz.b64",
+      "purpose": "direct FBI DITU engineer and electronic-interception liaison pass",
+      "records": 17,
+      "encoding": "base64",
+      "compression": "gzip",
+      "decoded_sha256": "cc1ba0dda5867f064ce025a3726c6d9f1ec0765d2d60c93658435be283260c06",
+      "decoded_bytes": 8290,
+      "encoded_bytes": 2365
     }
   ],
   "validation": {
