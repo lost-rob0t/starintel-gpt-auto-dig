@@ -49,9 +49,16 @@ Congressional questions, characterizations, and requests are not converted into 
 
 1. `sources.jsonl`
 2. `entities.jsonl`
-3. `relations.jsonl`
-4. `investigation-targets-1.jsonl`
-5. `investigation-targets-2.jsonl`
-6. `sources.md`
-7. `target-matrix.md`
-8. `manifest.json`
+3. `relations-1.jsonl`
+4. `relations-2.jsonl`
+5. `investigation-targets-1.jsonl`
+6. `investigation-targets-2.jsonl`
+7. `investigation-targets-3.jsonl`
+8. `investigation-targets-4.jsonl`
+9. `investigation-targets-5.jsonl`
+10. `investigation-targets-6.jsonl`
+11. `investigation-targets-7.jsonl`
+12. `investigation-targets-8.jsonl`
+13. `sources.md`
+14. `target-matrix.md`
+15. `manifest.json`
