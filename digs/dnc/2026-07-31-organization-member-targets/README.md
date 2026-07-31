@@ -2,8 +2,8 @@
 
 Deterministic target expansion over every DNC-dataset organization and every evidence-qualified person–organization affiliation relation.
 
-- organization leads: 69
-- investigation targets: 1,475
+- organization leads: 1,379
+- investigation targets: 8,025
 - five organization targets per organization
 - two verification and cross-tie targets per known person–organization pair
 
@@ -11,7 +11,7 @@ Deterministic target expansion over every DNC-dataset organization and every evi
 
 | Rank | Organization | Type | Priority | Known people | Relation degree |
 |---:|---|---|---:|---:|---:|
-| 1 | Democratic National Committee | national_party_committee | 1.0000 | 449 | 522 |
+| 1 | Democratic National Committee | national_party_committee | 1.0000 | 449 | 29039 |
 | 2 | Democracy Partners | political_consulting_firm | 0.9832 | 0 | 4 |
 | 3 | ActBlue Technical Services | fundraising_technology_vendor | 0.9700 | 0 | 1 |
 | 4 | MissionWired | digital_fundraising_vendor | 0.9700 | 0 | 1 |

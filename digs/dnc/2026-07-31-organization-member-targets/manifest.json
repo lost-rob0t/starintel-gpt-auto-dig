@@ -1,18 +1,18 @@
 {
   "dataset": "dnc",
-  "document_sha256": "e30c2640c0665c101d57b5571b3eb07de69a22aa0b2870887569a665fee45a8f",
+  "document_sha256": "b504b1516b53c8d24a88b9727ba3e643bca23868127855240a22034beaefb3e4",
   "generated_at": "2026-07-31T07:20:00Z",
-  "inventory_sha256": "5f53434ebd8ea33909c35a8353d3afb0b0a806c5130a186fe528fd80180bd954",
-  "organization_leads": 69,
+  "inventory_sha256": "23a31730fb464ad7e331dcfce839f9fd00aa432871d87c5b88ee6d7c87fcc29f",
+  "organization_leads": 1379,
   "schema_version": "0.9.0",
   "target_counts": {
-    "organization_cross_ties": 69,
-    "organization_governance": 69,
+    "organization_cross_ties": 1379,
+    "organization_governance": 1379,
     "organization_member_cross_ties": 565,
     "organization_member_role_verification": 565,
-    "organization_membership_roster": 69,
-    "organization_ownership_funding_control": 69,
-    "organization_staff_and_contractors": 69
+    "organization_membership_roster": 1379,
+    "organization_ownership_funding_control": 1379,
+    "organization_staff_and_contractors": 1379
   },
-  "total_targets": 1475
+  "total_targets": 8025
 }
