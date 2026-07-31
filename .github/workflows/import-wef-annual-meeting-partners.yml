@@ -1,0 +1,74 @@
+name: Import WEF Annual Meeting partners
+
+on:
+  push:
+    branches:
+      - "agent/wef-annual-meeting-partners-2015-2026"
+    paths:
+      - "imports/wef-annual-meeting-partners/importer.py.gz.b64"
+      - "digs/wef/2026-07-31-annual-meeting-partners-2015-2026/partners-by-year.json"
+      - ".github/workflows/import-wef-annual-meeting-partners.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: wef-annual-meeting-partners-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  import:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          ref: ${{ github.ref_name }}
+          fetch-depth: 0
+
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+
+      - name: Restore verified importer
+        shell: bash
+        run: |
+          set -euo pipefail
+          base64 --decode imports/wef-annual-meeting-partners/importer.py.gz.b64 | gzip --decompress > scripts/import_wef_annual_meeting_partners.py
+          echo "20b51b1ff8d4463e7d91043c13a32d84b5ab2a75887cda5e00275a8620ef16e7  scripts/import_wef_annual_meeting_partners.py" | sha256sum --check --strict
+          chmod +x scripts/import_wef_annual_meeting_partners.py
+
+      - name: Generate and import canonical StarIntel documents
+        run: python3 scripts/import_wef_annual_meeting_partners.py --root .
+
+      - name: Validate complete StarIntel corpus
+        run: python3 scripts/starintel.py validate --root .
+
+      - name: Commit normalized import
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm imports/wef-annual-meeting-partners/importer.py.gz.b64
+          rmdir imports/wef-annual-meeting-partners 2>/dev/null || true
+          rmdir imports 2>/dev/null || true
+
+          git add -A \
+            scripts/import_wef_annual_meeting_partners.py \
+            imports \
+            db/org \
+            db/relation \
+            db/research-pass \
+            digs/wef/2026-07-31-annual-meeting-partners-2015-2026 \
+            reports/wef-annual-meeting-partners-import.json \
+            reports/wef-annual-meeting-partners-import.md
+
+          if git diff --cached --quiet; then
+            echo "WEF partner import already current"
+            exit 0
+          fi
+
+          git config user.name "starintel-import-bot"
+          git config user.email "starintel-import-bot@users.noreply.github.com"
+          git commit -m "Import WEF Annual Meeting partners"
+          git push origin "HEAD:${GITHUB_REF_NAME}"
