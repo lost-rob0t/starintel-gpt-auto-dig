@@ -7,6 +7,7 @@
     "README.md",
     "sources.md",
     "starintel-documents.jsonl.gz.b64",
+    "prism-engineering-pass-6.jsonl.gz.b64",
     "entity-roster.csv",
     "drone-people.csv",
     "wef-edges.csv",
@@ -25,24 +26,35 @@
     "source": 47
   },
   "total": 213,
-  "hash_algorithm": "sha256",
-  "starintel_documents_sha256": "dc463d1724e2d82f6c9ca5fb5791bb2c60a6ee310ec9c44a75d61390b9191753",
+  "transports": [
+    {
+      "path": "starintel-documents.jsonl.gz.b64",
+      "purpose": "root passes 0-5",
+      "records": 142,
+      "encoding": "base64",
+      "compression": "gzip",
+      "decoded_sha256": "3e2133459a4126cad4194f42e883d8c3e484a2ee531049f47e4b515f4ff217b3",
+      "decoded_bytes": 50884,
+      "encoded_bytes": 8717
+    },
+    {
+      "path": "prism-engineering-pass-6.jsonl.gz.b64",
+      "purpose": "named PRISM and Section 702 engineering responsibility pass",
+      "records": 71,
+      "encoding": "base64",
+      "compression": "gzip",
+      "decoded_sha256": "0cb4d9e3e4930e3849842401e6025411cb04079d28e0d56e02489e16b3ca910c",
+      "decoded_bytes": 29419,
+      "encoded_bytes": 5505
+    }
+  ],
   "validation": {
-    "json_parse": "passed",
-    "unique_ids": "passed",
+    "composite_json_parse": "passed",
+    "composite_unique_ids": "passed",
     "required_common_fields": "passed",
     "source_references": "passed",
     "relation_endpoints": "passed",
     "validate_for_merge": "not run: no repository checkout/network resolution",
     "canonical_db_import": "not run: no repository checkout"
-  },
-  "transport": {
-    "path": "starintel-documents.jsonl.gz.b64",
-    "encoding": "base64",
-    "compression": "gzip",
-    "decoded_filename": "starintel-documents.jsonl",
-    "decoded_sha256": "dc463d1724e2d82f6c9ca5fb5791bb2c60a6ee310ec9c44a75d61390b9191753",
-    "decoded_bytes": 80305,
-    "encoded_bytes": 13637
   }
 }
