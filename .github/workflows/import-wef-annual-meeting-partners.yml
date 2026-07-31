@@ -1,130 +1,20 @@
-name: Import WEF Annual Meeting partners
+name: Verify imported WEF Annual Meeting partners
 
 on:
-  push:
-    branches:
-      - "agent/wef-annual-meeting-partners-2015-2026"
-    paths:
-      - "imports/wef-annual-meeting-partners/chunk-*"
-      - "digs/wef/2026-07-31-annual-meeting-partners-2015-2026/partners-by-year.json"
-      - ".github/workflows/import-wef-annual-meeting-partners.yml"
-  pull_request:
-    branches:
-      - main
-    paths:
-      - "imports/wef-annual-meeting-partners/chunk-*"
-      - "digs/wef/2026-07-31-annual-meeting-partners-2015-2026/partners-by-year.json"
-      - ".github/workflows/import-wef-annual-meeting-partners.yml"
   workflow_dispatch:
 
 permissions:
-  contents: write
-
-concurrency:
-  group: wef-annual-meeting-partners-${{ github.ref }}
-  cancel-in-progress: true
+  contents: read
 
 jobs:
-  import:
-    if: github.actor != 'github-actions[bot]'
+  verify:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
-        with:
-          ref: ${{ github.head_ref || github.ref_name }}
-          fetch-depth: 0
-
       - uses: actions/setup-python@v6
         with:
           python-version: "3.12"
-
-      - name: Restore verified importer
-        shell: bash
+      - name: Validate imported corpus
         run: |
-          set -euo pipefail
-          test "$(find imports/wef-annual-meeting-partners -maxdepth 1 -name 'chunk-*' -type f | wc -l)" -eq 14
-
-          python3 - <<'PY'
-          from hashlib import sha256
-          from pathlib import Path
-          import string
-
-          path = Path("imports/wef-annual-meeting-partners/chunk-00")
-          target = "9d773f9ff957ef176b858da6b32ff327ee82030de12ea61e8d6d8ab60e1be5b2"
-          value = path.read_text()
-          if sha256(value.encode()).hexdigest() != target:
-              alphabet = string.ascii_letters + string.digits + "+/="
-              repaired = None
-              for index, old in enumerate(value):
-                  for replacement in alphabet:
-                      if replacement == old:
-                          continue
-                      candidate = value[:index] + replacement + value[index + 1:]
-                      if sha256(candidate.encode()).hexdigest() == target:
-                          repaired = candidate
-                          print(f"repaired chunk-00 at offset {index}: {old!r} -> {replacement!r}")
-                          break
-                  if repaired is not None:
-                      break
-              if repaired is None:
-                  raise SystemExit("chunk-00 is not recoverable as a one-symbol substitution")
-              path.write_text(repaired)
-          PY
-
-          cat > /tmp/wef-chunk-checks <<'EOF'
-          9d773f9ff957ef176b858da6b32ff327ee82030de12ea61e8d6d8ab60e1be5b2  imports/wef-annual-meeting-partners/chunk-00
-          c2fc415c045bfe4631e8939cee3963f381c71e566d8540fed2f9587705ad4708  imports/wef-annual-meeting-partners/chunk-01
-          072acaa99cbeb8afb593ccf11224eda9ac4db0d43e588a72aacc2f39beee4d64  imports/wef-annual-meeting-partners/chunk-02
-          2e235f24f5c22e988dd2edc3f2986c5436588d8a130e46394fd9290ce9fd6e64  imports/wef-annual-meeting-partners/chunk-03
-          ddf31dd14ec553463a83fe00d7062b9979947adaff4583ca9dc73cf846d585bc  imports/wef-annual-meeting-partners/chunk-04
-          eaebbc5ec3f7ba591b5ea3dbea153bbe4d25a5246ed01429d9afe8644fae2e49  imports/wef-annual-meeting-partners/chunk-05
-          3c0301d7f8c7b00fee7999fb00b1f7096df8fbb24832a8e7c10a55654adbf459  imports/wef-annual-meeting-partners/chunk-06
-          7791a8919f60b8d67b06aba0430cf43dea747446d8332921e7287daf7a413377  imports/wef-annual-meeting-partners/chunk-07
-          fa7ffac508eb5694fdc5b818f4363515bc5c8de7feccb473cb57c33d4d404256  imports/wef-annual-meeting-partners/chunk-08
-          11cbe7f66f9eab5b406a825d55a1cafe4ffff905ac3e34be930a3a185cec05be  imports/wef-annual-meeting-partners/chunk-09
-          6419621e94686d1e5308abc47a03b83c423f9c333c102e459fd0fd412750e14a  imports/wef-annual-meeting-partners/chunk-10
-          4bf87c4cf0bae51fa0b7037d212339050d077f10002bac5c17be871a7d9f8944  imports/wef-annual-meeting-partners/chunk-11
-          0b3907a7ff9c3a659946bd71b7c500a3b5eeeffc4d7a6006f909145dd3155e26  imports/wef-annual-meeting-partners/chunk-12
-          43601f421f9ee5a21cef8cfb65ced039e0a1f587f16513bc1e0554a08094a95f  imports/wef-annual-meeting-partners/chunk-13
-          EOF
-          sha256sum --check --strict /tmp/wef-chunk-checks
-          cat imports/wef-annual-meeting-partners/chunk-* > /tmp/wef-importer.b64
-          echo "bd8c62172f6deaa6678571635b5b5b4103a0bd70a08a03483a091fd1fc08b10f  /tmp/wef-importer.b64" | sha256sum --check --strict
-          base64 --decode /tmp/wef-importer.b64 | gzip --decompress > scripts/import_wef_annual_meeting_partners.py
-          echo "20b51b1ff8d4463e7d91043c13a32d84b5ab2a75887cda5e00275a8620ef16e7  scripts/import_wef_annual_meeting_partners.py" | sha256sum --check --strict
-          chmod +x scripts/import_wef_annual_meeting_partners.py
-
-      - name: Generate and import canonical StarIntel documents
-        run: python3 scripts/import_wef_annual_meeting_partners.py --root .
-
-      - name: Validate complete StarIntel corpus
-        run: python3 scripts/starintel.py validate --root .
-
-      - name: Commit normalized import
-        shell: bash
-        run: |
-          set -euo pipefail
-          rm imports/wef-annual-meeting-partners/chunk-*
-          rmdir imports/wef-annual-meeting-partners 2>/dev/null || true
-          rmdir imports 2>/dev/null || true
-
-          git add -A -- \
-            scripts/import_wef_annual_meeting_partners.py \
-            imports \
-            db/org \
-            db/relation \
-            db/research-pass \
-            digs/wef/2026-07-31-annual-meeting-partners-2015-2026 \
-            reports/wef-annual-meeting-partners-import.json \
-            reports/wef-annual-meeting-partners-import.md
-
-          if git diff --cached --quiet; then
-            echo "WEF partner import already current"
-            exit 0
-          fi
-
-          git config user.name "starintel-import-bot"
-          git config user.email "starintel-import-bot@users.noreply.github.com"
-          git commit -m "Import WEF Annual Meeting partners"
-          BRANCH="${GITHUB_HEAD_REF:-$GITHUB_REF_NAME}"
-          git push origin "HEAD:${BRANCH}"
+          python3 scripts/import_wef_annual_meeting_partners.py --root . --verify-only
+          python3 scripts/starintel.py validate --root .
