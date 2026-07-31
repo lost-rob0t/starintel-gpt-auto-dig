@@ -1,0 +1,33 @@
+{
+  "counts": {
+    "claim": 6,
+    "contract": 3,
+    "dataset-manifest": 1,
+    "org": 2,
+    "relation": 5,
+    "research-pass": 1,
+    "source": 4,
+    "target": 1
+  },
+  "dataset": "lexisnexis-risk-state-surveillance",
+  "files": [
+    "README.md",
+    "sources.md",
+    "manifest.json",
+    "recursive-targets-pass-5.jsonl",
+    "starintel-documents.jsonl.gz.b64"
+  ],
+  "generated_at": "2026-07-31T03:13:00-04:00",
+  "gzip_transport_sha256": "e84b4370bff66bb4384d9a5a6e6fb29fc95ee123cd086c76a95b401e80b0d371",
+  "run": "2026-07-31-federal-contract-expansion-pass-5",
+  "schema_version": "0.9.0",
+  "starintel_documents_sha256": "5a69223f4b96ab661b2c8272107d3e15e9d33d0d01bec962f753f99437cf3124",
+  "total": 23,
+  "validation": {
+    "json_parse": "passed",
+    "relation_endpoints": "cross-packet endpoints intentionally reference merged pass 0-4 records",
+    "source_references": "passed",
+    "unique_ids": "passed",
+    "validate_for_merge": "GitHub CI authoritative"
+  }
+}
