@@ -50,43 +50,49 @@ jobs:
         with:
           python-version: "3.13"
 
-      - name: Read pinned Quasar fork
+      - name: Read pinned Quasar runtime
         id: quasar-pin
         run: |
           test -s quasar-fork.lock.json
-          echo "fork=$(python3 -c 'import json; print(json.load(open("quasar-fork.lock.json"))["quasar_fork_commit"])')" >> "$GITHUB_OUTPUT"
-          echo "upstream=$(python3 -c 'import json; print(json.load(open("quasar-fork.lock.json"))["quasar_upstream_commit"])')" >> "$GITHUB_OUTPUT"
+          echo "quasar=$(python3 -c 'import json; print(json.load(open("quasar-fork.lock.json"))["quasar_commit"])')" >> "$GITHUB_OUTPUT"
+          echo "ui=$(python3 -c 'import json; print(json.load(open("quasar-fork.lock.json"))["quasar_ui_commit"])')" >> "$GITHUB_OUTPUT"
           echo "auto_dig=$(python3 -c 'import json; print(json.load(open("quasar-fork.lock.json"))["auto_dig_version"])')" >> "$GITHUB_OUTPUT"
           echo "schema=$(python3 -c 'import json; print(json.load(open("quasar-fork.lock.json"))["starintel_schema_version"])')" >> "$GITHUB_OUTPUT"
 
-      - name: Check out pinned Quasar fork
+      - name: Check out pinned Quasar runtime
         uses: actions/checkout@v6
         with:
-          repository: lost-rob0t/auto-dig-quasar
-          ref: ${{ steps.quasar-pin.outputs.fork }}
-          path: .quasar-fork
+          repository: lost-rob0t/quasar
+          ref: ${{ steps.quasar-pin.outputs.quasar }}
+          path: .quasar
+          submodules: recursive
+
+      - name: Verify pinned Quasar frontend
+        run: |
+          test "$(git -C .quasar rev-parse HEAD)" = "${{ steps.quasar-pin.outputs.quasar }}"
+          test "$(git -C .quasar/frontend rev-parse HEAD)" = "${{ steps.quasar-pin.outputs.ui }}"
 
       - name: Set up Node
         uses: actions/setup-node@v6
         with:
           node-version: "22"
           cache: npm
-          cache-dependency-path: .quasar-fork/package-lock.json
+          cache-dependency-path: .quasar/frontend/package-lock.json
 
       - name: Validate and build Quasar
-        working-directory: .quasar-fork
         env:
           VITE_BASE_PATH: /quasar/app/
           VITE_AUTODIG_CORRECTION_REPO: lost-rob0t/starintel-gpt-auto-dig
-          VITE_QUASAR_FORK_COMMIT: ${{ steps.quasar-pin.outputs.fork }}
-          VITE_QUASAR_UPSTREAM_COMMIT: ${{ steps.quasar-pin.outputs.upstream }}
+          VITE_QUASAR_COMMIT: ${{ steps.quasar-pin.outputs.quasar }}
+          VITE_QUASAR_UI_COMMIT: ${{ steps.quasar-pin.outputs.ui }}
           VITE_AUTODIG_VERSION: ${{ steps.quasar-pin.outputs.auto_dig }}
           VITE_STARINTEL_SCHEMA_VERSION: ${{ steps.quasar-pin.outputs.schema }}
         run: |
-          npm ci
-          npm run check
-          npm test
-          npm run build
+          npm --prefix .quasar/frontend ci
+          bash .quasar/scripts/prepare-frontend.sh
+          npm --prefix .quasar/frontend run check
+          npm --prefix .quasar/frontend test
+          npm --prefix .quasar/frontend run build
 
       - name: Run mandatory StarIntel merge gate
         run: python3 scripts/validate-for-merge.py
@@ -107,9 +113,9 @@ jobs:
           python3 scripts/build-auto-dig-quasar.py \
             --auto-dig-root . \
             --site-dir _site \
-            --quasar-dist .quasar-fork/dist \
-            --quasar-fork-commit "${{ steps.quasar-pin.outputs.fork }}" \
-            --quasar-upstream-commit "${{ steps.quasar-pin.outputs.upstream }}" \
+            --quasar-dist .quasar/frontend/dist \
+            --quasar-commit "${{ steps.quasar-pin.outputs.quasar }}" \
+            --quasar-ui-commit "${{ steps.quasar-pin.outputs.ui }}" \
             --auto-dig-version "${{ steps.quasar-pin.outputs.auto_dig }}" \
             --starintel-schema-version "${{ steps.quasar-pin.outputs.schema }}"
 
@@ -143,6 +149,7 @@ jobs:
           grep -q '../quasar/index.html?dataset=palantir' _site/palantir/graph.html
           grep -q 'documents.json' _site/palantir/documents.html
           grep -q 'GRAPH_ROUTE = "/graph"' _site/quasar/host.js
+          grep -q 'app/index.html?host=auto-dig' _site/quasar/index.html
           ! grep -q '<header' _site/quasar/index.html
           ! grep -q 'data-quasar-route' _site/quasar/index.html
           python - <<'PY'

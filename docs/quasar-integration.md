@@ -1,15 +1,19 @@
-# Quasar graph editor inside Auto-Dig
+# Quasar graph editor inside AutoDig
 
-Auto-Dig no longer ships or exposes a second graph interface. Every generated `graph.html` entrypoint redirects to the pinned Quasar application and opens its `/graph` route.
+AutoDig no longer ships or exposes a second graph interface. Every generated `graph.html` entrypoint redirects to the pinned Quasar application and opens its `/graph` route.
 
 ## Runtime ownership
 
-- Auto-Dig generates the dataset JSONL files.
-- The same-origin host bridge reads the selected dataset and returns its StarIntel documents.
-- Quasar imports missing documents into its local PouchDB corpus.
+- AutoDig generates the dataset JSONL files.
+- `lost-rob0t/quasar` owns the runtime pin, Common Lisp control-plane bridge, and pinned `quasar-ui` frontend submodule.
+- The optional AutoDig host adapter is injected by Quasar's `scripts/prepare-frontend.sh`.
+- The same-origin AutoDig host bridge reads the selected dataset and returns its StarIntel documents.
+- Quasar imports missing documents into its local PouchDB corpus through the normal application store.
 - Existing Quasar documents are not replaced during reload, so edits remain authoritative.
 - Quasar owns graph workspaces, document changes, relations, and browser persistence.
-- The host shell contains only the full-screen Quasar iframe. It has no graph toolbar, graph canvas, or duplicate navigation.
+- The AutoDig host shell contains only the full-screen Quasar iframe. It has no graph toolbar, graph canvas, or duplicate navigation.
+
+The AutoDig adapter activates only when the iframe URL contains `?host=auto-dig`. Normal standalone and CLOG-hosted Quasar sessions do not start the AutoDig protocol.
 
 ## Dataset mapping
 
@@ -20,16 +24,29 @@ Auto-Dig no longer ships or exposes a second graph interface. Every generated `g
 
 ## Pinned build
 
-`quasar-fork.lock.json` records the exact `lost-rob0t/auto-dig-quasar` commit built into the research site. The Pages workflow checks out that commit, runs the fork validation, builds it with `/quasar/app/` as its base path, generates Auto-Dig, and then replaces the legacy graph entrypoints.
+`quasar-fork.lock.json` now records two exact revisions despite retaining its historical filename:
+
+- `quasar_commit`: the `lost-rob0t/quasar` runtime and frontend-overlay commit.
+- `quasar_ui_commit`: the `frontend/` submodule revision expected by that Quasar commit.
+
+The Pages workflow checks out Quasar recursively, verifies both revisions, prepares the frontend overlays, validates and builds the frontend with `/quasar/app/` as its base path, generates AutoDig, and replaces the legacy graph entrypoints.
+
+The retired `lost-rob0t/auto-dig-quasar` full UI fork is no longer part of the deployment path.
 
 ## Local build
 
 ```bash
-pin=$(python3 -c 'import json; print(json.load(open("quasar-fork.lock.json"))["quasar_fork_commit"])')
-git clone https://github.com/lost-rob0t/auto-dig-quasar.git .quasar-fork
-git -C .quasar-fork checkout "$pin"
-npm --prefix .quasar-fork ci
-VITE_BASE_PATH=/quasar/app/ npm --prefix .quasar-fork run build
+quasar_commit=$(python3 -c 'import json; print(json.load(open("quasar-fork.lock.json"))["quasar_commit"])')
+quasar_ui_commit=$(python3 -c 'import json; print(json.load(open("quasar-fork.lock.json"))["quasar_ui_commit"])')
+
+git clone --recurse-submodules https://github.com/lost-rob0t/quasar.git .quasar
+git -C .quasar checkout "$quasar_commit"
+git -C .quasar submodule update --init --recursive
+
+test "$(git -C .quasar/frontend rev-parse HEAD)" = "$quasar_ui_commit"
+bash .quasar/scripts/prepare-frontend.sh
+npm --prefix .quasar/frontend ci
+VITE_BASE_PATH=/quasar/app/ npm --prefix .quasar/frontend run build
 
 python3 scripts/build_research_site.py \
   --input digs \
@@ -40,9 +57,9 @@ python3 scripts/build_research_site.py \
 python3 scripts/build-auto-dig-quasar.py \
   --auto-dig-root . \
   --site-dir _site \
-  --quasar-dist .quasar-fork/dist \
-  --quasar-fork-commit "$pin" \
-  --quasar-upstream-commit "$(python3 -c 'import json; print(json.load(open("quasar-fork.lock.json"))["quasar_upstream_commit"])')"
+  --quasar-dist .quasar/frontend/dist \
+  --quasar-commit "$quasar_commit" \
+  --quasar-ui-commit "$quasar_ui_commit"
 ```
 
-Open any generated dataset's `graph.html`. It immediately transfers to the Quasar graph editor with that dataset populated in Quasar's database.
+Open any generated dataset's `graph.html`. It transfers to the new Quasar graph editor with that dataset populated in Quasar's local corpus.

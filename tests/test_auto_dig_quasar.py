@@ -15,8 +15,8 @@ spec.loader.exec_module(module)
 
 VERSIONS = {
     "auto_dig_version": "0.9.0",
-    "quasar_fork_commit": "a" * 40,
-    "quasar_upstream_commit": "b" * 40,
+    "quasar_commit": "a" * 40,
+    "quasar_ui_commit": "b" * 40,
     "starintel_schema_version": "0.9.0",
 }
 
@@ -29,7 +29,7 @@ class AutoDigQuasarBuildTest(unittest.TestCase):
         )
 
         self.assertIn('id="quasar-frame"', rendered)
-        self.assertIn('src="app/index.html"', rendered)
+        self.assertIn('src="app/index.html?host=auto-dig"', rendered)
         self.assertIn("host.js", rendered)
         self.assertIn("sandbox=", rendered)
         self.assertNotIn("allow-top-navigation", rendered)
