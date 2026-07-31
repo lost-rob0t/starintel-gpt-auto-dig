@@ -61,76 +61,146 @@ class InfluenceWatchImportTests(unittest.TestCase):
             MODULE.require_network_authorization(authorized=False, environment={})
         self.assertIn("express written consent", str(raised.exception))
         MODULE.require_network_authorization(authorized=True, environment={})
-        MODULE.require_network_authorization(authorized=False, environment={MODULE.AUTH_ENV: "1"})
+        MODULE.require_network_authorization(
+            authorized=False,
+            environment={MODULE.AUTH_ENV: "1"},
+        )
 
     def test_authorized_network_constraints_are_enforced(self) -> None:
-        args = MODULE.parse_args(["--crawl", "--authorized", "--output", "records.jsonl"])
+        args = MODULE.parse_args(
+            ["--crawl", "--authorized", "--output", "records.jsonl"]
+        )
         self.assertEqual(MODULE.MIN_REQUEST_DELAY, args.delay)
         self.assertFalse(args.respect_robots)
+        self.assertFalse(args.replace)
 
+        user_agent = (
+            MODULE.USER_AGENT_PREFIX
+            + ("a" * MODULE.USER_AGENT_HEX_LENGTH)
+        )
+        self.assertTrue(MODULE.valid_user_agent(user_agent))
         client = MODULE.NetworkClient(
-            MODULE.DEFAULT_USER_AGENT,
+            user_agent,
             MODULE.MIN_REQUEST_DELAY,
             30.0,
         )
-        self.assertEqual("FOFO-01", client.user_agent)
+        self.assertEqual(user_agent, client.user_agent)
         self.assertEqual([], client.sitemap_urls())
 
         with self.assertRaises(ValueError):
-            MODULE.NetworkClient("different-agent", MODULE.MIN_REQUEST_DELAY, 30.0)
+            MODULE.NetworkClient(
+                "different-agent",
+                MODULE.MIN_REQUEST_DELAY,
+                30.0,
+            )
         with self.assertRaises(ValueError):
-            MODULE.NetworkClient(MODULE.DEFAULT_USER_AGENT, 0.5, 30.0)
+            MODULE.NetworkClient(user_agent, 0.5, 30.0)
 
     def test_person_profile_is_normalized(self) -> None:
-        profile = MODULE.parse_profile(PERSON_HTML, "https://www.influencewatch.org/person/example-person/")
+        profile = MODULE.parse_profile(
+            PERSON_HTML,
+            "https://www.influencewatch.org/person/example-person/",
+        )
         self.assertEqual("person", profile.dtype)
         self.assertEqual("Example Person", profile.title)
-        self.assertEqual(["Donor", "Activist"], MODULE.profile_data(profile)["occupations"])
-        self.assertEqual("https://www.influencewatch.org/non-profit/example-org/", profile.links[0][1])
-        document = MODULE.profile_document(profile, site_source_id="starintel:source:test")
+        self.assertEqual(
+            ["Donor", "Activist"],
+            MODULE.profile_data(profile)["occupations"],
+        )
+        self.assertEqual(
+            "https://www.influencewatch.org/non-profit/example-org/",
+            profile.links[0][1],
+        )
+        document = MODULE.profile_document(
+            profile,
+            site_source_id="starintel:source:test",
+        )
         self.assertEqual(MODULE.DATASET, document["dataset"])
         self.assertEqual("person", document["dtype"])
         self.assertEqual("source-recorded", document["verification"]["status"])
 
     def test_org_profile_extracts_identifiers_and_issue_areas(self) -> None:
-        profile = MODULE.parse_profile(ORG_HTML, "https://www.influencewatch.org/non-profit/example-org/")
-        document = MODULE.profile_document(profile, site_source_id="starintel:source:test")
+        profile = MODULE.parse_profile(
+            ORG_HTML,
+            "https://www.influencewatch.org/non-profit/example-org/",
+        )
+        document = MODULE.profile_document(
+            profile,
+            site_source_id="starintel:source:test",
+        )
         self.assertEqual("org", document["dtype"])
         self.assertEqual("12-3456789", document["data"]["tax_id"])
-        self.assertEqual(["Economic Policy", "Elections Policy"], document["data"]["sectors"])
+        self.assertEqual(
+            ["Economic Policy", "Elections Policy"],
+            document["data"]["sectors"],
+        )
         schemes = {item["scheme"] for item in document["identifiers"]}
         self.assertIn("tax-id", schemes)
 
     def test_internal_profile_links_resolve_when_target_is_present(self) -> None:
-        person = MODULE.parse_profile(PERSON_HTML, "https://www.influencewatch.org/person/example-person/")
-        org = MODULE.parse_profile(ORG_HTML, "https://www.influencewatch.org/non-profit/example-org/")
+        person = MODULE.parse_profile(
+            PERSON_HTML,
+            "https://www.influencewatch.org/person/example-person/",
+        )
+        org = MODULE.parse_profile(
+            ORG_HTML,
+            "https://www.influencewatch.org/non-profit/example-org/",
+        )
         source = MODULE.site_source_document("2026-07-31T00:00:00Z")
         documents = {
-            person.url: MODULE.profile_document(person, site_source_id=source["_id"]),
-            org.url: MODULE.profile_document(org, site_source_id=source["_id"]),
+            person.url: MODULE.profile_document(
+                person,
+                site_source_id=source["_id"],
+            ),
+            org.url: MODULE.profile_document(
+                org,
+                site_source_id=source["_id"],
+            ),
         }
-        relations = MODULE.relation_documents([person, org], documents, site_source_id=source["_id"])
+        relations = MODULE.relation_documents(
+            [person, org],
+            documents,
+            site_source_id=source["_id"],
+        )
         self.assertEqual(1, len(relations))
         self.assertEqual("references_profile", relations[0]["data"]["predicate"])
-        self.assertEqual(documents[org.url]["_id"], relations[0]["data"]["object"])
+        self.assertEqual(
+            documents[org.url]["_id"],
+            relations[0]["data"]["object"],
+        )
 
     def test_sitemap_index_and_urlset_are_parsed(self) -> None:
         index = b'''<?xml version="1.0"?><sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"><sitemap><loc>https://www.influencewatch.org/wp-sitemap-posts-person-1.xml</loc></sitemap></sitemapindex>'''
         children, urls = MODULE.parse_sitemap(index, MODULE.DEFAULT_SITEMAP_URL)
         self.assertEqual([], urls)
-        self.assertEqual("https://www.influencewatch.org/wp-sitemap-posts-person-1.xml", children[0])
+        self.assertEqual(
+            "https://www.influencewatch.org/wp-sitemap-posts-person-1.xml",
+            children[0],
+        )
 
         urlset = b'''<?xml version="1.0"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"><url><loc>https://www.influencewatch.org/person/example-person/</loc></url><url><loc>https://www.influencewatch.org/about-us/</loc></url></urlset>'''
         children, urls = MODULE.parse_sitemap(urlset, children[0])
         self.assertEqual([], children)
-        self.assertEqual(["https://www.influencewatch.org/person/example-person/"], urls)
+        self.assertEqual(
+            ["https://www.influencewatch.org/person/example-person/"],
+            urls,
+        )
 
     def test_manifest_counts_generated_records(self) -> None:
-        person = MODULE.parse_profile(PERSON_HTML, "https://www.influencewatch.org/person/example-person/")
-        records = MODULE.build_records([person], output=Path("imports/influence-watch-db.jsonl"))
+        person = MODULE.parse_profile(
+            PERSON_HTML,
+            "https://www.influencewatch.org/person/example-person/",
+        )
+        records = MODULE.build_records(
+            [person],
+            output=Path("imports/influence-watch-db.jsonl"),
+        )
         self.assertEqual("dataset-manifest", records[-1]["dtype"])
         self.assertEqual(MODULE.DATASET, records[-1]["data"]["name"])
-        self.assertEqual(len(records) - 1, records[-1]["data"]["record_count"])
+        self.assertEqual(
+            len(records) - 1,
+            records[-1]["data"]["record_count"],
+        )
 
 
 if __name__ == "__main__":
