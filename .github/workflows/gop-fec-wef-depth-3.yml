@@ -131,6 +131,9 @@ jobs:
           --root .
           --replace
 
+      - name: Normalize canonical committee nodes
+        run: python3 scripts/normalize-gop-depth3-packet.py db/org
+
       - name: Remove bootstrap before validation
         run: |
           rm -rf imports/gop-depth3
