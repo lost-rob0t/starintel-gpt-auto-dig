@@ -1,0 +1,36 @@
+{
+  "counts": {
+    "analysis": 1,
+    "claim": 14,
+    "dataset-manifest": 1,
+    "event": 6,
+    "legal-case": 1,
+    "media": 2,
+    "org": 10,
+    "person": 12,
+    "policy": 2,
+    "relation": 43,
+    "research-pass": 1,
+    "source": 16
+  },
+  "dataset": "usaid-doge-mortality-accountability",
+  "files": [
+    "README.md",
+    "sources.md",
+    "starintel-documents.jsonl"
+  ],
+  "generated_at": "2026-07-30T23:30:00-04:00",
+  "hash_algorithm": "sha256",
+  "schema_version": "0.9.0",
+  "starintel_documents_sha256": "ededfe8fe106167f11ad691d8b02690b7d706c6c8fb96de45ada237733a9bbbf",
+  "total": 109,
+  "validation": {
+    "json_parse": "passed",
+    "unique_ids": "passed",
+    "strict_dtype_data_keys": "passed",
+    "relation_subject_shape": "passed",
+    "internal_references": "passed",
+    "source_urls": "classified",
+    "validate_for_merge": "not run locally; GitHub CI is authoritative"
+  }
+}
