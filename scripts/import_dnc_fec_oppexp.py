@@ -131,10 +131,12 @@ def iso_date(value: str) -> str | None:
     value = value.strip()
     if not value:
         return None
-    try:
-        return datetime.strptime(value, "%m%d%Y").strftime("%Y-%m-%dT00:00:00Z")
-    except ValueError as exc:
-        raise RuntimeError(f"invalid FEC date {value!r}") from exc
+    for date_format in ("%m%d%Y", "%m/%d/%Y", "%Y-%m-%d"):
+        try:
+            return datetime.strptime(value, date_format).strftime("%Y-%m-%dT00:00:00Z")
+        except ValueError:
+            continue
+    raise RuntimeError(f"invalid FEC date {value!r}")
 
 
 def amount(value: str) -> float:
