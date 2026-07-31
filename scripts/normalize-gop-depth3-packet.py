@@ -4,7 +4,7 @@ from __future__ import annotations
 import argparse
 import json
 from pathlib import Path
-from typing import Any
+from typing import Any, Iterable
 
 UNDECLARED_ORG_FIELDS = frozenset({"connected_organization_id", "fec_committee_id"})
 
@@ -25,7 +25,15 @@ def normalize_document(document: dict[str, Any]) -> tuple[dict[str, Any], int]:
     return document, removed
 
 
-def normalize_packet(path: Path) -> tuple[int, int]:
+def iter_ndjson_paths(inputs: Iterable[Path]) -> Iterable[Path]:
+    for input_path in inputs:
+        if input_path.is_dir():
+            yield from sorted(input_path.rglob("*.ndjson"))
+        else:
+            yield input_path
+
+
+def normalize_ndjson(path: Path) -> tuple[int, int]:
     documents: list[dict[str, Any]] = []
     removed = 0
 
@@ -39,21 +47,33 @@ def normalize_packet(path: Path) -> tuple[int, int]:
         documents.append(document)
         removed += count
 
-    payload = "".join(
-        json.dumps(document, sort_keys=True, separators=(",", ":"), ensure_ascii=False) + "\n"
-        for document in documents
-    )
-    path.write_text(payload, encoding="utf-8")
+    if removed:
+        payload = "".join(
+            json.dumps(document, sort_keys=True, separators=(",", ":"), ensure_ascii=False) + "\n"
+            for document in documents
+        )
+        path.write_text(payload, encoding="utf-8")
     return len(documents), removed
 
 
 def main() -> int:
-    parser = argparse.ArgumentParser(description="Normalize generated GOP depth-3 StarIntel packet fields.")
-    parser.add_argument("packet", type=Path)
+    parser = argparse.ArgumentParser(description="Normalize GOP recursion StarIntel NDJSON fields.")
+    parser.add_argument("paths", nargs="+", type=Path)
     args = parser.parse_args()
 
-    documents, removed = normalize_packet(args.packet)
-    print(f"normalized {documents} documents; removed {removed} undeclared organization fields")
+    files = 0
+    documents = 0
+    removed = 0
+    for path in iter_ndjson_paths(args.paths):
+        file_documents, file_removed = normalize_ndjson(path)
+        files += 1
+        documents += file_documents
+        removed += file_removed
+
+    print(
+        f"normalized {documents} documents across {files} files; "
+        f"removed {removed} undeclared organization fields"
+    )
     return 0
 
 
