@@ -2,98 +2,12 @@ name: Generate DNC organization targets
 
 on:
   workflow_dispatch:
-  push:
-    branches:
-      - agent/dnc-fec-project-veritas-seed
-    paths:
-      - scripts/generate_dnc_organization_targets.py
-      - .github/workflows/dnc-organization-targets.yml
-      - digs/dnc/**
 
 permissions:
-  contents: write
-
-concurrency:
-  group: dnc-organization-targets-${{ github.ref }}
-  cancel-in-progress: true
+  contents: read
 
 jobs:
-  generate:
-    if: >-
-      !(github.event_name == 'push' &&
-        github.actor == 'github-actions[bot]' &&
-        contains(github.event.head_commit.message, 'organization and member target queue'))
+  manual:
     runs-on: ubuntu-latest
-    timeout-minutes: 180
-    env:
-      PYTHONPATH: .
-      TARGET_BRANCH: ${{ github.ref_name }}
     steps:
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-          ref: ${{ env.TARGET_BRANCH }}
-
-      - uses: actions/setup-python@v5
-        with:
-          python-version: '3.12'
-
-      - name: Materialize compressed DNC packet inputs
-        shell: bash
-        run: |
-          python3 - <<'PY'
-          from pathlib import Path
-          from starintel_doc.store import read_transport
-
-          created: list[Path] = []
-          root = Path('digs/dnc')
-          transports = list(root.glob('*/starintel-documents.jsonl.gz.b64'))
-          transports += list(root.glob('*/starintel-documents.jsonl.gz.b64.parts'))
-          for transport in sorted(transports):
-              raw = transport.parent / 'starintel-documents.jsonl'
-              if raw.exists():
-                  continue
-              raw.write_text(read_transport(transport), encoding='utf-8')
-              created.append(raw)
-          Path('/tmp/dnc-materialized.txt').write_text(
-              ''.join(f'{path}\n' for path in created),
-              encoding='utf-8',
-          )
-          print({'materialized_packets': len(created)})
-          PY
-
-      - name: Generate organization and member target queue
-        run: python3 scripts/generate_dnc_organization_targets.py
-
-      - name: Remove materialized packet inputs
-        if: always()
-        shell: bash
-        run: |
-          python3 - <<'PY'
-          from pathlib import Path
-
-          manifest = Path('/tmp/dnc-materialized.txt')
-          if manifest.exists():
-              for line in manifest.read_text(encoding='utf-8').splitlines():
-                  path = Path(line)
-                  if path.exists():
-                      path.unlink()
-          PY
-
-      - name: Validate complete repository
-        run: python3 scripts/validate-for-merge.py --site
-
-      - name: Commit generated queue
-        shell: bash
-        run: |
-          set -euo pipefail
-          git config user.name 'github-actions[bot]'
-          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add digs/dnc/2026-07-31-organization-member-targets
-          if git diff --cached --quiet; then
-            echo 'Generated target queue is unchanged.'
-            exit 0
-          fi
-          git commit -m 'Add exhaustive DNC organization and member target queue [skip ci]'
-          git pull --rebase origin "${TARGET_BRANCH}"
-          git push origin HEAD:${TARGET_BRANCH}
+      - run: echo 'The existing organization queue is frozen; FEC partitions carry bounded batch targets.'
