@@ -104,6 +104,25 @@
       }
     },
     {
+      "id": "influence-watch-db",
+      "title": "InfluenceWatch",
+      "subtitle": "Permission-authorized InfluenceWatch public-policy influence profiles, source attribution, and internal profile links",
+      "match": {
+        "targets": [
+          "influencewatch",
+          "influence-watch"
+        ],
+        "datasets": [
+          "influence-watch-db",
+          "influencewatch"
+        ],
+        "terms": [
+          "influencewatch",
+          "influence watch"
+        ]
+      }
+    },
+    {
       "id": "hunter-biden",
       "title": "Hunter Biden",
       "subtitle": "Hunter Biden emails, communications, business relationships, public records, source provenance, and connected people and organizations",
