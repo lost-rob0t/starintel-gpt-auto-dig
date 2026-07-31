@@ -1,0 +1,56 @@
+{
+  "as_of": "2026-07-31T10:30:00Z",
+  "completed_targets": [
+    "starintel:investigation-target:aipac-gop-donation-recipient-resolution-depth-3",
+    "starintel:investigation-target:palantir-pac-recipient-network-depth-3",
+    "starintel:investigation-target:udp-candidate-spending-resolution-depth-3",
+    "starintel:investigation-target:wef-palantir-historical-network-depth-3"
+  ],
+  "direct_transactions": {
+    "C00498691": {
+      "amount": 79000.0,
+      "gop_amount": 40000.0,
+      "gop_rows": 12,
+      "non_memo_rows": 26
+    },
+    "C00797670": {
+      "amount": 1662049.0,
+      "gop_amount": 970615.0,
+      "gop_rows": 630,
+      "non_memo_rows": 1070
+    }
+  },
+  "documents": 1769,
+  "dtype_counts": {
+    "analysis": 1,
+    "claim": 4,
+    "investigation-target": 8,
+    "org": 339,
+    "person": 320,
+    "relation": 1096,
+    "research-pass": 1
+  },
+  "packet": "digs/gop/2026-07-31-fec-wef-depth-3/starintel-documents.jsonl",
+  "packet_sha256": "2da89985d7103d353c1f60f0889b9356fc58818ab67ab952ff8e3384184ef830",
+  "queued_targets": [
+    "starintel:investigation-target:gop-fec-amendment-delta-depth-4",
+    "starintel:investigation-target:gop-recipient-overlap-jfc-depth-4",
+    "starintel:investigation-target:udp-vendor-media-buy-depth-4",
+    "starintel:investigation-target:wef-palantir-session-archive-depth-4"
+  ],
+  "run_id": "gop-fec-wef-depth-3-2026-07-31",
+  "udp_independent_expenditures": {
+    "oppose_amount": 0.0,
+    "oppose_rows": 0,
+    "support_amount": 0.0,
+    "support_rows": 0
+  },
+  "wef_fetch_status": {
+    "2024": "fetch-error:HTTPError",
+    "2025": "fetch-error:HTTPError",
+    "2026": "fetch-error:HTTPError"
+  },
+  "wef_partner_years": [
+    2026
+  ]
+}
