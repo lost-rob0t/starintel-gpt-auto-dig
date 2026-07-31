@@ -63,6 +63,24 @@ class InfluenceWatchImportTests(unittest.TestCase):
         MODULE.require_network_authorization(authorized=True, environment={})
         MODULE.require_network_authorization(authorized=False, environment={MODULE.AUTH_ENV: "1"})
 
+    def test_authorized_network_constraints_are_enforced(self) -> None:
+        args = MODULE.parse_args(["--crawl", "--authorized", "--output", "records.jsonl"])
+        self.assertEqual(MODULE.MIN_REQUEST_DELAY, args.delay)
+        self.assertFalse(args.respect_robots)
+
+        client = MODULE.NetworkClient(
+            MODULE.DEFAULT_USER_AGENT,
+            MODULE.MIN_REQUEST_DELAY,
+            30.0,
+        )
+        self.assertEqual("FOFO-01", client.user_agent)
+        self.assertEqual([], client.sitemap_urls())
+
+        with self.assertRaises(ValueError):
+            MODULE.NetworkClient("different-agent", MODULE.MIN_REQUEST_DELAY, 30.0)
+        with self.assertRaises(ValueError):
+            MODULE.NetworkClient(MODULE.DEFAULT_USER_AGENT, 0.5, 30.0)
+
     def test_person_profile_is_normalized(self) -> None:
         profile = MODULE.parse_profile(PERSON_HTML, "https://www.influencewatch.org/person/example-person/")
         self.assertEqual("person", profile.dtype)
