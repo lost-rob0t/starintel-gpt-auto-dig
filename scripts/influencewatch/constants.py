@@ -7,7 +7,8 @@ TERMS_URL = urllib.parse.urljoin(BASE_URL, "terms-of-use/")
 DEFAULT_SITEMAP_URL = urllib.parse.urljoin(BASE_URL, "sitemap_index.xml")
 DATASET = "influence-watch-db"
 AUTH_ENV = "INFLUENCEWATCH_AUTHORIZED"
-DEFAULT_USER_AGENT = "StarIntelAutoDig/1.0 (+https://github.com/lost-rob0t/starintel-gpt-auto-dig)"
+DEFAULT_USER_AGENT = "FOFO-01"
+MIN_REQUEST_DELAY = 1.0
 MAX_RESPONSE_BYTES = 12 * 1024 * 1024
 PROFILE_PATH_DTYPES = {
     "person": "person",
