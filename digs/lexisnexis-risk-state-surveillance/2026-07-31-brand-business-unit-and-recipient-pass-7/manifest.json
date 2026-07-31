@@ -1,0 +1,36 @@
+{
+  "base64_transport_sha256": "bbe94707f6259b7243f83d6cc50f594f86df8fa8c72af72ec64a90641bb03d8f",
+  "counts": {
+    "claim": 7,
+    "contract": 2,
+    "dataset-manifest": 1,
+    "document": 1,
+    "org": 5,
+    "product": 4,
+    "relation": 15,
+    "research-pass": 1,
+    "source": 8,
+    "target": 1
+  },
+  "dataset": "lexisnexis-risk-state-surveillance",
+  "files": [
+    "README.md",
+    "sources.md",
+    "manifest.json",
+    "recursive-targets-pass-7.jsonl",
+    "starintel-documents.jsonl.gz.b64"
+  ],
+  "generated_at": "2026-07-31T04:02:00-04:00",
+  "gzip_transport_sha256": "518223ad1f40243b4b4d719a7dd241a1041befaa19557eda301290fcb6552ba3",
+  "run": "2026-07-31-brand-business-unit-and-recipient-pass-7",
+  "schema_version": "0.9.0",
+  "starintel_documents_sha256": "9cb376eb25d4e9f144a036148dce524d581e240959c6d460ad49323f3d691fe3",
+  "total": 45,
+  "validation": {
+    "json_parse": "passed",
+    "relation_endpoints": "passed against current corpus plus packet endpoints",
+    "source_references": "passed",
+    "unique_ids": "passed",
+    "validate_for_merge": "GitHub CI authoritative"
+  }
+}
