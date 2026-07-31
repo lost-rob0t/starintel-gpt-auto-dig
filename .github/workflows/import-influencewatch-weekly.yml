@@ -89,7 +89,7 @@ jobs:
           set -euo pipefail
           printf -v body '%s\n\n%s' \
             "Weekly authorized InfluenceWatch refresh started at ${RUN_STARTED_AT}." \
-            "The crawler enforced one request per second, generated a per-run HA-SCRAPED identifier with openssl, imported through scripts/starintel.py, and passed the repository merge gate."
+            "The crawler enforced one request per second, generated a random 64-character lowercase hexadecimal User-Agent with openssl, imported through scripts/starintel.py, and passed the repository merge gate."
           number="$(gh pr list \
             --head "${UPDATE_BRANCH}" \
             --base main \
