@@ -151,6 +151,37 @@ def main() -> int:
         )
     recipients.sort(key=lambda item: (-item["amount"], item["name"]))
 
+    combined_recipients: dict[str, dict[str, Any]] = {}
+    for item in recipients:
+        recipient_id = item["recipient_id"]
+        aggregate = combined_recipients.setdefault(
+            recipient_id,
+            {
+                "recipient_id": recipient_id,
+                "name": item["name"],
+                "dtype": item["dtype"],
+                "party": item["party"],
+                "amount": 0.0,
+                "rows": 0,
+                "candidate_like": item["candidate_like"],
+                "office": item["office"],
+                "sources": {},
+                "fec_recipient_committee_ids": set(),
+                "data": item["data"],
+            },
+        )
+        aggregate["amount"] += item["amount"]
+        aggregate["rows"] += item["rows"]
+        aggregate["sources"][item["source"]] = round(item["amount"], 2)
+        aggregate["fec_recipient_committee_ids"].update(item["fec_recipient_committee_ids"])
+
+    combined_recipient_list: list[dict[str, Any]] = []
+    for aggregate in combined_recipients.values():
+        aggregate["amount"] = round(aggregate["amount"], 2)
+        aggregate["fec_recipient_committee_ids"] = sorted(aggregate["fec_recipient_committee_ids"])
+        combined_recipient_list.append(aggregate)
+    combined_recipient_list.sort(key=lambda item: (-item["amount"], item["name"]))
+
     combined = {"Republican": 0.0, "Democratic": 0.0, "Other/unclear": 0.0, "total": 0.0}
     for totals in source_totals.values():
         for key in combined:
@@ -168,13 +199,14 @@ def main() -> int:
             }
             for label, totals in source_totals.items()
         },
-        "top_candidate_recipients": [item for item in recipients if item["candidate_like"]][:75],
-        "top_all_recipients": recipients[:125],
+        "top_candidate_recipients_combined": [item for item in combined_recipient_list if item["candidate_like"]][:75],
+        "top_all_recipients_combined": combined_recipient_list[:125],
+        "top_candidate_recipients_by_source": [item for item in recipients if item["candidate_like"]][:75],
     }
     output.parent.mkdir(parents=True, exist_ok=True)
     output.write_text(json.dumps(report, indent=2, sort_keys=True) + "\n", encoding="utf-8")
     print(json.dumps(report["combined"], sort_keys=True))
-    print(f"wrote {output} with {len(recipients)} recipients from {matched} relation rows")
+    print(f"wrote {output} with {len(combined_recipient_list)} combined recipients from {matched} relation rows")
     return 0
 
 
