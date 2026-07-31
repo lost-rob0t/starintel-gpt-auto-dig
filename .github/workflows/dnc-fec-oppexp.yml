@@ -8,31 +8,22 @@ on:
     paths:
       - scripts/import_dnc_fec_oppexp.py
       - .github/workflows/dnc-fec-oppexp.yml
-  pull_request:
-    branches:
-      - main
-    paths:
-      - scripts/import_dnc_fec_oppexp.py
-      - .github/workflows/dnc-fec-oppexp.yml
 
 permissions:
   contents: write
 
 concurrency:
-  group: dnc-fec-oppexp-${{ github.event.pull_request.head.ref || github.ref }}
-  cancel-in-progress: false
+  group: dnc-fec-oppexp-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   generate:
-    if: >-
-      github.actor != 'github-actions[bot]' &&
-      (github.event_name != 'pull_request' ||
-       github.event.pull_request.head.ref == 'agent/dnc-fec-project-veritas-seed')
+    if: github.actor != 'github-actions[bot]'
     runs-on: ubuntu-latest
     timeout-minutes: 120
     env:
       PYTHONPATH: .
-      TARGET_BRANCH: ${{ github.event.pull_request.head.ref || github.ref_name }}
+      TARGET_BRANCH: ${{ github.ref_name }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -71,11 +62,7 @@ jobs:
               encoding='utf-8',
           )
           source.unlink()
-          print({
-              'raw_bytes': len(payload),
-              'encoded_bytes': len(encoded),
-              'parts': len(names),
-          })
+          print({'raw_bytes': len(payload), 'encoded_bytes': len(encoded), 'parts': len(names)})
           PY
 
       - name: Validate complete repository
