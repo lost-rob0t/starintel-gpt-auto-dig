@@ -2,9 +2,9 @@ name: Generate DNC FEC people and employment
 
 on:
   workflow_dispatch:
-  push:
+  pull_request:
     branches:
-      - agent/dnc-fec-project-veritas-seed
+      - main
     paths:
       - scripts/import_dnc_fec_individual_contributions.py
       - .github/workflows/dnc-fec-individual-contributions.yml
@@ -13,17 +13,19 @@ permissions:
   contents: write
 
 concurrency:
-  group: dnc-fec-individual-contributions-${{ github.ref }}
-  cancel-in-progress: false
+  group: dnc-fec-individual-contributions-${{ github.event.pull_request.head.ref || github.ref }}
+  cancel-in-progress: true
 
 jobs:
   generate:
-    if: github.actor != 'github-actions[bot]'
+    if: >-
+      github.event_name != 'pull_request' ||
+      github.event.pull_request.head.ref == 'agent/dnc-fec-project-veritas-seed'
     runs-on: ubuntu-latest
     timeout-minutes: 240
     env:
       PYTHONPATH: .
-      TARGET_BRANCH: ${{ github.ref_name }}
+      TARGET_BRANCH: ${{ github.event.pull_request.head.ref || github.ref_name }}
     steps:
       - uses: actions/checkout@v4
         with:
