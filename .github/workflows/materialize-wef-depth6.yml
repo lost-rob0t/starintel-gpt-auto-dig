@@ -7,6 +7,15 @@ on:
     paths:
       - imports/.wef-depth6-packet.jsonl.gz.b64
       - .github/workflows/materialize-wef-depth6.yml
+  pull_request:
+    branches:
+      - main
+    types:
+      - opened
+      - synchronize
+    paths:
+      - imports/.wef-depth6-packet.jsonl.gz.b64
+      - .github/workflows/materialize-wef-depth6.yml
 
 permissions:
   contents: write
@@ -38,6 +47,7 @@ jobs:
           python3 scripts/validate-for-merge.py --site
 
       - name: Commit normalized records
+        if: github.event_name == 'pull_request'
         shell: bash
         run: |
           set -euo pipefail
