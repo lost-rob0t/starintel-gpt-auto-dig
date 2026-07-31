@@ -1,0 +1,60 @@
+name: Build DNC public record queue
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - agent/dnc-fec-project-veritas-seed
+    paths:
+      - scripts/generate_dnc_person_employment_targets.py
+      - .github/workflows/dnc-public-record-queue.yml
+      - digs/dnc/**
+
+permissions:
+  contents: write
+
+concurrency:
+  group: dnc-public-record-queue-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    if: >-
+      !(github.event_name == 'push' &&
+        github.actor == 'github-actions[bot]' &&
+        contains(github.event.head_commit.message, 'DNC public record queue'))
+    runs-on: ubuntu-latest
+    timeout-minutes: 240
+    env:
+      PYTHONPATH: .
+      TARGET_BRANCH: ${{ github.ref_name }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: ${{ env.TARGET_BRANCH }}
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Build queue
+        run: python3 scripts/generate_dnc_person_employment_targets.py
+
+      - name: Validate repository
+        run: python3 scripts/validate-for-merge.py --site
+
+      - name: Commit queue
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add digs/dnc/2026-07-31-person-employment-targets
+          if git diff --cached --quiet; then
+            echo 'Queue is unchanged.'
+            exit 0
+          fi
+          git commit -m 'Add DNC public record queue [skip ci]'
+          git pull --rebase origin "${TARGET_BRANCH}"
+          git push origin HEAD:${TARGET_BRANCH}
