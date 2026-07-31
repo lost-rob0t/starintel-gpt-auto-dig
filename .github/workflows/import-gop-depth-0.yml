@@ -1,0 +1,66 @@
+name: Import GOP national depth 0
+
+on:
+  pull_request:
+    branches:
+      - main
+      - agent/trump-thiel-vance-palantir-rebased
+    types: [opened, synchronize, reopened]
+    paths:
+      - .github/workflows/import-gop-depth-0.yml
+
+permissions:
+  contents: write
+
+jobs:
+  import:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out import branch
+        uses: actions/checkout@v6
+        with:
+          ref: agent/gop-national-depth-0-rebased
+          fetch-depth: 1
+
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.13"
+
+      - name: Restore exact validated GOP packet
+        run: |
+          git fetch --no-tags --depth=1 origin 59d64f7e15fbd6297b562d20a4e09079d66dc8e3
+          git checkout 59d64f7e15fbd6297b562d20a4e09079d66dc8e3 -- \
+            'db/analysis/starintel:analysis:gop-national-seed-depth-0.ndjson' \
+            'db/claim/starintel:claim:gop-national-committee-financial-snapshot-2026-05.ndjson' \
+            'db/claim/starintel:claim:joe-gruters-midterm-mission-2025.ndjson' \
+            'db/claim/starintel:claim:rnc-platform-border-deportation-commitment.ndjson' \
+            'db/claim/starintel:claim:rnc-platform-inflation-strategy.ndjson' \
+            'db/investigation-target/starintel:investigation-target:gop-affiliated-transfers-and-other-receipts-depth-1.ndjson' \
+            'db/investigation-target/starintel:investigation-target:gop-claim-implementation-depth-1.ndjson' \
+            'db/investigation-target/starintel:investigation-target:gop-leadership-and-state-party-network-depth-1.ndjson' \
+            'db/investigation-target/starintel:investigation-target:gop-national-network-depth-0.ndjson' \
+            'db/investigation-target/starintel:investigation-target:gop-vendors-and-disbursement-recipients-depth-1.ndjson' \
+            'db/org/starintel:org:nrcc.ndjson' \
+            'db/org/starintel:org:nrsc.ndjson' \
+            'db/org/starintel:org:republican-national-committee.ndjson' \
+            'db/person/starintel:person:joe-gruters.ndjson' \
+            'db/person/starintel:person:kc-crosbie.ndjson' \
+            'db/relation/starintel:relation:joe-gruters-chairs-rnc.ndjson' \
+            'db/relation/starintel:relation:kc-crosbie-cochairs-rnc.ndjson' \
+            'db/relation/starintel:relation:nrcc-affiliated-with-rnc.ndjson' \
+            'db/relation/starintel:relation:nrsc-affiliated-with-rnc.ndjson' \
+            'db/research-pass/starintel:research-pass:gop-national-seed-depth-0-2026-07-31.ndjson' \
+            digs/gop/2026-07-31-national-seed-depth-0
+
+      - name: Run mandatory merge gate
+        run: python3 scripts/validate-for-merge.py
+
+      - name: Commit imported packet
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add db digs/gop/2026-07-31-national-seed-depth-0
+          git diff --cached --check
+          git commit -m "Restore GOP national depth 0 packet"
+          git push origin HEAD:agent/gop-national-depth-0-rebased
