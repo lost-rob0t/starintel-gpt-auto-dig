@@ -71,6 +71,20 @@ A completed research pass updates at least one canonical machine-readable surfac
 - `digs/<target>/<YYYY-MM-DD>-<slug>/starintel-documents.jsonl`; or
 - `db/<dtype>/<_id>.ndjson`.
 
+## Email ingestion invariant
+
+Every imported email artifact must produce the complete typed record set in the same research transaction:
+
+1. a `source` document for the artifact and provenance;
+2. an `email-message` document using the executable `email-message` dtype from `starintel_doc`;
+3. `person` documents for the sender and every recipient;
+4. `person` documents for explicit named people in the message body;
+5. links from the email record to the source and person records through stable IDs.
+
+When a displayed name cannot be resolved safely, create a source-scoped unresolved `person` document. Do not guess a legal identity, merge an ambiguous name into an existing person, or omit the person record. Statements in the message body remain attributed claims until independently corroborated.
+
+An email import is not complete when it contains only an image, source record, generic `message`, summary, or investigation target.
+
 ## Search and recursive target selection
 
 Use the repository search engine rather than grepping individual records:
