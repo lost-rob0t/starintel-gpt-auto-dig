@@ -16,7 +16,6 @@ from .constants import (
     PROFILE_PATH_DTYPES,
     TERMS_URL,
     USER_AGENT_HEX_LENGTH,
-    USER_AGENT_PREFIX,
 )
 
 
@@ -89,13 +88,13 @@ def generate_user_agent() -> str:
         text=True,
     )
     token = clean(result.stdout).lower()
-    if not re.fullmatch(rf"[0-9a-f]{{{USER_AGENT_HEX_LENGTH}}}", token):
-        raise RuntimeError("openssl returned an invalid InfluenceWatch run identifier")
-    return f"{USER_AGENT_PREFIX}{token}"
+    if not valid_user_agent(token):
+        raise RuntimeError("openssl returned an invalid 64-character hexadecimal user agent")
+    return token
 
 
 def valid_user_agent(value: str) -> bool:
-    return bool(re.fullmatch(rf"{re.escape(USER_AGENT_PREFIX)}[0-9a-f]{{{USER_AGENT_HEX_LENGTH}}}", clean(value)))
+    return bool(re.fullmatch(rf"[0-9a-f]{{{USER_AGENT_HEX_LENGTH}}}", clean(value)))
 
 
 def require_network_authorization(*, authorized: bool, environment: dict[str, str] | None = None) -> None:
