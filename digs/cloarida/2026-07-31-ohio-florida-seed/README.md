@@ -33,7 +33,7 @@ It also creates a dedicated bridge and affiliation audit for Fishback–Ramaswam
 
 ## Files
 
-- `starintel-documents.jsonl` — 43 StarIntel-shaped records.
+- `starintel-documents.jsonl` — eight primary seed records.
 - `recursive-targets-pass-0.jsonl` — three queued recursive roots.
 - `sources.md` — source ledger.
 - `manifest.json` — counts, hashes, and validation status.
