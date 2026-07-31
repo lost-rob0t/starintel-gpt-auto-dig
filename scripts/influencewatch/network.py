@@ -10,7 +10,7 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Sequence
 
-from .constants import BASE_URL, MAX_RESPONSE_BYTES
+from .constants import BASE_URL, DEFAULT_USER_AGENT, MAX_RESPONSE_BYTES, MIN_REQUEST_DELAY
 from .parser import Profile, parse_profile
 from .utils import canonicalize_url, clean, normalize_resource_url, profile_kind
 
@@ -35,10 +35,17 @@ class NetworkClient:
     user_agent: str
     delay: float
     timeout: float
+    respect_robots: bool = False
     max_bytes: int = MAX_RESPONSE_BYTES
     _last_request_at: float = field(default=0.0, init=False)
     _robots: urllib.robotparser.RobotFileParser | None = field(default=None, init=False)
     _sitemap_urls: list[str] = field(default_factory=list, init=False)
+
+    def __post_init__(self) -> None:
+        if self.user_agent != DEFAULT_USER_AGENT:
+            raise ValueError(f"InfluenceWatch authorization requires User-Agent {DEFAULT_USER_AGENT!r}")
+        if self.delay < MIN_REQUEST_DELAY:
+            raise ValueError(f"InfluenceWatch authorization allows at most one request per second; delay must be >= {MIN_REQUEST_DELAY}")
 
     def _throttle(self) -> None:
         elapsed = time.monotonic() - self._last_request_at
@@ -84,11 +91,15 @@ class NetworkClient:
         ]
 
     def sitemap_urls(self) -> list[str]:
+        if not self.respect_robots:
+            return []
         if self._robots is None:
             self.load_robots()
         return list(self._sitemap_urls)
 
     def fetch_allowed(self, url: str, *, accept: str) -> bytes:
+        if not self.respect_robots:
+            return self.fetch(url, accept=accept)
         if self._robots is None:
             self.load_robots()
         assert self._robots is not None
