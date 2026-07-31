@@ -1,0 +1,50 @@
+name: Materialize WEF Depth 6
+
+on:
+  push:
+    branches:
+      - agent/wef-columbus-depth-6-primary-records
+    paths:
+      - imports/.wef-depth6-packet.jsonl.gz.b64
+      - .github/workflows/materialize-wef-depth6.yml
+
+permissions:
+  contents: write
+
+jobs:
+  import-and-validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: agent/wef-columbus-depth-6-primary-records
+          fetch-depth: 0
+
+      - name: Materialize canonical packet
+        shell: bash
+        run: |
+          set -euo pipefail
+          base64 --decode imports/.wef-depth6-packet.jsonl.gz.b64 \
+            | gzip --decompress \
+            > digs/wef-columbus/2026-07-31-depth-6-primary-records/starintel-documents.jsonl
+          test "$(wc -l < digs/wef-columbus/2026-07-31-depth-6-primary-records/starintel-documents.jsonl)" -eq 40
+
+      - name: Import canonical documents
+        run: python3 scripts/starintel.py import digs/wef-columbus/2026-07-31-depth-6-primary-records/starintel-documents.jsonl
+
+      - name: Validate full corpus
+        run: |
+          python3 scripts/starintel.py validate
+          python3 scripts/validate-for-merge.py --site
+
+      - name: Commit normalized records
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm imports/.wef-depth6-packet.jsonl.gz.b64
+          rm .github/workflows/materialize-wef-depth6.yml
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add digs/wef-columbus/2026-07-31-depth-6-primary-records/starintel-documents.jsonl db imports/.wef-depth6-packet.jsonl.gz.b64 .github/workflows/materialize-wef-depth6.yml
+          git commit -m "Add WEF Columbus depth 6 primary records"
+          git push origin HEAD:agent/wef-columbus-depth-6-primary-records
