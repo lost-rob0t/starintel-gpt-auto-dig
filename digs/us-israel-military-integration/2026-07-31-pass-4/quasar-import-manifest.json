@@ -1,0 +1,145 @@
+{
+  "_id": "starintel:dataset-manifest:us-israel-military-integration:2026-07-31-pass-4:quasar",
+  "dataset": "us-israel-military-integration",
+  "dtype": "dataset-manifest",
+  "schema_version": "0.9.0",
+  "version": 1,
+  "date_added": "2026-07-31T07:18:00Z",
+  "date_updated": "2026-07-31T07:18:00Z",
+  "title": "Quasar import manifest — U.S.–Israel Military Integration Pass 4",
+  "summary": "Target-generation packet containing organization-roster, named-person and cross-cutting recursive targets.",
+  "status": "complete",
+  "language": "en",
+  "tags": [
+    "quasar",
+    "auto-dig",
+    "military-integration",
+    "us-israel",
+    "recursive-pass-4",
+    "target-expansion"
+  ],
+  "sources": [],
+  "evidence": [],
+  "assessment": {
+    "confidence": 1.0,
+    "caveats": [
+      "These are queued research targets, not completed findings.",
+      "Membership covers publicly listed leadership, command, executive, board, program and liaison roles.",
+      "Decode each gzip/base64 transport before importing its JSONL."
+    ]
+  },
+  "verification": {
+    "status": "verified",
+    "verified": true,
+    "methods": [
+      "json-parse",
+      "unique-id-check",
+      "gzip",
+      "base64",
+      "sha256",
+      "record-count"
+    ]
+  },
+  "handling": {
+    "visibility": "public",
+    "classification": "unclassified",
+    "pii": false,
+    "sensitive": false
+  },
+  "data": {
+    "manifest_type": "quasar-import",
+    "name": "U.S.–Israel Military Integration — Pass 4 Targets",
+    "actor": "auto-dig",
+    "consumer_path": "/import",
+    "incremental": true,
+    "parent_packets": [
+      "digs/us-israel-military-integration/2026-07-26",
+      "digs/us-israel-military-integration/2026-07-31",
+      "digs/us-israel-military-integration/2026-07-31-pass-3"
+    ],
+    "root_target_id": "starintel:investigation-target:us-israel-military-integration-pass-4",
+    "counts_by_target_type": {
+      "root": 1,
+      "organization": 58,
+      "person": 134,
+      "cluster": 24
+    },
+    "record_count": 217,
+    "cumulative_record_count": 391,
+    "aggregate_hash_algorithm": "sha256",
+    "aggregate_content_hash": "c5fb0f5f35bf157eaa66dca01948f2acefe11c597af9d455b84b20623b00207a",
+    "files": [
+      {
+        "path": "targets-organizations.jsonl.gz.b64",
+        "role": "documents-transport",
+        "media_type": "text/plain",
+        "encoding": "base64",
+        "compression": "gzip",
+        "decoded_name": "targets-organizations.jsonl",
+        "decoded_media_type": "application/x-ndjson",
+        "record_count": 59,
+        "decoded_content_hash": "9d760d09ea30a0916448a178c90e976902c171e1f3468b94f72eacbd971afd20",
+        "gzip_content_hash": "2542fd73422672cec31b9438e25bcf12b67ed5703de9d21dacc5b5742aa88888",
+        "transport_content_hash": "2ae44d641cfb11fe638b5f0bfda0f38b752472ae0d5142ab858ab25e64700660"
+      },
+      {
+        "path": "targets-people-a.jsonl.gz.b64",
+        "role": "documents-transport",
+        "media_type": "text/plain",
+        "encoding": "base64",
+        "compression": "gzip",
+        "decoded_name": "targets-people-a.jsonl",
+        "decoded_media_type": "application/x-ndjson",
+        "record_count": 67,
+        "decoded_content_hash": "57220533a3ab8c87f74589ba86b4408a9bd70754ddd95155bffa64f4f644eea8",
+        "gzip_content_hash": "6bf53a60ab583e085b5d21b610a84f244c8e12d3cb684e372b0861b68d6f1d06",
+        "transport_content_hash": "16ecd756f33bc6255d031ce169bc929e80b67c8df331528961898d56c1946905"
+      },
+      {
+        "path": "targets-people-b.jsonl.gz.b64",
+        "role": "documents-transport",
+        "media_type": "text/plain",
+        "encoding": "base64",
+        "compression": "gzip",
+        "decoded_name": "targets-people-b.jsonl",
+        "decoded_media_type": "application/x-ndjson",
+        "record_count": 67,
+        "decoded_content_hash": "e27bf661cd981007d5859227d2ed734874c2f3de296d77cffa6fbbe4924c93de",
+        "gzip_content_hash": "2bc4e74721a2d3c4e92d515b9b3a70ab7b87ceb3c336a84b61c613bfb4596248",
+        "transport_content_hash": "2fd27578bfa67964c5b247de396b4dd088b088c58f6d449ab19eab330a6d3f44"
+      },
+      {
+        "path": "targets-clusters.jsonl.gz.b64",
+        "role": "documents-transport",
+        "media_type": "text/plain",
+        "encoding": "base64",
+        "compression": "gzip",
+        "decoded_name": "targets-clusters.jsonl",
+        "decoded_media_type": "application/x-ndjson",
+        "record_count": 24,
+        "decoded_content_hash": "9a52a2e6d94d05a0e2ee44ba4946969761e78310174694388afbef65e6a9fbb8",
+        "gzip_content_hash": "e763cfc9b5804c10055547fa28349c7e1c9467355bfb24fd220b448f1615dff3",
+        "transport_content_hash": "7ff28662ba00f68bfdd5a77d57db92ae3e2f4c9bdeeddb47393297a46911f823"
+      }
+    ],
+    "schema_versions": [
+      "0.9.0"
+    ],
+    "generated_at": "2026-07-31T07:18:00Z",
+    "target_options": [
+      {
+        "action": "save-and-open-graph",
+        "graph_name": "U.S.–Israel Military Integration",
+        "review_status": "all"
+      }
+    ]
+  },
+  "extensions": {
+    "quasar": {
+      "import_mode": "multi-file-bulk-manifest",
+      "open_graph_after_import": true,
+      "graph_name": "U.S.–Israel Military Integration",
+      "reveal_unreviewed": true
+    }
+  }
+}
