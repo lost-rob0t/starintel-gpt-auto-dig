@@ -14,7 +14,7 @@ if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
 from starintel_doc.schema_org import document_schema
-from starintel_doc.store import validate_repository
+from starintel_doc.store import packet_paths, read_transport, validate_repository
 
 
 def run(command: list[str]) -> None:
@@ -33,6 +33,15 @@ def validate_generated_schema() -> None:
             "checked-in JSON Schema is stale; run: "
             "python3 scripts/starintel.py schema --output schemas/starintel-doc-v0.9.0.schema.json"
         )
+
+
+def validate_packet_transports() -> None:
+    for path in packet_paths(ROOT):
+        try:
+            read_transport(path)
+        except Exception as exc:
+            relative = path.relative_to(ROOT)
+            raise RuntimeError(f"invalid packet transport {relative}: {exc}") from exc
 
 
 def validate_corpus() -> None:
@@ -104,6 +113,7 @@ def main(argv: list[str] | None = None) -> int:
         run([sys.executable, "-m", "unittest", "discover", "-s", "tests", "-v"])
         validate_javascript()
         validate_generated_schema()
+        validate_packet_transports()
         validate_corpus()
         if args.site:
             validate_site()
