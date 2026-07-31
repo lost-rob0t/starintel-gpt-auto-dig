@@ -22,6 +22,21 @@ _site/dataset-<topic>/downloads/topic-manifest.json
 
 The topical JSONL preserves the original canonical documents and their source `dataset` values. It is a merged view, not a duplicate normalized corpus.
 
+## Encrypted iPhone backups
+
+`scripts/extract_iphone_backup.py` decrypts a local encrypted backup, saves a decrypted `Manifest.db`, preserves domain and relative-path folders, and emits a hashed extraction report.
+
+```bash
+python3 -m pip install iphone_backup_decrypt
+export IPHONE_BACKUP_PASSWORD='...'
+python3 scripts/extract_iphone_backup.py \
+  --directory /path/to/MobileSync/Backup/DEVICE-ID \
+  --output imports/iphone-backup \
+  --password-env IPHONE_BACKUP_PASSWORD
+```
+
+See [`docs/iphone-backup-extraction.md`](iphone-backup-extraction.md) for filtering, incremental extraction, and the required StarIntel `source` + `email-message` + `person` import transaction.
+
 ## ICIJ Offshore Leaks
 
 The importer reads the official ICIJ CSV archive and emits validated StarIntel JSONL. By default it selects Paradise Papers and Offshore Leaks records.
