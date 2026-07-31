@@ -1,0 +1,37 @@
+{
+  "counts": {
+    "claim": 13,
+    "investigation-target": 19,
+    "org": 22,
+    "relation": 15
+  },
+  "dataset": "flock-safety-new-york-locality-seed-2026-07-31",
+  "files": [
+    "README.md",
+    "sources.md",
+    "starintel-documents.part-001.jsonl",
+    "starintel-documents.part-002.jsonl",
+    "starintel-documents.part-003.jsonl",
+    "starintel-documents.part-004.jsonl",
+    "starintel-documents.part-005.jsonl",
+    "starintel-documents.part-006.jsonl",
+    "starintel-documents.part-007.jsonl",
+    "starintel-documents.part-008.jsonl",
+    "manifest.json"
+  ],
+  "generated_at": "2026-07-31T05:49:00-04:00",
+  "hash_algorithm": "sha256",
+  "schema_version": "0.9.0",
+  "starintel_documents_sha256": "f27f766a9dfc1cae70097d93f1c25d0dd5461243eec68c33b5ecddc8144aa657",
+  "total": 69,
+  "transport": "readable-jsonl-shards",
+  "transport_part_count": 8,
+  "validation": {
+    "jsonl_parse": "passed",
+    "relation_endpoint_references": "passed",
+    "repository_merge_gate": "pending-github-actions",
+    "schema_validation": "pending-github-actions",
+    "target_seed_references": "passed",
+    "unique_ids": "passed"
+  }
+}
