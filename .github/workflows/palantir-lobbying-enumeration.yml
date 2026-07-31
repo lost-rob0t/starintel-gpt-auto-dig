@@ -25,8 +25,8 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
-          cache: pip
-      - run: python -m pip install requests
+      - run: python -m pip install requests pytest
+      - run: python -m pytest -q tests/test_enumerate_palantir_lobbying.py
       - name: Fetch and normalize LDA filings
         env:
           LDA_API_TOKEN: ${{ secrets.LDA_API_TOKEN }}
