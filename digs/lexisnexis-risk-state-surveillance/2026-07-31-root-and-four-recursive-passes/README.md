@@ -36,11 +36,12 @@ This packet maps the first five recursive passes over the commercial-dossier and
 - Run: `2026-07-31-root-and-four-recursive-passes`
 - Schema: `0.9.0`
 - Records across packet files: **90**
-- Canonical source/manifest transport: `starintel-documents.jsonl`
+- Canonical 86-record transport: `starintel-documents.jsonl.gz.b64.parts` with two indexed parts
 - Root entity transports: `starintel-documents-root-entities.jsonl` and `starintel-documents-root-products.jsonl`
 - Recursive pass transports: `starintel-documents-pass-1.jsonl` through `starintel-documents-pass-4.jsonl`
 - Recursive target outputs: `recursive-targets-pass-1.jsonl` through `recursive-targets-pass-4.jsonl`
-- SHA-256 (canonical source/manifest transport): `bd7d651201f140e5292ad6698d4e9ac30ff7819fab7834d42d6ca176c493d7df`
+- SHA-256 (decompressed canonical JSONL): `f9828e2302b95fd9b58b7bdf5feb6d7c076b118d6d3dd85a9a7469d69d873dad`
+- SHA-256 (gzip transport): `7647da408f9904b4d107c0f910c08eade6fea8deab077f7c6e2a9c482e7c4f3b`
 - Source inventory: `sources.md`
 - Integrity manifest: `manifest.json`
 
@@ -52,6 +53,6 @@ This packet maps the first five recursive passes over the commercial-dossier and
 - strict use of declared dtype fields
 - source-reference resolution
 - relation endpoint resolution
-- generated Git blob SHA calculation
+- deterministic gzip transport generation
 
 The repository's GitHub Actions checks remain authoritative for the complete `python3 scripts/validate-for-merge.py --site` gate.
