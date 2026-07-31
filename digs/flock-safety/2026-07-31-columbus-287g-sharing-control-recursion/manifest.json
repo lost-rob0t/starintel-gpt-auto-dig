@@ -18,14 +18,14 @@
   "generated_at": "2026-07-31T01:26:00-04:00",
   "hash_algorithm": "sha256",
   "schema_version": "0.9.0",
-  "starintel_documents_sha256": "c0646b695c734f084e0691476ac8ede4c124ef988f32ecc619bd26f07f7ecec2",
+  "starintel_documents_sha256": "68f4c0cdcbecba2e1b3dd0d0c0369f772a195206f8ccdab06bd5a222b897e263",
   "total": 39,
   "transport": "gzip+base64",
   "validation": {
     "jsonl_parse": "passed",
     "related_id_references": "passed",
     "relation_endpoint_references": "passed",
-    "schema_validation": "not-run-local-runtime-unavailable",
+    "schema_validation": "pending-github-actions",
     "source_urls": "reviewed",
     "target_seed_references": "passed",
     "unique_ids": "passed"
