@@ -1,8 +1,12 @@
-from .collectors import AuditorCollector, GitHubCollector, LegistarCollector, SiteCollector, WaybackCollector
-from .core import (
+from .network import HttpClient
+from .auditor import AuditorCollector
+from .github import GitHubCollector
+from .legistar import LegistarCollector
+from .site import SiteCollector
+from .wayback import WaybackCollector
+from .model import (
     COLLECTORS,
     CollectJob,
-    HttpClient,
     Observation,
     PageParser,
     Stop,
