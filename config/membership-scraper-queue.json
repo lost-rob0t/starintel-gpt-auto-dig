@@ -1,12 +1,23 @@
 {
   "version": 1,
-  "generation": 2,
+  "generation": 3,
   "policy": {
     "sources": "official-public-only",
     "contacts": "explicitly-published-professional-only",
     "issue_per_canonical_list_url": true,
     "exclude_individual_profiles": true,
+    "historical_alumni_rosters": true,
+    "traverse_all_exposed_years_and_cohorts": true,
+    "historical_relation_qualifiers": [
+      "program",
+      "cohort",
+      "year",
+      "role",
+      "region",
+      "source_url"
+    ],
     "max_issue_fanout_per_wave": 500,
+    "max_alumni_pages_per_organization": 2000,
     "preserve_coverage_gaps": true
   },
   "waves": [

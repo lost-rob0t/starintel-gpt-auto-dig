@@ -1,0 +1,86 @@
+name: People directory
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - "db/**"
+      - "digs/**"
+      - "scripts/build_research_site.py"
+      - "scripts/starintel_site/**"
+      - "site-assets/people.*"
+      - "tests/test_people_directory.py"
+      - "tests/test_alumni_roster_pipeline.py"
+      - ".github/workflows/people-directory.yml"
+  push:
+    branches: [main]
+    paths:
+      - "db/**"
+      - "digs/**"
+      - "scripts/build_research_site.py"
+      - "scripts/starintel_site/**"
+      - "site-assets/people.*"
+      - ".github/workflows/people-directory.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.13"
+
+      - name: Run directory and alumni tests
+        run: |
+          python -m unittest tests.test_people_directory tests.test_alumni_roster_pipeline -v
+          node --check site-assets/people.js
+          python -m compileall -q scripts/starintel_site scripts/build_research_site.py
+
+      - name: Build research site and people directory
+        run: |
+          python scripts/build_research_site.py \
+            --input digs \
+            --db db \
+            --output _site \
+            --org-output .generated/org
+
+      - name: Validate people artifacts
+        run: |
+          test -s _site/people/index.html
+          test -s _site/people/people.json
+          test -s _site/assets/people.css
+          test -s _site/assets/people.js
+          grep -q 'People directory' _site/people/index.html
+          grep -q 'people/index.html' _site/index.html
+          python - <<'PY'
+          import json
+          from pathlib import Path
+
+          root = Path("_site")
+          people = json.loads((root / "people" / "people.json").read_text(encoding="utf-8"))
+          assert people, "people directory is empty"
+          assert all(record.get("id") and record.get("name") and record.get("url") for record in people)
+          assert all((root / "people" / record["url"]).is_file() for record in people)
+          assert all(isinstance(record.get("memberships"), list) for record in people)
+          assert any(record.get("sources") for record in people)
+          print(json.dumps({
+              "people": len(people),
+              "alumni_linked": sum("alumni" in record.get("statuses", []) for record in people),
+              "profiles": sum((root / "people" / record["url"]).is_file() for record in people),
+          }, indent=2))
+          PY
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: people-directory
+          path: |
+            _site/people
+            _site/assets/people.css
+            _site/assets/people.js
+          retention-days: 7
