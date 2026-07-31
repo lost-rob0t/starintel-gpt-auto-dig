@@ -1,0 +1,46 @@
+{
+  "dataset": "cia",
+  "schema_version": "0.9.0",
+  "generated_at": "2026-07-31T03:03:00-04:00",
+  "consumer_path": "digs/cia/2026-07-31-inqtel-google-prism-drones-wef/",
+  "files": [
+    "README.md",
+    "sources.md",
+    "starintel-documents.jsonl.gz.b64",
+    "entity-roster.csv",
+    "drone-people.csv",
+    "wef-edges.csv",
+    "prism-responsibility.md"
+  ],
+  "counts": {
+    "claim": 8,
+    "dataset-manifest": 1,
+    "event": 9,
+    "org": 20,
+    "person": 19,
+    "relation": 48,
+    "research-pass": 5,
+    "source": 32
+  },
+  "total": 142,
+  "hash_algorithm": "sha256",
+  "starintel_documents_sha256": "3e2133459a4126cad4194f42e883d8c3e484a2ee531049f47e4b515f4ff217b3",
+  "validation": {
+    "json_parse": "passed",
+    "unique_ids": "passed",
+    "required_common_fields": "passed",
+    "source_references": "passed",
+    "relation_endpoints": "passed",
+    "validate_for_merge": "not run: no repository checkout/network resolution",
+    "canonical_db_import": "not run: no repository checkout"
+  },
+  "transport": {
+    "path": "starintel-documents.jsonl.gz.b64",
+    "encoding": "base64",
+    "compression": "gzip",
+    "decoded_filename": "starintel-documents.jsonl",
+    "decoded_sha256": "3e2133459a4126cad4194f42e883d8c3e484a2ee531049f47e4b515f4ff217b3",
+    "decoded_bytes": 50884,
+    "encoded_bytes": 8717
+  }
+}
