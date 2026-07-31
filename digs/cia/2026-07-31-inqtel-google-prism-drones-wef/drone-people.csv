@@ -1,0 +1,16 @@
+subject_id,person_or_org,predicate,target_id,target,source_ids
+o:iqt,In-Q-Tel,invested_in,o:anduril,Anduril Industries,s:iqt-anduril
+o:iqt,In-Q-Tel,portfolio_includes,o:skydio,Skydio,s:iqt-skydio
+o:iqt,In-Q-Tel,portfolio_includes,o:advanced-navigation,Advanced Navigation,s:iqt-advanced-navigation
+o:iqt,In-Q-Tel,invests_in_autonomous_aerial_systems_including,o:skydio,Skydio,s:iqt-manufacturing
+p:adam-bry,Adam Bry,chief_executive_of,o:skydio,Skydio,s:skydio-about
+p:abe-bachrach,Abe Bachrach,chief_technology_officer_of,o:skydio,Skydio,s:skydio-about
+p:adam-woodworth,Adam Woodworth,chief_executive_of,o:wing,Wing,s:wing-about
+p:brian-schimpf,Brian Schimpf,cofounder_and_chief_executive_of,o:anduril,Anduril Industries,s:anduril-brian
+p:palmer-luckey,Palmer Luckey,founder_of,o:anduril,Anduril Industries,s:anduril-palmer
+p:trae-stephens,Trae Stephens,executive_chair_of,o:anduril,Anduril Industries,s:anduril-trae
+p:matt-grimm,Matt Grimm,chief_operating_officer_of,o:anduril,Anduril Industries,s:anduril-matt
+p:brandon-tseng,Brandon Tseng,cofounded,o:shield-ai,Shield AI,s:shield-about
+p:ryan-tseng,Ryan Tseng,cofounded,o:shield-ai,Shield AI,s:shield-about
+p:andrew-reiter,Andrew Reiter,cofounded,o:shield-ai,Shield AI,s:shield-about
+p:gary-steele,Gary Steele,chief_executive_of,o:shield-ai,Shield AI,s:shield-ceo

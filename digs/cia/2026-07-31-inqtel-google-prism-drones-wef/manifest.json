@@ -1,0 +1,71 @@
+{
+  "dataset": "cia",
+  "schema_version": "0.9.0",
+  "generated_at": "2026-07-31T04:12:00-04:00",
+  "consumer_path": "digs/cia/2026-07-31-inqtel-google-prism-drones-wef/",
+  "files": [
+    "README.md",
+    "sources.md",
+    "starintel-documents.jsonl.gz.b64",
+    "prism-engineering-pass-6.jsonl.gz.b64",
+    "prism-ditu-engineers-pass-7.jsonl.gz.b64",
+    "entity-roster.csv",
+    "drone-people.csv",
+    "wef-edges.csv",
+    "prism-responsibility.md",
+    "prism-engineers.csv",
+    "prism-engineering-sources.md"
+  ],
+  "counts": {
+    "claim": 15,
+    "dataset-manifest": 1,
+    "event": 15,
+    "org": 28,
+    "person": 32,
+    "relation": 81,
+    "research-pass": 7,
+    "source": 51
+  },
+  "total": 230,
+  "transports": [
+    {
+      "path": "starintel-documents.jsonl.gz.b64",
+      "purpose": "root passes 0-5",
+      "records": 142,
+      "encoding": "base64",
+      "compression": "gzip",
+      "decoded_sha256": "3e2133459a4126cad4194f42e883d8c3e484a2ee531049f47e4b515f4ff217b3",
+      "decoded_bytes": 50884,
+      "encoded_bytes": 8717
+    },
+    {
+      "path": "prism-engineering-pass-6.jsonl.gz.b64",
+      "purpose": "named PRISM and Section 702 engineering responsibility pass",
+      "records": 71,
+      "encoding": "base64",
+      "compression": "gzip",
+      "decoded_sha256": "0cb4d9e3e4930e3849842401e6025411cb04079d28e0d56e02489e16b3ca910c",
+      "decoded_bytes": 29419,
+      "encoded_bytes": 5505
+    },
+    {
+      "path": "prism-ditu-engineers-pass-7.jsonl.gz.b64",
+      "purpose": "direct FBI DITU engineer and electronic-interception liaison pass",
+      "records": 17,
+      "encoding": "base64",
+      "compression": "gzip",
+      "decoded_sha256": "cc1ba0dda5867f064ce025a3726c6d9f1ec0765d2d60c93658435be283260c06",
+      "decoded_bytes": 8290,
+      "encoded_bytes": 2365
+    }
+  ],
+  "validation": {
+    "composite_json_parse": "passed",
+    "composite_unique_ids": "passed",
+    "required_common_fields": "passed",
+    "source_references": "passed",
+    "relation_endpoints": "passed",
+    "validate_for_merge": "not run: no repository checkout/network resolution",
+    "canonical_db_import": "not run: no repository checkout"
+  }
+}

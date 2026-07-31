@@ -1,0 +1,7 @@
+relation_id,subject_id,subject,predicate,relation_strength,source_ids
+r:google-wef-partner,o:google,Google,partner_of,formal,s:wef-2026-partners
+r:google-wef-tech-pioneer,o:google,Google,technology_pioneer_alumnus_of,community-status,s:wef-google-alumni
+r:skydio-wef-profile,o:skydio,Skydio,has_organization_profile_at,profile,s:wef-skydio
+r:camille-wef-profile,p:camille-francois,Camille François,has_person_profile_at,profile,s:wef-camille
+r:niantic-wef-coverage,o:niantic,"Niantic, Inc.",covered_by,editorial,s:wef-niantic
+r:pokemon-go-wef-coverage,e:pokemon-go-launch,e:pokemon-go-launch,covered_by,editorial,s:wef-pokemon-go
