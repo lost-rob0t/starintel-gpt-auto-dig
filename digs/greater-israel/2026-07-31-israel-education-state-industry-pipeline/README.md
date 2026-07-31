@@ -5,7 +5,7 @@
 **Root target:** `starintel:target:greater-israel-us-israeli-enablement`  
 **Schema:** StarIntel `0.9.0`  
 **Recursion depth:** `6` of `8`  
-**Documents:** `25`
+**Documents:** `14`
 
 ## Correction
 
