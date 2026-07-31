@@ -1,0 +1,78 @@
+{
+  "_id": "starintel:dataset-manifest:greater-israel-people-cross-connections-depth-7:quasar",
+  "dataset": "greater-israel-aipac-enablement-2026-07-26",
+  "dtype": "dataset-manifest",
+  "schema_version": "0.9.0",
+  "version": 1,
+  "date_added": "2026-07-31T10:55:00Z",
+  "date_updated": "2026-07-31T10:55:00Z",
+  "title": "Quasar import manifest — Greater Israel people cross-connections depth 7",
+  "summary": "Decode the deterministic gzip/base64 transport to starintel-documents.jsonl, then import it into the existing Greater Israel dataset.",
+  "sources": [],
+  "evidence": [],
+  "data": {
+    "manifest_type": "quasar-import",
+    "name": "Greater Israel people and cross-connections — depth 7",
+    "actor": "auto-dig",
+    "consumer_path": "/import",
+    "target_options": [
+      {
+        "action": "save-and-open-graph",
+        "graph_name": "Greater Israel people and cross-connections — depth 7",
+        "review_status": "all"
+      }
+    ],
+    "document_ids": [],
+    "counts_by_dtype": {
+      "analysis": 1,
+      "event": 2,
+      "investigation-target": 1,
+      "org": 9,
+      "person": 7,
+      "relation": 17,
+      "research-pass": 1
+    },
+    "record_count": 38,
+    "hash_algorithm": "sha256",
+    "content_hash": "73358afba6a5b2e2dd4b91f7005e4d4c0b417c085fab1dd599ca2f9717c5cff9",
+    "files": [
+      {
+        "name": "starintel-documents.jsonl.gz.b64",
+        "path": "starintel-documents.jsonl.gz.b64",
+        "role": "documents-transport",
+        "encoding": "base64",
+        "compression": "gzip",
+        "media_type": "text/plain",
+        "record_count": 38,
+        "decoded_name": "starintel-documents.jsonl",
+        "decoded_content_hash": "73358afba6a5b2e2dd4b91f7005e4d4c0b417c085fab1dd599ca2f9717c5cff9",
+        "transport_content_hash": "adb62d281deb518bb37f4a4aacde2ef1e8fc38fe6dd0117e70ebda1b44025e03",
+        "hash_algorithm": "sha256",
+        "transport_hash_algorithm": "sha256"
+      }
+    ],
+    "schema_versions": ["0.9.0"],
+    "generated_at": "2026-07-31T10:55:00Z"
+  },
+  "assessment": {
+    "confidence": 0.96
+  },
+  "verification": {
+    "status": "source-backed",
+    "verified": true,
+    "last_reviewed_at": "2026-07-31T10:55:00Z"
+  },
+  "handling": {
+    "visibility": "public",
+    "handling": "public-source-only",
+    "pii": false,
+    "sensitive": false
+  },
+  "workflow": {
+    "research_status": "completed",
+    "recursion_depth": 7,
+    "max_depth": 8,
+    "root_target_id": "starintel:target:greater-israel-us-israeli-enablement"
+  },
+  "tags": ["quasar", "greater-israel", "people-cross-connections", "depth-7"]
+}
