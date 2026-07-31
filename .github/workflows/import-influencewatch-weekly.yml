@@ -9,8 +9,6 @@ on:
         description: Maximum profile count; 0 imports every discovered profile
         required: false
         default: "0"
-  issue_comment:
-    types: [created]
 
 permissions:
   contents: write
@@ -22,9 +20,6 @@ concurrency:
 
 jobs:
   import:
-    if: >-
-      github.event_name != 'issue_comment' ||
-      (github.event.issue.number == 96 && github.event.comment.body == '/run-influencewatch-import')
     runs-on: ubuntu-latest
     timeout-minutes: 360
     env:
