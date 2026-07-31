@@ -1,0 +1,19 @@
+{
+  "dataset": "dnc",
+  "document_part_count": 1,
+  "document_sha256": "0d2eae02463771f308f77abe6c56fb76474cce36ca3927346de086da6b3061e0",
+  "employment_records": 0,
+  "generated_at": "2026-07-31T08:25:00Z",
+  "inventory_part_count": 1,
+  "inventory_sha256": "98ea8b0579ea30dc7977fc71444ed04484b6d383df1b1ee3f455251f6e9b56af",
+  "people": 1166,
+  "schema_version": "0.9.0",
+  "target_counts": {
+    "person_employment_history": 1166,
+    "person_fec_record_reconciliation": 1166,
+    "person_identity_resolution": 1166,
+    "person_institutional_ties": 1166,
+    "person_public_record_profile": 1166
+  },
+  "total_targets": 5830
+}
