@@ -30,6 +30,7 @@ jobs:
        github.event.pull_request.head.ref == 'agent/dnc-fec-project-veritas-seed')
     runs-on: ubuntu-latest
     env:
+      PYTHONPATH: .
       TARGET_BRANCH: ${{ github.event.pull_request.head.ref || github.ref_name }}
     steps:
       - uses: actions/checkout@v4
