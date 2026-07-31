@@ -18,6 +18,7 @@ from starintel_doc.store import read_transport
 from starintel_doc.validation import validate_document
 from starintel_site.builder import build_site
 from starintel_site.model import slug
+from starintel_site.people import build_people_directory
 
 
 def load_config(path: Path) -> dict[str, Any]:
@@ -121,10 +122,14 @@ def main() -> int:
         config = load_config(args.config)
         materialize_input(args.input, args.db, args.workspace, config)
         build_site(args.workspace, args.output, args.org_output, args.config, args.assets)
+        people = build_people_directory(args.workspace, args.output, args.assets)
     except Exception as exc:
         print(f"error: {exc}", file=sys.stderr)
         return 1
-    print(f"Built explorer at {args.output} and Org corpus at {args.org_output}")
+    print(
+        f"Built explorer at {args.output}, Org corpus at {args.org_output}, "
+        f"and {people['people']} people profiles ({people['alumni']} alumni-linked)"
+    )
     return 0
 
 
