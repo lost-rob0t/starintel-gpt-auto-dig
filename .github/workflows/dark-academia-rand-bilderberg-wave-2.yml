@@ -1,0 +1,92 @@
+name: Dark Academia RAND Bilderberg expansion
+
+on:
+  push:
+    branches:
+      - "agent/dark-academia-rand-bilderberg-wave-2"
+    paths:
+      - "imports/dark-academia-wave2/**"
+      - ".github/workflows/dark-academia-rand-bilderberg-wave-2.yml"
+  pull_request:
+    branches:
+      - main
+    paths:
+      - "imports/dark-academia-wave2/**"
+      - ".github/workflows/dark-academia-rand-bilderberg-wave-2.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: dark-academia-rand-bilderberg-wave-2
+  cancel-in-progress: true
+
+jobs:
+  scrape-import:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    timeout-minutes: 350
+    env:
+      TARGET_BRANCH: ${{ github.head_ref || github.ref_name }}
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          ref: ${{ env.TARGET_BRANCH }}
+          fetch-depth: 0
+
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+
+      - name: Restore verified wave-two scraper and targets
+        shell: bash
+        run: |
+          set -euo pipefail
+          echo "26dc09aa4077bc25f7187e1979002392da8ca183afeb0c7bb528b337560825c2  imports/dark-academia-wave2/scraper.py.gz" | sha256sum --check --strict
+          echo "df8d6ecc5105d89b7e9a312e153c33a7388c730a48aef6ea0a2934a5a47057f2  imports/dark-academia-wave2/targets.json.gz" | sha256sum --check --strict
+          mkdir -p scripts config
+          gzip --decompress --stdout imports/dark-academia-wave2/scraper.py.gz > scripts/scrape_dark_academia_memberships.py
+          gzip --decompress --stdout imports/dark-academia-wave2/targets.json.gz > config/dark-academia-targets.json
+          echo "46b5100baae4323c8a1c9cd20b35ed7362f99e533cb0a71a90b4b868a5b73b78  scripts/scrape_dark_academia_memberships.py" | sha256sum --check --strict
+          echo "1266126cdb1a4375c48e4f5c24b07de096e2a6d84fdf3f0a90d817b80065907c  config/dark-academia-targets.json" | sha256sum --check --strict
+          chmod +x scripts/scrape_dark_academia_memberships.py
+
+      - name: Install public-web parsing dependencies
+        run: python -m pip install --disable-pip-version-check requests beautifulsoup4 lxml
+
+      - name: Scrape RAND, Bilderberg, and expanded official rosters
+        env:
+          PYTHONUNBUFFERED: "1"
+        run: python scripts/scrape_dark_academia_memberships.py --root .
+
+      - name: Remove bootstrap before corpus validation
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -rf imports/dark-academia-wave2
+          rmdir imports 2>/dev/null || true
+
+      - name: Validate complete StarIntel corpus
+        run: python scripts/starintel.py validate --root .
+
+      - name: Commit expanded AutoDig corpus
+        shell: bash
+        run: |
+          set -euo pipefail
+          git add -A \
+            scripts/scrape_dark_academia_memberships.py \
+            config/dark-academia-targets.json \
+            imports \
+            digs/dark-academia \
+            reports/dark-academia-membership-recursion-wave-2.json \
+            reports/dark-academia-membership-recursion-wave-2.md \
+            db
+          if git diff --cached --quiet; then
+            echo "Dark Academia wave-two corpus already current"
+            exit 0
+          fi
+          git config user.name "starintel-auto-dig-bot"
+          git config user.email "starintel-auto-dig-bot@users.noreply.github.com"
+          git commit -m "Expand Dark Academia RAND and Bilderberg graph"
+          git push origin "HEAD:${TARGET_BRANCH}"
