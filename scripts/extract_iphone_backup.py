@@ -139,6 +139,7 @@ def run(args: argparse.Namespace) -> dict[str, object]:
         "started_at": started_at,
         "backup_directory": str(backup_directory),
         "output_directory": str(output_directory),
+        "report_path": str(report_path),
         "relative_path_like": args.relative_path_like,
         "domain_like": args.domain_like,
         "incremental": bool(args.incremental),
@@ -182,7 +183,6 @@ def run(args: argparse.Namespace) -> dict[str, object]:
 
     report["completed_at"] = utc_now()
     write_report(report_path, report)
-    report["report_path"] = str(report_path)
     return report
 
 
