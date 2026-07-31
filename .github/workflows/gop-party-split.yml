@@ -1,0 +1,51 @@
+name: GOP PAC party split
+
+on:
+  pull_request:
+    types: [opened, reopened, synchronize]
+    branches: ["agent/gop-wef-palantir-aipac-depth-2"]
+    paths:
+      - "scripts/summarize-gop-party-split.py"
+      - ".github/workflows/gop-party-split.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: gop-party-split-${{ github.event.pull_request.number || github.ref_name }}
+  cancel-in-progress: false
+
+jobs:
+  summarize:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          ref: ${{ github.head_ref || github.ref_name }}
+          fetch-depth: 0
+
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+
+      - name: Build party split report
+        run: >-
+          python3 scripts/summarize-gop-party-split.py
+          digs/gop/2026-07-31-fec-wef-depth-3/starintel-documents.jsonl
+          reports/gop-party-split.json
+
+      - name: Commit report
+        shell: bash
+        run: |
+          set -euo pipefail
+          git add reports/gop-party-split.json
+          if git diff --cached --quiet; then
+            echo "Party split report already current"
+            exit 0
+          fi
+          git config user.name "starintel-auto-dig-bot"
+          git config user.email "starintel-auto-dig-bot@users.noreply.github.com"
+          git commit -m "Add GOP PAC party split report"
+          git push origin "HEAD:${{ github.head_ref || github.ref_name }}"
