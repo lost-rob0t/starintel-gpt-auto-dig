@@ -7,12 +7,13 @@ import urllib.request
 import urllib.robotparser
 import xml.etree.ElementTree as ET
 from dataclasses import dataclass, field
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import Sequence
 
-from .constants import BASE_URL, DEFAULT_USER_AGENT, MAX_RESPONSE_BYTES, MIN_REQUEST_DELAY
+from .constants import BASE_URL, MAX_RESPONSE_BYTES, MIN_REQUEST_DELAY
 from .parser import Profile, parse_profile
-from .utils import canonicalize_url, clean, normalize_resource_url, profile_kind
+from .utils import canonicalize_url, clean, normalize_resource_url, profile_kind, valid_user_agent
 
 
 def parse_sitemap(payload: bytes, source_url: str) -> tuple[list[str], list[str]]:
@@ -30,6 +31,10 @@ def parse_sitemap(payload: bytes, source_url: str) -> tuple[list[str], list[str]
     raise ValueError(f"unsupported sitemap root {name!r} at {source_url}")
 
 
+def utc_now() -> str:
+    return datetime.now(timezone.utc).isoformat().replace("+00:00", "Z")
+
+
 @dataclass(slots=True)
 class NetworkClient:
     user_agent: str
@@ -38,14 +43,19 @@ class NetworkClient:
     respect_robots: bool = False
     max_bytes: int = MAX_RESPONSE_BYTES
     _last_request_at: float = field(default=0.0, init=False)
+    _request_count: int = field(default=0, init=False)
     _robots: urllib.robotparser.RobotFileParser | None = field(default=None, init=False)
     _sitemap_urls: list[str] = field(default_factory=list, init=False)
 
     def __post_init__(self) -> None:
-        if self.user_agent != DEFAULT_USER_AGENT:
-            raise ValueError(f"InfluenceWatch authorization requires User-Agent {DEFAULT_USER_AGENT!r}")
+        if not valid_user_agent(self.user_agent):
+            raise ValueError("InfluenceWatch user agent must be HA-SCRAPED-seeded-run- followed by 64 lowercase hex characters")
         if self.delay < MIN_REQUEST_DELAY:
             raise ValueError(f"InfluenceWatch authorization allows at most one request per second; delay must be >= {MIN_REQUEST_DELAY}")
+
+    @property
+    def request_count(self) -> int:
+        return self._request_count
 
     def _throttle(self) -> None:
         elapsed = time.monotonic() - self._last_request_at
@@ -53,27 +63,49 @@ class NetworkClient:
             time.sleep(self.delay - elapsed)
 
     def fetch(self, url: str, *, accept: str) -> bytes:
-        self._throttle()
         request = urllib.request.Request(url, headers={"User-Agent": self.user_agent, "Accept": accept})
         last_error: Exception | None = None
-        for attempt in range(3):
+        for attempt in range(1, 4):
+            self._throttle()
+            self._request_count += 1
+            request_number = self._request_count
+            self._last_request_at = time.monotonic()
+            print(
+                f"[influencewatch] event=request-start request={request_number} attempt={attempt} "
+                f"timestamp={utc_now()} user_agent={self.user_agent} url={url}",
+                flush=True,
+            )
             try:
                 with urllib.request.urlopen(request, timeout=self.timeout) as response:
                     payload = response.read(self.max_bytes + 1)
                     if len(payload) > self.max_bytes:
                         raise ValueError(f"response exceeds {self.max_bytes} bytes: {url}")
-                    self._last_request_at = time.monotonic()
+                    print(
+                        f"[influencewatch] event=request-complete request={request_number} "
+                        f"timestamp={utc_now()} status={getattr(response, 'status', 200)} bytes={len(payload)} url={url}",
+                        flush=True,
+                    )
                     return payload
             except urllib.error.HTTPError as exc:
                 last_error = exc
-                if exc.code not in {429, 500, 502, 503, 504} or attempt == 2:
+                print(
+                    f"[influencewatch] event=request-error request={request_number} timestamp={utc_now()} "
+                    f"status={exc.code} error={exc.reason!r} url={url}",
+                    flush=True,
+                )
+                if exc.code not in {429, 500, 502, 503, 504} or attempt == 3:
                     raise
-                time.sleep(max(self.delay, 2**attempt))
+                time.sleep(max(self.delay, 2 ** (attempt - 1)))
             except urllib.error.URLError as exc:
                 last_error = exc
-                if attempt == 2:
+                print(
+                    f"[influencewatch] event=request-error request={request_number} timestamp={utc_now()} "
+                    f"error={exc.reason!r} url={url}",
+                    flush=True,
+                )
+                if attempt == 3:
                     raise
-                time.sleep(max(self.delay, 2**attempt))
+                time.sleep(max(self.delay, 2 ** (attempt - 1)))
         assert last_error is not None
         raise last_error
 
