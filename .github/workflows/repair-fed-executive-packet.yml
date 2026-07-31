@@ -2,9 +2,9 @@
 name: Repair federal executive packet
 
 on:
-  push:
-    branches:
-      - agent/fed-executive-cabinet-advisers-repaired
+  pull_request:
+    branches: [main]
+    types: [opened, synchronize, reopened]
     paths:
       - .github/workflows/repair-fed-executive-packet.yml
 
