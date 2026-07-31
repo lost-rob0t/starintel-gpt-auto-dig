@@ -16,8 +16,10 @@
     "starintel-documents.jsonl.gz.b64.part-002",
     "starintel-documents.jsonl.gz.b64.part-003a",
     "starintel-documents.jsonl.gz.b64.part-003b",
-    "starintel-documents.jsonl.gz.b64.part-004a",
-    "starintel-documents.jsonl.gz.b64.part-004b",
+    "starintel-documents.jsonl.gz.b64.part-004-0",
+    "starintel-documents.jsonl.gz.b64.part-004-1",
+    "starintel-documents.jsonl.gz.b64.part-004-2",
+    "starintel-documents.jsonl.gz.b64.part-004-3",
     "starintel-documents.jsonl.gz.b64.part-005",
     "manifest.json"
   ],
@@ -27,8 +29,9 @@
   "starintel_documents_sha256": "c4edfd4d448666e8c1d585fde5a5d6fd98ded1f3c43c4664d070b2263d94eb16",
   "total": 368,
   "transport": "gzip+base64 multipart",
-  "transport_part_count": 7,
+  "transport_part_count": 9,
   "validation": {
+    "git_blob_hashes": "verified-all-indexed-parts",
     "jsonl_parse": "passed",
     "relation_endpoint_references": "passed",
     "repository_merge_gate": "blocked-by-unrelated-main-crc-failure",
