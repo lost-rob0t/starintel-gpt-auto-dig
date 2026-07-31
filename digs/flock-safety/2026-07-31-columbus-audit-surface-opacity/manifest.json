@@ -1,48 +1,18 @@
 {
-  "counts": {
-    "analysis": 3,
-    "claim": 5,
-    "dataset-manifest": 1,
-    "event": 4,
-    "investigation-target": 11,
-    "org": 7,
-    "person": 4,
-    "policy": 3,
-    "relation": 9,
-    "research-pass": 1,
-    "source": 9
-  },
   "dataset": "flock-safety-columbus-audit-surface-opacity-2026-07-31",
   "files": [
     "README.md",
     "sources.md",
-    "starintel-documents.jsonl.gz.b64.parts",
-    "starintel-documents.jsonl.gz.b64.fixed-001",
-    "starintel-documents.jsonl.gz.b64.fixed-002",
-    "starintel-documents.jsonl.gz.b64.fixed-003",
-    "starintel-documents.jsonl.gz.b64.fixed-004",
-    "starintel-documents.jsonl.gz.b64.fixed-005",
-    "starintel-documents.jsonl.gz.b64.fixed-006",
-    "starintel-documents.jsonl.gz.b64.fixed-007",
     "manifest.json"
   ],
   "generated_at": "2026-07-31T02:40:00-04:00",
-  "hash_algorithm": "sha256",
   "schema_version": "0.9.0",
-  "starintel_documents_sha256": "155763d65f62c67ae27958dd9b1873462943e76d8647de20828d62dee1872b66",
-  "total": 57,
-  "transport": "gzip+base64 multipart",
-  "transport_part_count": 7,
+  "status": "deferred-schema-rewrite",
+  "transport": "unindexed",
   "validation": {
-    "git_blob_hashes": "verified-all-indexed-parts",
-    "jsonl_parse": "passed",
-    "relation_endpoint_references": "passed",
-    "repository_merge_gate": "pending-github-actions",
-    "research_site_build": "pending-github-actions",
-    "schema_validation": "fixed-research-pass-undeclared-field-pending-actions",
-    "source_urls": "reviewed",
-    "target_seed_references": "passed",
-    "transport_roundtrip": "passed",
-    "unique_ids": "passed"
-  }
+    "repository_merge_gate": "excluded-until-readable-jsonl-rewrite",
+    "schema_validation": "research-pass-normalization-required",
+    "source_urls": "reviewed"
+  },
+  "note": "The narrative and source files are retained, but the packet transport is intentionally unindexed after strict v0.9 validation rejected undeclared research-pass fields. The packet must be regenerated as readable canonical JSONL before re-enabling it."
 }
