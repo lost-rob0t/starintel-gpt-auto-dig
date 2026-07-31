@@ -1,0 +1,70 @@
+name: Repair corrupt packet transport
+
+on:
+  pull_request:
+    types: [synchronize, reopened, ready_for_review]
+
+permissions:
+  contents: write
+
+concurrency:
+  group: repair-us-israel-pass-2-packet
+  cancel-in-progress: false
+
+jobs:
+  repair:
+    if: github.event.pull_request.head.repo.full_name == github.repository && github.head_ref == 'agent/wef-columbus-depth-6-primary-records'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out feature branch
+        uses: actions/checkout@v6
+        with:
+          ref: agent/wef-columbus-depth-6-primary-records
+          fetch-depth: 0
+
+      - name: Rebuild valid gzip wrapper
+        shell: python
+        run: |
+          from __future__ import annotations
+
+          import base64
+          import gzip
+          import hashlib
+          import json
+          import zlib
+          from pathlib import Path
+
+          path = Path('digs/us-israel-military-integration/2026-07-31/starintel-documents.jsonl.gz.b64')
+          encoded = ''.join(path.read_text(encoding='utf-8').split())
+          archive = base64.b64decode(encoded, validate=True)
+
+          if archive[:3] != b'\x1f\x8b\x08':
+              raise SystemExit('transport is not a gzip archive')
+          if archive[3] != 0:
+              raise SystemExit(f'unsupported gzip flags: {archive[3]:#x}')
+
+          payload = zlib.decompress(archive[10:-8], wbits=-zlib.MAX_WBITS)
+          records = [json.loads(line) for line in payload.decode('utf-8').splitlines() if line.strip()]
+          if not records:
+              raise SystemExit('recovered packet contains no records')
+
+          repaired = gzip.compress(payload, compresslevel=9, mtime=0)
+          gzip.decompress(repaired)
+          path.write_text(base64.b64encode(repaired).decode('ascii') + '\n', encoding='utf-8')
+
+          print(f'recovered_records={len(records)}')
+          print(f'payload_sha256={hashlib.sha256(payload).hexdigest()}')
+          print(f'archive_sha256={hashlib.sha256(repaired).hexdigest()}')
+
+      - name: Remove one-shot workflow and commit repair
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          git rm .github/workflows/repair-corrupt-packet.yml
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add digs/us-israel-military-integration/2026-07-31/starintel-documents.jsonl.gz.b64
+          git commit -m 'Repair US-Israel pass-2 gzip transport'
+          git push origin HEAD:agent/wef-columbus-depth-6-primary-records
