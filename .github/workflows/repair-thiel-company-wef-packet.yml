@@ -1,0 +1,41 @@
+name: Repair Thiel-company WEF packet
+
+on:
+  pull_request:
+    branches: [main]
+    types: [opened, synchronize, reopened]
+    paths:
+      - .github/workflows/repair-thiel-company-wef-packet.yml
+      - scripts/repair-thiel-company-wef-packet.py
+
+permissions:
+  contents: write
+
+jobs:
+  repair:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repair branch
+        uses: actions/checkout@v6
+        with:
+          ref: agent/thiel-company-wef-enumeration-repaired
+
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.13"
+
+      - name: Normalize packet
+        run: PYTHONPATH=. python3 scripts/repair-thiel-company-wef-packet.py
+
+      - name: Run mandatory merge gate
+        run: python3 scripts/validate-for-merge.py
+
+      - name: Commit repaired packet
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add digs/wef/2026-07-31-thiel-company-employee-enumeration-depth-1
+          git diff --cached --check
+          git commit -m "Normalize Thiel-company WEF packet"
+          git push origin HEAD:agent/thiel-company-wef-enumeration-repaired
