@@ -1,0 +1,38 @@
+{
+  "counts": {
+    "analysis": 3,
+    "claim": 5,
+    "dataset-manifest": 1,
+    "event": 4,
+    "investigation-target": 11,
+    "org": 7,
+    "person": 4,
+    "policy": 3,
+    "relation": 9,
+    "research-pass": 1,
+    "source": 9
+  },
+  "dataset": "flock-safety-columbus-audit-surface-opacity-2026-07-31",
+  "files": [
+    "README.md",
+    "sources.md",
+    "starintel-documents.jsonl.gz.b64.parts",
+    "manifest.json"
+  ],
+  "generated_at": "2026-07-31T02:40:00-04:00",
+  "hash_algorithm": "sha256",
+  "schema_version": "0.9.0",
+  "starintel_documents_sha256": "08183396e741d2e952c0bafc8d0a8b5153b2e84b1039b88284bc9d63dcde640b",
+  "total": 57,
+  "transport": "gzip+base64 multipart",
+  "validation": {
+    "jsonl_parse": "passed",
+    "relation_endpoint_references": "passed",
+    "repository_merge_gate": "pending-github-actions",
+    "research_site_build": "pending-github-actions",
+    "schema_validation": "pending-github-actions",
+    "source_urls": "reviewed",
+    "target_seed_references": "passed",
+    "unique_ids": "passed"
+  }
+}
