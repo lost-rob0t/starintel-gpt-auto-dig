@@ -11,6 +11,12 @@ from typing import Any, Iterable
 from urllib.parse import parse_qsl, urlencode, urlsplit, urlunsplit
 
 URL_RE = re.compile(r"https?://[^\s<>\]\[\)\(\"']+")
+TRACKING_PREFIXES = ("utm_", "fbclid", "gclid", "mc_")
+PROFILE_ROOTS = {
+    "people", "experts", "members", "fellows", "staff", "team", "advisers",
+    "advisors", "trustees", "participants", "profiles", "profile", "bios",
+    "bio", "biographies", "biography",
+}
 LIST_ROOTS = {
     "advisers", "advisors", "attendees", "board", "boards", "committee",
     "committees", "delegates", "directory", "experts", "fellows", "leadership",
@@ -24,21 +30,27 @@ LIST_SLUGS = {
     "our-staff", "our-team", "participant-list", "participants-list", "people-directory",
     "staff-directory", "team-members", "who-we-are",
 }
-LIST_TEXT = re.compile(
+LIST_TOKEN_RE = re.compile(
+    r"(?:^|[-_])(?:members?|membership|participants?|attendees?|delegates?|experts?|"
+    r"fellows?|leadership|staff|team|trustees?|boards?|committees?|directory|roster)"
+    r"(?:$|[-_\d])",
+    re.IGNORECASE,
+)
+LIST_TEXT_RE = re.compile(
     r"\b(?:our people|people directory|people and leadership|member(?:ship)? (?:directory|list|roster)|"
     r"participants? (?:directory|list|roster)|experts? (?:directory|list|roster)|"
     r"fellows? (?:directory|list|roster)|staff (?:directory|list|roster)|"
     r"team (?:directory|list|members|roster)|leadership (?:directory|team|list|roster)|"
     r"board (?:of )?(?:directors|trustees|members)|committee members?|council members?|"
     r"attendees? (?:list|roster)|delegates? (?:list|roster)|who we are)\b",
-    re.I,
+    re.IGNORECASE,
 )
 META_KEYS = {
     "page_type", "role", "kind", "label", "heading", "title", "description",
     "parser", "mode", "section", "list_type", "roster_type",
 }
-TRACKING_PREFIXES = ("utm_", "fbclid", "gclid", "mc_")
-PAGE_RE = re.compile(r"^(?:page[-_]?\d+|\d+)$", re.I)
+PAGE_SEGMENT_RE = re.compile(r"^(?:page[-_]?\d+|p[-_]?\d+)$", re.IGNORECASE)
+PAGE_QUERY_KEYS = {"page", "paged", "pagenum", "page_number", "offset", "start"}
 
 
 @dataclass(frozen=True)
@@ -75,16 +87,41 @@ def segment_stem(segment: str) -> str:
     return re.sub(r"\.(?:html?|php|aspx?)$", "", segment.lower())
 
 
+def path_segments(url: str) -> list[str]:
+    return [segment_stem(segment) for segment in urlsplit(url).path.split("/") if segment]
+
+
+def listish_segment(segment: str) -> bool:
+    return segment in LIST_ROOTS or segment in LIST_SLUGS or bool(LIST_TOKEN_RE.search(segment))
+
+
+def is_profile_path(url: str) -> bool:
+    segments = path_segments(url)
+    if len(segments) < 2:
+        return False
+    parent = segments[-2]
+    leaf = segments[-1]
+    if parent not in PROFILE_ROOTS:
+        return False
+    if listish_segment(leaf) or PAGE_SEGMENT_RE.fullmatch(leaf):
+        return False
+    return True
+
+
 def is_list_path(url: str) -> bool:
-    segments = [segment_stem(segment) for segment in urlsplit(url).path.split("/") if segment]
+    if is_profile_path(url):
+        return False
+    parts = urlsplit(url)
+    segments = path_segments(url)
     if not segments:
         return False
     last = segments[-1]
-    if last in LIST_ROOTS or last in LIST_SLUGS:
+    if listish_segment(last):
         return True
-    if PAGE_RE.fullmatch(last) and len(segments) > 1:
-        return segments[-2] in LIST_ROOTS or segments[-2] in LIST_SLUGS
-    return False
+    if PAGE_SEGMENT_RE.fullmatch(last) and len(segments) > 1 and listish_segment(segments[-2]):
+        return True
+    query_keys = {key.lower() for key, _ in parse_qsl(parts.query, keep_blank_values=True)}
+    return bool(query_keys & PAGE_QUERY_KEYS) and any(listish_segment(segment) for segment in segments)
 
 
 def local_evidence(container: dict[str, Any], key: str) -> str:
@@ -97,7 +134,9 @@ def local_evidence(container: dict[str, Any], key: str) -> str:
 
 
 def qualifies(url: str, evidence: str) -> bool:
-    return is_list_path(url) or bool(LIST_TEXT.search(evidence))
+    if is_profile_path(url):
+        return False
+    return is_list_path(url) or bool(LIST_TEXT_RE.search(evidence))
 
 
 def host_label(url: str) -> str:
@@ -105,7 +144,7 @@ def host_label(url: str) -> str:
     return host[4:] if host.startswith("www.") else host
 
 
-def context(container: dict[str, Any], url: str) -> tuple[str, str, str]:
+def infer_context(container: dict[str, Any], url: str) -> tuple[str, str, str]:
     def first(keys: tuple[str, ...], default: str = "") -> str:
         for key in keys:
             value = container.get(key)
@@ -129,9 +168,9 @@ def walk(value: Any, source: str) -> Iterable[Candidate]:
                     url = canonical_url(raw)
                     if not qualifies(url, evidence):
                         continue
-                    organization, dataset, label = context(value, url)
+                    organization, dataset, label = infer_context(value, url)
                     yield Candidate(
-                        hashlib.sha256(url.encode()).hexdigest(),
+                        hashlib.sha256(url.encode("utf-8")).hexdigest(),
                         url,
                         organization,
                         dataset,
@@ -161,29 +200,75 @@ def read_path(path: Path) -> list[Candidate]:
                     for raw in URL_RE.findall(line):
                         url = canonical_url(raw)
                         if is_list_path(url):
-                            found.append(Candidate(
-                                hashlib.sha256(url.encode()).hexdigest(), url, host_label(url), "", "",
-                                f"{path}:{line_number}", line[:900],
-                            ))
+                            found.append(
+                                Candidate(
+                                    hashlib.sha256(url.encode("utf-8")).hexdigest(),
+                                    url,
+                                    host_label(url),
+                                    "",
+                                    "",
+                                    f"{path}:{line_number}",
+                                    line[:900],
+                                )
+                            )
         return found
     try:
         return list(walk(json.loads(path.read_text(encoding="utf-8")), str(path)))
     except (UnicodeDecodeError, json.JSONDecodeError):
         text = path.read_text(encoding="utf-8", errors="replace")
         return [
-            Candidate(hashlib.sha256(url.encode()).hexdigest(), url, host_label(url), "", "", str(path), text[:900])
+            Candidate(
+                hashlib.sha256(url.encode("utf-8")).hexdigest(),
+                url,
+                host_label(url),
+                "",
+                "",
+                str(path),
+                text[:900],
+            )
             for raw in URL_RE.findall(text)
             for url in [canonical_url(raw)]
             if is_list_path(url)
         ]
 
 
+def run_self_test() -> None:
+    accepted = [
+        "https://example.org/about/people.html",
+        "https://example.org/members",
+        "https://example.org/meetings/2025/participants-2025",
+        "https://example.org/experts?page=4",
+        "https://example.org/board-of-directors",
+    ]
+    rejected = [
+        "https://example.org/",
+        "https://example.org/news",
+        "https://example.org/people/jane-doe",
+        "https://example.org/experts/john-smith",
+        "https://example.org/profile/person-name",
+    ]
+    for url in accepted:
+        assert is_list_path(url), f"expected list surface: {url}"
+    for url in rejected:
+        assert not qualifies(url, "People directory leadership team"), f"expected profile/non-list rejection: {url}"
+    print(json.dumps({"accepted": accepted, "rejected": rejected}, indent=2))
+
+
 def main() -> int:
-    parser = argparse.ArgumentParser(description="Extract membership-list surfaces while excluding individual profile URLs.")
+    parser = argparse.ArgumentParser(
+        description="Extract canonical membership-list surfaces while excluding individual profile URLs."
+    )
     parser.add_argument("--input", action="append", default=[], type=Path)
     parser.add_argument("--glob", action="append", default=[])
-    parser.add_argument("--report", required=True, type=Path)
+    parser.add_argument("--report", type=Path)
+    parser.add_argument("--self-test", action="store_true")
     args = parser.parse_args()
+
+    if args.self_test:
+        run_self_test()
+        return 0
+    if args.report is None:
+        parser.error("--report is required unless --self-test is used")
 
     paths = list(args.input)
     for pattern in args.glob:
