@@ -1,0 +1,37 @@
+{
+  "dataset": "flock-safety-new-york-governance-sharing-private-depth-2-2026-07-31",
+  "schema_version": "0.9.0",
+  "generated_at": "2026-07-31T10:00:00-04:00",
+  "total": 144,
+  "counts": {
+    "org": 22,
+    "person": 17,
+    "claim": 28,
+    "relation": 32,
+    "investigation-target": 45
+  },
+  "files": [
+    "README.md",
+    "sources.md",
+    "starintel-documents.part-001.jsonl",
+    "starintel-documents.part-002.jsonl",
+    "starintel-documents.part-003.jsonl",
+    "starintel-documents.part-004.jsonl",
+    "starintel-documents.part-005.jsonl",
+    "starintel-documents.part-006.jsonl",
+    "starintel-documents.part-007.jsonl",
+    "starintel-documents.part-008.jsonl"
+  ],
+  "transport": "readable-jsonl-shards",
+  "shard_count": 8,
+  "starintel_documents_sha256": "12847ffd5559a4bae79d44c5c6e3324b18dbfef2372319edac10f8a87bcc9020",
+  "hash_algorithm": "sha256",
+  "validation": {
+    "jsonl_parse": "passed",
+    "unique_ids": "passed",
+    "relation_endpoint_references": "passed",
+    "target_seed_references": "passed",
+    "source_urls": "reviewed",
+    "schema_validation": "pending-github-actions"
+  }
+}
