@@ -1,4 +1,5 @@
 {
+  "combined_documents_sha256": "e6a85b1476a749bc9a8f8d3cd9699eb54e911641e3f7b4be5caa74a1af4f43d8",
   "counts": {
     "investigation-target": 5,
     "org": 9,
@@ -7,15 +8,45 @@
     "source": 7
   },
   "dataset": "hunter-biden",
+  "document_files": [
+    {
+      "count": 7,
+      "path": "sources.jsonl",
+      "sha256": "e181d73995372aa92b8460cac535ed584c9e1e2c71b84a4f6b1497d890029913"
+    },
+    {
+      "count": 14,
+      "path": "entities.jsonl",
+      "sha256": "800b4258bfcba08be60e4f394e24f251a1409c1a235bca58cd300f89226add22"
+    },
+    {
+      "count": 9,
+      "path": "relations-1.jsonl",
+      "sha256": "1d8a4ef33fb53f8f486ffcc8bd70e0aff3af6d95539512ce51a091a10f88b809"
+    },
+    {
+      "count": 9,
+      "path": "relations-2.jsonl",
+      "sha256": "f8f73b954f51ed8280ad14be152820c5d2dc61500cdf9c00229b2230913662f0"
+    },
+    {
+      "count": 5,
+      "path": "investigation-targets.jsonl",
+      "sha256": "0113d638c79380bcdf7a6671c4e8a1c2e9bf59720e6346e38b9589089e90025d"
+    }
+  ],
   "files": [
     "README.md",
     "sources.md",
-    "starintel-documents.jsonl"
+    "sources.jsonl",
+    "entities.jsonl",
+    "relations-1.jsonl",
+    "relations-2.jsonl",
+    "investigation-targets.jsonl"
   ],
   "generated_at": "2026-07-31T05:20:00Z",
   "hash_algorithm": "sha256",
   "schema_version": "0.9.0",
-  "starintel_documents_sha256": "e6a85b1476a749bc9a8f8d3cd9699eb54e911641e3f7b4be5caa74a1af4f43d8",
   "total": 44,
   "validation": {
     "jsonl": "syntax checked",
