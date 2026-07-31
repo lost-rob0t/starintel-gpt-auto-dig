@@ -23,13 +23,18 @@ Files:
 
 - `bridge-memberships.json` — sourced cluster memberships used for screening;
 - `rank-bridge-sets.py` — deterministic ranking script;
-- `starintel-documents.jsonl` — graph records and evidence boundaries.
+- `starintel-documents.jsonl.gz.b64` — deterministic gzip/base64 transport containing 38 StarIntel records;
+- `quasar-import-manifest.json` — record counts and SHA-256 verification metadata.
 
 Run:
 
 ```bash
 python3 rank-bridge-sets.py bridge-memberships.json --pretty
+base64 -d starintel-documents.jsonl.gz.b64 | gzip -dc > starintel-documents.jsonl
 ```
+
+Decoded JSONL SHA-256: `73358afba6a5b2e2dd4b91f7005e4d4c0b417c085fab1dd599ca2f9717c5cff9`  
+Deterministic gzip SHA-256: `adb62d281deb518bb37f4a4aacde2ef1e8fc38fe6dd0117e70ebda1b44025e03`
 
 ## Highest-ranked bridge
 
