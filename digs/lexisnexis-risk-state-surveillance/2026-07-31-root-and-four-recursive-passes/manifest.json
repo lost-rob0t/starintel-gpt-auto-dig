@@ -1,4 +1,5 @@
 {
+  "base64_transport_sha256": "a185bda4b0c777388a04618f249f51303015e58e7c158283783ddc372deb0679",
   "counts": {
     "claim": 12,
     "contract": 1,
@@ -16,7 +17,9 @@
   "files": [
     "README.md",
     "sources.md",
-    "starintel-documents.jsonl",
+    "starintel-documents.jsonl.gz.b64.parts",
+    "starintel-documents.jsonl.gz.b64.part-001",
+    "starintel-documents.jsonl.gz.b64.part-002",
     "starintel-documents-root-entities.jsonl",
     "starintel-documents-root-products.jsonl",
     "starintel-documents-pass-1.jsonl",
@@ -29,10 +32,10 @@
     "recursive-targets-pass-4.jsonl"
   ],
   "generated_at": "2026-07-31T02:42:00-04:00",
+  "gzip_transport_sha256": "7647da408f9904b4d107c0f910c08eade6fea8deab077f7c6e2a9c482e7c4f3b",
   "hash_algorithm": "sha256",
   "schema_version": "0.9.0",
-  "starintel_documents_git_blob_sha1": "9e66d0add222b0026625ad021b4409400dbc9adb",
-  "starintel_documents_sha256": "bd7d651201f140e5292ad6698d4e9ac30ff7819fab7834d42d6ca176c493d7df",
+  "starintel_documents_sha256": "f9828e2302b95fd9b58b7bdf5feb6d7c076b118d6d3dd85a9a7469d69d873dad",
   "total": 90,
   "validation": {
     "json_parse": "passed",
@@ -40,7 +43,7 @@
     "required_common_fields": "passed",
     "source_references": "passed",
     "strict_dtype_data_keys": "checked against spec.py fields used",
-    "unique_ids_across_packet": "passed across 9 JSONL files",
+    "unique_ids_across_packet": "passed across canonical transport and 4 target files",
     "validate_for_merge": "GitHub CI authoritative"
   }
 }
