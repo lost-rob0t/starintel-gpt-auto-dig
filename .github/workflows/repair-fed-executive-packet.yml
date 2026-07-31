@@ -1,3 +1,4 @@
+# One-shot schema repair; remove after the normalized packet commit lands.
 name: Repair federal executive packet
 
 on:
