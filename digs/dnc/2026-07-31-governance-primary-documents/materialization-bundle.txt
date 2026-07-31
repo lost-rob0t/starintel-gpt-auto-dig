@@ -1,0 +1,2 @@
+Validated local materialization bundle: dnc-autodig-validated.tar.gz
+SHA-256 sidecar is included with the downloadable artifact.
