@@ -1,0 +1,53 @@
+{
+  "combined_documents_sha256": "54d7f1febe54f0c7b616d4dd8c7485a2afd1c4c0732130a5c56150975b6a9f85",
+  "counts": {
+    "source": 7,
+    "org": 3,
+    "person": 6,
+    "relation": 13,
+    "investigation-target": 38
+  },
+  "dataset": "hunter-biden",
+  "document_files": [
+    {"count": 7, "path": "sources.jsonl", "sha256": "e850ae83df420c379fad0cab85b7b64f23d722583e8080f4f2c2931710e8acba"},
+    {"count": 9, "path": "entities.jsonl", "sha256": "fdab8de9030805b3dcd2cf1c0d5dc0be3afa33a390ccade207976ddbe54943fb"},
+    {"count": 7, "path": "relations-1.jsonl", "sha256": "75ba68cdf771597f069c7c6b0bfef7f24758641efea8c0fa6f9fcf418c0be306"},
+    {"count": 6, "path": "relations-2.jsonl", "sha256": "4a2135d0a61ce8f0897b9748eead16184269905203d41e539eb61100fbebd024"},
+    {"count": 5, "path": "investigation-targets-1.jsonl", "sha256": "b96f2e88ac11dbca05874e490887893c48b94d62e8150bc658ac2a88e98a97a9"},
+    {"count": 5, "path": "investigation-targets-2.jsonl", "sha256": "54ced4dc4d3bde1eca6fa4c77425cd3f9ace34ad150d69e75d33fbcb4a536926"},
+    {"count": 5, "path": "investigation-targets-3.jsonl", "sha256": "ce3a0f8ff47dca6688ec65779d3a7ba3780c3aecfc356afdbb32cf33d40ef9e0"},
+    {"count": 5, "path": "investigation-targets-4.jsonl", "sha256": "66ec9b997b8a7b90284d04fe1bc08af15df893e19fb3939e03bcdd658f094257"},
+    {"count": 5, "path": "investigation-targets-5.jsonl", "sha256": "a38a0a755e098af8601241ab881cbfe302efec508ef3fe5d6168b46571dd5f63"},
+    {"count": 5, "path": "investigation-targets-6.jsonl", "sha256": "4c20cfc6b1b67c0a25aade52b04e4459e452b6dcbf74fe3dd21119083f00fe6b"},
+    {"count": 5, "path": "investigation-targets-7.jsonl", "sha256": "95145f0d6db569e818f31a422365c4a17a9d288865538390670f5df89068c7a3"},
+    {"count": 3, "path": "investigation-targets-8.jsonl", "sha256": "526ed10ee171827648d34642761e503e63bb693f7e5fa8e7d55d7e146671fb36"}
+  ],
+  "files": [
+    "README.md",
+    "sources.md",
+    "target-matrix.md",
+    "sources.jsonl",
+    "entities.jsonl",
+    "relations-1.jsonl",
+    "relations-2.jsonl",
+    "investigation-targets-1.jsonl",
+    "investigation-targets-2.jsonl",
+    "investigation-targets-3.jsonl",
+    "investigation-targets-4.jsonl",
+    "investigation-targets-5.jsonl",
+    "investigation-targets-6.jsonl",
+    "investigation-targets-7.jsonl",
+    "investigation-targets-8.jsonl",
+    "manifest.json"
+  ],
+  "generated_at": "2026-07-31T07:15:00Z",
+  "hash_algorithm": "sha256",
+  "schema_version": "0.9.0",
+  "total": 67,
+  "validation": {
+    "jsonl": "syntax checked",
+    "references": "checked against packet and prior BHR packets",
+    "schema": "pending repository CI",
+    "sources": "official and source-qualified leads separated"
+  }
+}

@@ -1,0 +1,49 @@
+{
+  "combined_documents_sha256": "6c731a5ad5672f4a746fe2fd3087bbbed53fce6badb97ed65680bd0a562712c7",
+  "counts": {
+    "investigation-target": 5,
+    "org": 2,
+    "relation": 11,
+    "source": 3
+  },
+  "dataset": "hunter-biden",
+  "document_files": [
+    {
+      "count": 3,
+      "path": "sources.jsonl",
+      "sha256": "88244b9a1c20f0fc95bbdb5e0b53b8bdbd5833de56549cb37d096364cdbc82e5"
+    },
+    {
+      "count": 2,
+      "path": "entities.jsonl",
+      "sha256": "46db258f6c1aafdf1e93ee296a92415a605c60f6956672c23af6b518a8d5bd39"
+    },
+    {
+      "count": 11,
+      "path": "relations.jsonl",
+      "sha256": "755c67b3320c6d66023d480a1352eb8758fa88cb4e474de7bcf58c4763e02958"
+    },
+    {
+      "count": 5,
+      "path": "investigation-targets.jsonl",
+      "sha256": "0f3d79ebc00d5d519687cf1c0a4fd6947157baf004a3c05edb6fe01c64c180ec"
+    }
+  ],
+  "files": [
+    "README.md",
+    "sources.md",
+    "sources.jsonl",
+    "entities.jsonl",
+    "relations.jsonl",
+    "investigation-targets.jsonl"
+  ],
+  "generated_at": "2026-07-31T05:45:00Z",
+  "hash_algorithm": "sha256",
+  "schema_version": "0.9.0",
+  "total": 21,
+  "validation": {
+    "jsonl": "syntax checked",
+    "schema": "pending repository CI",
+    "sources": "public-source review"
+  }
+}
