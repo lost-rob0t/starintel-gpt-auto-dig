@@ -5,11 +5,12 @@ on:
     branches: ["agent/dark-academia-institutions-foundations-wave-3"]
     paths:
       - "imports/dark-academia-wave3/**"
-      - "scripts/run_with_membership_url_capture.py"
-      - "scripts/membership_list_surface_candidates.py"
       - ".github/workflows/dark-academia-institutions-foundations-wave-3.yml"
   pull_request:
+    types: [opened, reopened, synchronize]
     branches: [main]
+    paths:
+      - "imports/dark-academia-wave3/**"
   workflow_dispatch:
 
 permissions:
@@ -37,64 +38,32 @@ jobs:
         with:
           python-version: "3.12"
 
-      - name: Drain invalid tickets from superseded classifier
+      - name: Load membership-list guard from main
+        shell: bash
+        run: |
+          set -euo pipefail
+          git fetch origin main --depth=1
+          for path in \
+            scripts/run_with_membership_url_capture.py \
+            scripts/membership_list_surface_candidates.py \
+            scripts/sync_membership_list_issues.py; do
+            mkdir -p "$(dirname "$path")"
+            git show "origin/main:${path}" > "$path"
+            chmod +x "$path"
+          done
+          python scripts/membership_list_surface_candidates.py --self-test
+
+      - name: Cancel stale fan-out and drain invalid tickets
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          python - <<'PY'
-          import json, os, re, subprocess, time
-          from urllib.parse import urlsplit
-
-          repo = os.environ["GITHUB_REPOSITORY"]
-          profile_roots = {"people", "experts", "members", "fellows", "staff", "team", "advisers", "advisors", "trustees", "participants"}
-          list_roots = profile_roots | {"leadership", "board", "boards", "committee", "committees", "directory", "membership", "roster", "attendees", "delegates"}
-          total_closed = []
-          stable_passes = 0
-
-          for pass_number in range(20):
-              raw = subprocess.run([
-                  "gh", "issue", "list", "--repo", repo, "--state", "open",
-                  "--limit", "1000", "--json", "number,title,body"
-              ], check=True, text=True, capture_output=True).stdout
-              issues = json.loads(raw or "[]")
-              invalid = []
-              for issue in issues:
-                  if not issue["title"].startswith("Scrape membership list:"):
-                      continue
-                  body = issue.get("body") or ""
-                  if "membership-list-url-sha256:" not in body:
-                      continue
-                  match = re.search(r"^- \*\*URL:\*\*\s+(https?://\S+)", body, re.M)
-                  if not match:
-                      continue
-                  parts = [re.sub(r"\.(?:html?|php|aspx?)$", "", p.lower()) for p in urlsplit(match.group(1)).path.split("/") if p]
-                  bad = not parts or parts == ["news"] or (len(parts) >= 2 and parts[-2] in profile_roots and parts[-1] not in list_roots)
-                  if bad:
-                      invalid.append(issue["number"])
-
-              if not invalid:
-                  stable_passes += 1
-                  print(json.dumps({"pass": pass_number + 1, "invalid": 0, "stable_passes": stable_passes}))
-                  if stable_passes >= 2:
-                      break
-                  time.sleep(10)
-                  continue
-
-              stable_passes = 0
-              print(json.dumps({"pass": pass_number + 1, "closing": len(invalid), "first": invalid[0], "last": invalid[-1]}))
-              for number in invalid:
-                  subprocess.run([
-                      "gh", "issue", "close", str(number), "--repo", repo,
-                      "--reason", "not planned",
-                      "--comment", "Closed after classifier correction: this URL is a homepage, individual profile, or non-roster page rather than a membership-list surface."
-                  ], check=True, stdout=subprocess.DEVNULL)
-              total_closed.extend(invalid)
-              time.sleep(5)
-
-          print(json.dumps({"closed_count": len(total_closed), "closed": total_closed}, indent=2))
-          PY
+          python scripts/sync_membership_list_issues.py \
+            --repository "$GITHUB_REPOSITORY" \
+            --cleanup-only \
+            --report reports/membership-list-cleanup-wave-3.json
 
       - name: Restore wave-three scraper and targets
+        shell: bash
         run: |
           set -euo pipefail
           mkdir -p scripts config reports
@@ -104,19 +73,22 @@ jobs:
           gzip --test /tmp/wave3-targets.json.gz
           gzip -dc /tmp/wave3-scraper.py.gz > scripts/scrape_dark_academia_memberships.py
           gzip -dc /tmp/wave3-targets.json.gz > config/dark-academia-targets.json
-          python -m py_compile scripts/scrape_dark_academia_memberships.py scripts/run_with_membership_url_capture.py scripts/membership_list_surface_candidates.py
+          python -m py_compile scripts/scrape_dark_academia_memberships.py
           python -m json.tool config/dark-academia-targets.json >/dev/null
 
-      - name: Normalize email schema key
+      - name: Normalize legacy email schema key
         run: |
           python - <<'PY'
           from pathlib import Path
           path = Path("scripts/scrape_dark_academia_memberships.py")
           source = path.read_text(encoding="utf-8")
-          path.write_text(source.replace('"email_type"', '"type"').replace("'email_type'", "'type'"), encoding="utf-8")
+          path.write_text(
+              source.replace('"email_type"', '"type"').replace("'email_type'", "'type'"),
+              encoding="utf-8",
+          )
           PY
 
-      - name: Install parsing dependencies
+      - name: Install public-web parsing dependencies
         run: python -m pip install --disable-pip-version-check requests beautifulsoup4 lxml
 
       - name: Scrape institutional and foundation rosters
@@ -127,7 +99,7 @@ jobs:
             --log reports/membership-url-observations-wave-3.jsonl \
             -- scripts/scrape_dark_academia_memberships.py --root .
 
-      - name: Extract roster-list surfaces
+      - name: Extract strict roster-list surfaces
         if: always()
         run: |
           python scripts/membership_list_surface_candidates.py \
@@ -136,81 +108,34 @@ jobs:
             --glob 'reports/dark-academia-membership-recursion*.json' \
             --report reports/membership-list-candidates-wave-3.json
 
-      - name: Create deduplicated roster-list issues
+      - name: Synchronize roster-list issues
         if: always()
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          python - <<'PY'
-          import json, os, subprocess, tempfile
-          from pathlib import Path
-          from urllib.parse import urlsplit
+          python scripts/sync_membership_list_issues.py \
+            --repository "$GITHUB_REPOSITORY" \
+            --cleanup \
+            --candidates reports/membership-list-candidates-wave-3.json \
+            --report reports/membership-list-issues-wave-3.json
 
-          repo = os.environ["GITHUB_REPOSITORY"]
-          source = Path("reports/membership-list-candidates-wave-3.json")
-          output = Path("reports/membership-list-issues-wave-3.json")
-          candidates = json.loads(source.read_text()).get("candidates", []) if source.exists() else []
-          if len(candidates) > 500:
-              raise SystemExit(f"Refusing unexpected issue fanout of {len(candidates)}")
-          results = []
-          for candidate in candidates:
-              marker = f"membership-list-url-sha256:{candidate['digest']}"
-              existing = json.loads(subprocess.run([
-                  "gh", "issue", "list", "--repo", repo, "--state", "all",
-                  "--search", f'"{marker}" in:body', "--limit", "1",
-                  "--json", "number,url,state"
-              ], check=True, text=True, capture_output=True).stdout or "[]")
-              if existing:
-                  results.append({**candidate, "status": "existing", **existing[0]})
-                  continue
-              org = candidate.get("organization") or urlsplit(candidate["url"]).hostname or "unknown organization"
-              label = candidate.get("label") or urlsplit(candidate["url"]).path.rstrip("/").split("/")[-1] or "membership list"
-              body = f"""<!-- {marker} -->
-## Membership-list scraper target
-
-- **Organization:** {org}
-- **Dataset:** `{candidate.get('dataset') or 'unresolved'}`
-- **URL:** {candidate['url']}
-- **Page label:** {candidate.get('label') or 'unresolved'}
-- **Discovered from:** `{candidate.get('discovered_from') or 'unknown'}`
-
-## Required parser work
-
-- [ ] Add or extend the organization-specific parser.
-- [ ] Traverse pagination, year archives, regions, tabs, and linked roster pages.
-- [ ] Preserve roles, affiliations, dates/years, regions, and source provenance.
-- [ ] Record only contacts explicitly published by the organization.
-- [ ] Import with the canonical writer and validate the corpus.
-- [ ] Add regression coverage for this URL.
-"""
-              with tempfile.NamedTemporaryFile("w", encoding="utf-8", delete=False) as handle:
-                  handle.write(body)
-                  body_path = handle.name
-              try:
-                  issue_url = subprocess.run([
-                      "gh", "issue", "create", "--repo", repo,
-                      "--title", f"Scrape membership list: {org} — {label}"[:240],
-                      "--body-file", body_path
-                  ], check=True, text=True, capture_output=True).stdout.strip()
-              finally:
-                  Path(body_path).unlink(missing_ok=True)
-              results.append({**candidate, "status": "created", "issue_url": issue_url})
-          output.write_text(json.dumps({"candidate_count": len(candidates), "results": results}, indent=2, sort_keys=True) + "\n")
-          PY
-
-      - name: Remove bootstrap
+      - name: Remove bootstrap before corpus validation
         run: |
           rm -rf imports/dark-academia-wave3
           rmdir imports 2>/dev/null || true
 
-      - name: Validate complete corpus
+      - name: Validate complete StarIntel corpus
         run: python scripts/starintel.py validate --root .
 
-      - name: Commit expanded corpus
+      - name: Commit expanded AutoDig corpus
+        shell: bash
         run: |
           set -euo pipefail
           git add -A scripts config imports digs/dark-academia reports db
-          if git diff --cached --quiet; then exit 0; fi
+          if git diff --cached --quiet; then
+            echo "Wave-three corpus already current"
+            exit 0
+          fi
           git config user.name "starintel-auto-dig-bot"
           git config user.email "starintel-auto-dig-bot@users.noreply.github.com"
           git commit -m "Expand Dark Academia institutions and foundations graph"
