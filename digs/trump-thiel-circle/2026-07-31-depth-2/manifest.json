@@ -32,14 +32,34 @@
         "sha256": "5bd4f237f57ee367e258c0db4f9459b77537df601e77be06139bb11d3d423a4a"
       },
       {
-        "bytes": 10189,
-        "path": "payload/depth2-part-02.b64",
-        "sha256": "72a9502c6762ae952f7de971238acddceb24ac66e7d85e254561828afe15cf6f"
+        "bytes": 2550,
+        "path": "payload/depth2-part-02a.b64",
+        "sha256": "3ccf8d198d58c4acc8cb6343f1ea8acccdaf87896bf3bdd4c41870790732bfdf"
       },
       {
-        "bytes": 10181,
-        "path": "payload/depth2-part-03.b64",
-        "sha256": "6938add608c4a2454a35f9aa532ce6195cc3d13bf713406dc0fdd227e3bef098"
+        "bytes": 2550,
+        "path": "payload/depth2-part-02b.b64",
+        "sha256": "d968fff037f226eef5cbfc01638603ba3754fa505be604aaa2addf5e72eef407"
+      },
+      {
+        "bytes": 2550,
+        "path": "payload/depth2-part-02c.b64",
+        "sha256": "858771a7990fb2652c9633a4245adc3c64caf1507cc97e37eaff799adaac290b"
+      },
+      {
+        "bytes": 2541,
+        "path": "payload/depth2-part-02d.b64",
+        "sha256": "a7f7cb951ecbddb931133c6a5a774d914bfcf3c6d0d4f254cb6d0a1438bb2058"
+      },
+      {
+        "bytes": 5091,
+        "path": "payload/depth2-part-03a.b64",
+        "sha256": "f8307e5a2a82e566d4c14bc50f6613c9c0c7144f0cc4ba9a1ca8e8b6258608d0"
+      },
+      {
+        "bytes": 5091,
+        "path": "payload/depth2-part-03b.b64",
+        "sha256": "a8c724f55f30763e81f2351b4fd6265cbf6cd1fa0e5d48553984c8a113c58a4c"
       }
     ]
   },
