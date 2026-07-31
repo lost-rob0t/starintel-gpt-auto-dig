@@ -14,16 +14,24 @@ A documented two-edge path connects Brett Leatherman to the World Economic Forum
 Brett Leatherman
   -> represented the FBI at the Operation Cronos / LockBit disruption announcement
 Operation Cronos
-  -> was officially covered and repeatedly amplified by the World Economic Forum
+  -> was officially covered and amplified by the World Economic Forum
 ```
 
-The FBI published Leatherman's remarks on February 20, 2024. WEF published a dedicated Operation Cronos article on February 21, 2024 and continued surfacing the operation through its Centre for Cybersecurity and Cybercrime Atlas materials.
+The FBI published Leatherman's remarks on February 20, 2024. WEF published dedicated Operation Cronos coverage on February 21, 2024 and continued surfacing the operation through its Centre for Cybersecurity and Cybercrime Atlas materials.
 
-## Classification
+## Classification at this pass
 
-This is a **verified indirect operational/content tie**. It is sufficient to add the investigation and graph path to dataset `wef`.
+This is a **verified indirect operational/content tie**. It does not establish that Leatherman is a WEF member, employee, adviser, contributor, event participant or operational partner. It also does not establish that WEF directed or participated in Operation Cronos.
 
-It does **not** establish that Leatherman is a WEF member, employee, adviser, contributor, event participant or operational partner. It also does not establish that WEF directed or participated in Operation Cronos.
+Subsequent recursion strengthened the institutional path:
+
+- Depth 2 verified FBI Cyber Division participation in WEF's Partnership against Cybercrime study.
+- Depth 3 verified the FBI as a WEF Partnership against Cybercrime member organization and found that the named 2020 FBI contributors were Steven Kelly and Mike Shanahan, not Leatherman.
+
+See:
+
+- `digs/wef/2026-07-31-brett-leatherman-fbi-cyber-division-depth-2/README.md`
+- `digs/wef/2026-07-31-brett-leatherman-named-participant-depth-3/README.md`
 
 ## Records
 
@@ -40,9 +48,11 @@ The existing identity `starintel:person:brett-leatherman` is reused from the FED
 ```bash
 python3 scripts/starintel.py import \
   digs/fed/2026-07-31-brett-leatherman/starintel-documents.jsonl
-
 python3 scripts/starintel.py import \
   digs/wef/2026-07-31-brett-leatherman-operation-cronos-depth-1/starintel-documents.jsonl
-
+python3 scripts/starintel.py import \
+  digs/wef/2026-07-31-brett-leatherman-fbi-cyber-division-depth-2/starintel-documents.jsonl
+python3 scripts/starintel.py import \
+  digs/wef/2026-07-31-brett-leatherman-named-participant-depth-3/starintel-documents.jsonl
 python3 scripts/validate-for-merge.py --site
 ```
