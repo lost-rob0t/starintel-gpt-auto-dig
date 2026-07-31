@@ -1,7 +1,7 @@
 # Brett Leatherman — FED investigation
 
 **Dataset:** `fed`  
-**Passes:** FED depth 0, adverse depths 1–2, plus WEF recursion depths 1–3  
+**Passes:** FED depth 0, adverse depths 1–2, FEC/employment depth 3, plus WEF recursion depths 1–3  
 **Date:** 2026-07-31  
 **Schema:** StarIntel v0.9.0
 
@@ -38,7 +38,7 @@ No public evidence reviewed establishes that Leatherman designed, requested or s
 
 Public bios confirm Leatherman concurrently taught as a Georgetown adjunct professor while holding senior FBI roles. No public evidence reviewed established an ethics violation, undisclosed payment, procurement conflict or misuse of office connected to that role.
 
-No verified bribery, illicit payment, campaign-finance link or adjudicated personal-corruption finding was identified.
+No verified bribery, illicit payment or adjudicated personal-corruption finding was identified.
 
 See:
 
@@ -46,6 +46,24 @@ See:
 - `digs/fed/2026-07-31-brett-leatherman-adverse-depth-2/README.md`
 - `starintel:analysis:brett-leatherman-adverse-information-2026-07-31`
 - `starintel:analysis:brett-leatherman-adverse-policy-context-2026-07-31`
+
+## FEC and employment result — depth 3
+
+Official OpenFEC Schedule A searches returned zero itemized records for the exact-name forms `Brett Leatherman` and `Leatherman, Brett`. Surname searches constrained by FBI employment and known career locations also produced no Brett match.
+
+This is a bounded negative finding. It does not exclude unitemized contributions, misspellings, unknown middle-name variants, state or local donations, or reporting errors.
+
+Leatherman entered the FBI in 2003. In a 2024 Lawfare interview, he stated that he had worked in the cyber discipline before joining the Bureau and was recruited after 9/11 because of that background. He did not name the employer. No reliable public source reviewed identifies the pre-FBI company.
+
+The only named organizations in his verified employment history are:
+
+- Federal Bureau of Investigation — primary employer since 2003
+- Georgetown University — concurrent adjunct-professor role
+
+See:
+
+- `digs/fed/2026-07-31-brett-leatherman-fec-employment-depth-3/README.md`
+- `starintel:analysis:brett-leatherman-fec-employment-scan-2026-07-31`
 
 ## WEF recursion result
 
@@ -89,10 +107,13 @@ See:
 - `starintel:analysis:brett-leatherman-trump-wef-corruption-scan-2026-07-31`
 - `starintel:analysis:brett-leatherman-adverse-information-2026-07-31`
 - `starintel:analysis:brett-leatherman-adverse-policy-context-2026-07-31`
+- `starintel:claim:brett-leatherman-no-exact-name-fec-records-2026-07-31`
+- `starintel:analysis:brett-leatherman-fec-employment-scan-2026-07-31`
 - `starintel:investigation-target:brett-leatherman-depth-1`
 - `starintel:research-pass:brett-leatherman-fed-depth-0-2026-07-31`
 - `starintel:research-pass:brett-leatherman-adverse-depth-1-2026-07-31`
 - `starintel:research-pass:brett-leatherman-adverse-depth-2-2026-07-31`
+- `starintel:research-pass:brett-leatherman-fec-employment-depth-3-2026-07-31`
 
 ## Import and validation
 
@@ -103,6 +124,8 @@ python3 scripts/starintel.py import \
   digs/fed/2026-07-31-brett-leatherman-adverse-depth-1/starintel-documents.jsonl
 python3 scripts/starintel.py import \
   digs/fed/2026-07-31-brett-leatherman-adverse-depth-2/starintel-documents.jsonl
+python3 scripts/starintel.py import \
+  digs/fed/2026-07-31-brett-leatherman-fec-employment-depth-3/starintel-documents.jsonl
 python3 scripts/starintel.py import \
   digs/wef/2026-07-31-brett-leatherman-operation-cronos-depth-1/starintel-documents.jsonl
 python3 scripts/starintel.py import \
