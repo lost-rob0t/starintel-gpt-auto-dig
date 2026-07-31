@@ -19,6 +19,7 @@ ALUMNI_SLUGS = {
 }
 ALUMNI_TOKEN_RE = re.compile(
     r"(?:^|[-_])(?:alumni|alumnae|alumnus|graduates?|cohorts?|classes?|"
+    r"class[-_]?of[-_]?(?:19|20)\d{2}|cohort[-_]?(?:19|20)\d{2}|"
     r"former[-_]?(?:members?|fellows?|participants?)|past[-_]?(?:members?|fellows?|participants?)|"
     r"honorees?|awardees?|laureates?)(?:$|[-_\d])",
     re.IGNORECASE,
