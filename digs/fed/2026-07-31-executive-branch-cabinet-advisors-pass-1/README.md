@@ -35,5 +35,10 @@ Official White House, ODNI, Senate, and agency sources are primary. Associated P
 - Persons: **31**
 - Organizations: **48**
 - Recursive targets: **2**
-- Canonical JSONL SHA-256: `69056149df883843198097ac1bbb62f2c2c5457256c7db17d0fd60a369b611ed`
-- Gzip SHA-256: `c662918677038977cefdaa0aeb9a1c0e90ffc9048e3bf7a6e800e68811dcb569`
+- Canonical JSONL SHA-256: `2ceb1425fed2641246b70e3fae9480c875ce02c37c2bae45214104c25ff3bd85`
+- Gzip SHA-256: `36611a873618814a20205df888774d0d9b85ed06f26ce621b26e4729c4b0eea2`
+
+
+## Schema normalization
+
+Legacy packet-only fields and original values requiring type coercion were preserved under `extensions.legacy_data`; target questions and preferred sources were mapped into declared StarIntel v0.9 fields.

@@ -16,17 +16,19 @@
     "starintel-documents.jsonl.gz.b64"
   ],
   "generated_at": "2026-07-31T09:17:07Z",
-  "gzip_transport_sha256": "c662918677038977cefdaa0aeb9a1c0e90ffc9048e3bf7a6e800e68811dcb569",
+  "gzip_transport_sha256": "36611a873618814a20205df888774d0d9b85ed06f26ce621b26e4729c4b0eea2",
   "run": "2026-07-31-executive-branch-cabinet-advisors-pass-1",
   "schema_version": "0.9.0",
-  "starintel_documents_sha256": "69056149df883843198097ac1bbb62f2c2c5457256c7db17d0fd60a369b611ed",
+  "starintel_documents_sha256": "2ceb1425fed2641246b70e3fae9480c875ce02c37c2bae45214104c25ff3bd85",
   "total": 188,
   "validation": {
     "json_parse": "passed",
+    "legacy_fields": "preserved under extensions.legacy_data",
     "relation_endpoints": "passed",
     "source_references": "inline and passed",
-    "unique_ids": "passed",
+    "strict_v0_9_schema": "passed",
     "temporal_transition": "Pulte remains acting; Clayton is confirmed-to-succeed pending official installation",
+    "unique_ids": "passed",
     "validate_for_merge": "GitHub CI authoritative"
   }
 }
