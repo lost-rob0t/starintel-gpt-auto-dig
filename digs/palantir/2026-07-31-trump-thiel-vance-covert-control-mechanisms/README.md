@@ -10,16 +10,18 @@ Does the public record expose mechanisms through which Peter Thiel or a Thiel-al
 
 ## Current assessment
 
-The hypothesis can no longer be reduced to “Thiel donated money and Vance shares his politics.”
+The hypothesis cannot be reduced to “Thiel donated money and Vance shares his politics.”
 
-The reviewed record establishes four concrete **covert-capable mechanisms**:
+The reviewed record establishes six concrete **covert-capable mechanisms**:
 
 1. a donor-driven PAC built a proposed two-way campaign-data environment through a common vendor;
 2. FEC counsel considered whether the arrangement could have been concealed through a subvendor and declined deeper investigation on prosecutorial-resource grounds;
 3. Vance remains financially entangled with Narya through fund interests, carried interest, fee receivables, and a promissory note payable through 2028;
-4. Rockbridge uses legally separate nonprofits, a super PAC, a private donor network, and a for-profit donor-management company to turn undisclosed capital into media, polling, turnout, church organizing, personnel, and access.
+4. Rockbridge uses legally separate nonprofits, a super PAC, a private donor network, and a for-profit donor-management company to turn undisclosed capital into media, polling, turnout, church organizing, personnel, and access;
+5. a named Better Tomorrow/Rockbridge development operative moved directly into the Office of the Vice President as its external-affairs director;
+6. the Vice President is outside the principal federal criminal financial-conflict statute, leaving disclosure without the ordinary section 208 recusal prohibition.
 
-These facts support a **distributed covert-influence and dependency architecture**. They do not yet prove that Thiel is the sole controller, that Vance accepts direct orders, or that coercion, blackmail, or foreign direction occurred.
+These facts support a **distributed covert-influence, access, dependency, and implementation architecture**. They do not yet prove that Thiel is the sole controller, that Vance accepts direct orders, or that coercion, blackmail, or foreign direction occurred.
 
 The strongest live model is layered:
 
@@ -61,7 +63,7 @@ This is the strongest concrete covert-operation lead in the election record.
 
 ## Mechanism 3 — continuing Narya financial leverage
 
-Vance's certified 2026 financial disclosure reports continuing interests tied to Narya:
+Vance's certified financial disclosure reports continuing interests tied to Narya:
 
 | Interest | Disclosed range or right |
 |---|---:|
@@ -82,7 +84,7 @@ The unresolved control questions are precise:
 - Who can accelerate, defer, forgive, refinance, assign, or modify the note?
 - Does Thiel remain a limited partner, side-letter beneficiary, creditor, or indirect economic participant?
 - Which portfolio exits, government contracts, regulatory decisions, or valuations alter Vance's carried interest and receivables?
-- What recusals or screening arrangements govern Vance's official work?
+- What voluntary recusals or screening arrangements govern Vance's official work?
 
 Until those records are obtained, Narya is an active financial-dependency channel, not a closed historical relationship.
 
@@ -111,15 +113,51 @@ Officer overlap, grants between entities, common vendors, donor-management servi
 
 This is a plausible intermediary layer for covert influence. Its beneficial ownership and instruction channels remain unresolved.
 
-## Mechanism 5 — personnel placement
+## Mechanism 5 — Rockbridge operative inside Vance's access office
+
+Hannah Huemme's White House financial disclosure identifies her current position as:
+
+> Special Assistant to the President and Director of External Affairs, Office of the Vice President
+
+Her appointment began October 10, 2025.
+
+The same filing documents her immediate pre-government network roles:
+
+| Organization | Role | Period | Disclosed income |
+|---|---|---|---:|
+| Better Tomorrow | Director of Development | Jan. 2022–Feb. 2025 | $162,048 |
+| Rockbridge Network LLC | Director of Development, consultant | Jan. 2022–Feb. 2025 | $19,500 |
+| 1789 Capital Management LLC | Consultant | Oct.–Nov. 2023 | $2,000 |
+
+Better Tomorrow's IRS filing also identifies Huemme as a paid political director, and Faithful in Action filings identify her as a director.
+
+This is a direct, named personnel bridge from the Rockbridge operating network into the office that manages Vance's external relationships. It is stronger than generic “personnel pipeline” evidence because the role itself plausibly controls outside access, stakeholder contact, donor and NGO relationships, and transmission of requests.
+
+The public record still does not show which meetings Huemme arranged, which network principals contacted her, what policy requests moved through her office, or whether she was subject to any screening or voluntary recusal arrangement.
+
+## Mechanism 6 — personnel placement as durable control
 
 American Moment openly presents itself as a pipeline that identifies, educates, credentials, and places personnel into government and policy roles. Vance was a founding-board adviser.
 
-Personnel placement matters because durable control does not require daily orders when aligned staff can select information, draft policy, manage appointments, control procurement, preserve private access, and implement network priorities.
+Durable control does not require daily orders when aligned staff can select information, draft policy, manage appointments, gate outside access, control procurement, preserve private relationships, and implement network priorities.
 
-The pipeline is documented. A Thiel-controlled command hierarchy inside it is not yet proved.
+The personnel pipeline and the Huemme placement are documented. A Thiel-controlled command hierarchy inside them is not yet proved.
 
-## Mechanism 6 — policy and benefit alignment
+## Mechanism 7 — vice-presidential conflict-law gap
+
+The Office of Government Ethics has long advised that the President and Vice President are not legally subject to the criminal conflict-of-interest restrictions in **18 U.S.C. §§ 202–209**, including section 208's prohibition on participating in matters affecting personal financial interests.
+
+A bill introduced in January 2026, H.R. 7207, would expressly add the President and Vice President to section 208 and require divestiture of conflicting interests. The bill remains introduced, not enacted.
+
+This matters to the Narya channel:
+
+- disclosure makes Vance's interests visible;
+- it does not place him under the ordinary section 208 criminal recusal rule;
+- no public ethics agreement, divestiture commitment, or comprehensive voluntary recusal protocol covering Narya has been located in this pass.
+
+This is a **control vulnerability**, not proof of misconduct. Other criminal laws, bribery prohibitions, disclosure duties, voluntary ethics standards, and political remedies may still apply.
+
+## Mechanism 8 — policy and benefit alignment
 
 Vance has used the vice presidency to advocate low-regulation AI development, federal adoption and export of American technology, cryptocurrency-friendly policy, defense-technology procurement, and opposition to incumbent regulatory institutions. Those positions overlap with the economic interests of Thiel, Palantir, Founders Fund, Narya investors, and related defense, AI, crypto, and media companies.
 
@@ -128,7 +166,7 @@ Policy congruence is not enough. Each official act must be matched to:
 1. a prior private contact, donor request, retreat discussion, or intermediary tasking;
 2. an identifiable beneficiary;
 3. a measurable financial, contractual, regulatory, or political benefit;
-4. any recusal, waiver, disclosure, or alternative public-interest explanation.
+4. any disclosure, voluntary recusal, ethics advice, or alternative public-interest explanation.
 
 ## Covert-control scorecard
 
@@ -143,6 +181,8 @@ Policy congruence is not enough. Each official act must be matched to:
 | Dark-money intermediary and pass-through architecture | **Supported** |
 | Private access through retreats and fundraising overlap | **Supported** |
 | Personnel pipeline into government | **Proven** |
+| Better Tomorrow/Rockbridge operative placed in OVP external affairs | **Proven** |
+| Vice President outside 18 U.S.C. § 208 | **Established legal gap** |
 | Dated private instruction followed by Vance official action | **Not yet established** |
 | Coercion, blackmail, or foreign direction | **No verified evidence located** |
 | Distributed network control without explicit orders | **Plausible and evidence-backed** |
@@ -155,7 +195,15 @@ Acquire contracts, scopes, invoices, subvendor agreements, platform access logs,
 
 ### Narya note and ownership
 
-Acquire the January 2023 note and August 2023 amendment; payment, interest, refinancing, waiver, acceleration, and forgiveness records; operating agreements; current members and managers; Fund I LP schedule and side letters; Vance recusal and ethics records; and portfolio valuations, exits, contracts, and regulatory benefits affecting his rights.
+Acquire the January 2023 note and August 2023 amendment; payment, interest, refinancing, waiver, acceleration, assignment, and forgiveness records; operating agreements; current members and managers; Fund I LP schedule and side letters; Vance ethics advice and voluntary screening records; and portfolio valuations, exits, contracts, and regulatory benefits affecting his rights.
+
+### Huemme external-affairs access ledger
+
+Acquire Huemme's OVP calendars, meeting requests, visitor logs, official email, texts and preserved messaging records involving Better Tomorrow, Rockbridge, Faithful in Action, 1789 Capital, Buskirk, Malik, Thiel, Greenspon, Trump Jr., American Moment, Palantir and network donors.
+
+Acquire any ethics advice, screening arrangement, voluntary recusal, waiver, or post-employment restriction analysis addressing her former employers and clients.
+
+Cross-reference each contact against Vance travel, speeches, appointments, policy announcements, procurement, regulatory interventions, and benefits to network-linked entities.
 
 ### Rockbridge beneficial ownership and instruction
 
@@ -163,8 +211,8 @@ Acquire Rockbridge Network LLC ownership and management records; membership and 
 
 ## Bottom line
 
-A direct Thiel-to-Vance command channel is not yet proved. But the record now shows more than ideological affinity or ordinary campaign support.
+A direct Thiel-to-Vance command event is not yet proved. But the record now shows materially more than ideological affinity or ordinary campaign support.
 
-It shows a covert-capable architecture combining concentrated capital, donor tasking, potentially concealed data coordination, ongoing financial entanglement, dark-money intermediaries, private access, and personnel placement.
+It shows a covert-capable architecture combining concentrated capital, donor tasking, potentially concealed data coordination, ongoing financial entanglement, dark-money intermediaries, private access, a named Rockbridge operative in Vance's external-affairs office, personnel placement, and a statutory conflict-of-interest gap.
 
-The next pass is to identify **who can modify Vance's financial outcomes, who transmits private priorities, which intermediaries implement them, and which official acts follow**.
+The next pass is to identify **who can modify Vance's financial outcomes, who controls access to him, who transmits private priorities, which intermediaries implement them, and which official acts follow**.
