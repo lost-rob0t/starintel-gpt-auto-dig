@@ -1,0 +1,42 @@
+name: Inspect pass 3 schema aliases
+
+on:
+  pull_request:
+    types: [synchronize, reopened]
+
+permissions:
+  contents: read
+
+jobs:
+  inspect:
+    if: github.event.pull_request.head.repo.full_name == github.repository && github.head_ref == 'agent/wef-columbus-depth-6-primary-records'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          ref: agent/wef-columbus-depth-6-primary-records
+      - name: Print structural aliases
+        shell: python
+        run: |
+          import base64
+          import gzip
+          import json
+          from collections import defaultdict
+          from pathlib import Path
+
+          path = Path('digs/us-israel-military-integration/2026-07-31-pass-3/starintel-documents.jsonl.gz.b64')
+          archive = base64.b64decode(''.join(path.read_text().split()), validate=True)
+          records = [json.loads(line) for line in gzip.decompress(archive).decode().splitlines() if line.strip()]
+
+          keys = defaultdict(set)
+          aliases = ('target', 'name', 'pass_number', 'judgment', 'organization_type', 'role', 'event_type', 'classification')
+          print(f'records={len(records)}')
+          for number, record in enumerate(records, 1):
+              dtype = record.get('dtype')
+              data = record.get('data') or {}
+              keys[dtype].update(data)
+              selected = {key: data.get(key) for key in aliases if key in data}
+              if number <= 3 or selected:
+                  print(json.dumps({'line': number, 'id': record.get('_id'), 'dtype': dtype, 'title': record.get('title'), 'data_keys': sorted(data), 'aliases': selected}, sort_keys=True))
+          for dtype in sorted(keys):
+              print(json.dumps({'dtype_summary': dtype, 'keys': sorted(keys[dtype])}, sort_keys=True))
