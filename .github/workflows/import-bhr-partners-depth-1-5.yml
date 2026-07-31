@@ -1,0 +1,54 @@
+name: Import BHR Partners depth 1 through 5
+
+on:
+  pull_request:
+    branches:
+      - main
+      - agent/thiel-company-wef-enumeration-repaired
+    types: [opened, synchronize, reopened]
+    paths:
+      - .github/workflows/import-bhr-partners-depth-1-5.yml
+
+permissions:
+  contents: write
+
+jobs:
+  import:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out import branch
+        uses: actions/checkout@v6
+        with:
+          ref: agent/bhr-partners-depth-1-5-rebased
+          fetch-depth: 1
+
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.13"
+
+      - name: Restore exact validated BHR packet
+        run: |
+          git fetch --no-tags --depth=1 origin 3a2be89d0aea654ca1c2a26445fe583fa3747b5c
+          git checkout 3a2be89d0aea654ca1c2a26445fe583fa3747b5c -- \
+            digs/hunter-biden/2026-07-31-bhr-partners-depth-1 \
+            digs/hunter-biden/2026-07-31-bhr-partners-depth-2 \
+            digs/hunter-biden/2026-07-31-bhr-partners-depth-3 \
+            digs/hunter-biden/2026-07-31-bhr-partners-depth-4 \
+            digs/hunter-biden/2026-07-31-bhr-partners-depth-5
+
+      - name: Run mandatory merge gate
+        run: python3 scripts/validate-for-merge.py
+
+      - name: Commit imported packet
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add digs/hunter-biden/2026-07-31-bhr-partners-depth-1 \
+                  digs/hunter-biden/2026-07-31-bhr-partners-depth-2 \
+                  digs/hunter-biden/2026-07-31-bhr-partners-depth-3 \
+                  digs/hunter-biden/2026-07-31-bhr-partners-depth-4 \
+                  digs/hunter-biden/2026-07-31-bhr-partners-depth-5
+          git diff --cached --check
+          git commit -m "Restore BHR Partners depth 1 through 5 packet"
+          git push origin HEAD:agent/bhr-partners-depth-1-5-rebased
