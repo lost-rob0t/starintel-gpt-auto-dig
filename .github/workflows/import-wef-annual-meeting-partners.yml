@@ -14,7 +14,17 @@ jobs:
       - uses: actions/setup-python@v6
         with:
           python-version: "3.12"
-      - name: Validate imported corpus
+      - name: Verify import report and corpus
         run: |
-          python3 scripts/import_wef_annual_meeting_partners.py --root . --verify-only
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+
+          report = json.loads(Path("reports/wef-annual-meeting-partners-import.json").read_text())
+          assert report["import_executed"] is True
+          assert report["canonical_wef_id"] == "starintel:org:world-economic-forum"
+          assert report["source_partner_observations"] == 826
+          assert report["created_relation_documents"] == 826
+          assert not report["relation_id_collisions"]
+          PY
           python3 scripts/starintel.py validate --root .
