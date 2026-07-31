@@ -4,11 +4,20 @@ import hashlib
 import html
 import os
 import re
+import subprocess
 import urllib.parse
 from datetime import datetime, timezone
 from typing import Any, Iterator
 
-from .constants import ARCHIVE_SLUGS, AUTH_ENV, BASE_URL, PROFILE_PATH_DTYPES, TERMS_URL
+from .constants import (
+    ARCHIVE_SLUGS,
+    AUTH_ENV,
+    BASE_URL,
+    PROFILE_PATH_DTYPES,
+    TERMS_URL,
+    USER_AGENT_HEX_LENGTH,
+    USER_AGENT_PREFIX,
+)
 
 
 def clean(value: Any) -> str:
@@ -70,6 +79,23 @@ def normalize_datetime(value: Any) -> str | None:
 
 def content_digest(payload: bytes) -> str:
     return hashlib.sha256(payload).hexdigest()
+
+
+def generate_user_agent() -> str:
+    result = subprocess.run(
+        ["openssl", "rand", "-hex", str(USER_AGENT_HEX_LENGTH // 2)],
+        check=True,
+        capture_output=True,
+        text=True,
+    )
+    token = clean(result.stdout).lower()
+    if not re.fullmatch(rf"[0-9a-f]{{{USER_AGENT_HEX_LENGTH}}}", token):
+        raise RuntimeError("openssl returned an invalid InfluenceWatch run identifier")
+    return f"{USER_AGENT_PREFIX}{token}"
+
+
+def valid_user_agent(value: str) -> bool:
+    return bool(re.fullmatch(rf"{re.escape(USER_AGENT_PREFIX)}[0-9a-f]{{{USER_AGENT_HEX_LENGTH}}}", clean(value)))
 
 
 def require_network_authorization(*, authorized: bool, environment: dict[str, str] | None = None) -> None:
