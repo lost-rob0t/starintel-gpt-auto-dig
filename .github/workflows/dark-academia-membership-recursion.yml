@@ -7,6 +7,12 @@ on:
     paths:
       - "imports/dark-academia/**"
       - ".github/workflows/dark-academia-membership-recursion.yml"
+  pull_request:
+    branches:
+      - main
+    paths:
+      - "imports/dark-academia/**"
+      - ".github/workflows/dark-academia-membership-recursion.yml"
   workflow_dispatch:
 
 permissions:
@@ -21,10 +27,12 @@ jobs:
     if: github.actor != 'github-actions[bot]'
     runs-on: ubuntu-latest
     timeout-minutes: 350
+    env:
+      TARGET_BRANCH: ${{ github.head_ref || github.ref_name }}
     steps:
       - uses: actions/checkout@v6
         with:
-          ref: ${{ github.ref_name }}
+          ref: ${{ env.TARGET_BRANCH }}
           fetch-depth: 0
 
       - uses: actions/setup-python@v6
@@ -76,4 +84,4 @@ jobs:
           git config user.name "starintel-auto-dig-bot"
           git config user.email "starintel-auto-dig-bot@users.noreply.github.com"
           git commit -m "Import Dark Academia public membership graph"
-          git push origin "HEAD:${GITHUB_REF_NAME}"
+          git push origin "HEAD:${TARGET_BRANCH}"
