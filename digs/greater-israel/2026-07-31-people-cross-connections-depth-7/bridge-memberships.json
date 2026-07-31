@@ -7,12 +7,34 @@
     "aharon_institute_policy",
     "pnima_civic_network"
   ],
+  "Yair Schindel": [
+    "maoz_cofounder",
+    "digital_israel",
+    "health_8400_network",
+    "startup_nation_central",
+    "amoon_venture_capital",
+    "shayetet_13"
+  ],
+  "Eli Hurvitz": [
+    "foundation_management",
+    "rothschild_philanthropy",
+    "knesset_defense_oversight_staff",
+    "military_intelligence_collection_unit",
+    "meridor_family"
+  ],
   "Yossi Baidatz": [
     "foundation_advisory",
     "educational_technology_leadership",
     "idf_general_officer",
     "military_academies_command",
     "military_intelligence_research_command"
+  ],
+  "Liat Nadai Arad": [
+    "maoz_board",
+    "military_intelligence_cyber_command",
+    "hospital_ai_leadership",
+    "biocatch_board",
+    "technology_company_management"
   ],
   "Jules Trump": [
     "foundation_family",
@@ -26,12 +48,33 @@
     "technology_company_boards",
     "beit_issie_shapiro_endowment"
   ],
-  "Eli Hurvitz": [
-    "foundation_management",
-    "rothschild_philanthropy",
-    "knesset_defense_oversight_staff",
-    "military_intelligence_collection_unit",
-    "meridor_family"
+  "Dadi Perlmutter": [
+    "intel_executive",
+    "government_human_capital_committee",
+    "government_policy_adoption",
+    "double_tech_launch"
+  ],
+  "Doron Latzer": [
+    "maoz_board",
+    "unit_8200_alumni_entrepreneurship",
+    "idf_computing_alumni_entrepreneurship",
+    "elbit_counsel"
+  ],
+  "Erez Askal": [
+    "national_ai_directorate",
+    "pmo_digital_government",
+    "national_ai_plan",
+    "double_tech_launch_communications"
+  ],
+  "Meirav Zarbiv": [
+    "education_ministry_innovation_leadership",
+    "foundation_high_tech_matriculation_advisory",
+    "maoz_education_network"
+  ],
+  "Sagi Bar": [
+    "cyber_education_center",
+    "military_intelligence_technology_rd",
+    "maoz_education_network"
   ],
   "Michal Cohen": [
     "rashi_leadership",
