@@ -2,9 +2,7 @@ name: Import BHR Partners depth 1 through 5
 
 on:
   pull_request:
-    branches:
-      - main
-      - agent/thiel-company-wef-enumeration-repaired
+    branches: [main]
     types: [opened, synchronize, reopened]
     paths:
       - .github/workflows/import-bhr-partners-depth-1-5.yml
@@ -36,6 +34,17 @@ jobs:
             digs/hunter-biden/2026-07-31-bhr-partners-depth-3 \
             digs/hunter-biden/2026-07-31-bhr-partners-depth-4 \
             digs/hunter-biden/2026-07-31-bhr-partners-depth-5
+
+      - name: Normalize Markdown whitespace
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+
+          root = Path("digs/hunter-biden")
+          for path in root.glob("2026-07-31-bhr-partners-depth-*/*.md"):
+              lines = path.read_text(encoding="utf-8").splitlines()
+              path.write_text("\n".join(line.rstrip() for line in lines) + "\n", encoding="utf-8")
+          PY
 
       - name: Run mandatory merge gate
         run: python3 scripts/validate-for-merge.py
