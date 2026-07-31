@@ -1,7 +1,7 @@
 {
   "dataset": "cia",
   "schema_version": "0.9.0",
-  "generated_at": "2026-07-31T03:03:00-04:00",
+  "generated_at": "2026-07-31T03:34:00-04:00",
   "consumer_path": "digs/cia/2026-07-31-inqtel-google-prism-drones-wef/",
   "files": [
     "README.md",
@@ -10,21 +10,23 @@
     "entity-roster.csv",
     "drone-people.csv",
     "wef-edges.csv",
-    "prism-responsibility.md"
+    "prism-responsibility.md",
+    "prism-engineers.csv",
+    "prism-engineering-sources.md"
   ],
   "counts": {
-    "claim": 8,
+    "claim": 13,
     "dataset-manifest": 1,
-    "event": 9,
-    "org": 20,
-    "person": 19,
-    "relation": 48,
-    "research-pass": 5,
-    "source": 32
+    "event": 14,
+    "org": 27,
+    "person": 30,
+    "relation": 75,
+    "research-pass": 6,
+    "source": 47
   },
-  "total": 142,
+  "total": 213,
   "hash_algorithm": "sha256",
-  "starintel_documents_sha256": "3e2133459a4126cad4194f42e883d8c3e484a2ee531049f47e4b515f4ff217b3",
+  "starintel_documents_sha256": "dc463d1724e2d82f6c9ca5fb5791bb2c60a6ee310ec9c44a75d61390b9191753",
   "validation": {
     "json_parse": "passed",
     "unique_ids": "passed",
@@ -39,8 +41,8 @@
     "encoding": "base64",
     "compression": "gzip",
     "decoded_filename": "starintel-documents.jsonl",
-    "decoded_sha256": "3e2133459a4126cad4194f42e883d8c3e484a2ee531049f47e4b515f4ff217b3",
-    "decoded_bytes": 50884,
-    "encoded_bytes": 8717
+    "decoded_sha256": "dc463d1724e2d82f6c9ca5fb5791bb2c60a6ee310ec9c44a75d61390b9191753",
+    "decoded_bytes": 80305,
+    "encoded_bytes": 13637
   }
 }
