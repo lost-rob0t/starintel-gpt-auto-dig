@@ -1,0 +1,284 @@
+{
+  "target_set": "greater-israel-people-orgs-us-ties-2026-07-31",
+  "generated_at": "2026-07-31T02:06:00-04:00",
+  "parent_target": "greater-israel",
+  "method": "people -> organizations -> public members and leadership -> documented U.S. ties",
+  "rules": {
+    "public_sources_only": true,
+    "private_personal_data": false,
+    "separate_fact_allegation_inference": true,
+    "association_is_not_control": true,
+    "organization_tie_is_not_automatically_personal_tie": true,
+    "sanctions_are_attributed_determinations_not_criminal_convictions": true
+  },
+  "targets": [
+    {
+      "priority": 1,
+      "id": "yesha-board-us-crosswalk",
+      "title": "Resolve every Yesha Council board member's U.S. activity",
+      "seed_entities": [
+        "Shy Rozensweig",
+        "Yair Chetbon",
+        "Sharon Alfasi",
+        "Meir Rubenstein",
+        "Shai Alon",
+        "Yisrael Ganz",
+        "Dovi Shefler",
+        "Asaf Mintzer",
+        "Rabbi Eliyahu Gafni",
+        "Yosef Asraf",
+        "Yaron Rosenthal",
+        "Chaim Mendel Shaked",
+        "Eliram Azulai",
+        "Eyal Gelman",
+        "David Elhayani",
+        "Yonatan Kuznitz",
+        "Oziel Vatik",
+        "Yisrael Birmason",
+        "Guy Yifrach",
+        "Shlomo Lalush",
+        "Aryeh Cohen",
+        "Ya'akov Guterman",
+        "Or Piron Zomer",
+        "Avi Roeh",
+        "Yossi Dagan"
+      ],
+      "collect": [
+        "U.S. travel and delegation dates",
+        "conference and donor-event appearances",
+        "congressional and executive-branch meetings",
+        "U.S. nonprofit board, officer, contractor, or speaker roles",
+        "trip sponsors and ethics disclosures",
+        "public remarks about sovereignty, annexation, settlements, or Palestinian statehood"
+      ],
+      "source_classes": [
+        "official council pages",
+        "House and Senate ethics disclosures",
+        "Congressional Record",
+        "FARA filings",
+        "IRS filings",
+        "event programs",
+        "high-quality reporting"
+      ],
+      "stop_condition": "Each official board-page entry has either a source-backed U.S. tie or an explicit unresolved result with searched source classes."
+    },
+    {
+      "priority": 2,
+      "id": "afjs-corporate-financial-pass",
+      "title": "Normalize American Friends of Judea and Samaria",
+      "seed_entities": ["American Friends of Judea and Samaria", "Yigal Dilmoni", "EIN 88-2871507"],
+      "collect": [
+        "IRS determination and Form 990 series",
+        "incorporation and state charity registrations",
+        "officers, directors, key employees, and compensation",
+        "grants, contractors, related organizations, and foreign transfers",
+        "program and project recipients",
+        "Yesha Council personnel overlap",
+        "FARA registrations or informational materials"
+      ],
+      "stop_condition": "A year-by-year officer, revenue, expense, grant, project, and related-party graph exists for all available filing years."
+    },
+    {
+      "priority": 3,
+      "id": "regavim-policy-forum-financial-pass",
+      "title": "Resolve The Regavim Policy Forum's U.S. structure and flows",
+      "seed_entities": ["The Regavim Policy Forum", "EIN 41-2923371", "565 Amherst Drive Woodmere NY"],
+      "collect": [
+        "Form 990 series and Schedule F/I/R",
+        "officers and directors",
+        "foreign grants and transfers",
+        "vendors and professional fees",
+        "payments or grants to Regavim in Israel",
+        "shared addresses, personnel, and contractors",
+        "state registrations and fundraising agents"
+      ],
+      "stop_condition": "U.S.-to-Israel money flows are resolved by year, amount, recipient, and source filing."
+    },
+    {
+      "priority": 4,
+      "id": "ruth-lieberman-entity-resolution",
+      "title": "Resolve Ruth Lieberman's foundation and delegation infrastructure",
+      "seed_entities": ["Ruth Lieberman", "Mike Johnson", "Mike Lee", "Eliana Passentin", "Yisrael Ganz"],
+      "collect": [
+        "exact foundation legal name and EIN",
+        "officers and filings",
+        "congressional-trip sponsorship",
+        "traveler and staff lists",
+        "itineraries, briefers, hosts, and destinations",
+        "reimbursement and gift disclosures",
+        "Washington meeting calendars and public statements"
+      ],
+      "stop_condition": "The foundation is legally resolved and every documented trip or delegation has participants, sponsor, dates, locations, and sources."
+    },
+    {
+      "priority": 5,
+      "id": "usiea-congressional-travel-crosswalk",
+      "title": "Crosswalk USIEA congressional travel to policy activity",
+      "seed_entities": ["U.S. Israel Education Association", "Heather Johnston"],
+      "collect": [
+        "House privately sponsored travel disclosures",
+        "Senate travel and gift disclosures",
+        "member and staff participants",
+        "Israeli hosts and briefers",
+        "settlement and council destinations",
+        "subsequent bills, letters, hearings, votes, and public statements"
+      ],
+      "analytic_constraint": "Report chronology and overlap; do not claim travel caused later policy without direct evidence.",
+      "stop_condition": "Every identified trip is mapped to participants, sponsor, itinerary, costs, briefers, and subsequent public actions."
+    },
+    {
+      "priority": 6,
+      "id": "keep-gods-land-membership-graph",
+      "title": "Resolve Keep God's Land's claimed Jewish-Christian coalition",
+      "seed_entities": ["Keep God's Land", "Pesach Wolicki", "Tony Perkins", "Ohad Tal"],
+      "collect": [
+        "organizers and legal entities",
+        "claimed 1,000 faith leaders",
+        "event speakers and venues",
+        "media and mailing-list partners",
+        "funders, sponsors, and vendors",
+        "Heritage Foundation event records",
+        "Republican and evangelical political contacts"
+      ],
+      "stop_condition": "The coalition's public membership, organizers, events, money, and institutional partners are normalized with source confidence."
+    },
+    {
+      "priority": 7,
+      "id": "hr902-s384-origin-graph",
+      "title": "Trace the origin and promotion of H.R. 902 and S. 384",
+      "seed_entities": ["H.R. 902", "S. 384", "Claudia Tenney", "Tom Cotton"],
+      "collect": [
+        "draft and revision history",
+        "sponsors and cosponsors",
+        "committee and legislative staff",
+        "outside endorsements and model language",
+        "lobbying contacts and LD-2 filings",
+        "parallel Israeli bills and advocates",
+        "events and media promoting the terminology change"
+      ],
+      "stop_condition": "A source-backed drafting, endorsement, lobbying, sponsorship, and committee-action chronology exists."
+    },
+    {
+      "priority": 8,
+      "id": "zoa-house-testimony-source-graph",
+      "title": "Decompose the December 2025 ZOA House testimony",
+      "seed_entities": ["Morton A. Klein", "Elizabeth Berney", "Zionist Organization of America", "AFJS", "Regavim"],
+      "collect": [
+        "every citation and source organization",
+        "map and graphic provenance",
+        "authors and research assistants",
+        "hearing invitation and witness-selection records",
+        "public pre-hearing coordination or joint events",
+        "post-hearing reuse in legislation, media, and advocacy"
+      ],
+      "analytic_constraint": "Source citation establishes amplification; coordination requires additional evidence.",
+      "stop_condition": "Every substantive claim and cited source in the testimony is represented as a claim-source-person-organization graph."
+    },
+    {
+      "priority": 9,
+      "id": "central-fund-recipient-pass",
+      "title": "Resolve Central Fund of Israel grant recipients",
+      "seed_entities": ["Central Fund of Israel", "EIN 13-2992985", "Jay Marcus"],
+      "collect": [
+        "Form 990 and Schedule I grants",
+        "foreign organization names and aliases",
+        "Israeli registry numbers",
+        "fiscal-sponsorship and earmark mechanisms",
+        "links to Amana, Nachala, Regavim, Hashomer Yosh, councils, farms, and outposts",
+        "grant purpose and amount by year"
+      ],
+      "analytic_constraint": "Do not attribute a grant to a named organization without a filing, recipient acknowledgment, or equivalent direct evidence.",
+      "stop_condition": "All discoverable foreign grants are entity-resolved and linked to legal recipients, amounts, purposes, and years."
+    },
+    {
+      "priority": 10,
+      "id": "one-israel-fund-project-pass",
+      "title": "Map One Israel Fund projects to councils, recipients, and vendors",
+      "seed_entities": ["One Israel Fund", "EIN 11-3195338"],
+      "collect": [
+        "Form 990 and foreign grants",
+        "project pages and beneficiary communities",
+        "security equipment and infrastructure recipients",
+        "agricultural and land projects",
+        "vendors and procurement",
+        "Yesha Council and municipal-person overlaps"
+      ],
+      "stop_condition": "Each funded project has a year, amount, beneficiary, locale, council, vendor where public, and source."
+    },
+    {
+      "priority": 11,
+      "id": "hebron-fund-disbursement-graph",
+      "title": "Resolve Hebron Fund people and Israeli endpoints",
+      "seed_entities": ["Hebron Fund", "EIN 11-2623719", "Daniel Rosenstein", "Jack Deutsch", "Laurie Moskowitz Hirsh"],
+      "collect": [
+        "officers, directors, compensation, and related parties",
+        "foreign grants and Israeli recipients",
+        "Hebron municipal and nonprofit beneficiaries",
+        "property, security, education, tourism, and infrastructure projects",
+        "overlap with Eyal Gelman and other Hebron public officials"
+      ],
+      "stop_condition": "U.S. people and money are linked to legally resolved Israeli recipients and projects by filing year."
+    },
+    {
+      "priority": 12,
+      "id": "ateret-cohanim-entity-reconciliation",
+      "title": "Reconcile American Friends of Ateret Cohanim and Israeli entities",
+      "seed_entities": ["American Friends of Ateret Cohanim", "EIN 11-2706563", "Ateret Cohanim"],
+      "collect": [
+        "U.S. officers and Form 990 schedules",
+        "Israeli entities and registry identifiers",
+        "grants and transfers",
+        "properties, litigation, and project companies",
+        "leadership and related organizations"
+      ],
+      "stop_condition": "U.S. and Israeli legal entities, people, grants, properties, and proceedings are disambiguated."
+    },
+    {
+      "priority": 13,
+      "id": "nachala-us-donation-vehicle",
+      "title": "Resolve Nachala's U.S. donation and partner structure",
+      "seed_entities": ["Nachala Settlement Movement", "Daniella Weiss", "Lital Slonim", "Jewish Heritage Project"],
+      "collect": [
+        "website payment processor and merchant identity",
+        "bank and legal recipient",
+        "U.S. charity or fiscal sponsor",
+        "partner agreement with Jewish Heritage Project",
+        "officers, board, and donor events",
+        "grants, projects, and settlement groups"
+      ],
+      "stop_condition": "Every public donation route is linked to a legal recipient, processor, officers, and downstream project evidence."
+    },
+    {
+      "priority": 14,
+      "id": "amana-us-support-graph",
+      "title": "Trace U.S. support and entities connected to Amana",
+      "seed_entities": ["Amana", "Ze'ev Hever", "Binyanei Bar Amana", "Al-Watan"],
+      "collect": [
+        "current leadership and Israeli registry records",
+        "subsidiaries and project companies",
+        "U.S. charities and donor conduits",
+        "foreign grants, loans, and guarantees",
+        "construction projects, land companies, contractors, and councils",
+        "effects of U.S. sanctions and January 2025 termination"
+      ],
+      "analytic_constraint": "Preserve sanctions as attributed government determinations; separately establish transactions and legal relationships.",
+      "stop_condition": "A time-bounded organization-person-company-project-money graph exists before, during, and after U.S. sanctions."
+    },
+    {
+      "priority": 15,
+      "id": "hashomer-yosh-disambiguation",
+      "title": "Disambiguate Hashomer Yosh from HaShomer HaChadash",
+      "seed_entities": ["Hashomer Yosh", "Avichai Suissa", "HaShomer HaChadash"],
+      "collect": [
+        "legal names and registry identifiers",
+        "current and former leadership",
+        "boards, staff, volunteers, and farms",
+        "donation and fiscal-sponsor routes",
+        "U.S. partners and donors",
+        "shared people, addresses, projects, or branding if any"
+      ],
+      "analytic_constraint": "Do not merge the organizations because their English names are similar.",
+      "stop_condition": "Each entity has separate identifiers, personnel, money routes, projects, and evidence-backed relations."
+    }
+  ]
+}
