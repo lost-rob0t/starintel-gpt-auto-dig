@@ -119,6 +119,11 @@ jobs:
       - name: Resolve official FEC and WEF records
         run: python3 scripts/gop_fec_wef_depth3.py --root . --as-of 2026-07-31T10:30:00Z
 
+      - name: Normalize generated packet
+        run: >-
+          python3 scripts/normalize-gop-depth3-packet.py
+          digs/gop/2026-07-31-fec-wef-depth-3/starintel-documents.jsonl
+
       - name: Import canonical StarIntel packet
         run: >-
           python3 scripts/starintel.py import
@@ -130,6 +135,7 @@ jobs:
         run: |
           rm -rf imports/gop-depth3
           rmdir imports 2>/dev/null || true
+          rm -f reports/gop-fec-wef-depth-3-validation.log
 
       - name: Validate corpus and site
         shell: bash
@@ -158,7 +164,7 @@ jobs:
             .github/workflows/gop-fec-wef-depth-3.yml \
             imports \
             digs/gop/2026-07-31-fec-wef-depth-3 \
-            reports/gop-fec-wef-depth-3.json \
+            reports \
             db
           if git diff --cached --quiet; then
             echo "Depth-3 corpus already current"
