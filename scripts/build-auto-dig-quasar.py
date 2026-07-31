@@ -28,7 +28,7 @@ iframe{{display:block;width:100%;height:100%;border:0;background:#090b10}}
 <script>window.AUTO_DIG_QUASAR_VERSIONS={version_json}</script>
 </head>
 <body>
-<iframe id="quasar-frame" title="Quasar graph editor" src="app/index.html" sandbox="allow-scripts allow-same-origin allow-forms allow-downloads allow-popups"></iframe>
+<iframe id="quasar-frame" title="Quasar graph editor" src="app/index.html?host=auto-dig" sandbox="allow-scripts allow-same-origin allow-forms allow-downloads allow-popups"></iframe>
 <script src="host.js"></script>
 </body>
 </html>"""
@@ -88,8 +88,8 @@ def build(args: argparse.Namespace) -> Path:
 
     versions = {
         "auto_dig_version": args.auto_dig_version,
-        "quasar_fork_commit": args.quasar_fork_commit,
-        "quasar_upstream_commit": args.quasar_upstream_commit,
+        "quasar_commit": args.quasar_commit,
+        "quasar_ui_commit": args.quasar_ui_commit,
         "starintel_schema_version": args.starintel_schema_version,
     }
     (output / "index.html").write_text(
@@ -112,8 +112,8 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--auto-dig-root", required=True)
     parser.add_argument("--quasar-dist", required=True)
     parser.add_argument("--site-dir")
-    parser.add_argument("--quasar-fork-commit", required=True)
-    parser.add_argument("--quasar-upstream-commit", required=True)
+    parser.add_argument("--quasar-commit", required=True)
+    parser.add_argument("--quasar-ui-commit", required=True)
     parser.add_argument("--auto-dig-version", default="0.9.0")
     parser.add_argument("--starintel-schema-version", default="0.9.0")
     parser.add_argument(
