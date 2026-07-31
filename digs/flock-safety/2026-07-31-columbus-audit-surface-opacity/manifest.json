@@ -17,6 +17,11 @@
     "README.md",
     "sources.md",
     "starintel-documents.jsonl.gz.b64.parts",
+    "starintel-documents.jsonl.gz.b64.part-001",
+    "starintel-documents.jsonl.gz.b64.part-002",
+    "starintel-documents.jsonl.gz.b64.part-003",
+    "starintel-documents.jsonl.gz.b64.part-004",
+    "starintel-documents.jsonl.gz.b64.part-005",
     "manifest.json"
   ],
   "generated_at": "2026-07-31T02:40:00-04:00",
@@ -25,12 +30,13 @@
   "starintel_documents_sha256": "08183396e741d2e952c0bafc8d0a8b5153b2e84b1039b88284bc9d63dcde640b",
   "total": 57,
   "transport": "gzip+base64 multipart",
+  "transport_part_count": 5,
   "validation": {
     "jsonl_parse": "passed",
     "relation_endpoint_references": "passed",
-    "repository_merge_gate": "pending-github-actions",
-    "research_site_build": "pending-github-actions",
-    "schema_validation": "pending-github-actions",
+    "repository_merge_gate": "blocked-by-unrelated-main-crc-failure",
+    "research_site_build": "blocked-by-unrelated-main-crc-failure",
+    "schema_validation": "pending-clean-base-validation",
     "source_urls": "reviewed",
     "target_seed_references": "passed",
     "unique_ids": "passed"
