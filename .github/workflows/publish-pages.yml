@@ -88,8 +88,8 @@ jobs:
           VITE_AUTODIG_VERSION: ${{ steps.quasar-pin.outputs.auto_dig }}
           VITE_STARINTEL_SCHEMA_VERSION: ${{ steps.quasar-pin.outputs.schema }}
         run: |
-          bash .quasar/scripts/prepare-frontend.sh
           npm --prefix .quasar/frontend ci
+          bash .quasar/scripts/prepare-frontend.sh
           npm --prefix .quasar/frontend run check
           npm --prefix .quasar/frontend test
           npm --prefix .quasar/frontend run build
