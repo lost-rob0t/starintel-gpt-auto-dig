@@ -1,9 +1,30 @@
 {
+  "Shlomo Dovrat": [
+    "foundation_advisory",
+    "venture_capital",
+    "government_education_reform",
+    "israel_democracy_institute",
+    "aharon_institute_policy",
+    "pnima_civic_network"
+  ],
+  "Yossi Baidatz": [
+    "foundation_advisory",
+    "educational_technology_leadership",
+    "idf_general_officer",
+    "military_academies_command",
+    "military_intelligence_research_command"
+  ],
   "Jules Trump": [
     "foundation_family",
     "industrial_ownership",
     "netanyahu_direct",
     "state_regulatory_intervention"
+  ],
+  "Eddy Shalev": [
+    "foundation_board_chair",
+    "venture_capital",
+    "technology_company_boards",
+    "beit_issie_shapiro_endowment"
   ],
   "Eli Hurvitz": [
     "foundation_management",
@@ -29,6 +50,11 @@
     "education_ministry",
     "netanyahu_government",
     "foundation_award_event"
+  ],
+  "Sasha Trump-Weiss": [
+    "trump_family_descendant",
+    "beit_issie_shapiro_board_leadership",
+    "multigenerational_philanthropy"
   ],
   "Eddie Trump": [
     "foundation_family",
