@@ -1,0 +1,48 @@
+name: Count DNC bulk rows
+
+on:
+  workflow_dispatch:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - scripts/census_dnc_fec_bulk.py
+      - .github/workflows/dnc-bulk-count.yml
+
+permissions:
+  contents: write
+
+concurrency:
+  group: dnc-bulk-count-${{ github.event.pull_request.head.ref || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  count:
+    if: >-
+      github.event_name != 'pull_request' ||
+      github.event.pull_request.head.ref == 'agent/dnc-fec-project-veritas-seed'
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    env:
+      PYTHONPATH: .
+      TARGET_BRANCH: ${{ github.event.pull_request.head.ref || github.ref_name }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: ${{ env.TARGET_BRANCH }}
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Count rows
+        run: python3 scripts/census_dnc_fec_bulk.py
+      - name: Commit result
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add digs/dnc/2026-07-31-fec-individual-census
+          git commit -m 'Add DNC bulk count [skip ci]'
+          git pull --rebase origin "${TARGET_BRANCH}"
+          git push origin HEAD:${TARGET_BRANCH}
