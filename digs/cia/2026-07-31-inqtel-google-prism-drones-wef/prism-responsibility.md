@@ -1,6 +1,13 @@
 # PRISM / Section 702 technical responsibility matrix
 
-This file separates launch-era agency engineering authority, provider-side engineering, later successor portals, and public technical response.
+This file separates direct hands-on intercept engineering, launch-era agency technical authority, provider-side engineering, later successor portals, and public technical response.
+
+## Direct FBI intercept engineering
+
+| Person | Publicly documented technical role | Classification |
+|---|---|---|
+| Bart Holzer | Public biographies describe twenty years as an engineer in the FBI Data Intercept Technology Unit, working federal cases with an Internet nexus | **Strongest publicly named hands-on DITU engineer identified** |
+| Darrin E. Jones | Official FBI biography states that he created the Technical Liaison Office to cultivate relationships with technology companies and later oversaw technical and policy matters associated with electronic communication interception | **Provider-liaison creator and interception implementation manager** |
 
 ## Named agency technical layer
 
@@ -24,6 +31,6 @@ This file separates launch-era agency engineering authority, provider-side engin
 
 ## Related implementation architecture
 
-A declassified NSA record on SSO support to FBI Cyber FISA orders describes provider-controlled routers, commercial processing, secure provider WANs, delivery to an FBI Engineering Research Facility repository at Quantico, and cleared technical manpower at providers. It is strong implementation-layer evidence for the NSA–FBI–provider machinery, but it is retained as a related FISA implementation record rather than silently relabeled as the exact PRISM transaction path.
+The public PRISM dataflow places the FBI Data Intercept Technology Unit between provider tasking and government collection repositories. A separate declassified NSA record on SSO support to FBI Cyber FISA orders describes provider-controlled routers, commercial processing, secure provider WANs, delivery to an FBI Engineering Research Facility repository at Quantico, and cleared technical manpower at providers. The latter is strong implementation-layer evidence for related NSA–FBI–provider machinery, but it is retained as a Cyber FISA implementation record rather than silently relabeled as the exact PRISM transaction path.
 
 Provider-side records show different mechanisms: Microsoft GCC software and operations tooling; Google secure FTP or in-person FISA delivery plus its later LERS portal; and Meta/WhatsApp request/download portals. These are stored separately rather than presented as one uniform architecture.
