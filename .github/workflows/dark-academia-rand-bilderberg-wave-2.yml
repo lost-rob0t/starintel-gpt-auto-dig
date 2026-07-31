@@ -7,7 +7,7 @@ on:
     paths:
       - "imports/dark-academia-wave2/**"
       - "scripts/run_with_membership_url_capture.py"
-      - "scripts/membership_url_issue_queue.py"
+      - "scripts/membership_url_candidates.py"
       - ".github/workflows/dark-academia-rand-bilderberg-wave-2.yml"
   pull_request:
     branches:
@@ -15,7 +15,7 @@ on:
     paths:
       - "imports/dark-academia-wave2/**"
       - "scripts/run_with_membership_url_capture.py"
-      - "scripts/membership_url_issue_queue.py"
+      - "scripts/membership_url_candidates.py"
       - ".github/workflows/dark-academia-rand-bilderberg-wave-2.yml"
   workflow_dispatch:
 
@@ -55,30 +55,26 @@ jobs:
           gzip --decompress --stdout imports/dark-academia-wave2/targets.json.gz > config/dark-academia-targets.json
           echo "46b5100baae4323c8a1c9cd20b35ed7362f99e533cb0a71a90b4b868a5b73b78  scripts/scrape_dark_academia_memberships.py" | sha256sum --check --strict
           echo "1266126cdb1a4375c48e4f5c24b07de096e2a6d84fdf3f0a90d817b80065907c  config/dark-academia-targets.json" | sha256sum --check --strict
-          chmod +x scripts/scrape_dark_academia_memberships.py scripts/run_with_membership_url_capture.py scripts/membership_url_issue_queue.py
+          chmod +x \
+            scripts/scrape_dark_academia_memberships.py \
+            scripts/run_with_membership_url_capture.py \
+            scripts/membership_url_candidates.py
 
-      - name: Remove undeclared legacy email field
+      - name: Replace undeclared legacy email field
         shell: bash
         run: |
           set -euo pipefail
           python - <<'PY'
           from pathlib import Path
-          import re
 
           path = Path("scripts/scrape_dark_academia_memberships.py")
           source = path.read_text(encoding="utf-8")
-          patterns = [
-              r"(?m)^\s*[\"']email_type[\"']\s*:\s*[^,\n]+,\s*\n",
-              r"(?m)^\s*[\"']email_type[\"']\s*:\s*[^\n]+\n",
-          ]
-          removed = 0
-          for pattern in patterns:
-              source, count = re.subn(pattern, "", source)
-              removed += count
-          if removed == 0:
-              raise SystemExit("email_type generator field was not found; refusing an unverified patch")
+          replacements = source.count('"email_type"') + source.count("'email_type'")
+          if replacements == 0:
+              raise SystemExit("email_type generator key was not found; refusing an unverified patch")
+          source = source.replace('"email_type"', '"type"').replace("'email_type'", "'type'")
           path.write_text(source, encoding="utf-8")
-          print(f"Removed {removed} undeclared email_type generator field(s)")
+          print(f"Replaced {replacements} email_type key occurrence(s) with schema field type")
           PY
 
       - name: Install public-web parsing dependencies
@@ -92,17 +88,130 @@ jobs:
             --log reports/membership-url-observations-wave-2.jsonl \
             -- scripts/scrape_dark_academia_memberships.py --root .
 
-      - name: Create one issue per discovered membership-list URL
+      - name: Extract strict membership-list URL candidates
         if: always()
-        env:
-          GITHUB_TOKEN: ${{ github.token }}
         run: |
-          python scripts/membership_url_issue_queue.py \
-            --repository "${GITHUB_REPOSITORY}" \
+          python scripts/membership_url_candidates.py \
             --input config/dark-academia-targets.json \
             --input reports/membership-url-observations-wave-2.jsonl \
             --glob 'reports/dark-academia-membership-recursion*.json' \
-            --report reports/membership-list-issues-wave-2.json
+            --report reports/membership-list-candidates-wave-2.json
+
+      - name: Close known homepage false positives
+        if: always()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          for issue in {112..132} {134..138}; do
+            payload="$(gh issue view "$issue" --repo "$GITHUB_REPOSITORY" --json state,title,body 2>/dev/null || true)"
+            [ -n "$payload" ] || continue
+            state="$(jq -r '.state' <<<"$payload")"
+            title="$(jq -r '.title' <<<"$payload")"
+            body="$(jq -r '.body' <<<"$payload")"
+            if [ "$state" = "OPEN" ] \
+              && [[ "$title" == "Scrape membership list:"* ]] \
+              && grep -q 'membership-list-url-sha256:' <<<"$body"; then
+              gh issue close "$issue" \
+                --repo "$GITHUB_REPOSITORY" \
+                --reason "not planned" \
+                --comment "Closed after strict roster-URL classifier correction: this ticket represented a homepage or other non-roster surface."
+            fi
+          done
+
+      - name: Create one deduplicated issue per membership-list URL
+        if: always()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          from __future__ import annotations
+
+          import json
+          import os
+          from pathlib import Path
+          import subprocess
+          import tempfile
+          from urllib.parse import urlsplit
+
+          source = Path("reports/membership-list-candidates-wave-2.json")
+          output = Path("reports/membership-list-issues-wave-2.json")
+          repository = os.environ["GITHUB_REPOSITORY"]
+          candidates = json.loads(source.read_text(encoding="utf-8")).get("candidates", []) if source.exists() else []
+          results = []
+
+          for candidate in candidates:
+              digest = candidate["digest"]
+              marker = f"membership-list-url-sha256:{digest}"
+              search = subprocess.run(
+                  ["gh", "issue", "list", "--repo", repository, "--state", "all", "--search", f'"{marker}" in:body', "--limit", "1", "--json", "number,url,state"],
+                  check=True,
+                  text=True,
+                  capture_output=True,
+              )
+              matches = json.loads(search.stdout or "[]")
+              if matches:
+                  results.append({**candidate, "status": "existing", **matches[0]})
+                  continue
+
+              organization = candidate.get("organization") or urlsplit(candidate["url"]).hostname or "unknown organization"
+              label = candidate.get("label") or urlsplit(candidate["url"]).path.rstrip("/").split("/")[-1] or "membership list"
+              title = f"Scrape membership list: {organization} — {label}"[:240]
+              body = f"""<!-- {marker} -->
+          ## Membership-list scraper target
+
+          - **Organization:** {organization}
+          - **Dataset:** `{candidate.get('dataset') or 'unresolved'}`
+          - **URL:** {candidate['url']}
+          - **Page label:** {candidate.get('label') or 'unresolved'}
+          - **Discovered from:** `{candidate.get('discovered_from') or 'unknown'}`
+
+          ## Required parser work
+
+          - [ ] Verify this official public roster surface.
+          - [ ] Add or extend an organization-specific parser.
+          - [ ] Traverse pagination, year archives, regions, tabs, and linked roster pages.
+          - [ ] Preserve roles, affiliations, dates/years, regions, and source provenance.
+          - [ ] Record only contact details explicitly published by the organization.
+          - [ ] Import through the canonical StarIntel writer and validate the corpus.
+          - [ ] Add regression coverage for this URL.
+
+          ```text
+          {(candidate.get('evidence') or '')[:1200]}
+          ```
+          """
+              with tempfile.NamedTemporaryFile("w", encoding="utf-8", delete=False) as handle:
+                  handle.write(body)
+                  body_path = handle.name
+              try:
+                  created = subprocess.run(
+                      ["gh", "issue", "create", "--repo", repository, "--title", title, "--body-file", body_path],
+                      check=True,
+                      text=True,
+                      capture_output=True,
+                  ).stdout.strip()
+              finally:
+                  Path(body_path).unlink(missing_ok=True)
+              results.append({**candidate, "status": "created", "url": candidate["url"], "issue_url": created})
+
+          output.write_text(
+              json.dumps(
+                  {
+                      "candidate_count": len(candidates),
+                      "created_count": sum(item["status"] == "created" for item in results),
+                      "existing_count": sum(item["status"] == "existing" for item in results),
+                      "results": results,
+                  },
+                  indent=2,
+                  sort_keys=True,
+              ) + "\n",
+              encoding="utf-8",
+          )
+          print(output.read_text(encoding="utf-8"))
+          PY
 
       - name: Remove bootstrap before corpus validation
         shell: bash
@@ -121,13 +230,14 @@ jobs:
           git add -A \
             scripts/scrape_dark_academia_memberships.py \
             scripts/run_with_membership_url_capture.py \
-            scripts/membership_url_issue_queue.py \
+            scripts/membership_url_candidates.py \
             config/dark-academia-targets.json \
             imports \
             digs/dark-academia \
             reports/dark-academia-membership-recursion-wave-2.json \
             reports/dark-academia-membership-recursion-wave-2.md \
             reports/membership-url-observations-wave-2.jsonl \
+            reports/membership-list-candidates-wave-2.json \
             reports/membership-list-issues-wave-2.json \
             db
           if git diff --cached --quiet; then
