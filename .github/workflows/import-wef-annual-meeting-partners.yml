@@ -5,14 +5,14 @@ on:
     branches:
       - "agent/wef-annual-meeting-partners-2015-2026"
     paths:
-      - "imports/wef-annual-meeting-partners/importer.py.gz.b64"
+      - "imports/wef-annual-meeting-partners/chunk-*"
       - "digs/wef/2026-07-31-annual-meeting-partners-2015-2026/partners-by-year.json"
       - ".github/workflows/import-wef-annual-meeting-partners.yml"
   pull_request:
     branches:
       - main
     paths:
-      - "imports/wef-annual-meeting-partners/importer.py.gz.b64"
+      - "imports/wef-annual-meeting-partners/chunk-*"
       - "digs/wef/2026-07-31-annual-meeting-partners-2015-2026/partners-by-year.json"
       - ".github/workflows/import-wef-annual-meeting-partners.yml"
   workflow_dispatch:
@@ -42,7 +42,8 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          base64 --decode imports/wef-annual-meeting-partners/importer.py.gz.b64 | gzip --decompress > scripts/import_wef_annual_meeting_partners.py
+          test "$(find imports/wef-annual-meeting-partners -maxdepth 1 -name 'chunk-*' -type f | wc -l)" -eq 14
+          cat imports/wef-annual-meeting-partners/chunk-* | base64 --decode | gzip --decompress > scripts/import_wef_annual_meeting_partners.py
           echo "20b51b1ff8d4463e7d91043c13a32d84b5ab2a75887cda5e00275a8620ef16e7  scripts/import_wef_annual_meeting_partners.py" | sha256sum --check --strict
           chmod +x scripts/import_wef_annual_meeting_partners.py
 
@@ -56,7 +57,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          rm imports/wef-annual-meeting-partners/importer.py.gz.b64
+          rm imports/wef-annual-meeting-partners/chunk-*
           rmdir imports/wef-annual-meeting-partners 2>/dev/null || true
           rmdir imports 2>/dev/null || true
 
