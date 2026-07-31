@@ -1,0 +1,41 @@
+{
+  "manifest_type": "research-supplement",
+  "name": "WEF, Palantir, and campaign-finance follow-on",
+  "run_id": "greater-israel-wef-palantir-aipac-2026-07-31",
+  "generated_at": "2026-07-31T03:14:00-04:00",
+  "parent_run_id": "greater-israel-people-orgs-us-ties-2026-07-31",
+  "repository": "lost-rob0t/starintel-gpt-auto-dig",
+  "branch": "agent/greater-israel-people-orgs-us-ties-2026-07-31",
+  "files": [
+    {
+      "path": "wef-palantir-aipac-donation-pass.md",
+      "role": "sourced narrative and evidence boundaries"
+    },
+    {
+      "path": "funding-influence-crosswalk.csv",
+      "role": "relationship and financial crosswalk"
+    },
+    {
+      "path": "wef-palantir-aipac-targets.json",
+      "role": "supplemental recursive target queue"
+    }
+  ],
+  "counts": {
+    "crosswalk_rows": 17,
+    "recursive_targets": 10
+  },
+  "quality_controls": {
+    "public_sources_only": true,
+    "private_personal_data": false,
+    "facts_and_inferences_separated": true,
+    "direct_contributions_separated_from_independent_expenditures": true,
+    "contract_ceiling_separated_from_obligation_and_revenue": true,
+    "corporate_revenue_not_treated_as_earmarked_funding": true,
+    "event_participation_not_treated_as_operational_control": true,
+    "normalized_db_records_created": false
+  },
+  "validation_required_before_merge": [
+    "Run python3 scripts/validate-for-merge.py --site",
+    "Require all GitHub checks to pass on the current head"
+  ]
+}

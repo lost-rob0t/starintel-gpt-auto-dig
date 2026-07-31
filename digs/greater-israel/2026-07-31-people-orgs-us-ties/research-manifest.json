@@ -1,0 +1,58 @@
+{
+  "manifest_type": "research-pass",
+  "name": "Greater Israel: People, Organizations, Members, and U.S. Ties",
+  "run_id": "greater-israel-people-orgs-us-ties-2026-07-31",
+  "generated_at": "2026-07-31T02:06:00-04:00",
+  "repository": "lost-rob0t/starintel-gpt-auto-dig",
+  "branch": "agent/greater-israel-people-orgs-us-ties-2026-07-31",
+  "parent_target": "greater-israel",
+  "prior_packet": "digs/greater-israel/2026-07-26-aipac-us-israeli-enablement/",
+  "scope": [
+    "public people and leadership",
+    "organizations and publicly listed members",
+    "U.S. nonprofit and tax-exempt bridges",
+    "U.S. delegations and congressional travel",
+    "U.S. legislation, hearings, testimony, and policy events"
+  ],
+  "files": [
+    {
+      "path": "report.md",
+      "role": "narrative assessment and evidence boundaries"
+    },
+    {
+      "path": "entity-roster.csv",
+      "role": "66-row person and organization roster with U.S.-tie status"
+    },
+    {
+      "path": "recursive-targets.json",
+      "role": "15-target recursive research queue"
+    }
+  ],
+  "counts": {
+    "roster_entries": 66,
+    "yesha_board_page_entries": 25,
+    "recursive_targets": 15
+  },
+  "quality_controls": {
+    "public_sources_only": true,
+    "private_personal_data": false,
+    "facts_allegations_inferences_separated": true,
+    "unresolved_ties_explicit": true,
+    "organization_ties_not_imputed_to_people": true,
+    "sanctions_attributed": true,
+    "normalized_db_records_created": false,
+    "local_merge_gate_run": false
+  },
+  "known_discrepancies": [
+    {
+      "subject": "Yesha Council board count",
+      "detail": "The official About Us page says the council consists of 24 mayors, while the current English Board of Directors page lists 25 locale-person pairs. The pass preserves all listed entries and flags the mismatch."
+    }
+  ],
+  "validation_required_before_merge": [
+    "Review names and transliterations against original-language records",
+    "Normalize selected findings through scripts/starintel.py import rather than hand-writing db records",
+    "Run python3 scripts/validate-for-merge.py --site",
+    "Require all GitHub checks to pass on the current head"
+  ]
+}
