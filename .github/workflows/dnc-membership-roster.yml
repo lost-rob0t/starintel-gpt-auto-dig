@@ -8,30 +8,21 @@ on:
     paths:
       - scripts/import_dnc_membership_roster.py
       - .github/workflows/dnc-membership-roster.yml
-  pull_request:
-    branches:
-      - main
-    paths:
-      - scripts/import_dnc_membership_roster.py
-      - .github/workflows/dnc-membership-roster.yml
 
 permissions:
   contents: write
 
 concurrency:
-  group: dnc-bulk-generation-${{ github.event.pull_request.head.ref || github.ref }}
-  cancel-in-progress: false
+  group: dnc-membership-roster-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   generate:
-    if: >-
-      github.actor != 'github-actions[bot]' &&
-      (github.event_name != 'pull_request' ||
-       github.event.pull_request.head.ref == 'agent/dnc-fec-project-veritas-seed')
+    if: github.actor != 'github-actions[bot]'
     runs-on: ubuntu-latest
     env:
       PYTHONPATH: .
-      TARGET_BRANCH: ${{ github.event.pull_request.head.ref || github.ref_name }}
+      TARGET_BRANCH: ${{ github.ref_name }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -60,4 +51,5 @@ jobs:
             exit 0
           fi
           git commit -m 'Add January 2025 DNC membership roster corpus [skip ci]'
+          git pull --rebase origin "${TARGET_BRANCH}"
           git push origin HEAD:${TARGET_BRANCH}
