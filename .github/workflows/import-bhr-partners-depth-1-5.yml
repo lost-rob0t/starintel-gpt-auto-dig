@@ -1,3 +1,4 @@
+# One-shot exact packet import; remove after the BHR data commit lands.
 name: Import BHR Partners depth 1 through 5
 
 on:
