@@ -6,7 +6,15 @@
 **Schema:** StarIntel `0.9.0`  
 **Recursion depth:** `8` of `8`  
 **Documents:** `68`  
-**Decoded JSONL SHA-256:** `9bc35b0fcacaa15d6b48fb6e1b5d0ba273214ec4b1f032bc34b93f45b7207f3c`
+**Decoded JSONL SHA-256:** `9bc35b0fcacaa15d6b48fb6e1b5d0ba273214ec4b1f032bc34b93f45b7207f3c`  
+**Deterministic gzip SHA-256:** `29614ebfffa1ffff52d79c13d7b712cba7512bd3c0fa62ded61c9c72f66d0a65`
+
+Decode and import:
+
+```bash
+base64 -d starintel-documents.jsonl.gz.b64 | gzip -dc > starintel-documents.jsonl
+python3 ../../../scripts/starintel.py import starintel-documents.jsonl --replace
+```
 
 ## What changed
 
