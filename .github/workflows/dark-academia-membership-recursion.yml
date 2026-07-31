@@ -35,11 +35,11 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          echo "984ea6008b90a394d2e6080c32f7f12480f80fa3045cc1a7bb56abba13c62e77  imports/dark-academia/scraper.py.gz.b64" | sha256sum --check --strict
-          echo "0f3e742a58caad83949f55b19061c41ca5f38aed1e9c0a64dcc592dc5b5f3fc8  imports/dark-academia/targets.json.gz.b64" | sha256sum --check --strict
+          echo "3dc67e369d393219f7a6b3499eb50fb01cb12056cc4653b1fa9b6bd09aaa1d12  imports/dark-academia/scraper.py.gz" | sha256sum --check --strict
+          echo "8c8260af8347d253d46eb7f3d1c54137743d1cb2edb0171f2b92d32ac223dd2a  imports/dark-academia/targets.json.gz" | sha256sum --check --strict
           mkdir -p scripts config
-          base64 --decode imports/dark-academia/scraper.py.gz.b64 | gzip --decompress > scripts/scrape_dark_academia_memberships.py
-          base64 --decode imports/dark-academia/targets.json.gz.b64 | gzip --decompress > config/dark-academia-targets.json
+          gzip --decompress --stdout imports/dark-academia/scraper.py.gz > scripts/scrape_dark_academia_memberships.py
+          gzip --decompress --stdout imports/dark-academia/targets.json.gz > config/dark-academia-targets.json
           echo "946c0395735f22333709ea2e1e9e97181553b5621a6d67081d464ae94fa89a62  scripts/scrape_dark_academia_memberships.py" | sha256sum --check --strict
           echo "9c328174d7ae253db5e751726acf60266932a16b8fc0f113240616aad750ee7c  config/dark-academia-targets.json" | sha256sum --check --strict
           chmod +x scripts/scrape_dark_academia_memberships.py
