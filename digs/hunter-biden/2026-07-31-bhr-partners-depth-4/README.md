@@ -40,3 +40,13 @@ The document clarifies why a 10 percent registered-capital block could be approx
 - Relations: 14
 - Investigation targets: 4
 - Total: 25
+
+## Files
+
+1. `sources.jsonl`
+2. `entities.jsonl`
+3. `relations-1.jsonl`
+4. `relations-2.jsonl`
+5. `investigation-targets.jsonl`
+6. `sources.md`
+7. `manifest.json`
