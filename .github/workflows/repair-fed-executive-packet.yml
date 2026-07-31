@@ -27,7 +27,7 @@ jobs:
           python-version: "3.13"
 
       - name: Normalize packet to strict StarIntel v0.9
-        run: python3 scripts/repair-fed-executive-packet.py
+        run: PYTHONPATH=. python3 scripts/repair-fed-executive-packet.py
 
       - name: Run mandatory merge gate
         run: python3 scripts/validate-for-merge.py
