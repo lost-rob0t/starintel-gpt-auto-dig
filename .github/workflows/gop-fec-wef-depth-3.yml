@@ -1,0 +1,82 @@
+name: GOP FEC and WEF recursion depth 3
+
+on:
+  push:
+    branches: ["agent/gop-fec-wef-depth-3"]
+    paths:
+      - "imports/gop-depth3/**"
+      - ".github/workflows/gop-fec-wef-depth-3.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: gop-fec-wef-depth-3
+  cancel-in-progress: true
+
+jobs:
+  recurse:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    env:
+      TARGET_BRANCH: ${{ github.ref_name }}
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          ref: ${{ env.TARGET_BRANCH }}
+          fetch-depth: 0
+
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+
+      - name: Restore depth-3 generator
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p scripts
+          cat imports/gop-depth3/script-* | tr -d '\r\n ' | base64 --decode > /tmp/gop_fec_wef_depth3.py.gz
+          gzip --test /tmp/gop_fec_wef_depth3.py.gz
+          gzip -dc /tmp/gop_fec_wef_depth3.py.gz > scripts/gop_fec_wef_depth3.py
+          chmod +x scripts/gop_fec_wef_depth3.py
+          python3 -m py_compile scripts/gop_fec_wef_depth3.py
+
+      - name: Resolve official FEC and WEF records
+        run: python3 scripts/gop_fec_wef_depth3.py --root . --as-of 2026-07-31T10:30:00Z
+
+      - name: Import canonical StarIntel packet
+        run: >-
+          python3 scripts/starintel.py import
+          digs/gop/2026-07-31-fec-wef-depth-3/starintel-documents.jsonl
+          --root .
+          --replace
+
+      - name: Remove bootstrap before validation
+        run: |
+          rm -rf imports/gop-depth3
+          rmdir imports 2>/dev/null || true
+
+      - name: Validate corpus and site
+        run: python3 scripts/validate-for-merge.py --site
+
+      - name: Commit resolved depth-3 corpus
+        shell: bash
+        run: |
+          set -euo pipefail
+          git add -A \
+            scripts/gop_fec_wef_depth3.py \
+            .github/workflows/gop-fec-wef-depth-3.yml \
+            imports \
+            digs/gop/2026-07-31-fec-wef-depth-3 \
+            reports/gop-fec-wef-depth-3.json \
+            db
+          if git diff --cached --quiet; then
+            echo "Depth-3 corpus already current"
+            exit 0
+          fi
+          git config user.name "starintel-auto-dig-bot"
+          git config user.email "starintel-auto-dig-bot@users.noreply.github.com"
+          git commit -m "Resolve GOP FEC and WEF recursion depth 3"
+          git push origin "HEAD:${TARGET_BRANCH}"
