@@ -2,50 +2,54 @@ from __future__ import annotations
 
 import base64
 import lzma
+import string
 import unittest
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-FIRST_REPAIR_CANDIDATES = (
-    (151_980, "1"),
-    (151_970, "9"),
-    (151_926, "/"),
-    (151_902, "d"),
-)
+BASE64_ALPHABET = string.ascii_uppercase + string.ascii_lowercase + string.digits + "+/"
+FIRST_INSERT_POSITION = 151_980
+FIRST_INSERT_CHARACTER = "1"
 
 
-def decode_with_insert(encoded: str, position: int, character: str) -> bytes:
-    candidate = encoded[:position] + character + encoded[position:]
-    return base64.b64decode(candidate, validate=True)
+def repaired_encoded() -> str:
+    directory = ROOT / "imports" / ".wef-shapers-compact"
+    encoded = "".join(
+        "".join(path.read_text(encoding="utf-8").lstrip("\ufeff").split())
+        for path in sorted(directory.glob("part-*"))
+    )
+    return encoded[:FIRST_INSERT_POSITION] + FIRST_INSERT_CHARACTER + encoded[FIRST_INSERT_POSITION:]
 
 
-def exact_xz_progress(compressed: bytes) -> tuple[int, int]:
+def xz_progress(compressed: bytes, chunk_size: int = 1024) -> int:
     decoder = lzma.LZMADecompressor()
-    output_bytes = 0
-    for index, byte in enumerate(compressed):
+    offset = 0
+    while offset < len(compressed):
+        chunk = compressed[offset : offset + chunk_size]
         try:
-            output_bytes += len(decoder.decompress(bytes((byte,))))
+            decoder.decompress(chunk)
         except lzma.LZMAError:
-            return index, output_bytes
+            return offset
+        offset += len(chunk)
         if decoder.eof:
-            return len(compressed), output_bytes
-    return len(compressed), output_bytes
+            return len(compressed)
+    return offset
 
 
 class WefTransportDiagnostics(unittest.TestCase):
-    def test_rank_first_transport_repairs_exactly(self) -> None:
-        directory = ROOT / "imports" / ".wef-shapers-compact"
-        encoded = "".join(
-            "".join(path.read_text(encoding="utf-8").lstrip("\ufeff").split())
-            for path in sorted(directory.glob("part-*"))
-        )
-        results = []
-        for position, character in FIRST_REPAIR_CANDIDATES:
-            compressed = decode_with_insert(encoded, position, character)
-            input_progress, output_bytes = exact_xz_progress(compressed)
-            results.append((input_progress, output_bytes, position, character))
-        results.sort(reverse=True)
-        self.fail(f"WEF_TRANSPORT_FIRST_REPAIR_EXACT {results}")
+    def test_rank_second_transport_repairs(self) -> None:
+        encoded = repaired_encoded()
+        candidates: list[tuple[int, int, str, str]] = []
+        for position in range(160_430, 160_511):
+            original = encoded[position]
+            for character in BASE64_ALPHABET:
+                if character == original:
+                    continue
+                candidate = encoded[:position] + character + encoded[position + 1 :]
+                compressed = base64.b64decode(candidate, validate=True)
+                candidates.append((xz_progress(compressed), position, original, character))
+        candidates.sort(reverse=True)
+        self.fail(f"WEF_TRANSPORT_SECOND_REPAIR_CANDIDATES {candidates[:20]}")
 
 
 if __name__ == "__main__":
