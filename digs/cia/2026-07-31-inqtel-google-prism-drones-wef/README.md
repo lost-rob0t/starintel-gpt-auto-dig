@@ -4,7 +4,7 @@ StarIntel v0.9.0 public-source packet for issue #93.
 
 ## Scope
 
-This packet executes six evidence-separated passes:
+This packet executes seven evidence-separated passes:
 
 1. **CIA and In-Q-Tel root** — public institutional structure, leadership seeds, and technology priorities.
 2. **Keyhole → Google → Niantic → Pokémon GO** — investment, acquisition, internal venture, financing, product, and restructuring lineage.
@@ -12,6 +12,7 @@ This packet executes six evidence-separated passes:
 4. **Drone and autonomous-systems organizations** — Skydio, Anduril, Advanced Navigation, Wing, Shield AI, and responsible public people.
 5. **WEF recursion** — continue until a direct sourced World Economic Forum relation is found, then preserve weaker profile/editorial edges separately.
 6. **PRISM engineering responsibility** — identify named agency technical leaders, provider-side engineers, operations engineers, test engineers, portal builders, and technical public responders.
+7. **Direct FBI DITU engineers** — recurse until a publicly named hands-on Data Intercept Technology Unit engineer and provider-liaison implementation lead are identified.
 
 ## Verified graph spine
 
@@ -28,9 +29,19 @@ The WEF stop condition is met through the official **Google → partner_of → W
 - Adjacent unresolved target: Shield AI; this pass found no direct IQT investment edge.
 - Public people include Adam Bry, Abe Bachrach, Adam Woodworth, Brian Schimpf, Palmer Luckey, Trae Stephens, Matt Grimm, Brandon Tseng, Ryan Tseng, Andrew Reiter, and Gary Steele.
 
-## PRISM engineering pass
+## PRISM engineering passes
 
-The implementation roster identifies launch-era FBI OTD technical leadership, NSA SIGINT/SSO technical authority, Microsoft Global Criminal Compliance engineers, and a later Meta/WhatsApp portal engineer. See `prism-engineers.csv` and `prism-responsibility.md`. Role classes preserve the difference between direct engineering, technical executive authority, successor systems, and public technical response.
+The implementation roster identifies:
+
+- **Bart Holzer** — publicly described as having spent twenty years as an engineer in the FBI Data Intercept Technology Unit; strongest named hands-on DITU engineer found.
+- **Darrin E. Jones** — official FBI biography says he created the Technical Liaison Office to cultivate technology-company relationships and later oversaw technical and policy matters associated with electronic communication interception.
+- launch-era FBI OTD technical leadership;
+- NSA SIGINT/SSO technical authority;
+- Microsoft Global Criminal Compliance operations, software, and test engineers;
+- a later Meta/WhatsApp request-portal engineer;
+- Google’s technical public-response witness.
+
+See `prism-engineers.csv` and `prism-responsibility.md`. Role classes preserve the difference between direct hands-on engineering, technical executive authority, successor systems, and public technical response.
 
 ## PRISM boundary
 
@@ -40,14 +51,17 @@ The packet does not label PRISM as a CIA-run program. PCLOB’s public descripti
 
 - Dataset: `cia`
 - Schema: `0.9.0`
-- Composite records: **213**
-- Dtypes: claim 13, dataset-manifest 1, event 14, org 27, person 30, relation 75, research-pass 6, source 47
+- Composite records: **230**
+- Dtypes: claim 15, dataset-manifest 1, event 15, org 28, person 32, relation 81, research-pass 7, source 51
 - Root transport, passes 0–5: `starintel-documents.jsonl.gz.b64`
   - 142 records
   - decoded SHA-256: `3e2133459a4126cad4194f42e883d8c3e484a2ee531049f47e4b515f4ff217b3`
 - PRISM engineering transport, pass 6: `prism-engineering-pass-6.jsonl.gz.b64`
   - 71 records
   - decoded SHA-256: `0cb4d9e3e4930e3849842401e6025411cb04079d28e0d56e02489e16b3ca910c`
+- Direct DITU engineer transport, pass 7: `prism-ditu-engineers-pass-7.jsonl.gz.b64`
+  - 17 records
+  - decoded SHA-256: `cc1ba0dda5867f064ce025a3726c6d9f1ec0765d2d60c93658435be283260c06`
 - Entity roster: `entity-roster.csv`
 - Drone people matrix: `drone-people.csv`
 - WEF edge table: `wef-edges.csv`
