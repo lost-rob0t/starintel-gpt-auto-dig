@@ -4,7 +4,7 @@
 **Schema:** StarIntel `0.9.0`  
 **Research cutoff:** July 31, 2026  
 **Maximum recursion depth:** 3  
-**Main packet documents:** 25  
+**Packet documents:** 8  
 **Queued recursive targets:** 4
 
 ## Research question
@@ -125,4 +125,4 @@ That contradiction is worth resolving, but the endorsement remains a political c
   <https://www.israelnationalnews.com/news/164227>
   <https://www.israelnationalnews.com/news/164345>
 
-Exact source metadata and confidence assessments are embedded in `starintel-documents.jsonl`. Queued follow-up work is in `recursive-targets.jsonl`.
+Exact source metadata, confidence assessments and the four queued investigation targets are embedded in `starintel-documents.jsonl`.
