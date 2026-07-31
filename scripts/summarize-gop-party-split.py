@@ -21,62 +21,28 @@ def first_value(data: dict[str, Any], keys: tuple[str, ...]) -> Any:
     return None
 
 
-def text_value(value: Any) -> str:
-    if value is None:
-        return ""
-    if isinstance(value, (list, tuple, set)):
-        return " ".join(text_value(item) for item in value)
-    if isinstance(value, dict):
-        return " ".join(f"{key} {text_value(item)}" for key, item in value.items())
-    return str(value)
-
-
 def document_name(document: dict[str, Any]) -> str:
     data = document.get("data") if isinstance(document.get("data"), dict) else {}
     return str(
-        first_value(
-            data,
-            ("name", "full_name", "candidate_name", "committee_name", "legal_name", "title", "label"),
-        )
-        or document.get("name")
+        first_value(data, ("name", "full_name", "candidate_name", "committee_name", "legal_name", "title", "label"))
         or document.get("title")
+        or document.get("name")
         or document.get("_id")
         or "unknown"
     )
 
 
-def party_of(document: dict[str, Any]) -> tuple[str, str]:
-    data = document.get("data") if isinstance(document.get("data"), dict) else {}
-    raw = first_value(
-        data,
-        ("party", "party_affiliation", "candidate_party", "party_code", "political_party", "affiliation"),
-    )
-    haystack = " ".join(
-        [
-            text_value(raw),
-            text_value(document.get("labels")),
-            text_value(document.get("keywords")),
-            text_value(data.get("description")),
-            document_name(document),
-        ]
-    ).upper()
-    tokens = set(haystack.replace("-", " ").replace("/", " ").replace("[", " ").replace("]", " ").split())
-    if {"REP", "REPUBLICAN", "GOP"} & tokens:
-        return "Republican", text_value(raw)
-    if {"DEM", "DEMOCRAT", "DEMOCRATIC", "DFL"} & tokens:
-        return "Democratic", text_value(raw)
-    return "Other/unclear", text_value(raw)
+def classify_party(raw: Any) -> str:
+    value = str(raw or "").strip().upper()
+    if value in {"REP", "R", "GOP", "REPUBLICAN"}:
+        return "Republican"
+    if value in {"DEM", "D", "DFL", "DEMOCRAT", "DEMOCRATIC"}:
+        return "Democratic"
+    return "Other/unclear"
 
 
 def amount_of(data: dict[str, Any]) -> float | None:
-    for key in (
-        "amount",
-        "transaction_amount",
-        "disbursement_amount",
-        "contribution_amount",
-        "value",
-        "total_amount",
-    ):
+    for key in ("amount", "transaction_amount", "disbursement_amount", "contribution_amount", "value", "total_amount"):
         value = data.get(key)
         if isinstance(value, (int, float)):
             return float(value)
@@ -85,8 +51,8 @@ def amount_of(data: dict[str, Any]) -> float | None:
                 return float(value.replace("$", "").replace(",", ""))
             except ValueError:
                 pass
-    for container_key in ("transaction", "filing", "details", "metadata", "extensions"):
-        nested = data.get(container_key)
+    for key in ("qualifiers", "transaction", "filing", "details", "metadata", "extensions"):
+        nested = data.get(key)
         if isinstance(nested, dict):
             value = amount_of(nested)
             if value is not None:
@@ -94,41 +60,12 @@ def amount_of(data: dict[str, Any]) -> float | None:
     return None
 
 
-def endpoint(document: dict[str, Any], role: str) -> str | None:
-    data = document.get("data") if isinstance(document.get("data"), dict) else {}
-    if role == "subject":
-        keys = ("subject", "subject_id", "source", "source_id", "from", "from_id", "payer_id", "committee_id")
-    else:
-        keys = ("object", "object_id", "target", "target_id", "to", "to_id", "recipient_id", "payee_id")
-    for container in (document, data):
-        for key in keys:
-            value = container.get(key)
-            if isinstance(value, str):
-                return value
-            if isinstance(value, dict):
-                for candidate in ("_id", "id", "entity_id", "document_id"):
-                    nested = value.get(candidate)
-                    if isinstance(nested, str):
-                        return nested
-    return None
-
-
-def candidate_like(document: dict[str, Any]) -> bool:
-    if document.get("dtype") == "person":
-        return True
-    data = document.get("data") if isinstance(document.get("data"), dict) else {}
-    return any(
-        data.get(key) not in (None, "", [], {})
-        for key in ("candidate_id", "fec_candidate_id", "office", "office_sought", "district", "candidate_status")
-    )
-
-
 def office_of(document: dict[str, Any]) -> str:
     data = document.get("data") if isinstance(document.get("data"), dict) else {}
     office = first_value(data, ("office_sought", "office", "candidate_office", "position"))
     state = first_value(data, ("state", "candidate_state"))
     district = first_value(data, ("district", "candidate_district"))
-    return " · ".join(text_value(item) for item in (office, state, district) if text_value(item))
+    return " · ".join(str(item) for item in (office, state, district) if item not in (None, ""))
 
 
 def main() -> int:
@@ -159,50 +96,56 @@ def main() -> int:
     }
     recipient_amounts: dict[tuple[str, str], float] = defaultdict(float)
     recipient_rows: dict[tuple[str, str], int] = defaultdict(int)
-    field_inventory: Counter[str] = Counter()
+    recipient_parties: dict[tuple[str, str], str] = {}
+    recipient_committee_ids: dict[tuple[str, str], set[str]] = defaultdict(set)
     matched = 0
 
     for relation in relations:
         relation_id = str(relation.get("_id", ""))
         if "fec-disbursement" not in relation_id:
             continue
-        subject = endpoint(relation, "subject")
+        data = relation.get("data") if isinstance(relation.get("data"), dict) else {}
+        subject = data.get("subject")
         if subject not in SOURCE_IDS:
             continue
-        data = relation.get("data") if isinstance(relation.get("data"), dict) else {}
-        amount = amount_of(relation) or amount_of(data)
+        qualifiers = data.get("qualifiers") if isinstance(data.get("qualifiers"), dict) else {}
+        amount = amount_of(data)
         if amount is None:
             continue
-        field_inventory.update(data.keys())
-        object_id = endpoint(relation, "object")
-        recipient = documents.get(object_id or "", {"_id": object_id or "unresolved", "data": {}})
-        party, _ = party_of(recipient)
-        label = SOURCE_IDS[subject]
-        source_totals[label][party] += amount
-        source_totals[label]["total"] += amount
-        source_rows[label][party] += 1
-        source_rows[label]["total"] += 1
-        key = (label, object_id or "unresolved")
+        party = classify_party(qualifiers.get("recipient_party"))
+        source = SOURCE_IDS[subject]
+        source_totals[source][party] += amount
+        source_totals[source]["total"] += amount
+        source_rows[source][party] += 1
+        source_rows[source]["total"] += 1
+
+        candidate_document_id = str(qualifiers.get("candidate_document_id") or "").strip()
+        object_id = str(data.get("object") or "").strip()
+        recipient_id = candidate_document_id or object_id or "unresolved"
+        key = (source, recipient_id)
         recipient_amounts[key] += amount
         recipient_rows[key] += 1
+        recipient_parties[key] = party
+        committee_id = str(qualifiers.get("fec_recipient_committee_id") or "").strip()
+        if committee_id:
+            recipient_committee_ids[key].add(committee_id)
         matched += 1
 
     recipients: list[dict[str, Any]] = []
     for (source, recipient_id), amount in recipient_amounts.items():
         document = documents.get(recipient_id, {"_id": recipient_id, "data": {}})
-        party, raw_party = party_of(document)
         recipients.append(
             {
                 "source": source,
                 "recipient_id": recipient_id,
                 "name": document_name(document),
                 "dtype": document.get("dtype"),
-                "party": party,
-                "raw_party": raw_party,
+                "party": recipient_parties[(source, recipient_id)],
                 "amount": round(amount, 2),
                 "rows": recipient_rows[(source, recipient_id)],
-                "candidate_like": candidate_like(document),
+                "candidate_like": recipient_id.startswith("starintel:person:fec-candidate-"),
                 "office": office_of(document),
+                "fec_recipient_committee_ids": sorted(recipient_committee_ids[(source, recipient_id)]),
                 "data": document.get("data", {}),
             }
         )
@@ -213,7 +156,6 @@ def main() -> int:
         for key in combined:
             combined[key] += totals[key]
 
-    fec_samples = [relation for relation in relations if "fec-disbursement" in str(relation.get("_id", ""))][:8]
     report = {
         "packet": str(packet),
         "dtype_counts": dict(dtype_counts),
@@ -226,11 +168,8 @@ def main() -> int:
             }
             for label, totals in source_totals.items()
         },
-        "top_candidate_recipients": [item for item in recipients if item["candidate_like"]][:50],
-        "top_all_recipients": recipients[:100],
-        "relation_data_field_inventory": dict(field_inventory),
-        "source_documents": {source_id: documents.get(source_id) for source_id in SOURCE_IDS},
-        "fec_relation_samples": fec_samples,
+        "top_candidate_recipients": [item for item in recipients if item["candidate_like"]][:75],
+        "top_all_recipients": recipients[:125],
     }
     output.parent.mkdir(parents=True, exist_ok=True)
     output.write_text(json.dumps(report, indent=2, sort_keys=True) + "\n", encoding="utf-8")
