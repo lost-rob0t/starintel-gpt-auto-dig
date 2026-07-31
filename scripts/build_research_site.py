@@ -180,8 +180,12 @@ def materialize_wef_shapers_import(workspace: Path) -> None:
 
     compact_payload = decode_part_bundle(WEF_SHAPERS_IMPORT_PARTS)
     if compact_payload is not None:
-        values, canonical = parse_jsonl_payload(compact_payload, WEF_SHAPERS_IMPORT_PARTS)
-        if all(isinstance(value, dict) for value in values):
+        try:
+            values, canonical = parse_jsonl_payload(compact_payload, WEF_SHAPERS_IMPORT_PARTS)
+        except ValueError:
+            values = []
+            canonical = ""
+        if values and all(isinstance(value, dict) for value in values):
             packet_dir.mkdir(parents=True, exist_ok=True)
             packet.write_text(canonical, encoding="utf-8")
             verify_wef_shapers_packet(packet)
