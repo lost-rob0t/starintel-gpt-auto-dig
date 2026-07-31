@@ -74,11 +74,17 @@ class InfluenceWatchImportTests(unittest.TestCase):
         self.assertFalse(args.respect_robots)
         self.assertFalse(args.replace)
 
-        user_agent = (
-            MODULE.USER_AGENT_PREFIX
-            + ("a" * MODULE.USER_AGENT_HEX_LENGTH)
-        )
+        user_agent = "a" * MODULE.USER_AGENT_HEX_LENGTH
         self.assertTrue(MODULE.valid_user_agent(user_agent))
+        self.assertFalse(MODULE.valid_user_agent(f"HA-SCRAPED-seeded-run-{user_agent}"))
+        self.assertFalse(MODULE.valid_user_agent(user_agent.upper()))
+        self.assertFalse(MODULE.valid_user_agent(user_agent[:-1]))
+        self.assertFalse(MODULE.valid_user_agent("g" * MODULE.USER_AGENT_HEX_LENGTH))
+
+        generated = MODULE.generate_user_agent()
+        self.assertEqual(MODULE.USER_AGENT_HEX_LENGTH, len(generated))
+        self.assertTrue(MODULE.valid_user_agent(generated))
+
         client = MODULE.NetworkClient(
             user_agent,
             MODULE.MIN_REQUEST_DELAY,

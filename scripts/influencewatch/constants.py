@@ -7,7 +7,6 @@ TERMS_URL = urllib.parse.urljoin(BASE_URL, "terms-of-use/")
 DEFAULT_SITEMAP_URL = urllib.parse.urljoin(BASE_URL, "sitemap_index.xml")
 DATASET = "influence-watch-db"
 AUTH_ENV = "INFLUENCEWATCH_AUTHORIZED"
-USER_AGENT_PREFIX = "HA-SCRAPED-seeded-run-"
 USER_AGENT_HEX_LENGTH = 64
 MIN_REQUEST_DELAY = 1.0
 MAX_RESPONSE_BYTES = 12 * 1024 * 1024
