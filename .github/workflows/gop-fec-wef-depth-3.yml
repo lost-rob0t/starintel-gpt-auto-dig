@@ -1,8 +1,9 @@
 name: GOP FEC and WEF recursion depth 3
 
 on:
-  push:
-    branches: ["agent/gop-fec-wef-depth-3"]
+  pull_request:
+    types: [opened, reopened, synchronize]
+    branches: ["agent/gop-wef-palantir-aipac-depth-2"]
     paths:
       - "imports/gop-depth3/**"
       - ".github/workflows/gop-fec-wef-depth-3.yml"
@@ -12,7 +13,7 @@ permissions:
   contents: write
 
 concurrency:
-  group: gop-fec-wef-depth-3-${{ github.ref_name }}
+  group: gop-fec-wef-depth-3-${{ github.event.pull_request.number || github.ref_name }}
   cancel-in-progress: true
 
 jobs:
@@ -21,7 +22,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 90
     env:
-      TARGET_BRANCH: ${{ github.ref_name }}
+      TARGET_BRANCH: ${{ github.head_ref || github.ref_name }}
     steps:
       - uses: actions/checkout@v6
         with:
