@@ -36,6 +36,7 @@ base.LIST_ROOTS.update(ALUMNI_ROOTS)
 base.LIST_SLUGS.update(ALUMNI_SLUGS)
 _original_listish = base.listish_segment
 _original_qualifies = base.qualifies
+_original_self_test = base.run_self_test
 
 
 def listish_segment(segment: str) -> bool:
@@ -53,7 +54,7 @@ base.qualifies = qualifies
 
 
 def run_self_test() -> None:
-    base.run_self_test()
+    _original_self_test()
     accepted = [
         "https://example.org/alumni",
         "https://example.org/alumni-directory",
