@@ -31,6 +31,7 @@ Run:
 ```bash
 python3 rank-bridge-sets.py bridge-memberships.json --pretty
 base64 -d starintel-documents.jsonl.gz.b64 | gzip -dc > starintel-documents.jsonl
+python3 ../../../scripts/starintel.py import starintel-documents.jsonl --replace
 ```
 
 Decoded JSONL SHA-256: `73358afba6a5b2e2dd4b91f7005e4d4c0b417c085fab1dd599ca2f9717c5cff9`  
