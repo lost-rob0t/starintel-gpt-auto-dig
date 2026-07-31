@@ -1,0 +1,79 @@
+name: Dark Academia membership recursion
+
+on:
+  push:
+    branches:
+      - "agent/dark-academia-membership-recursion"
+    paths:
+      - "imports/dark-academia/**"
+      - ".github/workflows/dark-academia-membership-recursion.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: dark-academia-membership-recursion
+  cancel-in-progress: true
+
+jobs:
+  scrape-import:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    timeout-minutes: 350
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          ref: ${{ github.ref_name }}
+          fetch-depth: 0
+
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+
+      - name: Restore verified scraper and targets
+        shell: bash
+        run: |
+          set -euo pipefail
+          echo "984ea6008b90a394d2e6080c32f7f12480f80fa3045cc1a7bb56abba13c62e77  imports/dark-academia/scraper.py.gz.b64" | sha256sum --check --strict
+          echo "0f3e742a58caad83949f55b19061c41ca5f38aed1e9c0a64dcc592dc5b5f3fc8  imports/dark-academia/targets.json.gz.b64" | sha256sum --check --strict
+          mkdir -p scripts config
+          base64 --decode imports/dark-academia/scraper.py.gz.b64 | gzip --decompress > scripts/scrape_dark_academia_memberships.py
+          base64 --decode imports/dark-academia/targets.json.gz.b64 | gzip --decompress > config/dark-academia-targets.json
+          echo "946c0395735f22333709ea2e1e9e97181553b5621a6d67081d464ae94fa89a62  scripts/scrape_dark_academia_memberships.py" | sha256sum --check --strict
+          echo "9c328174d7ae253db5e751726acf60266932a16b8fc0f113240616aad750ee7c  config/dark-academia-targets.json" | sha256sum --check --strict
+          chmod +x scripts/scrape_dark_academia_memberships.py
+
+      - name: Install public-web parsing dependencies
+        run: python -m pip install --disable-pip-version-check requests beautifulsoup4 lxml
+
+      - name: Scrape official public rosters and import documents
+        env:
+          PYTHONUNBUFFERED: "1"
+        run: python scripts/scrape_dark_academia_memberships.py --root .
+
+      - name: Validate complete StarIntel corpus
+        run: python scripts/starintel.py validate --root .
+
+      - name: Commit generated AutoDig corpus
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -rf imports/dark-academia
+          rmdir imports 2>/dev/null || true
+          git add -A \
+            scripts/scrape_dark_academia_memberships.py \
+            config/dark-academia-targets.json \
+            imports \
+            digs/dark-academia \
+            reports/dark-academia-membership-recursion.json \
+            reports/dark-academia-membership-recursion.md \
+            db
+          if git diff --cached --quiet; then
+            echo "Dark Academia corpus already current"
+            exit 0
+          fi
+          git config user.name "starintel-auto-dig-bot"
+          git config user.email "starintel-auto-dig-bot@users.noreply.github.com"
+          git commit -m "Import Dark Academia public membership graph"
+          git push origin "HEAD:${GITHUB_REF_NAME}"
