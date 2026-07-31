@@ -4,6 +4,7 @@ from __future__ import annotations
 import base64
 import gzip
 import hashlib
+import os
 from pathlib import Path
 import subprocess
 import sys
@@ -11,6 +12,8 @@ import sys
 ROOT = Path(__file__).resolve().parents[1]
 PAYLOAD = ROOT / "imports" / "global-shapers" / "import_global_shapers_people.py.gz.b64"
 GENERATED = ROOT / ".generated" / "import_global_shapers_people.py"
+HUB_URL_FILE = ROOT / "imports" / "global-shapers" / "generated-hub-urls.txt"
+PROFILE_URL_FILE = ROOT / "imports" / "global-shapers" / "generated-member-profile-urls.txt"
 SOURCE_SHA256 = "1b75a51d5b55fe830744bae144d26cb8bd14d0fe0a026f3797a03be453c4068f"
 GZIP_SHA256 = "d1bdbf26070763cc45807bd2b2bcc21693a7de7c36b7198604f08c7ceb8041f9"
 
@@ -30,10 +33,38 @@ def restore() -> Path:
     return GENERATED
 
 
+def supported_seed_arguments(importer: Path) -> list[str]:
+    help_run = subprocess.run(
+        [sys.executable, str(importer), "--help"],
+        cwd=ROOT,
+        text=True,
+        capture_output=True,
+        check=True,
+    )
+    help_text = help_run.stdout + help_run.stderr
+    extra: list[str] = []
+    if HUB_URL_FILE.is_file() and "--hub-url-file" in help_text:
+        extra.extend(["--hub-url-file", str(HUB_URL_FILE)])
+    if PROFILE_URL_FILE.is_file() and "--profile-url-file" in help_text:
+        extra.extend(["--profile-url-file", str(PROFILE_URL_FILE)])
+    return extra
+
+
 def main() -> int:
     importer = restore()
     subprocess.run([sys.executable, "-m", "py_compile", str(importer)], check=True)
-    completed = subprocess.run([sys.executable, str(importer), *sys.argv[1:]], cwd=ROOT)
+    if "--help" in sys.argv[1:] or "-h" in sys.argv[1:]:
+        return subprocess.run([sys.executable, str(importer), *sys.argv[1:]], cwd=ROOT).returncode
+
+    env = os.environ.copy()
+    env["GLOBAL_SHAPERS_HUB_URL_FILE"] = str(HUB_URL_FILE)
+    env["GLOBAL_SHAPERS_PROFILE_URL_FILE"] = str(PROFILE_URL_FILE)
+    extra = supported_seed_arguments(importer)
+    completed = subprocess.run(
+        [sys.executable, str(importer), *sys.argv[1:], *extra],
+        cwd=ROOT,
+        env=env,
+    )
     return completed.returncode
 
 
