@@ -6,17 +6,22 @@ on:
       - "agent/dark-academia-rand-bilderberg-wave-2"
     paths:
       - "imports/dark-academia-wave2/**"
+      - "scripts/run_with_membership_url_capture.py"
+      - "scripts/membership_url_issue_queue.py"
       - ".github/workflows/dark-academia-rand-bilderberg-wave-2.yml"
   pull_request:
     branches:
       - main
     paths:
       - "imports/dark-academia-wave2/**"
+      - "scripts/run_with_membership_url_capture.py"
+      - "scripts/membership_url_issue_queue.py"
       - ".github/workflows/dark-academia-rand-bilderberg-wave-2.yml"
   workflow_dispatch:
 
 permissions:
   contents: write
+  issues: write
 
 concurrency:
   group: dark-academia-rand-bilderberg-wave-2
@@ -45,12 +50,36 @@ jobs:
           set -euo pipefail
           echo "26dc09aa4077bc25f7187e1979002392da8ca183afeb0c7bb528b337560825c2  imports/dark-academia-wave2/scraper.py.gz" | sha256sum --check --strict
           echo "df8d6ecc5105d89b7e9a312e153c33a7388c730a48aef6ea0a2934a5a47057f2  imports/dark-academia-wave2/targets.json.gz" | sha256sum --check --strict
-          mkdir -p scripts config
+          mkdir -p scripts config reports
           gzip --decompress --stdout imports/dark-academia-wave2/scraper.py.gz > scripts/scrape_dark_academia_memberships.py
           gzip --decompress --stdout imports/dark-academia-wave2/targets.json.gz > config/dark-academia-targets.json
           echo "46b5100baae4323c8a1c9cd20b35ed7362f99e533cb0a71a90b4b868a5b73b78  scripts/scrape_dark_academia_memberships.py" | sha256sum --check --strict
           echo "1266126cdb1a4375c48e4f5c24b07de096e2a6d84fdf3f0a90d817b80065907c  config/dark-academia-targets.json" | sha256sum --check --strict
-          chmod +x scripts/scrape_dark_academia_memberships.py
+          chmod +x scripts/scrape_dark_academia_memberships.py scripts/run_with_membership_url_capture.py scripts/membership_url_issue_queue.py
+
+      - name: Remove undeclared legacy email field
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          from pathlib import Path
+          import re
+
+          path = Path("scripts/scrape_dark_academia_memberships.py")
+          source = path.read_text(encoding="utf-8")
+          patterns = [
+              r"(?m)^\s*[\"']email_type[\"']\s*:\s*[^,\n]+,\s*\n",
+              r"(?m)^\s*[\"']email_type[\"']\s*:\s*[^\n]+\n",
+          ]
+          removed = 0
+          for pattern in patterns:
+              source, count = re.subn(pattern, "", source)
+              removed += count
+          if removed == 0:
+              raise SystemExit("email_type generator field was not found; refusing an unverified patch")
+          path.write_text(source, encoding="utf-8")
+          print(f"Removed {removed} undeclared email_type generator field(s)")
+          PY
 
       - name: Install public-web parsing dependencies
         run: python -m pip install --disable-pip-version-check requests beautifulsoup4 lxml
@@ -58,7 +87,22 @@ jobs:
       - name: Scrape RAND, Bilderberg, and expanded official rosters
         env:
           PYTHONUNBUFFERED: "1"
-        run: python scripts/scrape_dark_academia_memberships.py --root .
+        run: |
+          python scripts/run_with_membership_url_capture.py \
+            --log reports/membership-url-observations-wave-2.jsonl \
+            -- scripts/scrape_dark_academia_memberships.py --root .
+
+      - name: Create one issue per discovered membership-list URL
+        if: always()
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: |
+          python scripts/membership_url_issue_queue.py \
+            --repository "${GITHUB_REPOSITORY}" \
+            --input config/dark-academia-targets.json \
+            --input reports/membership-url-observations-wave-2.jsonl \
+            --glob 'reports/dark-academia-membership-recursion*.json' \
+            --report reports/membership-list-issues-wave-2.json
 
       - name: Remove bootstrap before corpus validation
         shell: bash
@@ -76,11 +120,15 @@ jobs:
           set -euo pipefail
           git add -A \
             scripts/scrape_dark_academia_memberships.py \
+            scripts/run_with_membership_url_capture.py \
+            scripts/membership_url_issue_queue.py \
             config/dark-academia-targets.json \
             imports \
             digs/dark-academia \
             reports/dark-academia-membership-recursion-wave-2.json \
             reports/dark-academia-membership-recursion-wave-2.md \
+            reports/membership-url-observations-wave-2.jsonl \
+            reports/membership-list-issues-wave-2.json \
             db
           if git diff --cached --quiet; then
             echo "Dark Academia wave-two corpus already current"
