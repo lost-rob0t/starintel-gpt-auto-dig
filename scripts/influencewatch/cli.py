@@ -10,10 +10,10 @@ from collections import Counter
 from pathlib import Path
 from typing import Any, Sequence
 
-from .constants import BASE_URL, DEFAULT_SITEMAP_URL, DEFAULT_USER_AGENT, MIN_REQUEST_DELAY
-from .network import NetworkClient, discover_profile_urls, fetch_profiles, read_local_profiles
+from .constants import BASE_URL, DEFAULT_SITEMAP_URL, MIN_REQUEST_DELAY
+from .network import NetworkClient, discover_profile_urls, fetch_profiles, read_local_profiles, utc_now
 from .records import build_records
-from .utils import canonicalize_url, clean, profile_kind, require_network_authorization
+from .utils import canonicalize_url, clean, generate_user_agent, profile_kind, require_network_authorization
 
 ROOT = Path(__file__).resolve().parents[2]
 
@@ -55,9 +55,16 @@ def main(argv: Sequence[str] | None = None) -> int:
     if network_requested:
         require_network_authorization(authorized=args.authorized)
     profiles = read_local_profiles(args.input)
+    client: NetworkClient | None = None
     if network_requested:
+        user_agent = generate_user_agent()
+        print(
+            f"[influencewatch] event=run-start timestamp={utc_now()} user_agent={user_agent} "
+            f"delay={args.delay} respect_robots={str(args.respect_robots).lower()} limit={args.limit}",
+            flush=True,
+        )
         client = NetworkClient(
-            DEFAULT_USER_AGENT,
+            user_agent,
             args.delay,
             max(1.0, args.timeout),
             respect_robots=args.respect_robots,
@@ -80,5 +87,10 @@ def main(argv: Sequence[str] | None = None) -> int:
     if args.import_db:
         subprocess.run([sys.executable, str(ROOT / "scripts" / "starintel.py"), "import", str(args.output)], check=True)
     counts = Counter(record["dtype"] for record in records)
-    print(f"wrote {len(records)} records to {args.output}: {dict(sorted(counts.items()))}")
+    request_count = client.request_count if client else 0
+    print(
+        f"[influencewatch] event=run-complete timestamp={utc_now()} requests={request_count} "
+        f"profiles={len(profiles)} records={len(records)} output={args.output} counts={dict(sorted(counts.items()))}",
+        flush=True,
+    )
     return 0
