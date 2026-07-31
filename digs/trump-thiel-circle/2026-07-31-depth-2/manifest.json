@@ -1,0 +1,55 @@
+{
+  "base_seed_records": 311,
+  "clusters": [
+    "Lutnick family / Cantor / Tether / Rumble / USA Rare Earth",
+    "Vought / Center for Renewing America / Heritage / Project 2025 / Vance",
+    "Hegseth / Defense Department / Army / Palantir / Thiel"
+  ],
+  "combined_records": 467,
+  "counts": {
+    "claim": 9,
+    "org": 15,
+    "person": 35,
+    "relation": 72,
+    "research-pass": 1,
+    "source": 24
+  },
+  "dataset": "trump-thiel-circle",
+  "depth": 2,
+  "generated_at": "2026-07-31T07:38:00Z",
+  "new_records": 156,
+  "next_queue": "research-queue.json",
+  "payload": {
+    "builder": "build-depth2.py",
+    "encoding": "base64(gzip(jsonl))",
+    "materialized_bytes": 319849,
+    "materialized_file": "starintel-documents.jsonl",
+    "materialized_sha256": "52281167da70f4f421455c4e70489d9d473f92b7171064b47228982ce7c40f50",
+    "parts": [
+      {
+        "bytes": 10189,
+        "path": "payload/depth2-part-01.b64",
+        "sha256": "5bd4f237f57ee367e258c0db4f9459b77537df601e77be06139bb11d3d423a4a"
+      },
+      {
+        "bytes": 10189,
+        "path": "payload/depth2-part-02.b64",
+        "sha256": "72a9502c6762ae952f7de971238acddceb24ac66e7d85e254561828afe15cf6f"
+      },
+      {
+        "bytes": 10181,
+        "path": "payload/depth2-part-03.b64",
+        "sha256": "6938add608c4a2454a35f9aa532ce6195cc3d13bf713406dc0fdd227e3bef098"
+      }
+    ]
+  },
+  "run_id": "trump-thiel-circle-depth-2-2026-07-31",
+  "schema_version": "0.9.0",
+  "validation": {
+    "overlap_with_base": 0,
+    "round_trip_json": true,
+    "unique_ids": true,
+    "unresolved_claim_subjects": [],
+    "unresolved_relation_endpoints": []
+  }
+}
