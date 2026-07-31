@@ -1,33 +1,41 @@
 name: Materialize WEF Depth 6
 
 on:
-  push:
-    branches:
-      - agent/wef-columbus-depth-6-primary-records
-    paths:
-      - imports/.wef-depth6-packet.jsonl.gz.b64
-      - .github/workflows/materialize-wef-depth6.yml
   pull_request:
-    branches:
-      - main
-    types:
-      - opened
-      - synchronize
+    branches: [main]
+    types: [opened, synchronize, reopened]
     paths:
-      - imports/.wef-depth6-packet.jsonl.gz.b64
-      - .github/workflows/materialize-wef-depth6.yml
+      - "imports/.wef-depth6-packet.jsonl.gz.b64"
+      - ".github/workflows/materialize-wef-depth6.yml"
 
 permissions:
+  actions: write
   contents: write
+  pull-requests: read
+  statuses: write
+
+concurrency:
+  group: materialize-wef-columbus-depth-6
+  cancel-in-progress: false
+
+env:
+  BRANCH: agent/wef-columbus-depth-6-primary-records
+  PACKET: digs/wef-columbus/2026-07-31-depth-6-primary-records/starintel-documents.jsonl
 
 jobs:
   import-and-validate:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - name: Check out research branch
+        uses: actions/checkout@v4
         with:
-          ref: agent/wef-columbus-depth-6-primary-records
+          ref: ${{ env.BRANCH }}
           fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
 
       - name: Materialize canonical packet
         shell: bash
@@ -35,26 +43,35 @@ jobs:
           set -euo pipefail
           base64 --decode imports/.wef-depth6-packet.jsonl.gz.b64 \
             | gzip --decompress \
-            > digs/wef-columbus/2026-07-31-depth-6-primary-records/starintel-documents.jsonl
-          test "$(wc -l < digs/wef-columbus/2026-07-31-depth-6-primary-records/starintel-documents.jsonl)" -eq 40
+            > "${PACKET}"
+          test "$(wc -l < "${PACKET}")" -eq 40
 
       - name: Import canonical documents
-        run: python3 scripts/starintel.py import digs/wef-columbus/2026-07-31-depth-6-primary-records/starintel-documents.jsonl
+        run: python3 scripts/starintel.py import "${PACKET}"
 
-      - name: Validate full corpus
+      - name: Remove one-shot transport
         run: |
-          python3 scripts/starintel.py validate
-          python3 scripts/validate-for-merge.py --site
+          git rm imports/.wef-depth6-packet.jsonl.gz.b64
+          git rm .github/workflows/materialize-wef-depth6.yml
+
+      - name: Run mandatory merge gate on final tree
+        run: python3 scripts/validate-for-merge.py --site
 
       - name: Commit normalized records
-        if: github.event_name == 'pull_request'
+        env:
+          GH_TOKEN: ${{ github.token }}
         shell: bash
         run: |
           set -euo pipefail
-          rm imports/.wef-depth6-packet.jsonl.gz.b64
-          rm .github/workflows/materialize-wef-depth6.yml
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add digs/wef-columbus/2026-07-31-depth-6-primary-records/starintel-documents.jsonl db imports/.wef-depth6-packet.jsonl.gz.b64 .github/workflows/materialize-wef-depth6.yml
+          git add "${PACKET}" db \
+            imports/.wef-depth6-packet.jsonl.gz.b64 \
+            .github/workflows/materialize-wef-depth6.yml
           git commit -m "Add WEF Columbus depth 6 primary records"
-          git push origin HEAD:agent/wef-columbus-depth-6-primary-records
+          git push origin HEAD:${BRANCH}
+          head_sha=$(git rev-parse HEAD)
+          gh api "repos/${GITHUB_REPOSITORY}/statuses/${head_sha}" \
+            -f state=success \
+            -f context='StarIntel merge gate' \
+            -f description='Canonical validation and site build passed on generated tree'
