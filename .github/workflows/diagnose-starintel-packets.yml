@@ -1,0 +1,44 @@
+name: Diagnose StarIntel packet transports
+
+on:
+  push:
+    branches:
+      - "agent/dark-academia-membership-recursion"
+    paths:
+      - ".github/workflows/diagnose-starintel-packets.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  diagnose:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          ref: agent/dark-academia-membership-recursion
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+      - name: Test every packet transport
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          from pathlib import Path
+          from starintel_doc.store import packet_paths, read_transport
+
+          failed = []
+          paths = packet_paths(Path('.'))
+          print(f'packet_paths={len(paths)}')
+          for path in paths:
+              try:
+                  payload = read_transport(path)
+                  print(f'OK {path} bytes={len(payload.encode())}')
+              except Exception as exc:
+                  failed.append((path, exc))
+                  print(f'FAILED {path}: {type(exc).__name__}: {exc}')
+          if failed:
+              raise SystemExit(1)
+          PY
