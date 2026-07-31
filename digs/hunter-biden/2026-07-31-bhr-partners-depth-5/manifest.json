@@ -37,7 +37,8 @@
     "investigation-targets-5.jsonl",
     "investigation-targets-6.jsonl",
     "investigation-targets-7.jsonl",
-    "investigation-targets-8.jsonl"
+    "investigation-targets-8.jsonl",
+    "manifest.json"
   ],
   "generated_at": "2026-07-31T07:15:00Z",
   "hash_algorithm": "sha256",
