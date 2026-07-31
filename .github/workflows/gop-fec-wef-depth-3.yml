@@ -6,6 +6,12 @@ on:
     paths:
       - "imports/gop-depth3/**"
       - ".github/workflows/gop-fec-wef-depth-3.yml"
+  pull_request:
+    types: [opened, reopened, synchronize]
+    branches: ["agent/gop-wef-palantir-aipac-depth-2"]
+    paths:
+      - "imports/gop-depth3/**"
+      - ".github/workflows/gop-fec-wef-depth-3.yml"
   workflow_dispatch:
 
 permissions:
@@ -21,7 +27,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 90
     env:
-      TARGET_BRANCH: ${{ github.ref_name }}
+      TARGET_BRANCH: ${{ github.head_ref || github.ref_name }}
     steps:
       - uses: actions/checkout@v6
         with:
