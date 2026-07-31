@@ -94,32 +94,44 @@ def decode_part_bundle(parts_dir: Path) -> str | None:
         return None
 
     raw_parts = [path.read_text(encoding="utf-8") for path in parts]
-    encoded_parts = ["".join(raw.split()) for raw in raw_parts]
+    encoded_parts = ["".join(raw.lstrip("\ufeff").split()) for raw in raw_parts]
 
-    attempts: list[bytes] = []
+    def decode_base64(value: str) -> bytes:
+        encoded = value.encode("ascii")
+        encoded += b"=" * (-len(encoded) % 4)
+        return base64.b64decode(encoded, validate=False)
+
+    candidates: list[bytes] = []
     try:
-        attempts.append(base64.b64decode("".join(encoded_parts), validate=True))
-    except binascii.Error:
+        candidates.append(decode_base64("".join(encoded_parts)))
+    except (binascii.Error, UnicodeEncodeError):
         pass
     try:
-        attempts.append(
-            b"".join(base64.b64decode(encoded, validate=True) for encoded in encoded_parts)
-        )
-    except binascii.Error:
+        candidates.append(b"".join(decode_base64(encoded) for encoded in encoded_parts))
+    except (binascii.Error, UnicodeEncodeError):
         pass
 
-    for compressed in attempts:
-        try:
-            return lzma.decompress(compressed).decode("utf-8")
-        except (lzma.LZMAError, UnicodeDecodeError):
-            continue
+    xz_magic = b"\xfd7zXZ\x00"
+    for compressed in candidates:
+        offsets = [0]
+        magic_offset = compressed.find(xz_magic)
+        if magic_offset > 0:
+            offsets.append(magic_offset)
+        for offset in offsets:
+            try:
+                return lzma.decompress(compressed[offset:]).decode("utf-8")
+            except (lzma.LZMAError, UnicodeDecodeError):
+                continue
 
     decoded_streams: list[str] = []
     try:
         for encoded in encoded_parts:
-            compressed = base64.b64decode(encoded, validate=True)
+            compressed = decode_base64(encoded)
+            magic_offset = compressed.find(xz_magic)
+            if magic_offset > 0:
+                compressed = compressed[magic_offset:]
             decoded_streams.append(lzma.decompress(compressed).decode("utf-8"))
-    except (binascii.Error, lzma.LZMAError, UnicodeDecodeError):
+    except (binascii.Error, lzma.LZMAError, UnicodeDecodeError, UnicodeEncodeError):
         decoded_streams.clear()
     if decoded_streams:
         return "".join(decoded_streams)
