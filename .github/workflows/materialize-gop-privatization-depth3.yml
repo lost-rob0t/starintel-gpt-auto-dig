@@ -1,0 +1,59 @@
+name: Materialize GOP privatization depth 3
+
+on:
+  push:
+    branches:
+      - agent/gop-privatization-leads-depth-3
+    paths:
+      - scripts/materialize-gop-privatization-depth3.py
+      - .github/workflows/materialize-gop-privatization-depth3.yml
+
+permissions:
+  contents: write
+
+jobs:
+  materialize:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout branch
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+
+      - name: Materialize records
+        run: python scripts/materialize-gop-privatization-depth3.py
+
+      - name: Validate NDJSON syntax
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+
+          paths = list(Path("db").rglob("*.ndjson"))
+          paths += list(Path("digs/gop/2026-07-31-privatization-leads-depth-3").glob("*.jsonl"))
+          for path in paths:
+              for number, line in enumerate(path.read_text(encoding="utf-8").splitlines(), 1):
+                  if line.strip():
+                      try:
+                          json.loads(line)
+                      except Exception as exc:
+                          raise SystemExit(f"{path}:{number}: {exc}") from exc
+          print(f"validated {len(paths)} NDJSON/JSONL files")
+          PY
+
+      - name: Commit generated research records
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add db digs/gop/2026-07-31-privatization-leads-depth-3
+          if git diff --cached --quiet; then
+            echo "No generated changes"
+            exit 0
+          fi
+          git commit -m "Materialize GOP privatization depth 3 targets"
+          git push
