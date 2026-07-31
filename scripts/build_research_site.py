@@ -92,13 +92,39 @@ def decode_part_bundle(parts_dir: Path) -> str | None:
     parts = sorted(parts_dir.glob("part-*"))
     if not parts:
         return None
-    raw = "".join(path.read_text(encoding="utf-8") for path in parts)
-    encoded = "".join(raw.split())
+
+    raw_parts = [path.read_text(encoding="utf-8") for path in parts]
+    encoded_parts = ["".join(raw.split()) for raw in raw_parts]
+
+    attempts: list[bytes] = []
     try:
-        compressed = base64.b64decode(encoded, validate=True)
-        return lzma.decompress(compressed).decode("utf-8")
+        attempts.append(base64.b64decode("".join(encoded_parts), validate=True))
+    except binascii.Error:
+        pass
+    try:
+        attempts.append(
+            b"".join(base64.b64decode(encoded, validate=True) for encoded in encoded_parts)
+        )
+    except binascii.Error:
+        pass
+
+    for compressed in attempts:
+        try:
+            return lzma.decompress(compressed).decode("utf-8")
+        except (lzma.LZMAError, UnicodeDecodeError):
+            continue
+
+    decoded_streams: list[str] = []
+    try:
+        for encoded in encoded_parts:
+            compressed = base64.b64decode(encoded, validate=True)
+            decoded_streams.append(lzma.decompress(compressed).decode("utf-8"))
     except (binascii.Error, lzma.LZMAError, UnicodeDecodeError):
-        return raw
+        decoded_streams.clear()
+    if decoded_streams:
+        return "".join(decoded_streams)
+
+    return "".join(raw_parts)
 
 
 def parse_jsonl_payload(payload: str, source: Path) -> tuple[list[Any], str]:
