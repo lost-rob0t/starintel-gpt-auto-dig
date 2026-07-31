@@ -14,7 +14,7 @@ if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
 from starintel_doc.schema_org import document_schema
-from starintel_doc.store import validate_repository
+from starintel_doc.store import packet_paths, read_transport, validate_repository
 
 
 def run(command: list[str]) -> None:
@@ -35,7 +35,16 @@ def validate_generated_schema() -> None:
         )
 
 
+def validate_packet_transports() -> None:
+    for path in packet_paths(ROOT):
+        try:
+            read_transport(path)
+        except Exception as exc:
+            raise RuntimeError(f"{path.relative_to(ROOT)}: transport decode failed: {exc}") from exc
+
+
 def validate_corpus() -> None:
+    validate_packet_transports()
     result = validate_repository(ROOT, require_v090=True)
     if result["ok"]:
         print(f"documents={result['documents']} schema=0.9.0 corpus=valid")
