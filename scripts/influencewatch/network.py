@@ -7,7 +7,6 @@ import urllib.request
 import urllib.robotparser
 import xml.etree.ElementTree as ET
 from dataclasses import dataclass, field
-from datetime import datetime, timezone
 from pathlib import Path
 from typing import Sequence
 
@@ -22,17 +21,17 @@ def parse_sitemap(payload: bytes, source_url: str) -> tuple[list[str], list[str]
     except ET.ParseError as exc:
         raise ValueError(f"invalid sitemap XML at {source_url}: {exc}") from exc
     name = root.tag.rsplit("}", 1)[-1].lower()
-    locations = [clean(node.text) for node in root.iter() if node.tag.rsplit("}", 1)[-1].lower() == "loc" and clean(node.text)]
+    locations = [
+        clean(node.text)
+        for node in root.iter()
+        if node.tag.rsplit("}", 1)[-1].lower() == "loc" and clean(node.text)
+    ]
     if name == "sitemapindex":
         return [normalize_resource_url(location, base=source_url) for location in locations], []
     if name == "urlset":
         urls = [canonicalize_url(location, base=source_url) for location in locations]
         return [], [url for url in urls if profile_kind(url) is not None]
     raise ValueError(f"unsupported sitemap root {name!r} at {source_url}")
-
-
-def utc_now() -> str:
-    return datetime.now(timezone.utc).isoformat().replace("+00:00", "Z")
 
 
 @dataclass(slots=True)
@@ -43,19 +42,20 @@ class NetworkClient:
     respect_robots: bool = False
     max_bytes: int = MAX_RESPONSE_BYTES
     _last_request_at: float = field(default=0.0, init=False)
-    _request_count: int = field(default=0, init=False)
     _robots: urllib.robotparser.RobotFileParser | None = field(default=None, init=False)
     _sitemap_urls: list[str] = field(default_factory=list, init=False)
 
     def __post_init__(self) -> None:
         if not valid_user_agent(self.user_agent):
-            raise ValueError("InfluenceWatch user agent must be HA-SCRAPED-seeded-run- followed by 64 lowercase hex characters")
+            raise ValueError(
+                "InfluenceWatch user agent must be HA-SCRAPED-seeded-run- "
+                "followed by 64 lowercase hex characters"
+            )
         if self.delay < MIN_REQUEST_DELAY:
-            raise ValueError(f"InfluenceWatch authorization allows at most one request per second; delay must be >= {MIN_REQUEST_DELAY}")
-
-    @property
-    def request_count(self) -> int:
-        return self._request_count
+            raise ValueError(
+                "InfluenceWatch authorization allows at most one request per second; "
+                f"delay must be >= {MIN_REQUEST_DELAY}"
+            )
 
     def _throttle(self) -> None:
         elapsed = time.monotonic() - self._last_request_at
@@ -63,46 +63,27 @@ class NetworkClient:
             time.sleep(self.delay - elapsed)
 
     def fetch(self, url: str, *, accept: str) -> bytes:
-        request = urllib.request.Request(url, headers={"User-Agent": self.user_agent, "Accept": accept})
+        request = urllib.request.Request(
+            url,
+            headers={"User-Agent": self.user_agent, "Accept": accept},
+        )
         last_error: Exception | None = None
         for attempt in range(1, 4):
             self._throttle()
-            self._request_count += 1
-            request_number = self._request_count
             self._last_request_at = time.monotonic()
-            print(
-                f"[influencewatch] event=request-start request={request_number} attempt={attempt} "
-                f"timestamp={utc_now()} user_agent={self.user_agent} url={url}",
-                flush=True,
-            )
             try:
                 with urllib.request.urlopen(request, timeout=self.timeout) as response:
                     payload = response.read(self.max_bytes + 1)
                     if len(payload) > self.max_bytes:
                         raise ValueError(f"response exceeds {self.max_bytes} bytes: {url}")
-                    print(
-                        f"[influencewatch] event=request-complete request={request_number} "
-                        f"timestamp={utc_now()} status={getattr(response, 'status', 200)} bytes={len(payload)} url={url}",
-                        flush=True,
-                    )
                     return payload
             except urllib.error.HTTPError as exc:
                 last_error = exc
-                print(
-                    f"[influencewatch] event=request-error request={request_number} timestamp={utc_now()} "
-                    f"status={exc.code} error={exc.reason!r} url={url}",
-                    flush=True,
-                )
                 if exc.code not in {429, 500, 502, 503, 504} or attempt == 3:
                     raise
                 time.sleep(max(self.delay, 2 ** (attempt - 1)))
             except urllib.error.URLError as exc:
                 last_error = exc
-                print(
-                    f"[influencewatch] event=request-error request={request_number} timestamp={utc_now()} "
-                    f"error={exc.reason!r} url={url}",
-                    flush=True,
-                )
                 if attempt == 3:
                     raise
                 time.sleep(max(self.delay, 2 ** (attempt - 1)))
@@ -111,7 +92,9 @@ class NetworkClient:
 
     def load_robots(self) -> None:
         robots_url = urllib.parse.urljoin(BASE_URL, "robots.txt")
-        lines = self.fetch(robots_url, accept="text/plain").decode("utf-8", errors="replace").splitlines()
+        lines = self.fetch(robots_url, accept="text/plain").decode(
+            "utf-8", errors="replace"
+        ).splitlines()
         parser = urllib.robotparser.RobotFileParser()
         parser.set_url(robots_url)
         parser.parse(lines)
@@ -140,7 +123,12 @@ class NetworkClient:
         return self.fetch(url, accept=accept)
 
 
-def discover_profile_urls(client: NetworkClient, sitemap_urls: Sequence[str], *, limit: int = 0) -> list[str]:
+def discover_profile_urls(
+    client: NetworkClient,
+    sitemap_urls: Sequence[str],
+    *,
+    limit: int = 0,
+) -> list[str]:
     pending = list(dict.fromkeys(normalize_resource_url(url) for url in sitemap_urls))
     seen_sitemaps: set[str] = set()
     profiles: list[str] = []
@@ -151,7 +139,10 @@ def discover_profile_urls(client: NetworkClient, sitemap_urls: Sequence[str], *,
             continue
         seen_sitemaps.add(sitemap_url)
         try:
-            payload = client.fetch_allowed(sitemap_url, accept="application/xml,text/xml")
+            payload = client.fetch_allowed(
+                sitemap_url,
+                accept="application/xml,text/xml",
+            )
         except urllib.error.HTTPError as exc:
             if exc.code == 404:
                 continue
@@ -173,4 +164,10 @@ def read_local_profiles(paths: Sequence[Path]) -> list[Profile]:
 
 
 def fetch_profiles(client: NetworkClient, urls: Sequence[str]) -> list[Profile]:
-    return [parse_profile(client.fetch_allowed(url, accept="text/html,application/xhtml+xml"), url) for url in urls]
+    return [
+        parse_profile(
+            client.fetch_allowed(url, accept="text/html,application/xhtml+xml"),
+            url,
+        )
+        for url in urls
+    ]
