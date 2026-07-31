@@ -1,0 +1,196 @@
+{
+  "_id": "starintel:dataset-manifest:us-israel-military-integration:2026-07-31-pass-3:quasar",
+  "dataset": "us-israel-military-integration",
+  "dtype": "dataset-manifest",
+  "schema_version": "0.9.0",
+  "version": 1,
+  "date_added": "2026-07-31T06:16:00Z",
+  "date_updated": "2026-07-31T06:16:00Z",
+  "title": "Quasar import manifest — U.S.–Israel Military Integration Pass 3",
+  "summary": "Incremental pass covering JTF-Israel command lineage, the CMCC/IDF headquarters interface, end-use-monitoring oversight, Epic Fury financial auditing, and multi-year FMS support footprints.",
+  "status": "complete",
+  "language": "en",
+  "tags": [
+    "quasar",
+    "auto-dig",
+    "military-integration",
+    "us-israel",
+    "recursive-pass-3"
+  ],
+  "sources": [],
+  "evidence": [],
+  "assessment": {
+    "confidence": 1.0,
+    "caveats": [
+      "This is an incremental packet requiring the 2026-07-26 baseline and 2026-07-31 pass-2 packet.",
+      "Decode the gzip/base64 transport before Quasar import.",
+      "Foreign Military Sales notifications are maximum estimates and do not establish executed contract value."
+    ]
+  },
+  "verification": {
+    "status": "verified",
+    "verified": true,
+    "methods": [
+      "json-parse",
+      "unique-id-check",
+      "gzip",
+      "base64",
+      "sha256",
+      "record-count"
+    ]
+  },
+  "handling": {
+    "visibility": "public",
+    "classification": "unclassified",
+    "pii": false,
+    "sensitive": false
+  },
+  "data": {
+    "manifest_type": "quasar-import",
+    "name": "U.S.–Israel Military Integration — Pass 3",
+    "actor": "auto-dig",
+    "consumer_path": "/import",
+    "incremental": true,
+    "parent_packets": [
+      "digs/us-israel-military-integration/2026-07-26",
+      "digs/us-israel-military-integration/2026-07-31"
+    ],
+    "prerequisite_document_ids": [
+      "starintel:target:us-israel-military-integration",
+      "starintel:research-pass:us-israel-military-integration-2",
+      "starintel:org:us-centcom",
+      "starintel:org:idf",
+      "starintel:org:cmcc-gaza",
+      "starintel:org:mead-cdoc",
+      "starintel:event:operation-epic-fury-2026",
+      "starintel:org:lockheed-martin-aeronautics",
+      "starintel:location:israel"
+    ],
+    "target_options": [
+      {
+        "action": "save-and-open-graph",
+        "graph_name": "U.S.–Israel Military Integration",
+        "review_status": "all"
+      }
+    ],
+    "document_ids": [
+      "starintel:target:us-israel-military-integration-pass-3",
+      "starintel:research-pass:us-israel-military-integration-3",
+      "starintel:analysis:us-israel-command-interface-oversight-pass-3",
+      "starintel:org:joint-task-force-israel",
+      "starintel:org:us-third-air-force",
+      "starintel:org:us-air-forces-europe-africa",
+      "starintel:org:jc18-combined-exercise-control-group",
+      "starintel:org:idf-cmcc-coordination-headquarters",
+      "starintel:org:us-arcent",
+      "starintel:org:dsca",
+      "starintel:org:golden-sentry",
+      "starintel:org:odc-israel",
+      "starintel:org:middle-east-air-defense-network",
+      "starintel:org:am-general",
+      "starintel:org:boeing-defense",
+      "starintel:org:leonardo-helicopters-usa",
+      "starintel:org:rolls-royce-solutions-america",
+      "starintel:person:richard-clark",
+      "starintel:person:steven-basham",
+      "starintel:person:adam-king",
+      "starintel:person:patrick-frank",
+      "starintel:person:yaki-dolf",
+      "starintel:event:juniper-cobra-2018-jtf-israel",
+      "starintel:event:juniper-falcon-2021-jtf-israel",
+      "starintel:event:cmcc-established-2025",
+      "starintel:event:idf-cmcc-interface-hq-established-2025",
+      "starintel:event:dodig-eeum-israel-audit-2025",
+      "starintel:event:dsca-eeum-policy-update-2026",
+      "starintel:event:dodig-epic-fury-open-commitments-audit-2026",
+      "starintel:event:israel-fms-approvals-2026-01-30",
+      "starintel:claim:jtf-israel-command-precedent",
+      "starintel:claim:jtf-lineage-continuity-unproven",
+      "starintel:claim:cmcc-parallel-headquarters-interface",
+      "starintel:claim:eeum-inspection-gap",
+      "starintel:claim:fms-embedded-support-footprint",
+      "starintel:claim:fms-notification-not-contract",
+      "starintel:claim:epic-fury-financial-traceability",
+      "starintel:relation:richard-clark-commanded-jtf-israel",
+      "starintel:relation:steven-basham-commanded-jtf-israel",
+      "starintel:relation:third-air-force-provided-jtf-israel-commander",
+      "starintel:relation:usafe-afafrica-provided-jtf-israel-commander",
+      "starintel:relation:jtf-israel-supported-defense-of-israel",
+      "starintel:relation:juniper-cobra-used-combined-exercise-control-group",
+      "starintel:relation:adam-king-commanded-jc18-control-group",
+      "starintel:relation:juniper-falcon-tested-segmented-deployment",
+      "starintel:relation:centcom-leads-cmcc",
+      "starintel:relation:arcent-established-cmcc",
+      "starintel:relation:patrick-frank-led-cmcc-establishment",
+      "starintel:relation:idf-created-cmcc-interface-headquarters",
+      "starintel:relation:idf-interface-hq-connects-to-cmcc",
+      "starintel:relation:yaki-dolf-leads-idf-cmcc-hq",
+      "starintel:relation:idf-cmcc-hq-opened-permanent-positions",
+      "starintel:relation:cmcc-staffed-by-us-personnel",
+      "starintel:relation:cmcc-integrated-60-partners",
+      "starintel:relation:cmcc-used-mq9-surveillance",
+      "starintel:relation:dsca-manages-golden-sentry",
+      "starintel:relation:golden-sentry-monitors-fms-articles",
+      "starintel:relation:dodig-audited-odc-israel-eeum",
+      "starintel:relation:dodig-recommended-centcom-inspect-odc-israel",
+      "starintel:relation:dodig-recommended-dsca-compliance-visit-israel",
+      "starintel:relation:eeum-audit-had-open-recommendations",
+      "starintel:relation:dsca-policy-strengthened-eeum",
+      "starintel:relation:dodig-audits-epic-fury-commitments",
+      "starintel:relation:mead-network-defended-israel",
+      "starintel:relation:mead-network-linked-operational-centers",
+      "starintel:relation:jltv-sale-principal-contractor-am-general",
+      "starintel:relation:jltv-sale-embedded-support-personnel",
+      "starintel:relation:apache-sale-principal-contractors",
+      "starintel:relation:apache-sale-embedded-support-personnel",
+      "starintel:relation:aw119-sale-principal-contractor-leonardo",
+      "starintel:relation:aw119-sale-embedded-support-personnel",
+      "starintel:relation:namer-sale-principal-contractor-rolls-royce"
+    ],
+    "counts_by_dtype": {
+      "analysis": 1,
+      "claim": 7,
+      "event": 8,
+      "org": 14,
+      "person": 5,
+      "relation": 35,
+      "research-pass": 1,
+      "target": 1
+    },
+    "record_count": 72,
+    "cumulative_record_count": 174,
+    "hash_algorithm": "sha256",
+    "content_hash": "1d0606d2478b75eda508f7b5e48f8c48a1f112e077513317fdc36ac2ac44423b",
+    "files": [
+      {
+        "path": "starintel-documents.jsonl.gz.b64",
+        "name": "starintel-documents.jsonl.gz.b64",
+        "role": "documents-transport",
+        "media_type": "text/plain",
+        "encoding": "base64",
+        "compression": "gzip",
+        "decoded_name": "starintel-documents.jsonl",
+        "decoded_media_type": "application/x-ndjson",
+        "record_count": 72,
+        "hash_algorithm": "sha256",
+        "decoded_content_hash": "1d0606d2478b75eda508f7b5e48f8c48a1f112e077513317fdc36ac2ac44423b",
+        "gzip_content_hash": "725d8c9d5cf4278cfa2809259559e3e8ff3c18a6ae3d6f6f7b67ad0600e0d043",
+        "transport_hash_algorithm": "sha256",
+        "transport_content_hash": "edb3b435e8548e1a15e465a55abe3f740855673794f4d452ec597252b96e4ac4"
+      }
+    ],
+    "schema_versions": [
+      "0.9.0"
+    ],
+    "generated_at": "2026-07-31T06:16:00Z"
+  },
+  "extensions": {
+    "quasar": {
+      "import_mode": "bulk-manifest",
+      "preferred_file": "starintel-documents.jsonl",
+      "open_graph_after_import": true,
+      "graph_name": "U.S.–Israel Military Integration",
+      "reveal_unreviewed": true
+    }
+  }
+}
