@@ -2,20 +2,18 @@ name: Dark Academia institutions and foundations expansion
 
 on:
   push:
-    branches:
-      - "agent/dark-academia-institutions-foundations-wave-3"
+    branches: ["agent/dark-academia-institutions-foundations-wave-3"]
     paths:
       - "imports/dark-academia-wave3/**"
       - "scripts/run_with_membership_url_capture.py"
-      - "scripts/membership_url_candidates.py"
+      - "scripts/membership_list_surface_candidates.py"
       - ".github/workflows/dark-academia-institutions-foundations-wave-3.yml"
   pull_request:
-    branches:
-      - main
+    branches: [main]
     paths:
       - "imports/dark-academia-wave3/**"
       - "scripts/run_with_membership_url_capture.py"
-      - "scripts/membership_url_candidates.py"
+      - "scripts/membership_list_surface_candidates.py"
       - ".github/workflows/dark-academia-institutions-foundations-wave-3.yml"
   workflow_dispatch:
 
@@ -49,30 +47,30 @@ jobs:
         run: |
           set -euo pipefail
           mkdir -p scripts config reports
-          cat imports/dark-academia-wave3/scraper-* | tr -d '\r\n ' | base64 --decode > /tmp/dark-academia-wave3-scraper.py.gz
-          cat imports/dark-academia-wave3/targets-* | tr -d '\r\n ' | base64 --decode > /tmp/dark-academia-wave3-targets.json.gz
-          gzip --test /tmp/dark-academia-wave3-scraper.py.gz
-          gzip --test /tmp/dark-academia-wave3-targets.json.gz
-          gzip --decompress --stdout /tmp/dark-academia-wave3-scraper.py.gz > scripts/scrape_dark_academia_memberships.py
-          gzip --decompress --stdout /tmp/dark-academia-wave3-targets.json.gz > config/dark-academia-targets.json
-          python -m py_compile scripts/scrape_dark_academia_memberships.py scripts/run_with_membership_url_capture.py scripts/membership_url_candidates.py
+          cat imports/dark-academia-wave3/scraper-* | tr -d '\r\n ' | base64 --decode > /tmp/wave3-scraper.py.gz
+          cat imports/dark-academia-wave3/targets-* | tr -d '\r\n ' | base64 --decode > /tmp/wave3-targets.json.gz
+          gzip --test /tmp/wave3-scraper.py.gz
+          gzip --test /tmp/wave3-targets.json.gz
+          gzip -dc /tmp/wave3-scraper.py.gz > scripts/scrape_dark_academia_memberships.py
+          gzip -dc /tmp/wave3-targets.json.gz > config/dark-academia-targets.json
+          python -m py_compile \
+            scripts/scrape_dark_academia_memberships.py \
+            scripts/run_with_membership_url_capture.py \
+            scripts/membership_list_surface_candidates.py
           python -m json.tool config/dark-academia-targets.json >/dev/null
-          sha256sum scripts/scrape_dark_academia_memberships.py config/dark-academia-targets.json
-          chmod +x scripts/scrape_dark_academia_memberships.py scripts/run_with_membership_url_capture.py scripts/membership_url_candidates.py
+          chmod +x scripts/scrape_dark_academia_memberships.py \
+            scripts/run_with_membership_url_capture.py \
+            scripts/membership_list_surface_candidates.py
 
       - name: Normalize legacy email schema key
         shell: bash
         run: |
-          set -euo pipefail
           python - <<'PY'
           from pathlib import Path
-
           path = Path("scripts/scrape_dark_academia_memberships.py")
           source = path.read_text(encoding="utf-8")
-          replacements = source.count('"email_type"') + source.count("'email_type'")
           source = source.replace('"email_type"', '"type"').replace("'email_type'", "'type'")
           path.write_text(source, encoding="utf-8")
-          print(f"Normalized {replacements} legacy email schema key occurrence(s)")
           PY
 
       - name: Install public-web parsing dependencies
@@ -86,112 +84,132 @@ jobs:
             --log reports/membership-url-observations-wave-3.jsonl \
             -- scripts/scrape_dark_academia_memberships.py --root .
 
-      - name: Extract strict membership-list URL candidates
+      - name: Extract roster-list surfaces
         if: always()
         run: |
-          python scripts/membership_url_candidates.py \
+          python scripts/membership_list_surface_candidates.py \
             --input config/dark-academia-targets.json \
             --input reports/membership-url-observations-wave-3.jsonl \
             --glob 'reports/dark-academia-membership-recursion*.json' \
             --report reports/membership-list-candidates-wave-3.json
 
-      - name: Create one deduplicated issue per membership-list URL
+      - name: Close profile and homepage tickets from superseded classifier
         if: always()
         env:
           GH_TOKEN: ${{ github.token }}
         shell: bash
         run: |
-          set -euo pipefail
           python - <<'PY'
-          from __future__ import annotations
-
-          import json
-          import os
-          from pathlib import Path
-          import subprocess
-          import tempfile
+          import json, os, re, subprocess
           from urllib.parse import urlsplit
 
+          repo = os.environ["GITHUB_REPOSITORY"]
+          raw = subprocess.run([
+              "gh", "issue", "list", "--repo", repo, "--state", "open",
+              "--search", '"membership-list-url-sha256:" in:body',
+              "--limit", "1000", "--json", "number,title,body"
+          ], check=True, text=True, capture_output=True).stdout
+          issues = json.loads(raw or "[]")
+          profile_roots = {"people", "experts", "members", "fellows", "staff", "team", "advisers", "advisors", "trustees", "participants"}
+          list_roots = profile_roots | {"leadership", "board", "boards", "committee", "committees", "directory", "membership", "roster", "attendees", "delegates"}
+          closed = []
+          for issue in issues:
+              if not issue["title"].startswith("Scrape membership list:"):
+                  continue
+              match = re.search(r"^- \*\*URL:\*\*\s+(https?://\S+)", issue.get("body") or "", re.M)
+              if not match:
+                  continue
+              url = match.group(1).rstrip(".,;:")
+              parts = [re.sub(r"\.(?:html?|php|aspx?)$", "", p.lower()) for p in urlsplit(url).path.split("/") if p]
+              is_homepage = not parts
+              is_profile = len(parts) >= 2 and parts[-2] in profile_roots and parts[-1] not in list_roots
+              is_non_roster_news = parts == ["news"]
+              if not (is_homepage or is_profile or is_non_roster_news):
+                  continue
+              subprocess.run([
+                  "gh", "issue", "close", str(issue["number"]), "--repo", repo,
+                  "--reason", "not planned",
+                  "--comment", "Closed after correcting the classifier: this URL is a homepage, individual profile, or non-roster page rather than a membership-list surface."
+              ], check=True)
+              closed.append(issue["number"])
+          print(json.dumps({"closed_superseded_issues": closed}, indent=2))
+          PY
+
+      - name: Create one deduplicated issue per roster-list URL
+        if: always()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          python - <<'PY'
+          import json, os, subprocess, tempfile
+          from pathlib import Path
+          from urllib.parse import urlsplit
+
+          repo = os.environ["GITHUB_REPOSITORY"]
           source = Path("reports/membership-list-candidates-wave-3.json")
           output = Path("reports/membership-list-issues-wave-3.json")
-          repository = os.environ["GITHUB_REPOSITORY"]
-          candidates = json.loads(source.read_text(encoding="utf-8")).get("candidates", []) if source.exists() else []
+          candidates = json.loads(source.read_text()).get("candidates", []) if source.exists() else []
+          if len(candidates) > 500:
+              raise SystemExit(f"Refusing unexpected issue fanout of {len(candidates)} list surfaces")
           results = []
-
           for candidate in candidates:
-              digest = candidate["digest"]
-              marker = f"membership-list-url-sha256:{digest}"
-              search = subprocess.run(
-                  ["gh", "issue", "list", "--repo", repository, "--state", "all", "--search", f'"{marker}" in:body', "--limit", "1", "--json", "number,url,state"],
-                  check=True,
-                  text=True,
-                  capture_output=True,
-              )
-              matches = json.loads(search.stdout or "[]")
-              if matches:
-                  results.append({**candidate, "status": "existing", **matches[0]})
+              marker = f"membership-list-url-sha256:{candidate['digest']}"
+              existing = json.loads(subprocess.run([
+                  "gh", "issue", "list", "--repo", repo, "--state", "all",
+                  "--search", f'"{marker}" in:body', "--limit", "1",
+                  "--json", "number,url,state"
+              ], check=True, text=True, capture_output=True).stdout or "[]")
+              if existing:
+                  results.append({**candidate, "status": "existing", **existing[0]})
                   continue
-
-              organization = candidate.get("organization") or urlsplit(candidate["url"]).hostname or "unknown organization"
+              org = candidate.get("organization") or urlsplit(candidate["url"]).hostname or "unknown organization"
               label = candidate.get("label") or urlsplit(candidate["url"]).path.rstrip("/").split("/")[-1] or "membership list"
-              title = f"Scrape membership list: {organization} — {label}"[:240]
               body = f"""<!-- {marker} -->
-          ## Membership-list scraper target
+## Membership-list scraper target
 
-          - **Organization:** {organization}
-          - **Dataset:** `{candidate.get('dataset') or 'unresolved'}`
-          - **URL:** {candidate['url']}
-          - **Page label:** {candidate.get('label') or 'unresolved'}
-          - **Discovered from:** `{candidate.get('discovered_from') or 'unknown'}`
+- **Organization:** {org}
+- **Dataset:** `{candidate.get('dataset') or 'unresolved'}`
+- **URL:** {candidate['url']}
+- **Page label:** {candidate.get('label') or 'unresolved'}
+- **Discovered from:** `{candidate.get('discovered_from') or 'unknown'}`
 
-          ## Required parser work
+## Required parser work
 
-          - [ ] Verify this official public roster surface.
-          - [ ] Add or extend an organization-specific parser.
-          - [ ] Traverse pagination, year archives, regions, tabs, and linked roster pages.
-          - [ ] Preserve roles, affiliations, dates/years, regions, and source provenance.
-          - [ ] Record only contact details explicitly published by the organization.
-          - [ ] Import through the canonical StarIntel writer and validate the corpus.
-          - [ ] Add regression coverage for this URL.
+- [ ] Verify this official public roster-list surface.
+- [ ] Add or extend the organization-specific parser.
+- [ ] Traverse pagination, year archives, regions, tabs, and linked roster pages.
+- [ ] Preserve roles, affiliations, dates/years, regions, and source provenance.
+- [ ] Record only contacts explicitly published by the organization.
+- [ ] Import through the canonical StarIntel writer and validate the corpus.
+- [ ] Add regression coverage for this URL.
 
-          ```text
-          {(candidate.get('evidence') or '')[:1200]}
-          ```
-          """
+```text
+{(candidate.get('evidence') or '')[:1200]}
+```
+"""
               with tempfile.NamedTemporaryFile("w", encoding="utf-8", delete=False) as handle:
                   handle.write(body)
                   body_path = handle.name
               try:
-                  created = subprocess.run(
-                      ["gh", "issue", "create", "--repo", repository, "--title", title, "--body-file", body_path],
-                      check=True,
-                      text=True,
-                      capture_output=True,
-                  ).stdout.strip()
+                  issue_url = subprocess.run([
+                      "gh", "issue", "create", "--repo", repo,
+                      "--title", f"Scrape membership list: {org} — {label}"[:240],
+                      "--body-file", body_path
+                  ], check=True, text=True, capture_output=True).stdout.strip()
               finally:
                   Path(body_path).unlink(missing_ok=True)
-              results.append({**candidate, "status": "created", "issue_url": created})
-
-          output.write_text(
-              json.dumps(
-                  {
-                      "candidate_count": len(candidates),
-                      "created_count": sum(item["status"] == "created" for item in results),
-                      "existing_count": sum(item["status"] == "existing" for item in results),
-                      "results": results,
-                  },
-                  indent=2,
-                  sort_keys=True,
-              ) + "\n",
-              encoding="utf-8",
-          )
-          print(output.read_text(encoding="utf-8"))
+              results.append({**candidate, "status": "created", "issue_url": issue_url})
+          output.write_text(json.dumps({
+              "candidate_count": len(candidates),
+              "created_count": sum(x["status"] == "created" for x in results),
+              "existing_count": sum(x["status"] == "existing" for x in results),
+              "results": results,
+          }, indent=2, sort_keys=True) + "\n")
           PY
 
       - name: Remove bootstrap before corpus validation
-        shell: bash
         run: |
-          set -euo pipefail
           rm -rf imports/dark-academia-wave3
           rmdir imports 2>/dev/null || true
 
@@ -202,22 +220,8 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          git add -A \
-            scripts/scrape_dark_academia_memberships.py \
-            scripts/run_with_membership_url_capture.py \
-            scripts/membership_url_candidates.py \
-            config/dark-academia-targets.json \
-            imports \
-            digs/dark-academia \
-            reports/dark-academia-membership-recursion* \
-            reports/membership-url-observations-wave-3.jsonl \
-            reports/membership-list-candidates-wave-3.json \
-            reports/membership-list-issues-wave-3.json \
-            db
-          if git diff --cached --quiet; then
-            echo "Dark Academia wave-three corpus already current"
-            exit 0
-          fi
+          git add -A scripts config imports digs/dark-academia reports db
+          if git diff --cached --quiet; then exit 0; fi
           git config user.name "starintel-auto-dig-bot"
           git config user.email "starintel-auto-dig-bot@users.noreply.github.com"
           git commit -m "Expand Dark Academia institutions and foundations graph"
