@@ -1,7 +1,7 @@
 # Brett Leatherman — FED investigation
 
 **Dataset:** `fed`  
-**Passes:** FED depth 0 plus WEF recursion depths 1–3  
+**Passes:** FED depth 0, adverse depth 1, plus WEF recursion depths 1–3  
 **Date:** 2026-07-31  
 **Schema:** StarIntel v0.9.0
 
@@ -15,12 +15,23 @@ Brett Leatherman is added to the `fed` research packet as the assistant director
 - Two independent reports say FBI Director Kash Patel selected or elevated him to lead the Cyber Division in June 2025.
 - FBI primary material shows Leatherman publicly implementing and explaining President Trump's Cyber Strategy for America.
 
-### Corruption and scandal scan
+## Adverse-information result
 
-- The Trump connection is institutional: appointment chain and policy implementation. No evidence reviewed establishes a personal political affiliation, campaign role or private relationship with Trump.
-- No credible adjudicated corruption or misconduct finding involving Leatherman was located.
-- A plaintiff-controlled site describes a pending case, *Lacroix v. Leatherman*, and labels its allegations unproven. The FED packet stores it only as a low-confidence litigation lead.
-- Published court opinions describe Leatherman investigating fraud and public corruption; the cited opinions do not identify misconduct by him.
+The strongest verified personally inconvenient fact is a public statement by former FBI Cyber Division executive John Riggi. Riggi said he selected Leatherman over candidates with more tenure, **double promoted** him and predicted that he would eventually run the division. This documents unusually strong internal sponsorship and creates favoritism or patronage optics, but it does not establish a rules violation.
+
+Additional adverse material:
+
+- *Lacroix v. Leatherman*, No. 25-cv-13452, is a pending federal action alleging surveillance, harassment, abuse of authority and evidence misconduct. The allegations are plaintiff-controlled, disputed and unadjudicated.
+- LockBit restored public infrastructure within five days of Operation Cronos, undercutting any permanent-elimination narrative even though the operation later damaged LockBit's affiliate trust and activity.
+- BreachForums and successor communities repeatedly returned after FBI-led seizures, illustrating the displacement limits of the disruption strategy Leatherman publicly promotes.
+- Salt Typhoon operated for years before discovery and compromised telecommunications and lawful-intercept information, creating institutional leadership-accountability exposure within Leatherman's mission portfolio. Public evidence does not establish personal causation.
+
+No verified bribery, illicit payment, campaign-finance link or adjudicated personal-corruption finding was identified.
+
+See:
+
+- `digs/fed/2026-07-31-brett-leatherman-adverse-depth-1/README.md`
+- `starintel:analysis:brett-leatherman-adverse-information-2026-07-31`
 
 ## WEF recursion result
 
@@ -62,14 +73,18 @@ See:
 
 - `starintel:person:brett-leatherman`
 - `starintel:analysis:brett-leatherman-trump-wef-corruption-scan-2026-07-31`
+- `starintel:analysis:brett-leatherman-adverse-information-2026-07-31`
 - `starintel:investigation-target:brett-leatherman-depth-1`
 - `starintel:research-pass:brett-leatherman-fed-depth-0-2026-07-31`
+- `starintel:research-pass:brett-leatherman-adverse-depth-1-2026-07-31`
 
 ## Import and validation
 
 ```bash
 python3 scripts/starintel.py import \
   digs/fed/2026-07-31-brett-leatherman/starintel-documents.jsonl
+python3 scripts/starintel.py import \
+  digs/fed/2026-07-31-brett-leatherman-adverse-depth-1/starintel-documents.jsonl
 python3 scripts/starintel.py import \
   digs/wef/2026-07-31-brett-leatherman-operation-cronos-depth-1/starintel-documents.jsonl
 python3 scripts/starintel.py import \
