@@ -1,0 +1,11 @@
+person,organization,component,role_class,period,public_evidence,confidence,source_ids
+Marcus C. Thomas,FBI,Operational Technology Division,launch-era agency technical executive,2007–2011,Directed OTD; managed technical collection operations/equipment development and led high-tech industry partnerships,high,s:fbi-marcus-thomas-otd
+Teresa H. Shea,NSA,Signals Intelligence Directorate,SIGINT authorization executive; electrical engineer,by 2012 decision record,Director of SIGINT; role aligns with approval line for SSO technical assistance to FBI FISA implementation,high,s:asb-teresa-shea;s:nsarchive-sso-fbi-implementation
+Rob Joyce,NSA,Special Source Operations,technical director,"dates unresolved, pre-2013 history",Public bio identifies service as Technical Director in SSO,medium-high,s:cyberscoop-rob-joyce-sso;s:usenix-rob-joyce
+John C. Inglis,NSA,Agency leadership,technical COO; engineering/computer-science background,2006–2014,NSA deputy director and chief operating officer guiding strategy and policy,high,s:nsa-john-inglis
+Amy S. Hess,FBI,Operational Technology Division,technical executive; aeronautical/astronautical engineer,2011 onward,Directed division that develops and supports state-of-the-art investigative technologies,high,s:fbi-amy-hess-otd
+Emmanuel Mills,Microsoft,Global Criminal Compliance,operations engineer,2008–2015,Public professional history lists Global Criminal Compliance Operation Engineer,medium,s:signalhire-emmanuel-mills
+Brian Faucher,Microsoft,Global Criminal Compliance,software test engineer,2010–2011,Created/deployed automated tests for desktop application developed by GCC team,medium-high,s:intch-brian-faucher
+Matt Atkins,Microsoft,Global Criminal Compliance,software engineer,dates unresolved,Public Microsoft engineering bio says he worked on Global Criminal Compliance tooling,medium-high,s:powertofly-matt-atkins
+Chris Thomas,Meta / WhatsApp,Law Enforcement Response Team,portal engineer,2018–2022,Credited with creating separate WhatsApp request/download portal and its encryption workflow,medium-high,s:linkedin-chris-thomas-meta
+Yonatan Zunger,Google,Google+ / architecture,chief architect and technical public witness,2013,Publicly addressed claimed PRISM access architecture; not identified as disclosure-system implementer,high for response; not implementation,s:wired-yonatan-zunger-prism
