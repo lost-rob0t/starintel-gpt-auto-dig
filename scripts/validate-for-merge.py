@@ -38,13 +38,30 @@ def validate_generated_schema() -> None:
 def validate_packet_transports() -> None:
     for path in packet_paths(ROOT):
         try:
-            read_transport(path)
+            payload = read_transport(path)
         except Exception as exc:
-            relative = path.relative_to(ROOT)
-            raise RuntimeError(f"invalid packet transport {relative}: {exc}") from exc
+            raise RuntimeError(f"{path.relative_to(ROOT)}: transport decode failed: {exc}") from exc
+        for number, raw in enumerate(payload.splitlines(), 1):
+            if not raw.strip():
+                continue
+            try:
+                value = json.loads(raw)
+            except json.JSONDecodeError as exc:
+                start = max(0, exc.pos - 120)
+                end = min(len(raw), exc.pos + 120)
+                excerpt = raw[start:end]
+                raise RuntimeError(
+                    f"{path.relative_to(ROOT)}:{number}: invalid JSON: {exc}; "
+                    f"excerpt[{start}:{end}]={excerpt!r}"
+                ) from exc
+            if not isinstance(value, dict):
+                raise RuntimeError(
+                    f"{path.relative_to(ROOT)}:{number}: expected JSON object"
+                )
 
 
 def validate_corpus() -> None:
+    validate_packet_transports()
     result = validate_repository(ROOT, require_v090=True)
     if result["ok"]:
         print(f"documents={result['documents']} schema=0.9.0 corpus=valid")
@@ -113,7 +130,6 @@ def main(argv: list[str] | None = None) -> int:
         run([sys.executable, "-m", "unittest", "discover", "-s", "tests", "-v"])
         validate_javascript()
         validate_generated_schema()
-        validate_packet_transports()
         validate_corpus()
         if args.site:
             validate_site()

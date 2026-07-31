@@ -1,0 +1,192 @@
+{
+  "target_set": "greater-israel-wef-palantir-aipac-2026-07-31",
+  "generated_at": "2026-07-31T03:14:00-04:00",
+  "parent_target_set": "greater-israel-people-orgs-us-ties-2026-07-31",
+  "rules": {
+    "public_sources_only": true,
+    "separate_direct_contributions_from_independent_expenditures": true,
+    "contract_ceiling_is_not_paid_amount": true,
+    "corporate_revenue_is_not_earmarked_without_evidence": true,
+    "event_participation_is_not_operational_control": true,
+    "chronology_is_not_causation": true
+  },
+  "targets": [
+    {
+      "priority": 1,
+      "id": "aipac-pac-recipient-export-2025-2026",
+      "title": "Resolve every AIPAC PAC recipient in the 2025–2026 cycle",
+      "seed_entities": ["AIPAC PAC", "FEC C00797670"],
+      "collect": [
+        "all Schedule B disbursements",
+        "recipient committee IDs",
+        "candidate IDs and races",
+        "amounts and dates",
+        "refunds and amendments",
+        "AIPAC endorsement status",
+        "committee assignments and Israel-policy activity"
+      ],
+      "analytic_constraint": "A contribution establishes financial support, not control or vote causation.",
+      "stop_condition": "Every disbursement is reconciled to a recipient, candidate, race, amount, date, and amendment state."
+    },
+    {
+      "priority": 2,
+      "id": "udp-independent-expenditure-export-2025-2026",
+      "title": "Resolve every United Democracy Project independent expenditure",
+      "seed_entities": ["United Democracy Project", "FEC C00799031"],
+      "collect": [
+        "24-hour and 48-hour reports",
+        "monthly and amended filings",
+        "support or oppose code",
+        "candidate and race",
+        "vendor and subvendor",
+        "communication date",
+        "amount and aggregate total",
+        "ad archive identifier"
+      ],
+      "analytic_constraint": "Independent expenditures are not direct payments to or spending by candidate committees.",
+      "stop_condition": "FEC aggregates reconcile to transaction-level records without double-counting amendments."
+    },
+    {
+      "priority": 3,
+      "id": "michigan-stevens-el-sayed-aipac-reconciliation",
+      "title": "Reconcile AIPAC-affiliated spending in the 2026 Michigan Senate primary",
+      "seed_entities": ["Haley Stevens", "Abdul El-Sayed", "AIPAC PAC", "United Democracy Project"],
+      "collect": [
+        "all supporting and opposing spenders",
+        "AIPAC legal and organizational affiliation",
+        "FEC transaction totals",
+        "media-buy contracts",
+        "vendors and ad creatives",
+        "campaign receipts distinct from outside spending",
+        "daily spending chronology and polling chronology"
+      ],
+      "analytic_constraint": "Do not attribute all outside support for Stevens to AIPAC; preserve spender identity and legal separation.",
+      "stop_condition": "The reported approximately $30 million is reproduced or corrected from named committees and filings."
+    },
+    {
+      "priority": 4,
+      "id": "aipac-ad-content-policy-crosswalk",
+      "title": "Code AIPAC and UDP advertising against policy positions",
+      "seed_entities": ["AIPAC PAC", "United Democracy Project"],
+      "collect": [
+        "video and audio creatives",
+        "transcripts",
+        "issue mentions",
+        "Israel and foreign-policy mentions",
+        "domestic-policy messaging",
+        "target candidate policy record",
+        "disclaimer and sponsor language"
+      ],
+      "analytic_constraint": "Message choice may indicate electoral strategy; it does not prove deception or unlawful coordination.",
+      "stop_condition": "Every located creative has a transcript, sponsor, race, spend, date range, and coded issue set."
+    },
+    {
+      "priority": 5,
+      "id": "palantir-israel-mod-contract-resolution",
+      "title": "Resolve Palantir's Israeli Defense Ministry partnership",
+      "seed_entities": ["Palantir Technologies", "Israeli Defense Ministry", "Alex Karp", "Peter Thiel", "Josh Harris"],
+      "collect": [
+        "procurement authority",
+        "contract or memorandum identifiers",
+        "value and currency",
+        "product and service scope",
+        "performance period",
+        "personnel and subcontractors",
+        "data hosting and deployment locations",
+        "official Israeli and company statements",
+        "amendments, renewals, or termination"
+      ],
+      "analytic_constraint": "Do not infer targeting-system use when Palantir denies a relationship to named IDF automated targeting programs.",
+      "stop_condition": "The legal instrument, value, scope, responsible offices, products, and performance period are source-backed or explicitly unresolved."
+    },
+    {
+      "priority": 6,
+      "id": "palantir-us-contract-to-segment-revenue",
+      "title": "Reconcile Palantir's U.S. government funding base",
+      "seed_entities": ["Palantir USG", "Maven Smart System", "Army Vantage", "U.S. Army", "Department of Defense"],
+      "collect": [
+        "contract ceilings",
+        "task and delivery orders",
+        "obligations and outlays",
+        "modifications",
+        "agency and contracting office",
+        "period of performance",
+        "revenue recognition",
+        "government segment totals"
+      ],
+      "analytic_constraint": "Do not add ceilings, modifications, obligations, and recognized revenue as if they were equivalent measures.",
+      "stop_condition": "Every major award is reconciled to orders and obligations and then bounded against SEC segment revenue."
+    },
+    {
+      "priority": 7,
+      "id": "palantir-pac-recipient-crosswalk",
+      "title": "Resolve Palantir PAC recipients and policy relevance",
+      "seed_entities": ["Employees of Palantir Technologies Inc. PAC", "FEC C00498691"],
+      "collect": [
+        "all recipient committees",
+        "candidate and office",
+        "amount and date",
+        "refund and amendment state",
+        "defense, AI, surveillance, procurement, and Israel-policy activity"
+      ],
+      "analytic_constraint": "Company-connected PAC support is not the same as a corporate contract or candidate control.",
+      "stop_condition": "The reported $81,500 in committee contributions is fully reconciled."
+    },
+    {
+      "priority": 8,
+      "id": "palantir-wef-year-event-graph",
+      "title": "Build the complete Palantir–WEF participation graph",
+      "seed_entities": ["Palantir Technologies", "Alex Karp", "World Economic Forum"],
+      "collect": [
+        "partner status by year and meeting",
+        "official WEF sessions",
+        "speaker and participant pages",
+        "WEF centres, initiatives, councils, and reports",
+        "private Palantir Davos events",
+        "attendees and co-hosts",
+        "meeting chronology around government announcements"
+      ],
+      "analytic_constraint": "Separate official WEF programming from privately hosted events occurring in Davos.",
+      "stop_condition": "Every located year and event is classified by official status, participants, subject, and source."
+    },
+    {
+      "priority": 9,
+      "id": "netanyahu-wef-policy-event-crosswalk",
+      "title": "Crosswalk Netanyahu's WEF participation with Israeli policy chronology",
+      "seed_entities": ["Benjamin Netanyahu", "World Economic Forum"],
+      "collect": [
+        "all WEF appearances and transcripts",
+        "bilateral meetings announced around Davos",
+        "technology and security themes",
+        "contemporaneous Israeli policy announcements",
+        "business delegations and investment promotion"
+      ],
+      "analytic_constraint": "Temporal proximity does not establish that WEF caused Israeli policy.",
+      "stop_condition": "Each appearance is mapped to its stated topic, participants, public meetings, and contemporaneous policy context."
+    },
+    {
+      "priority": 10,
+      "id": "settlement-leaders-wef-archive-pass",
+      "title": "Search archived WEF records for settlement-network people and organizations",
+      "seed_entities": [
+        "Yesha Council",
+        "Yisrael Ganz",
+        "Daniella Weiss",
+        "Amana",
+        "Regavim",
+        "Nachala",
+        "Hashomer Yosh"
+      ],
+      "collect": [
+        "archived participant lists",
+        "speaker pages",
+        "partner and member directories",
+        "Global Shapers and Young Global Leaders records",
+        "original-language name variants",
+        "third-party event programs with official WEF identifiers"
+      ],
+      "analytic_constraint": "Preserve no-result searches and do not turn name similarity into identity.",
+      "stop_condition": "Each seed has a logged query set, aliases, archives searched, and direct hit or explicit unresolved result."
+    }
+  ]
+}
