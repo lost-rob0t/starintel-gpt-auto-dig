@@ -1,0 +1,46 @@
+{
+  "counts": {
+    "claim": 12,
+    "contract": 1,
+    "dataset-manifest": 1,
+    "event": 6,
+    "org": 12,
+    "person": 2,
+    "product": 11,
+    "relation": 22,
+    "research-pass": 5,
+    "source": 14,
+    "target": 4
+  },
+  "dataset": "lexisnexis-risk-state-surveillance",
+  "files": [
+    "README.md",
+    "sources.md",
+    "starintel-documents.jsonl",
+    "starintel-documents-root-entities.jsonl",
+    "starintel-documents-root-products.jsonl",
+    "starintel-documents-pass-1.jsonl",
+    "starintel-documents-pass-2.jsonl",
+    "starintel-documents-pass-3.jsonl",
+    "starintel-documents-pass-4.jsonl",
+    "recursive-targets-pass-1.jsonl",
+    "recursive-targets-pass-2.jsonl",
+    "recursive-targets-pass-3.jsonl",
+    "recursive-targets-pass-4.jsonl"
+  ],
+  "generated_at": "2026-07-31T02:42:00-04:00",
+  "hash_algorithm": "sha256",
+  "schema_version": "0.9.0",
+  "starintel_documents_git_blob_sha1": "9e66d0add222b0026625ad021b4409400dbc9adb",
+  "starintel_documents_sha256": "bd7d651201f140e5292ad6698d4e9ac30ff7819fab7834d42d6ca176c493d7df",
+  "total": 90,
+  "validation": {
+    "json_parse": "passed",
+    "relation_endpoints": "passed",
+    "required_common_fields": "passed",
+    "source_references": "passed",
+    "strict_dtype_data_keys": "checked against spec.py fields used",
+    "unique_ids_across_packet": "passed across 9 JSONL files",
+    "validate_for_merge": "GitHub CI authoritative"
+  }
+}
