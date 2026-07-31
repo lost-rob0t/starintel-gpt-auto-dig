@@ -1,0 +1,36 @@
+{
+  "counts": {
+    "investigation-target": 5,
+    "source": 9
+  },
+  "dataset": "hunter-biden",
+  "files": [
+    "README.md",
+    "sources.md",
+    "../../../db/source/starintel:source:4plebs-pol-385931719.ndjson",
+    "../../../db/source/starintel:source:4plebs-pol-386015453.ndjson",
+    "../../../db/source/starintel:source:the-verge-hunter-biden-phone-hack-2022-07-12.ndjson",
+    "../../../db/source/starintel:source:vice-motherboard-hunter-biden-icloud-leak-2022-07-11.ndjson",
+    "../../../db/source/starintel:source:nbc-secret-service-awareness-2022-07-11.ndjson",
+    "../../../db/source/starintel:source:reincubate-iphone-backup-extractor-overview.ndjson",
+    "../../../db/source/starintel:source:github-iphone-backup-decrypt.ndjson",
+    "../../../db/source/starintel:source:apple-icloud-encryption.ndjson",
+    "../../../db/source/starintel:source:washington-post-laptop-forensics-2022-03-30.ndjson",
+    "../../../db/investigation-target/starintel:investigation-target:hunter-biden-4plebs-backup-depth-0.ndjson",
+    "../../../db/investigation-target/starintel:investigation-target:hunter-biden-4plebs-technical-chain-depth-1.ndjson",
+    "../../../db/investigation-target/starintel:investigation-target:hunter-biden-4plebs-integrity-depth-1.ndjson",
+    "../../../db/investigation-target/starintel:investigation-target:hunter-biden-4plebs-reporting-corroboration-depth-1.ndjson",
+    "../../../db/investigation-target/starintel:investigation-target:hunter-biden-4plebs-corpus-import-depth-2.ndjson"
+  ],
+  "generated_at": "2026-07-31T03:52:00Z",
+  "schema_version": "0.9.0",
+  "total": 14,
+  "validation": {
+    "credentials": "excluded",
+    "explicit_private_media": "excluded",
+    "json": "syntax checked",
+    "remote_4plebs_capture": "direct automated capture blocked; full thread export queued",
+    "schema": "pending repository CI",
+    "source_pages": "public URLs reviewed where accessible"
+  }
+}
