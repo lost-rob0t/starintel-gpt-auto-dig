@@ -17,6 +17,9 @@ ALUMNI_SLUGS = {
     "past-members", "former-fellows", "past-fellows", "past-participants",
     "cohort-directory", "class-directory", "graduate-directory",
 }
+STRONG_PROFILE_ROOTS = {
+    "profile", "profiles", "bio", "bios", "biography", "biographies",
+}
 ALUMNI_TOKEN_RE = re.compile(
     r"(?:^|[-_])(?:alumni|alumnae|alumnus|graduates?|cohorts?|classes?|"
     r"class[-_]?of[-_]?(?:19|20)\d{2}|cohort[-_]?(?:19|20)\d{2}|"
@@ -36,6 +39,7 @@ base.PROFILE_ROOTS.update(ALUMNI_ROOTS)
 base.LIST_ROOTS.update(ALUMNI_ROOTS)
 base.LIST_SLUGS.update(ALUMNI_SLUGS)
 _original_listish = base.listish_segment
+_original_profile = base.is_profile_path
 _original_qualifies = base.qualifies
 _original_self_test = base.run_self_test
 
@@ -44,13 +48,21 @@ def listish_segment(segment: str) -> bool:
     return _original_listish(segment) or bool(ALUMNI_TOKEN_RE.search(segment))
 
 
+def is_profile_path(url: str) -> bool:
+    segments = base.path_segments(url)
+    if len(segments) >= 2 and segments[-2] in STRONG_PROFILE_ROOTS:
+        return True
+    return _original_profile(url)
+
+
 def qualifies(url: str, evidence: str) -> bool:
-    if base.is_profile_path(url):
+    if is_profile_path(url):
         return False
     return _original_qualifies(url, evidence) or bool(ALUMNI_TEXT_RE.search(evidence))
 
 
 base.listish_segment = listish_segment
+base.is_profile_path = is_profile_path
 base.qualifies = qualifies
 
 
@@ -67,7 +79,8 @@ def run_self_test() -> None:
     rejected = [
         "https://example.org/alumni/jane-doe",
         "https://example.org/graduates/john-smith",
-        "https://example.org/profile/alumna-name",
+        "https://example.org/profile/former-fellow-name",
+        "https://example.org/bio/alumni-leader",
     ]
     for url in accepted:
         assert base.is_list_path(url) or qualifies(url, "Official alumni directory and cohort roster"), url
