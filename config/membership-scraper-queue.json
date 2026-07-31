@@ -1,5 +1,6 @@
 {
   "version": 1,
+  "generation": 2,
   "policy": {
     "sources": "official-public-only",
     "contacts": "explicitly-published-professional-only",
