@@ -1,0 +1,40 @@
+id,dtype,name,scope
+o:cia,org,Central Intelligence Agency,public organization
+o:iqt,org,In-Q-Tel,public organization
+o:keyhole,org,"Keyhole, Inc.",public organization
+o:google,org,Google,public organization
+o:alphabet,org,Alphabet Inc.,public organization
+o:google-x,org,"X, the Moonshot Factory",public organization
+o:niantic,org,"Niantic, Inc.",public organization
+o:niantic-spatial,org,"Niantic Spatial, Inc.",public organization
+o:scopely,org,Scopely,public organization
+o:pokemon-company,org,The Pokémon Company,public organization
+o:nintendo,org,Nintendo,public organization
+o:nsa,org,National Security Agency,public organization
+o:fbi,org,Federal Bureau of Investigation,public organization
+o:pclob,org,Privacy and Civil Liberties Oversight Board,public organization
+o:wef,org,World Economic Forum,public organization
+o:skydio,org,Skydio,public organization
+o:anduril,org,Anduril Industries,public organization
+o:advanced-navigation,org,Advanced Navigation,public organization
+o:wing,org,Wing,public organization
+o:shield-ai,org,Shield AI,public organization
+p:john-hanke,person,John Hanke,public professional role
+p:brian-mcclendon,person,Brian McClendon,public professional role
+p:gilman-louie,person,Gilman Louie,public professional role
+p:larry-page,person,Larry Page,public professional role
+p:david-drummond,person,David Drummond,public professional role
+p:camille-francois,person,Camille François,public professional role
+p:adam-bry,person,Adam Bry,public professional role
+p:abe-bachrach,person,Abe Bachrach,public professional role
+p:adam-woodworth,person,Adam Woodworth,public professional role
+p:brian-schimpf,person,Brian Schimpf,public professional role
+p:palmer-luckey,person,Palmer Luckey,public professional role
+p:trae-stephens,person,Trae Stephens,public professional role
+p:matt-grimm,person,Matt Grimm,public professional role
+p:brandon-tseng,person,Brandon Tseng,public professional role
+p:ryan-tseng,person,Ryan Tseng,public professional role
+p:andrew-reiter,person,Andrew Reiter,public professional role
+p:gary-steele,person,Gary Steele,public professional role
+p:steve-bowsher,person,Steve Bowsher,public professional role
+p:dan-gwak,person,Dan Gwak,public professional role
