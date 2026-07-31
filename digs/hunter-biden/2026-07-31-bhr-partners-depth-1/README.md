@@ -41,6 +41,15 @@ Questions, allegations, and committee characterizations are not converted into a
 
 ## Packet
 
-- `starintel-documents.jsonl` — import-ready StarIntel records
+The records are split by type for review and can be concatenated in the listed order for a single import stream:
+
+1. `sources.jsonl`
+2. `entities.jsonl`
+3. `relations-1.jsonl`
+4. `relations-2.jsonl`
+5. `investigation-targets.jsonl`
+
+Additional files:
+
 - `sources.md` — source ledger and extraction notes
-- `manifest.json` — counts and SHA-256
+- `manifest.json` — counts, per-file hashes, and combined SHA-256
