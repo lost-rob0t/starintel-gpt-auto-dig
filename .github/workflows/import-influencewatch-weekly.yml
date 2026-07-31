@@ -3,12 +3,6 @@ name: Weekly InfluenceWatch import
 on:
   schedule:
     - cron: "0 12 * * 1"
-  workflow_dispatch:
-    inputs:
-      limit:
-        description: Maximum profile count; 0 imports every discovered profile
-        required: false
-        default: "0"
 
 permissions:
   contents: write
@@ -26,7 +20,6 @@ jobs:
       GH_TOKEN: ${{ github.token }}
       INFLUENCEWATCH_AUTHORIZED: "1"
       UPDATE_BRANCH: automation/influence-watch-db-weekly
-      LIMIT: ${{ github.event_name == 'workflow_dispatch' && inputs.limit || '0' }}
     steps:
       - uses: actions/checkout@v6
         with:
@@ -50,18 +43,12 @@ jobs:
           RUN_STARTED_AT="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
           echo "RUN_STARTED_AT=${RUN_STARTED_AT}" >> "${GITHUB_ENV}"
 
-          args=(
-            --crawl
-            --delay 1
-            --output imports/influence-watch-db.jsonl
-            --import-db
+          python3 scripts/import_influencewatch.py \
+            --crawl \
+            --delay 1 \
+            --output imports/influence-watch-db.jsonl \
+            --import-db \
             --replace
-          )
-          if [[ -n "${LIMIT}" && "${LIMIT}" != "0" ]]; then
-            args+=(--limit "${LIMIT}")
-          fi
-
-          python3 scripts/import_influencewatch.py "${args[@]}"
           python3 scripts/validate-for-merge.py --site
 
       - name: Commit dataset update
