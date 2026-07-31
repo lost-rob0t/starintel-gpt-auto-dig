@@ -1,0 +1,66 @@
+name: Generate DNC organization targets
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - agent/dnc-fec-project-veritas-seed
+    paths:
+      - scripts/generate_dnc_organization_targets.py
+      - .github/workflows/dnc-organization-targets.yml
+      - digs/dnc/**
+  pull_request:
+    branches:
+      - main
+    paths:
+      - scripts/generate_dnc_organization_targets.py
+      - .github/workflows/dnc-organization-targets.yml
+      - digs/dnc/**
+
+permissions:
+  contents: write
+
+concurrency:
+  group: dnc-bulk-generation-${{ github.event.pull_request.head.ref || github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  generate:
+    if: >-
+      github.actor != 'github-actions[bot]' &&
+      (github.event_name != 'pull_request' ||
+       github.event.pull_request.head.ref == 'agent/dnc-fec-project-veritas-seed')
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    env:
+      PYTHONPATH: .
+      TARGET_BRANCH: ${{ github.event.pull_request.head.ref || github.ref_name }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: ${{ env.TARGET_BRANCH }}
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Generate organization and member target queue
+        run: python3 scripts/generate_dnc_organization_targets.py
+
+      - name: Validate complete repository
+        run: python3 scripts/validate-for-merge.py --site
+
+      - name: Commit generated queue
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add digs/dnc/2026-07-31-organization-member-targets
+          if git diff --cached --quiet; then
+            echo 'Generated target queue is unchanged.'
+            exit 0
+          fi
+          git commit -m 'Add exhaustive DNC organization and member target queue [skip ci]'
+          git push origin HEAD:${TARGET_BRANCH}
