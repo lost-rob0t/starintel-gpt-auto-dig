@@ -39,6 +39,26 @@ jobs:
         with:
           python-version: "3.12"
 
+      - name: Diagnose existing packet transports
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          from pathlib import Path
+          from starintel_doc.store import packet_paths, read_transport
+
+          failed = []
+          for path in packet_paths(Path('.')):
+              try:
+                  payload = read_transport(path)
+                  print(f'OK {path} bytes={len(payload.encode())}')
+              except Exception as exc:
+                  failed.append(path)
+                  print(f'FAILED {path}: {type(exc).__name__}: {exc}')
+          if failed:
+              raise SystemExit(1)
+          PY
+
       - name: Restore verified scraper and targets
         shell: bash
         run: |
