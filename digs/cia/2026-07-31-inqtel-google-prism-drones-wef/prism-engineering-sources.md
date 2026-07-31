@@ -1,7 +1,15 @@
 # PRISM engineering source supplement
 
-Pass 6 source inventory for named technical roles and implementation systems.
+Passes 6–7 source inventory for named technical roles and implementation systems.
 
+- **Bart Holzer — JMT Consulting speaker biography** — `s:jmt-bart-holzer`  
+  https://jmtconsulting.com/blog/introducing-the-thought-leaders-speaking-at-innovate-2024/
+- **Bart Holzer — public professional profile** — `s:linkedin-bart-holzer`  
+  https://www.linkedin.com/in/bartholzer
+- **Darrin E. Jones — official FBI biography** — `s:fbi-darrin-jones`  
+  https://www.fbi.gov/news/press-releases/darrin-e-jones-named-assistant-director-of-the-information-technology-infrastructure-division
+- **FBI OTD/DITU organizational case study** — `s:wiley-fbi-otd`  
+  https://onlinelibrary.wiley.com/doi/full/10.1111/ropr.12474
 - **Teresa H. Shea — Army Science Board** — `s:asb-teresa-shea`  
   https://asb.army.mil/Home/Article-View/Article/4081117/teresa-h-shea/
 - **NSA welcomes John C. Inglis as Deputy Director** — `s:nsa-john-inglis`  
