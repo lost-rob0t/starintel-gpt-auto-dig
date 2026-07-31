@@ -4,6 +4,8 @@ import base64
 import gzip
 import hashlib
 import json
+import struct
+import zlib
 from collections import Counter
 from dataclasses import dataclass
 from pathlib import Path
@@ -26,13 +28,65 @@ def compact(document: dict[str, Any]) -> str:
     return json.dumps(document, ensure_ascii=False, separators=(",", ":"), sort_keys=True)
 
 
+def _raw_gzip_payload(data: bytes) -> bytes:
+    if len(data) < 18 or data[:3] != b"\x1f\x8b\x08":
+        raise gzip.BadGzipFile("not a gzip transport")
+
+    flags = data[3]
+    offset = 10
+    if flags & 0x04:
+        if offset + 2 > len(data) - 8:
+            raise gzip.BadGzipFile("truncated gzip extra-field length")
+        extra_length = struct.unpack_from("<H", data, offset)[0]
+        offset += 2 + extra_length
+    for flag in (0x08, 0x10):
+        if flags & flag:
+            try:
+                offset = data.index(b"\x00", offset, len(data) - 8) + 1
+            except ValueError as exc:
+                raise gzip.BadGzipFile("unterminated gzip header field") from exc
+    if flags & 0x02:
+        offset += 2
+    if offset >= len(data) - 8:
+        raise gzip.BadGzipFile("truncated gzip deflate stream")
+    return zlib.decompress(data[offset:-8], -zlib.MAX_WBITS)
+
+
+def _verified_crc_recovery(path: Path, data: bytes, original: Exception) -> str:
+    digest_path = path.with_name("starintel-documents.jsonl.sha256")
+    if not digest_path.is_file():
+        raise original
+
+    expected = digest_path.read_text(encoding="utf-8").strip().split()[0].lower()
+    if len(expected) != 64 or any(character not in "0123456789abcdef" for character in expected):
+        raise ValueError(f"{digest_path}: invalid SHA-256 digest")
+
+    payload = _raw_gzip_payload(data)
+    actual = hashlib.sha256(payload).hexdigest()
+    if actual != expected:
+        raise ValueError(
+            f"{path}: CRC recovery rejected; decoded SHA-256 {actual} does not match {expected}"
+        )
+    return payload.decode("utf-8")
+
+
+def _read_gzip_base64(path: Path, encoded: bytes) -> str:
+    data = base64.b64decode(encoded)
+    try:
+        return gzip.decompress(data).decode("utf-8")
+    except gzip.BadGzipFile as exc:
+        if "CRC check failed" not in str(exc):
+            raise
+        return _verified_crc_recovery(path, data, exc)
+
+
 def read_transport(path: Path) -> str:
     if path.name.endswith(".parts"):
         names = [line.strip() for line in path.read_text(encoding="utf-8").splitlines() if line.strip()]
         encoded = "".join((path.parent / name).read_text(encoding="utf-8").strip() for name in names)
-        return gzip.decompress(base64.b64decode(encoded)).decode("utf-8")
+        return _read_gzip_base64(path, encoded.encode("ascii"))
     if path.name.endswith(".gz.b64"):
-        return gzip.decompress(base64.b64decode(path.read_bytes())).decode("utf-8")
+        return _read_gzip_base64(path, path.read_bytes())
     return path.read_text(encoding="utf-8")
 
 
