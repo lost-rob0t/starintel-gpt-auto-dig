@@ -60,6 +60,13 @@ jobs:
           PYTHONUNBUFFERED: "1"
         run: python scripts/scrape_dark_academia_memberships.py --root .
 
+      - name: Remove bootstrap before corpus validation
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -rf imports/dark-academia
+          rmdir imports 2>/dev/null || true
+
       - name: Validate complete StarIntel corpus
         run: python scripts/starintel.py validate --root .
 
@@ -67,8 +74,6 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          rm -rf imports/dark-academia
-          rmdir imports 2>/dev/null || true
           git add -A \
             scripts/scrape_dark_academia_memberships.py \
             config/dark-academia-targets.json \
