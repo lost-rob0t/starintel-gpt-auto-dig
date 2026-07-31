@@ -8,28 +8,11 @@
   },
   "dataset": "hunter-biden",
   "document_files": [
-    {
-      "count": 1,
-      "path": "sources.jsonl"
-    },
-    {
-      "count": 6,
-      "path": "entities.jsonl"
-    },
-    {
-      "count": 7,
-      "path": "relations-1.jsonl"
-    },
-    {
-      "count": 7,
-      "path": "relations-2.jsonl",
-      "sha256": "5b30480c63d08529468d9ef567e61952a3bd4e8d607022b252177bb9e3570472"
-    },
-    {
-      "count": 4,
-      "path": "investigation-targets.jsonl",
-      "sha256": "3caf41dd72215a9531d04cc081356fdfd53207b4c11e9d66b77187245ef25e92"
-    }
+    {"count": 1, "path": "sources.jsonl"},
+    {"count": 6, "path": "entities.jsonl"},
+    {"count": 7, "path": "relations-1.jsonl"},
+    {"count": 7, "path": "relations-2.jsonl", "sha256": "5b30480c63d08529468d9ef567e61952a3bd4e8d607022b252177bb9e3570472"},
+    {"count": 4, "path": "investigation-targets.jsonl", "sha256": "3caf41dd72215a9531d04cc081356fdfd53207b4c11e9d66b77187245ef25e92"}
   ],
   "files": [
     "README.md",
@@ -38,7 +21,8 @@
     "entities.jsonl",
     "relations-1.jsonl",
     "relations-2.jsonl",
-    "investigation-targets.jsonl"
+    "investigation-targets.jsonl",
+    "manifest.json"
   ],
   "generated_at": "2026-07-31T06:10:00Z",
   "hash_algorithm": "sha256",
