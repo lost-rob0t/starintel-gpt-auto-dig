@@ -9,26 +9,17 @@ on:
       - scripts/generate_dnc_organization_targets.py
       - .github/workflows/dnc-organization-targets.yml
       - digs/dnc/**
-  pull_request:
-    branches:
-      - main
-    paths:
-      - scripts/generate_dnc_organization_targets.py
-      - .github/workflows/dnc-organization-targets.yml
-      - digs/dnc/**
 
 permissions:
   contents: write
 
 concurrency:
-  group: dnc-organization-targets-${{ github.event.pull_request.head.ref || github.ref }}
+  group: dnc-organization-targets-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
   generate:
     if: >-
-      (github.event_name != 'pull_request' ||
-       github.event.pull_request.head.ref == 'agent/dnc-fec-project-veritas-seed') &&
       !(github.event_name == 'push' &&
         github.actor == 'github-actions[bot]' &&
         contains(github.event.head_commit.message, 'organization and member target queue'))
@@ -36,7 +27,7 @@ jobs:
     timeout-minutes: 120
     env:
       PYTHONPATH: .
-      TARGET_BRANCH: ${{ github.event.pull_request.head.ref || github.ref_name }}
+      TARGET_BRANCH: ${{ github.ref_name }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -47,8 +38,47 @@ jobs:
         with:
           python-version: '3.12'
 
+      - name: Materialize compressed DNC packet inputs
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          from starintel_doc.store import read_transport
+
+          created: list[Path] = []
+          root = Path('digs/dnc')
+          transports = list(root.glob('*/starintel-documents.jsonl.gz.b64'))
+          transports += list(root.glob('*/starintel-documents.jsonl.gz.b64.parts'))
+          for transport in sorted(transports):
+              raw = transport.parent / 'starintel-documents.jsonl'
+              if raw.exists():
+                  continue
+              raw.write_text(read_transport(transport), encoding='utf-8')
+              created.append(raw)
+          Path('/tmp/dnc-materialized.txt').write_text(
+              ''.join(f'{path}\n' for path in created),
+              encoding='utf-8',
+          )
+          print({'materialized_packets': len(created)})
+          PY
+
       - name: Generate organization and member target queue
         run: python3 scripts/generate_dnc_organization_targets.py
+
+      - name: Remove materialized packet inputs
+        if: always()
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+
+          manifest = Path('/tmp/dnc-materialized.txt')
+          if manifest.exists():
+              for line in manifest.read_text(encoding='utf-8').splitlines():
+                  path = Path(line)
+                  if path.exists():
+                      path.unlink()
+          PY
 
       - name: Validate complete repository
         run: python3 scripts/validate-for-merge.py --site
