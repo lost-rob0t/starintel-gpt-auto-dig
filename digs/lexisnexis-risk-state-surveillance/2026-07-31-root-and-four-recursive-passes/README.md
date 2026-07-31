@@ -36,9 +36,11 @@ This packet maps the first five recursive passes over the commercial-dossier and
 - Run: `2026-07-31-root-and-four-recursive-passes`
 - Schema: `0.9.0`
 - Records across packet files: **90**
-- Canonical core transport: `starintel-documents.jsonl`
+- Canonical source/manifest transport: `starintel-documents.jsonl`
+- Root entity transports: `starintel-documents-root-entities.jsonl` and `starintel-documents-root-products.jsonl`
+- Recursive pass transports: `starintel-documents-pass-1.jsonl` through `starintel-documents-pass-4.jsonl`
 - Recursive target outputs: `recursive-targets-pass-1.jsonl` through `recursive-targets-pass-4.jsonl`
-- SHA-256: `023e6229a895e15538b69bc079b42dd05a3ac961a716ac688be4c2f480826a98`
+- SHA-256 (canonical source/manifest transport): `bd7d651201f140e5292ad6698d4e9ac30ff7819fab7834d42d6ca176c493d7df`
 - Source inventory: `sources.md`
 - Integrity manifest: `manifest.json`
 
