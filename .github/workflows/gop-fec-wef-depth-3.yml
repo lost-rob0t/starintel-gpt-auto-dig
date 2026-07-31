@@ -14,7 +14,7 @@ permissions:
 
 concurrency:
   group: gop-fec-wef-depth-3-${{ github.event.pull_request.number || github.ref_name }}
-  cancel-in-progress: true
+  cancel-in-progress: false
 
 jobs:
   recurse:
@@ -42,6 +42,78 @@ jobs:
           gzip --test /tmp/gop_fec_wef_depth3.py.gz
           gzip -dc /tmp/gop_fec_wef_depth3.py.gz > scripts/gop_fec_wef_depth3.py
           chmod +x scripts/gop_fec_wef_depth3.py
+          python3 -m py_compile scripts/gop_fec_wef_depth3.py
+
+      - name: Stream FEC bulk archives
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+
+          path = Path("scripts/gop_fec_wef_depth3.py")
+          source = path.read_text(encoding="utf-8")
+          source = source.replace(
+              "import sys\nimport urllib.request\n",
+              "import sys\nimport tempfile\nimport urllib.request\n",
+              1,
+          )
+          start = source.index("def zip_pipe_rows(")
+          end = source.index("\n\ndef load_db", start)
+          replacement = '''def zip_pipe_rows(url: str, fields: list[str]) -> Iterable[dict[str, str]]:
+              request = urllib.request.Request(
+                  url,
+                  headers={"User-Agent": "StarIntel-AutoDig/0.9 public-record-research"},
+              )
+              temp_path: Path | None = None
+              try:
+                  with tempfile.NamedTemporaryFile(prefix="starintel-fec-", suffix=".zip", delete=False) as temp_file:
+                      temp_path = Path(temp_file.name)
+                      with urllib.request.urlopen(request, timeout=180) as response:
+                          downloaded = 0
+                          while chunk := response.read(1024 * 1024):
+                              temp_file.write(chunk)
+                              downloaded += len(chunk)
+                              if downloaded % (32 * 1024 * 1024) < len(chunk):
+                                  print(f"downloaded {downloaded // (1024 * 1024)} MiB from {url}", flush=True)
+                  print(f"processing {temp_path.stat().st_size // (1024 * 1024)} MiB archive from {url}", flush=True)
+                  with zipfile.ZipFile(temp_path) as archive:
+                      names = [name for name in archive.namelist() if not name.endswith("/")]
+                      if not names:
+                          raise RuntimeError(f"empty archive: {url}")
+                      member = next((name for name in names if name.lower().endswith((".txt", ".csv"))), names[0])
+                      with archive.open(member) as raw, io.TextIOWrapper(raw, encoding="latin-1", errors="replace", newline="") as text:
+                          for values in csv.reader(text, delimiter="|"):
+                              if not values:
+                                  continue
+                              values = values[: len(fields)] + [""] * max(0, len(fields) - len(values))
+                              yield dict(zip(fields, values, strict=True))
+              finally:
+                  if temp_path is not None:
+                      temp_path.unlink(missing_ok=True)
+          '''
+          source = source[:start] + replacement + source[end:]
+          source = source.replace(
+              '    committee_rows = {row["cmte_id"].upper(): row for row in zip_pipe_rows(FEC_URLS["committee_master"], COMMITTEE_FIELDS)}',
+              '    print("loading FEC committee master", flush=True)\n    committee_rows = {row["cmte_id"].upper(): row for row in zip_pipe_rows(FEC_URLS["committee_master"], COMMITTEE_FIELDS)}',
+              1,
+          )
+          source = source.replace(
+              '    candidate_rows = {row["cand_id"].upper(): row for row in zip_pipe_rows(FEC_URLS["candidate_master"], CANDIDATE_FIELDS)}',
+              '    print("loading FEC candidate master", flush=True)\n    candidate_rows = {row["cand_id"].upper(): row for row in zip_pipe_rows(FEC_URLS["candidate_master"], CANDIDATE_FIELDS)}',
+              1,
+          )
+          source = source.replace(
+              '    oth_rows = reconcile_oth(zip_pipe_rows(FEC_URLS["committee_transactions"], OTH_FIELDS))',
+              '    print("streaming FEC committee disbursements", flush=True)\n    oth_rows = reconcile_oth(zip_pipe_rows(FEC_URLS["committee_transactions"], OTH_FIELDS))',
+              1,
+          )
+          source = source.replace(
+              '    ie_reader = csv.DictReader(io.StringIO(fetch_text(FEC_URLS["independent_expenditures"])))',
+              '    print("loading FEC independent expenditures", flush=True)\n    ie_reader = csv.DictReader(io.StringIO(fetch_text(FEC_URLS["independent_expenditures"])))',
+              1,
+          )
+          path.write_text(source, encoding="utf-8")
+          PY
           python3 -m py_compile scripts/gop_fec_wef_depth3.py
 
       - name: Resolve official FEC and WEF records
