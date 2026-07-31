@@ -1,0 +1,88 @@
+{
+  "dataset": "trump-thiel-circle",
+  "depth": 3,
+  "generated_at": "2026-07-31T07:38:00Z",
+  "run_id": "trump-thiel-circle-depth-3-queue-2026-07-31",
+  "targets": [
+    {
+      "objective": "Trace Cantor Fitzgerald & Co. transactions, placement-agent mandates, SPAC sponsors, government-facing clients, and executives into Trump-administration decisions; identify direct benefits, conflicts, and family-control continuity.",
+      "preferred_sources": ["SEC filings", "Senate disclosures", "Commerce records", "USAspending", "FEC", "lobbying disclosures", "court records"],
+      "priority": 1.0,
+      "required_paths": ["Cantor transaction -> administration decision", "Cantor executive/family -> Trump transition or administration", "Cantor client -> Commerce Department action"],
+      "seed_ids": ["starintel:person:howard-lutnick", "starintel:person:brandon-lutnick", "starintel:person:kyle-lutnick", "starintel:org:cantor-fitzgerald", "starintel:org:cantor-fitzgerald-co", "starintel:org:cf-group-management"],
+      "target_id": "starintel:org:cantor-fitzgerald-co"
+    },
+    {
+      "objective": "Resolve the 2026 USA Rare Earth–Commerce–Cantor conflict inquiry, including financing chronology, beneficial investors, placement-agent compensation, government agreement terms, and Lutnick recusals.",
+      "preferred_sources": ["SEC 8-K/S-1", "Commerce agreements", "congressional letters", "ethics recusals", "FOIA releases"],
+      "priority": 0.99,
+      "required_paths": ["USA Rare Earth financing -> Cantor", "Commerce agreement -> USA Rare Earth", "Howard Lutnick or family interest -> Cantor compensation"],
+      "seed_ids": ["starintel:org:usa-rare-earth", "starintel:org:cantor-fitzgerald-co", "starintel:person:howard-lutnick"],
+      "target_id": "starintel:org:usa-rare-earth"
+    },
+    {
+      "objective": "Trace Tether ownership, board/control, Cantor reserve-management and investment arrangements, U.S. policy access, Rumble investment, and any Trump/Vance/Thiel-connected intermediaries.",
+      "preferred_sources": ["SEC filings", "company filings", "Senate records", "DOJ/CFTC records", "transaction announcements"],
+      "priority": 0.98,
+      "required_paths": ["Tether -> Cantor", "Tether -> Rumble", "Tether/Cantor -> administration access or policy"],
+      "seed_ids": ["starintel:org:tether", "starintel:org:tether-investments", "starintel:person:paolo-ardoino", "starintel:person:giancarlo-devasini", "starintel:org:cantor-fitzgerald", "starintel:org:rumble"],
+      "target_id": "starintel:org:tether"
+    },
+    {
+      "objective": "Map Rumble ownership, board seats, voting control, Narya/Thiel/Vance capital, Tether financing, Cantor placement activity, Rumble Cloud government work, and personnel overlaps.",
+      "preferred_sources": ["SEC proxy/10-K", "federal procurement", "board biographies", "fund filings"],
+      "priority": 0.97,
+      "required_paths": ["Vance/Thiel capital -> Rumble governance", "Tether/Cantor -> Rumble financing", "Rumble Cloud -> federal contract or administration customer"],
+      "seed_ids": ["starintel:org:rumble", "starintel:org:rumble-cloud", "starintel:person:chris-pavlovski", "starintel:person:ethan-fallang", "starintel:org:narya-capital", "starintel:person:jd-vance", "starintel:person:peter-thiel"],
+      "target_id": "starintel:org:rumble"
+    },
+    {
+      "objective": "Map Center for Renewing America and Citizens for Renewing America staff, donors, board, Project 2025 contributions, administration appointments, and Vance/Trump policy coordination.",
+      "preferred_sources": ["IRS 990", "FEC", "White House appointments", "Project 2025 chapters", "nonprofit disclosures"],
+      "priority": 0.96,
+      "required_paths": ["CRA staff -> Trump administration", "CRA donor/board -> Trump/Vance/Thiel", "CRA policy -> executive action"],
+      "seed_ids": ["starintel:org:center-for-renewing-america", "starintel:org:citizens-for-renewing-america", "starintel:person:russ-vought", "starintel:person:wade-miller", "starintel:person:ashlea-frazier"],
+      "target_id": "starintel:org:center-for-renewing-america"
+    },
+    {
+      "objective": "Trace Heritage and Project 2025 chapter authors, board members, donors, administration appointments, Vance relationships, and policy adoption.",
+      "preferred_sources": ["Heritage rosters", "OMB records", "White House personnel", "IRS filings", "FEC", "executive orders"],
+      "priority": 0.95,
+      "required_paths": ["Heritage member/author -> administration office", "Heritage board/donor -> Trump/Vance/Thiel", "Project 2025 proposal -> implemented action"],
+      "seed_ids": ["starintel:org:heritage-foundation", "starintel:org:project-2025", "starintel:org:heritage-board-of-trustees", "starintel:person:kevin-roberts", "starintel:person:rebekah-mercer", "starintel:person:russ-vought", "starintel:person:jd-vance"],
+      "target_id": "starintel:org:heritage-foundation"
+    },
+    {
+      "objective": "Trace Palantir board/control, DoD and Army awards under Hegseth, contract consolidation, lobbying, transition access, and direct Thiel/Vance/Trump personnel links.",
+      "preferred_sources": ["USAspending", "DoD contract releases", "SEC proxy/10-K", "lobbying filings", "ethics disclosures"],
+      "priority": 0.94,
+      "required_paths": ["Hegseth/DoD decision -> Palantir award", "Palantir founder/control -> Peter Thiel", "Palantir personnel/lobbying -> Trump or Vance"],
+      "seed_ids": ["starintel:org:palantir-technologies", "starintel:person:peter-thiel", "starintel:person:alexander-karp", "starintel:person:stephen-cohen-palantir", "starintel:person:pete-hegseth", "starintel:org:department-of-defense", "starintel:org:us-army"],
+      "target_id": "starintel:org:palantir-technologies"
+    },
+    {
+      "objective": "Map Brandon Lutnick's control as trustee, Cantor leadership, political giving, Trump transition ties, and transactions benefiting Cantor after Howard Lutnick entered office.",
+      "preferred_sources": ["ethics agreement", "trust documents", "FEC", "SEC filings", "company releases"],
+      "priority": 0.93,
+      "required_paths": ["trust control -> Cantor", "Cantor deal -> Commerce action", "Brandon Lutnick -> Trump/Vance network"],
+      "seed_ids": ["starintel:person:brandon-lutnick", "starintel:person:howard-lutnick", "starintel:person:kyle-lutnick", "starintel:org:cantor-fitzgerald", "starintel:org:cf-group-management"],
+      "target_id": "starintel:person:brandon-lutnick"
+    },
+    {
+      "objective": "Trace Rebekah Mercer's Heritage board role, political funding, Trump transition history, data/technology ties, and connections to Vance or Thiel networks.",
+      "preferred_sources": ["FEC", "IRS 990/990-PF", "board records", "transition records", "corporate filings"],
+      "priority": 0.9,
+      "required_paths": ["Mercer funding/governance -> Heritage or Project 2025", "Mercer -> Trump transition/campaign", "Mercer -> Thiel/Vance-linked organization"],
+      "seed_ids": ["starintel:person:rebekah-mercer", "starintel:org:heritage-foundation", "starintel:org:heritage-board-of-trustees", "starintel:person:donald-trump"],
+      "target_id": "starintel:person:rebekah-mercer"
+    },
+    {
+      "objective": "Trace Ethan Fallang's Narya and Rumble governance role, portfolio overlaps, federal policy access, and links to Vance and Thiel.",
+      "preferred_sources": ["SEC filings", "fund records", "board biographies", "federal contracts"],
+      "priority": 0.88,
+      "required_paths": ["Narya -> Rumble board", "Vance/Thiel -> Narya/Rumble", "Rumble portfolio/government work -> administration"],
+      "seed_ids": ["starintel:person:ethan-fallang", "starintel:org:narya-capital", "starintel:org:rumble", "starintel:person:jd-vance", "starintel:person:peter-thiel"],
+      "target_id": "starintel:person:ethan-fallang"
+    }
+  ]
+}
