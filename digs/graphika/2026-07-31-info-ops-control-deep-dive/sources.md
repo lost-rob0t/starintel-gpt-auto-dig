@@ -1,0 +1,24 @@
+# Source ledger
+
+- **Leadership** — Graphika — https://www.graphika.com/leadership
+- **Dr. John Kelly, Founder & Executive Chairman** — Graphika — https://www.graphika.com/leadership/dr-john-kelly
+- **Lauren Pencek, Chief Operating Officer** — Graphika — https://www.graphika.com/leadership/lauren-pencek
+- **Our Story** — Graphika — https://www.graphika.com/our-story
+- **OCTANT DATA, LLC SBIR/STTR portfolio** — U.S. Small Business Administration SBIR.gov — https://www.sbir.gov/portfolio/1516843
+- **Anticipating Strategic Influence Campaigns** — U.S. Small Business Administration SBIR.gov — https://www.sbir.gov/awards/204742
+- **Determining Causality between Online and Offline Behavior** — U.S. Small Business Administration SBIR.gov — https://www.sbir.gov/awards/207301
+- **Determining Causality between Malign Influence Operations and Target Population Behavior** — U.S. Small Business Administration SBIR.gov — https://www.sbir.gov/awards/204855
+- **Analyzing Narrative Evolution Across Social Networks** — U.S. Small Business Administration SBIR.gov — https://www.sbir.gov/awards/207308
+- **Monitoring Evolution of Coordinated Inauthentic Behavior** — U.S. Small Business Administration SBIR.gov — https://www.sbir.gov/awards/208691
+- **Detecting, Forecasting, and Countering Chinese Information Operations** — U.S. Small Business Administration SBIR.gov — https://www.sbir.gov/awards/214602
+- **Detecting, Forecasting, and Countering Great Power Information Operations in Developing Nations** — U.S. Small Business Administration SBIR.gov — https://www.sbir.gov/awards/216281
+- **Identifying Community-Specific Online Lexicons Affecting Offline Action** — U.S. Small Business Administration SBIR.gov — https://www.sbir.gov/awards/210955
+- **Automated Methods for Detecting Inauthentic AI-Driven Accounts** — U.S. Small Business Administration SBIR.gov — https://www.sbir.gov/awards/210645
+- **Understanding the Spread and Influence of Online Video Content** — U.S. Small Business Administration SBIR.gov — https://www.sbir.gov/awards/205163
+- **Detect & Deter Foreign Influence Activity Across the Information Environment** — U.S. Small Business Administration SBIR.gov — https://www.sbir.gov/awards/205162
+- **Graphika welcomes industry expert Ben Nimmo to the team** — Graphika — https://www.graphika.com/blogs/graphika-welcomes-industry-expert-ben-nimmo-to-the-team
+- **Graphika Chief Innovation Officer Camille François Named MIT Technology Review Innovator Under 35** — Graphika — https://www.graphika.com/blogs/graphika-chief-innovation-officer-camille-francois-named-as-mit-technology-review-2019-innovator-under-35
+- **Peter Thiel to Retire from Meta Board of Directors at 2022 Annual Shareholder Meeting** — Meta Platforms — https://investor.atmeta.com/investor-news/press-release-details/2022/Peter-Thiel-to-Retire-from-Meta-Board-of-Directors-at-2022-Annual-Shareholder-Meeting/default.aspx
+- **The Virality Project** — Stanford Internet Observatory — https://cyber.fsi.stanford.edu/io/news/virality-project
+- **The COVID-19 Infodemic** — Graphika — https://www.graphika.com/reports/the-covid-19-infodemic
+- **Method and apparatus for monitoring complex contagion and critical mass in online social media** — Google Patents / USPTO record — https://patents.google.com/patent/US20200160149A1/en
