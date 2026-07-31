@@ -46,7 +46,7 @@
       }
     }
   },
-  "top_all_recipients": [
+  "top_all_recipients_combined": [
     {
       "amount": 70724.0,
       "candidate_like": true,
@@ -68,7 +68,9 @@
       "party": "Democratic",
       "recipient_id": "starintel:person:fec-candidate-h6nj05171",
       "rows": 34,
-      "source": "AIPAC PAC"
+      "sources": {
+        "AIPAC PAC": 70724.0
+      }
     },
     {
       "amount": 40175.0,
@@ -91,10 +93,12 @@
       "party": "Democratic",
       "recipient_id": "starintel:person:fec-candidate-h8ny22177",
       "rows": 18,
-      "source": "AIPAC PAC"
+      "sources": {
+        "AIPAC PAC": 40175.0
+      }
     },
     {
-      "amount": 30000.0,
+      "amount": 40000.0,
       "candidate_like": false,
       "data": {
         "name": "DCCC",
@@ -110,8 +114,11 @@
       "office": "",
       "party": "Democratic",
       "recipient_id": "starintel:org:fec-committee-c00000935",
-      "rows": 2,
-      "source": "AIPAC PAC"
+      "rows": 4,
+      "sources": {
+        "AIPAC PAC": 30000.0,
+        "Palantir employee PAC": 10000.0
+      }
     },
     {
       "amount": 21884.0,
@@ -134,7 +141,9 @@
       "party": "Democratic",
       "recipient_id": "starintel:person:fec-candidate-h0mi03316",
       "rows": 42,
-      "source": "AIPAC PAC"
+      "sources": {
+        "AIPAC PAC": 21884.0
+      }
     },
     {
       "amount": 21800.0,
@@ -157,7 +166,9 @@
       "party": "Democratic",
       "recipient_id": "starintel:person:fec-candidate-h2tx23082",
       "rows": 6,
-      "source": "AIPAC PAC"
+      "sources": {
+        "AIPAC PAC": 21800.0
+      }
     },
     {
       "amount": 15000.0,
@@ -177,7 +188,32 @@
       "party": "Democratic",
       "recipient_id": "starintel:org:fec-committee-c00042366",
       "rows": 1,
-      "source": "AIPAC PAC"
+      "sources": {
+        "AIPAC PAC": 15000.0
+      }
+    },
+    {
+      "amount": 15000.0,
+      "candidate_like": false,
+      "data": {
+        "name": "WITH HONOR PAC",
+        "org_type": "federal political committee",
+        "registration_number": "C00661272",
+        "website": "https://www.fec.gov/data/committee/C00661272/"
+      },
+      "dtype": "org",
+      "fec_recipient_committee_ids": [
+        "C00661272"
+      ],
+      "name": "WITH HONOR PAC",
+      "office": "",
+      "party": "Other/unclear",
+      "recipient_id": "starintel:org:fec-committee-c00661272",
+      "rows": 3,
+      "sources": {
+        "AIPAC PAC": 5000.0,
+        "Palantir employee PAC": 10000.0
+      }
     },
     {
       "amount": 15000.0,
@@ -192,7 +228,9 @@
       "party": "Republican",
       "recipient_id": "starintel:org:nrcc",
       "rows": 1,
-      "source": "AIPAC PAC"
+      "sources": {
+        "AIPAC PAC": 15000.0
+      }
     },
     {
       "amount": 14994.0,
@@ -215,7 +253,9 @@
       "party": "Democratic",
       "recipient_id": "starintel:person:fec-candidate-h4mo01134",
       "rows": 4,
-      "source": "AIPAC PAC"
+      "sources": {
+        "AIPAC PAC": 14994.0
+      }
     },
     {
       "amount": 14994.0,
@@ -238,7 +278,9 @@
       "party": "Republican",
       "recipient_id": "starintel:person:fec-candidate-h6fl01390",
       "rows": 5,
-      "source": "AIPAC PAC"
+      "sources": {
+        "AIPAC PAC": 14994.0
+      }
     },
     {
       "amount": 14994.0,
@@ -262,7 +304,9 @@
       "party": "Republican",
       "recipient_id": "starintel:person:fec-candidate-s4ak00214",
       "rows": 3,
-      "source": "AIPAC PAC"
+      "sources": {
+        "AIPAC PAC": 14994.0
+      }
     },
     {
       "amount": 14494.0,
@@ -285,7 +329,35 @@
       "party": "Republican",
       "recipient_id": "starintel:person:fec-candidate-s6ne00129",
       "rows": 4,
-      "source": "AIPAC PAC"
+      "sources": {
+        "AIPAC PAC": 14494.0
+      }
+    },
+    {
+      "amount": 13496.0,
+      "candidate_like": true,
+      "data": {
+        "full_name": "CALVERT, KEN",
+        "political_affiliations": [
+          "REP"
+        ],
+        "public_roles": [
+          "Federal candidate for H CA-40"
+        ]
+      },
+      "dtype": "person",
+      "fec_recipient_committee_ids": [
+        "C00257337"
+      ],
+      "name": "CALVERT, KEN",
+      "office": "",
+      "party": "Republican",
+      "recipient_id": "starintel:person:fec-candidate-h2ca37023",
+      "rows": 5,
+      "sources": {
+        "AIPAC PAC": 8496.0,
+        "Palantir employee PAC": 5000.0
+      }
     },
     {
       "amount": 13396.0,
@@ -308,7 +380,9 @@
       "party": "Democratic",
       "recipient_id": "starintel:person:fec-candidate-h4ca33119",
       "rows": 10,
-      "source": "AIPAC PAC"
+      "sources": {
+        "AIPAC PAC": 13396.0
+      }
     },
     {
       "amount": 12094.0,
@@ -331,7 +405,35 @@
       "party": "Republican",
       "recipient_id": "starintel:person:fec-candidate-h0mo06073",
       "rows": 4,
-      "source": "AIPAC PAC"
+      "sources": {
+        "AIPAC PAC": 12094.0
+      }
+    },
+    {
+      "amount": 11994.0,
+      "candidate_like": true,
+      "data": {
+        "full_name": "CORNYN, JOHN SEN",
+        "political_affiliations": [
+          "REP"
+        ],
+        "public_roles": [
+          "Federal candidate for S TX-00"
+        ]
+      },
+      "dtype": "person",
+      "fec_recipient_committee_ids": [
+        "C00369033"
+      ],
+      "name": "CORNYN, JOHN SEN",
+      "office": "",
+      "party": "Republican",
+      "recipient_id": "starintel:person:fec-candidate-s2tx00106",
+      "rows": 7,
+      "sources": {
+        "AIPAC PAC": 6994.0,
+        "Palantir employee PAC": 5000.0
+      }
     },
     {
       "amount": 10994.0,
@@ -354,7 +456,35 @@
       "party": "Democratic",
       "recipient_id": "starintel:person:fec-candidate-h8ct01046",
       "rows": 6,
-      "source": "AIPAC PAC"
+      "sources": {
+        "AIPAC PAC": 10994.0
+      }
+    },
+    {
+      "amount": 10994.0,
+      "candidate_like": true,
+      "data": {
+        "full_name": "WITTMAN, ROBERT J. MR.",
+        "political_affiliations": [
+          "REP"
+        ],
+        "public_roles": [
+          "Federal candidate for H VA-01"
+        ]
+      },
+      "dtype": "person",
+      "fec_recipient_committee_ids": [
+        "C00441014"
+      ],
+      "name": "WITTMAN, ROBERT J. MR.",
+      "office": "",
+      "party": "Republican",
+      "recipient_id": "starintel:person:fec-candidate-h8va01147",
+      "rows": 7,
+      "sources": {
+        "AIPAC PAC": 5994.0,
+        "Palantir employee PAC": 5000.0
+      }
     },
     {
       "amount": 10494.0,
@@ -377,27 +507,9 @@
       "party": "Republican",
       "recipient_id": "starintel:person:fec-candidate-h4mn06087",
       "rows": 6,
-      "source": "AIPAC PAC"
-    },
-    {
-      "amount": 10000.0,
-      "candidate_like": false,
-      "data": {
-        "name": "DCCC",
-        "org_type": "federal political committee",
-        "registration_number": "C00000935",
-        "website": "https://www.fec.gov/data/committee/C00000935/"
-      },
-      "dtype": "org",
-      "fec_recipient_committee_ids": [
-        "C00000935"
-      ],
-      "name": "DCCC",
-      "office": "",
-      "party": "Democratic",
-      "recipient_id": "starintel:org:fec-committee-c00000935",
-      "rows": 2,
-      "source": "Palantir employee PAC"
+      "sources": {
+        "AIPAC PAC": 10494.0
+      }
     },
     {
       "amount": 10000.0,
@@ -420,27 +532,9 @@
       "party": "Republican",
       "recipient_id": "starintel:person:fec-candidate-h0ga14030",
       "rows": 2,
-      "source": "AIPAC PAC"
-    },
-    {
-      "amount": 10000.0,
-      "candidate_like": false,
-      "data": {
-        "name": "WITH HONOR PAC",
-        "org_type": "federal political committee",
-        "registration_number": "C00661272",
-        "website": "https://www.fec.gov/data/committee/C00661272/"
-      },
-      "dtype": "org",
-      "fec_recipient_committee_ids": [
-        "C00661272"
-      ],
-      "name": "WITH HONOR PAC",
-      "office": "",
-      "party": "Other/unclear",
-      "recipient_id": "starintel:org:fec-committee-c00661272",
-      "rows": 2,
-      "source": "Palantir employee PAC"
+      "sources": {
+        "AIPAC PAC": 10000.0
+      }
     },
     {
       "amount": 9994.0,
@@ -463,7 +557,9 @@
       "party": "Republican",
       "recipient_id": "starintel:person:fec-candidate-h2mo04207",
       "rows": 3,
-      "source": "AIPAC PAC"
+      "sources": {
+        "AIPAC PAC": 9994.0
+      }
     },
     {
       "amount": 9994.0,
@@ -486,7 +582,9 @@
       "party": "Democratic",
       "recipient_id": "starintel:person:fec-candidate-h0ma04192",
       "rows": 3,
-      "source": "AIPAC PAC"
+      "sources": {
+        "AIPAC PAC": 9994.0
+      }
     },
     {
       "amount": 9994.0,
@@ -509,7 +607,9 @@
       "party": "Republican",
       "recipient_id": "starintel:person:fec-candidate-h2fl04211",
       "rows": 4,
-      "source": "AIPAC PAC"
+      "sources": {
+        "AIPAC PAC": 9994.0
+      }
     },
     {
       "amount": 9994.0,
@@ -532,7 +632,9 @@
       "party": "Republican",
       "recipient_id": "starintel:person:fec-candidate-h4il12060",
       "rows": 4,
-      "source": "AIPAC PAC"
+      "sources": {
+        "AIPAC PAC": 9994.0
+      }
     },
     {
       "amount": 9994.0,
@@ -555,7 +657,9 @@
       "party": "Democratic",
       "recipient_id": "starintel:person:fec-candidate-h4pa13199",
       "rows": 3,
-      "source": "AIPAC PAC"
+      "sources": {
+        "AIPAC PAC": 9994.0
+      }
     },
     {
       "amount": 9994.0,
@@ -578,7 +682,9 @@
       "party": "Republican",
       "recipient_id": "starintel:person:fec-candidate-h4pa08124",
       "rows": 4,
-      "source": "AIPAC PAC"
+      "sources": {
+        "AIPAC PAC": 9994.0
+      }
     },
     {
       "amount": 9994.0,
@@ -601,7 +707,35 @@
       "party": "Democratic",
       "recipient_id": "starintel:person:fec-candidate-h4ma05084",
       "rows": 3,
-      "source": "AIPAC PAC"
+      "sources": {
+        "AIPAC PAC": 9994.0
+      }
+    },
+    {
+      "amount": 9994.0,
+      "candidate_like": true,
+      "data": {
+        "full_name": "COLE, TOM",
+        "political_affiliations": [
+          "REP"
+        ],
+        "public_roles": [
+          "Federal candidate for H OK-04"
+        ]
+      },
+      "dtype": "person",
+      "fec_recipient_committee_ids": [
+        "C00379735"
+      ],
+      "name": "COLE, TOM",
+      "office": "",
+      "party": "Republican",
+      "recipient_id": "starintel:person:fec-candidate-h2ok04055",
+      "rows": 4,
+      "sources": {
+        "AIPAC PAC": 4994.0,
+        "Palantir employee PAC": 5000.0
+      }
     },
     {
       "amount": 9994.0,
@@ -624,7 +758,9 @@
       "party": "Republican",
       "recipient_id": "starintel:person:fec-candidate-s4ar00103",
       "rows": 5,
-      "source": "AIPAC PAC"
+      "sources": {
+        "AIPAC PAC": 9994.0
+      }
     },
     {
       "amount": 9994.0,
@@ -647,7 +783,9 @@
       "party": "Republican",
       "recipient_id": "starintel:person:fec-candidate-h8tx02166",
       "rows": 3,
-      "source": "AIPAC PAC"
+      "sources": {
+        "AIPAC PAC": 9994.0
+      }
     },
     {
       "amount": 9994.0,
@@ -670,7 +808,9 @@
       "party": "Republican",
       "recipient_id": "starintel:person:fec-candidate-s2mt00096",
       "rows": 3,
-      "source": "AIPAC PAC"
+      "sources": {
+        "AIPAC PAC": 9994.0
+      }
     },
     {
       "amount": 9994.0,
@@ -693,7 +833,9 @@
       "party": "Democratic",
       "recipient_id": "starintel:person:fec-candidate-h2nc02287",
       "rows": 3,
-      "source": "AIPAC PAC"
+      "sources": {
+        "AIPAC PAC": 9994.0
+      }
     },
     {
       "amount": 9994.0,
@@ -716,7 +858,9 @@
       "party": "Republican",
       "recipient_id": "starintel:person:fec-candidate-h0tx15124",
       "rows": 4,
-      "source": "AIPAC PAC"
+      "sources": {
+        "AIPAC PAC": 9994.0
+      }
     },
     {
       "amount": 9994.0,
@@ -739,7 +883,9 @@
       "party": "Republican",
       "recipient_id": "starintel:person:fec-candidate-h2nc14050",
       "rows": 4,
-      "source": "AIPAC PAC"
+      "sources": {
+        "AIPAC PAC": 9994.0
+      }
     },
     {
       "amount": 9994.0,
@@ -762,7 +908,9 @@
       "party": "Republican",
       "recipient_id": "starintel:person:fec-candidate-h6fl06258",
       "rows": 4,
-      "source": "AIPAC PAC"
+      "sources": {
+        "AIPAC PAC": 9994.0
+      }
     },
     {
       "amount": 9994.0,
@@ -785,7 +933,9 @@
       "party": "Democratic",
       "recipient_id": "starintel:person:fec-candidate-h2wa03217",
       "rows": 3,
-      "source": "AIPAC PAC"
+      "sources": {
+        "AIPAC PAC": 9994.0
+      }
     },
     {
       "amount": 9994.0,
@@ -808,7 +958,9 @@
       "party": "Republican",
       "recipient_id": "starintel:person:fec-candidate-h4ga03126",
       "rows": 3,
-      "source": "AIPAC PAC"
+      "sources": {
+        "AIPAC PAC": 9994.0
+      }
     },
     {
       "amount": 9994.0,
@@ -831,7 +983,9 @@
       "party": "Republican",
       "recipient_id": "starintel:person:fec-candidate-h6oh04082",
       "rows": 4,
-      "source": "AIPAC PAC"
+      "sources": {
+        "AIPAC PAC": 9994.0
+      }
     },
     {
       "amount": 9994.0,
@@ -854,7 +1008,9 @@
       "party": "Republican",
       "recipient_id": "starintel:person:fec-candidate-h0nj07261",
       "rows": 5,
-      "source": "AIPAC PAC"
+      "sources": {
+        "AIPAC PAC": 9994.0
+      }
     },
     {
       "amount": 9994.0,
@@ -877,7 +1033,9 @@
       "party": "Republican",
       "recipient_id": "starintel:person:fec-candidate-h8pa15195",
       "rows": 3,
-      "source": "AIPAC PAC"
+      "sources": {
+        "AIPAC PAC": 9994.0
+      }
     },
     {
       "amount": 9994.0,
@@ -900,7 +1058,9 @@
       "party": "Democratic",
       "recipient_id": "starintel:person:fec-candidate-h8ny06048",
       "rows": 3,
-      "source": "AIPAC PAC"
+      "sources": {
+        "AIPAC PAC": 9994.0
+      }
     },
     {
       "amount": 9994.0,
@@ -923,7 +1083,9 @@
       "party": "Democratic",
       "recipient_id": "starintel:person:fec-candidate-h6md07020",
       "rows": 3,
-      "source": "AIPAC PAC"
+      "sources": {
+        "AIPAC PAC": 9994.0
+      }
     },
     {
       "amount": 9994.0,
@@ -946,7 +1108,9 @@
       "party": "Democratic",
       "recipient_id": "starintel:person:fec-candidate-h2fl22171",
       "rows": 3,
-      "source": "AIPAC PAC"
+      "sources": {
+        "AIPAC PAC": 9994.0
+      }
     },
     {
       "amount": 9994.0,
@@ -969,7 +1133,9 @@
       "party": "Republican",
       "recipient_id": "starintel:person:fec-candidate-h0nc03172",
       "rows": 4,
-      "source": "AIPAC PAC"
+      "sources": {
+        "AIPAC PAC": 9994.0
+      }
     },
     {
       "amount": 9994.0,
@@ -992,7 +1158,9 @@
       "party": "Democratic",
       "recipient_id": "starintel:person:fec-candidate-h8co02160",
       "rows": 3,
-      "source": "AIPAC PAC"
+      "sources": {
+        "AIPAC PAC": 9994.0
+      }
     },
     {
       "amount": 9994.0,
@@ -1015,7 +1183,9 @@
       "party": "Republican",
       "recipient_id": "starintel:person:fec-candidate-h0tx11230",
       "rows": 3,
-      "source": "AIPAC PAC"
+      "sources": {
+        "AIPAC PAC": 9994.0
+      }
     },
     {
       "amount": 9994.0,
@@ -1038,7 +1208,9 @@
       "party": "Republican",
       "recipient_id": "starintel:person:fec-candidate-h8pa18199",
       "rows": 5,
-      "source": "AIPAC PAC"
+      "sources": {
+        "AIPAC PAC": 9994.0
+      }
     },
     {
       "amount": 9994.0,
@@ -1061,7 +1233,9 @@
       "party": "Democratic",
       "recipient_id": "starintel:person:fec-candidate-h4ca29141",
       "rows": 3,
-      "source": "AIPAC PAC"
+      "sources": {
+        "AIPAC PAC": 9994.0
+      }
     },
     {
       "amount": 9994.0,
@@ -1084,7 +1258,9 @@
       "party": "Democratic",
       "recipient_id": "starintel:person:fec-candidate-h8ny19223",
       "rows": 3,
-      "source": "AIPAC PAC"
+      "sources": {
+        "AIPAC PAC": 9994.0
+      }
     },
     {
       "amount": 9994.0,
@@ -1107,7 +1283,35 @@
       "party": "Republican",
       "recipient_id": "starintel:person:fec-candidate-h4ks02164",
       "rows": 4,
-      "source": "AIPAC PAC"
+      "sources": {
+        "AIPAC PAC": 9994.0
+      }
+    },
+    {
+      "amount": 9994.0,
+      "candidate_like": true,
+      "data": {
+        "full_name": "SMITH, D. ADAM",
+        "political_affiliations": [
+          "DEM"
+        ],
+        "public_roles": [
+          "Federal candidate for H WA-09"
+        ]
+      },
+      "dtype": "person",
+      "fec_recipient_committee_ids": [
+        "C00304709"
+      ],
+      "name": "SMITH, D. ADAM",
+      "office": "",
+      "party": "Democratic",
+      "recipient_id": "starintel:person:fec-candidate-h6wa09025",
+      "rows": 4,
+      "sources": {
+        "AIPAC PAC": 4994.0,
+        "Palantir employee PAC": 5000.0
+      }
     },
     {
       "amount": 9994.0,
@@ -1130,7 +1334,9 @@
       "party": "Democratic",
       "recipient_id": "starintel:person:fec-candidate-h6fl09179",
       "rows": 3,
-      "source": "AIPAC PAC"
+      "sources": {
+        "AIPAC PAC": 9994.0
+      }
     },
     {
       "amount": 9994.0,
@@ -1153,7 +1359,9 @@
       "party": "Democratic",
       "recipient_id": "starintel:person:fec-candidate-h0wa10034",
       "rows": 4,
-      "source": "AIPAC PAC"
+      "sources": {
+        "AIPAC PAC": 9994.0
+      }
     },
     {
       "amount": 9994.0,
@@ -1176,7 +1384,9 @@
       "party": "Democratic",
       "recipient_id": "starintel:person:fec-candidate-h6ny03247",
       "rows": 3,
-      "source": "AIPAC PAC"
+      "sources": {
+        "AIPAC PAC": 9994.0
+      }
     },
     {
       "amount": 9994.0,
@@ -1199,7 +1409,9 @@
       "party": "Democratic",
       "recipient_id": "starintel:person:fec-candidate-h2oh13264",
       "rows": 3,
-      "source": "AIPAC PAC"
+      "sources": {
+        "AIPAC PAC": 9994.0
+      }
     },
     {
       "amount": 9994.0,
@@ -1222,7 +1434,9 @@
       "party": "Democratic",
       "recipient_id": "starintel:person:fec-candidate-h0ny15160",
       "rows": 8,
-      "source": "AIPAC PAC"
+      "sources": {
+        "AIPAC PAC": 9994.0
+      }
     },
     {
       "amount": 9994.0,
@@ -1245,7 +1459,9 @@
       "party": "Republican",
       "recipient_id": "starintel:person:fec-candidate-h2ca20094",
       "rows": 4,
-      "source": "AIPAC PAC"
+      "sources": {
+        "AIPAC PAC": 9994.0
+      }
     },
     {
       "amount": 9994.0,
@@ -1268,7 +1484,9 @@
       "party": "Democratic",
       "recipient_id": "starintel:person:fec-candidate-h4fl20023",
       "rows": 3,
-      "source": "AIPAC PAC"
+      "sources": {
+        "AIPAC PAC": 9994.0
+      }
     },
     {
       "amount": 9994.0,
@@ -1291,7 +1509,9 @@
       "party": "Republican",
       "recipient_id": "starintel:person:fec-candidate-h2tx14149",
       "rows": 4,
-      "source": "AIPAC PAC"
+      "sources": {
+        "AIPAC PAC": 9994.0
+      }
     },
     {
       "amount": 9994.0,
@@ -1314,7 +1534,9 @@
       "party": "Republican",
       "recipient_id": "starintel:person:fec-candidate-h4ar04048",
       "rows": 4,
-      "source": "AIPAC PAC"
+      "sources": {
+        "AIPAC PAC": 9994.0
+      }
     },
     {
       "amount": 9994.0,
@@ -1337,7 +1559,9 @@
       "party": "Republican",
       "recipient_id": "starintel:person:fec-candidate-h2sc02059",
       "rows": 3,
-      "source": "AIPAC PAC"
+      "sources": {
+        "AIPAC PAC": 9994.0
+      }
     },
     {
       "amount": 9994.0,
@@ -1360,7 +1584,9 @@
       "party": "Republican",
       "recipient_id": "starintel:person:fec-candidate-h2in02295",
       "rows": 4,
-      "source": "AIPAC PAC"
+      "sources": {
+        "AIPAC PAC": 9994.0
+      }
     },
     {
       "amount": 9497.0,
@@ -1383,7 +1609,9 @@
       "party": "Democratic",
       "recipient_id": "starintel:person:fec-candidate-h4ca20082",
       "rows": 5,
-      "source": "AIPAC PAC"
+      "sources": {
+        "AIPAC PAC": 9497.0
+      }
     },
     {
       "amount": 9494.0,
@@ -1406,30 +1634,9 @@
       "party": "Republican",
       "recipient_id": "starintel:person:fec-candidate-h4wa05234",
       "rows": 5,
-      "source": "AIPAC PAC"
-    },
-    {
-      "amount": 8496.0,
-      "candidate_like": true,
-      "data": {
-        "full_name": "CALVERT, KEN",
-        "political_affiliations": [
-          "REP"
-        ],
-        "public_roles": [
-          "Federal candidate for H CA-40"
-        ]
-      },
-      "dtype": "person",
-      "fec_recipient_committee_ids": [
-        "C00257337"
-      ],
-      "name": "CALVERT, KEN",
-      "office": "",
-      "party": "Republican",
-      "recipient_id": "starintel:person:fec-candidate-h2ca37023",
-      "rows": 4,
-      "source": "AIPAC PAC"
+      "sources": {
+        "AIPAC PAC": 9494.0
+      }
     },
     {
       "amount": 8494.0,
@@ -1452,30 +1659,113 @@
       "party": "Republican",
       "recipient_id": "starintel:person:fec-candidate-h6tn07161",
       "rows": 4,
-      "source": "AIPAC PAC"
+      "sources": {
+        "AIPAC PAC": 8494.0
+      }
+    },
+    {
+      "amount": 7494.0,
+      "candidate_like": true,
+      "data": {
+        "full_name": "GRAHAM, LINDSEY O.",
+        "political_affiliations": [
+          "REP"
+        ],
+        "public_roles": [
+          "Federal candidate for S SC-00"
+        ]
+      },
+      "dtype": "person",
+      "fec_recipient_committee_ids": [
+        "C00458828"
+      ],
+      "name": "GRAHAM, LINDSEY O.",
+      "office": "",
+      "party": "Republican",
+      "recipient_id": "starintel:person:fec-candidate-s0sc00149",
+      "rows": 4,
+      "sources": {
+        "AIPAC PAC": 2494.0,
+        "Palantir employee PAC": 5000.0
+      }
+    },
+    {
+      "amount": 7494.0,
+      "candidate_like": true,
+      "data": {
+        "full_name": "MULLIN, MARKWAYNE",
+        "political_affiliations": [
+          "REP"
+        ],
+        "public_roles": [
+          "Federal candidate for S OK-00"
+        ]
+      },
+      "dtype": "person",
+      "fec_recipient_committee_ids": [
+        "C00498345"
+      ],
+      "name": "MULLIN, MARKWAYNE",
+      "office": "",
+      "party": "Republican",
+      "recipient_id": "starintel:person:fec-candidate-s2ok00186",
+      "rows": 4,
+      "sources": {
+        "AIPAC PAC": 4994.0,
+        "Palantir employee PAC": 2500.0
+      }
+    },
+    {
+      "amount": 7494.0,
+      "candidate_like": true,
+      "data": {
+        "full_name": "WOMACK, STEPHEN A THE HON",
+        "political_affiliations": [
+          "REP"
+        ],
+        "public_roles": [
+          "Federal candidate for H AR-03"
+        ]
+      },
+      "dtype": "person",
+      "fec_recipient_committee_ids": [
+        "C00477745"
+      ],
+      "name": "WOMACK, STEPHEN A THE HON",
+      "office": "",
+      "party": "Republican",
+      "recipient_id": "starintel:person:fec-candidate-h0ar03055",
+      "rows": 6,
+      "sources": {
+        "AIPAC PAC": 4994.0,
+        "Palantir employee PAC": 2500.0
+      }
     },
     {
       "amount": 6994.0,
       "candidate_like": true,
       "data": {
-        "full_name": "CORNYN, JOHN SEN",
+        "full_name": "WARNER, MARK ROBERT",
         "political_affiliations": [
-          "REP"
+          "DEM"
         ],
         "public_roles": [
-          "Federal candidate for S TX-00"
+          "Federal candidate for S VA-00"
         ]
       },
       "dtype": "person",
       "fec_recipient_committee_ids": [
-        "C00369033"
+        "C00438713"
       ],
-      "name": "CORNYN, JOHN SEN",
+      "name": "WARNER, MARK ROBERT",
       "office": "",
-      "party": "Republican",
-      "recipient_id": "starintel:person:fec-candidate-s2tx00106",
-      "rows": 6,
-      "source": "AIPAC PAC"
+      "party": "Democratic",
+      "recipient_id": "starintel:person:fec-candidate-s6va00093",
+      "rows": 5,
+      "sources": {
+        "AIPAC PAC": 4494.0,
+        "Palantir employee PAC": 2500.0
+      }
     },
     {
       "amount": 6494.0,
@@ -1498,7 +1788,35 @@
       "party": "Republican",
       "recipient_id": "starintel:person:fec-candidate-h0in03198",
       "rows": 4,
-      "source": "AIPAC PAC"
+      "sources": {
+        "AIPAC PAC": 6494.0
+      }
+    },
+    {
+      "amount": 5994.0,
+      "candidate_like": true,
+      "data": {
+        "full_name": "AGUILAR, PETE",
+        "political_affiliations": [
+          "DEM"
+        ],
+        "public_roles": [
+          "Federal candidate for H CA-33"
+        ]
+      },
+      "dtype": "person",
+      "fec_recipient_committee_ids": [
+        "C00510461"
+      ],
+      "name": "AGUILAR, PETE",
+      "office": "",
+      "party": "Democratic",
+      "recipient_id": "starintel:person:fec-candidate-h2ca31125",
+      "rows": 3,
+      "sources": {
+        "AIPAC PAC": 4994.0,
+        "Palantir employee PAC": 1000.0
+      }
     },
     {
       "amount": 5994.0,
@@ -1521,7 +1839,9 @@
       "party": "Republican",
       "recipient_id": "starintel:person:fec-candidate-s8ms00261",
       "rows": 4,
-      "source": "AIPAC PAC"
+      "sources": {
+        "AIPAC PAC": 5994.0
+      }
     },
     {
       "amount": 5994.0,
@@ -1544,7 +1864,9 @@
       "party": "Republican",
       "recipient_id": "starintel:person:fec-candidate-h2va02064",
       "rows": 5,
-      "source": "AIPAC PAC"
+      "sources": {
+        "AIPAC PAC": 5994.0
+      }
     },
     {
       "amount": 5994.0,
@@ -1567,30 +1889,9 @@
       "party": "Republican",
       "recipient_id": "starintel:person:fec-candidate-h8ia02043",
       "rows": 5,
-      "source": "AIPAC PAC"
-    },
-    {
-      "amount": 5994.0,
-      "candidate_like": true,
-      "data": {
-        "full_name": "WITTMAN, ROBERT J. MR.",
-        "political_affiliations": [
-          "REP"
-        ],
-        "public_roles": [
-          "Federal candidate for H VA-01"
-        ]
-      },
-      "dtype": "person",
-      "fec_recipient_committee_ids": [
-        "C00441014"
-      ],
-      "name": "WITTMAN, ROBERT J. MR.",
-      "office": "",
-      "party": "Republican",
-      "recipient_id": "starintel:person:fec-candidate-h8va01147",
-      "rows": 5,
-      "source": "AIPAC PAC"
+      "sources": {
+        "AIPAC PAC": 5994.0
+      }
     },
     {
       "amount": 5496.0,
@@ -1613,7 +1914,9 @@
       "party": "Democratic",
       "recipient_id": "starintel:person:fec-candidate-h6ca20152",
       "rows": 5,
-      "source": "AIPAC PAC"
+      "sources": {
+        "AIPAC PAC": 5496.0
+      }
     },
     {
       "amount": 5494.0,
@@ -1636,7 +1939,9 @@
       "party": "Republican",
       "recipient_id": "starintel:person:fec-candidate-h6pa08277",
       "rows": 5,
-      "source": "AIPAC PAC"
+      "sources": {
+        "AIPAC PAC": 5494.0
+      }
     },
     {
       "amount": 5494.0,
@@ -1659,7 +1964,9 @@
       "party": "Democratic",
       "recipient_id": "starintel:person:fec-candidate-h6ca24113",
       "rows": 3,
-      "source": "AIPAC PAC"
+      "sources": {
+        "AIPAC PAC": 5494.0
+      }
     },
     {
       "amount": 5000.0,
@@ -1682,7 +1989,9 @@
       "party": "Republican",
       "recipient_id": "starintel:person:fec-candidate-h6ky06192",
       "rows": 1,
-      "source": "AIPAC PAC"
+      "sources": {
+        "AIPAC PAC": 5000.0
+      }
     },
     {
       "amount": 5000.0,
@@ -1702,7 +2011,9 @@
       "party": "Other/unclear",
       "recipient_id": "starintel:org:fec-committee-c00506907",
       "rows": 1,
-      "source": "AIPAC PAC"
+      "sources": {
+        "AIPAC PAC": 5000.0
+      }
     },
     {
       "amount": 5000.0,
@@ -1725,7 +2036,9 @@
       "party": "Republican",
       "recipient_id": "starintel:person:fec-candidate-s2al00145",
       "rows": 2,
-      "source": "Palantir employee PAC"
+      "sources": {
+        "Palantir employee PAC": 5000.0
+      }
     },
     {
       "amount": 5000.0,
@@ -1745,30 +2058,9 @@
       "party": "Other/unclear",
       "recipient_id": "starintel:org:fec-committee-c00573709",
       "rows": 1,
-      "source": "AIPAC PAC"
-    },
-    {
-      "amount": 5000.0,
-      "candidate_like": true,
-      "data": {
-        "full_name": "CALVERT, KEN",
-        "political_affiliations": [
-          "REP"
-        ],
-        "public_roles": [
-          "Federal candidate for H CA-40"
-        ]
-      },
-      "dtype": "person",
-      "fec_recipient_committee_ids": [
-        "C00257337"
-      ],
-      "name": "CALVERT, KEN",
-      "office": "",
-      "party": "Republican",
-      "recipient_id": "starintel:person:fec-candidate-h2ca37023",
-      "rows": 1,
-      "source": "Palantir employee PAC"
+      "sources": {
+        "AIPAC PAC": 5000.0
+      }
     },
     {
       "amount": 5000.0,
@@ -1788,7 +2080,9 @@
       "party": "Other/unclear",
       "recipient_id": "starintel:org:fec-committee-c00365536",
       "rows": 1,
-      "source": "AIPAC PAC"
+      "sources": {
+        "AIPAC PAC": 5000.0
+      }
     },
     {
       "amount": 5000.0,
@@ -1811,30 +2105,9 @@
       "party": "Republican",
       "recipient_id": "starintel:person:fec-candidate-h6sc05202",
       "rows": 1,
-      "source": "AIPAC PAC"
-    },
-    {
-      "amount": 5000.0,
-      "candidate_like": true,
-      "data": {
-        "full_name": "COLE, TOM",
-        "political_affiliations": [
-          "REP"
-        ],
-        "public_roles": [
-          "Federal candidate for H OK-04"
-        ]
-      },
-      "dtype": "person",
-      "fec_recipient_committee_ids": [
-        "C00379735"
-      ],
-      "name": "COLE, TOM",
-      "office": "",
-      "party": "Republican",
-      "recipient_id": "starintel:person:fec-candidate-h2ok04055",
-      "rows": 1,
-      "source": "Palantir employee PAC"
+      "sources": {
+        "AIPAC PAC": 5000.0
+      }
     },
     {
       "amount": 5000.0,
@@ -1857,7 +2130,9 @@
       "party": "Republican",
       "recipient_id": "starintel:person:fec-candidate-s6ga00390",
       "rows": 1,
-      "source": "AIPAC PAC"
+      "sources": {
+        "AIPAC PAC": 5000.0
+      }
     },
     {
       "amount": 5000.0,
@@ -1877,30 +2152,9 @@
       "party": "Other/unclear",
       "recipient_id": "starintel:org:fec-committee-c00147512",
       "rows": 1,
-      "source": "AIPAC PAC"
-    },
-    {
-      "amount": 5000.0,
-      "candidate_like": true,
-      "data": {
-        "full_name": "CORNYN, JOHN SEN",
-        "political_affiliations": [
-          "REP"
-        ],
-        "public_roles": [
-          "Federal candidate for S TX-00"
-        ]
-      },
-      "dtype": "person",
-      "fec_recipient_committee_ids": [
-        "C00369033"
-      ],
-      "name": "CORNYN, JOHN SEN",
-      "office": "",
-      "party": "Republican",
-      "recipient_id": "starintel:person:fec-candidate-s2tx00106",
-      "rows": 1,
-      "source": "Palantir employee PAC"
+      "sources": {
+        "AIPAC PAC": 5000.0
+      }
     },
     {
       "amount": 5000.0,
@@ -1923,7 +2177,9 @@
       "party": "Democratic",
       "recipient_id": "starintel:person:fec-candidate-h6mn02131",
       "rows": 3,
-      "source": "AIPAC PAC"
+      "sources": {
+        "AIPAC PAC": 5000.0
+      }
     },
     {
       "amount": 5000.0,
@@ -1943,7 +2199,9 @@
       "party": "Other/unclear",
       "recipient_id": "starintel:org:fec-committee-c00592089",
       "rows": 1,
-      "source": "AIPAC PAC"
+      "sources": {
+        "AIPAC PAC": 5000.0
+      }
     },
     {
       "amount": 5000.0,
@@ -1963,7 +2221,9 @@
       "party": "Other/unclear",
       "recipient_id": "starintel:org:fec-committee-c00550970",
       "rows": 1,
-      "source": "AIPAC PAC"
+      "sources": {
+        "AIPAC PAC": 5000.0
+      }
     },
     {
       "amount": 5000.0,
@@ -1986,7 +2246,9 @@
       "party": "Republican",
       "recipient_id": "starintel:person:fec-candidate-h4nd00061",
       "rows": 3,
-      "source": "AIPAC PAC"
+      "sources": {
+        "AIPAC PAC": 5000.0
+      }
     },
     {
       "amount": 5000.0,
@@ -2009,30 +2271,9 @@
       "party": "Republican",
       "recipient_id": "starintel:person:fec-candidate-h6ga10175",
       "rows": 1,
-      "source": "AIPAC PAC"
-    },
-    {
-      "amount": 5000.0,
-      "candidate_like": true,
-      "data": {
-        "full_name": "GRAHAM, LINDSEY O.",
-        "political_affiliations": [
-          "REP"
-        ],
-        "public_roles": [
-          "Federal candidate for S SC-00"
-        ]
-      },
-      "dtype": "person",
-      "fec_recipient_committee_ids": [
-        "C00458828"
-      ],
-      "name": "GRAHAM, LINDSEY O.",
-      "office": "",
-      "party": "Republican",
-      "recipient_id": "starintel:person:fec-candidate-s0sc00149",
-      "rows": 1,
-      "source": "Palantir employee PAC"
+      "sources": {
+        "AIPAC PAC": 5000.0
+      }
     },
     {
       "amount": 5000.0,
@@ -2052,7 +2293,9 @@
       "party": "Other/unclear",
       "recipient_id": "starintel:org:fec-committee-c00809970",
       "rows": 3,
-      "source": "AIPAC PAC"
+      "sources": {
+        "AIPAC PAC": 5000.0
+      }
     },
     {
       "amount": 5000.0,
@@ -2072,7 +2315,9 @@
       "party": "Other/unclear",
       "recipient_id": "starintel:org:fec-committee-c00326439",
       "rows": 1,
-      "source": "AIPAC PAC"
+      "sources": {
+        "AIPAC PAC": 5000.0
+      }
     },
     {
       "amount": 5000.0,
@@ -2095,7 +2340,9 @@
       "party": "Republican",
       "recipient_id": "starintel:person:fec-candidate-h6sd01109",
       "rows": 1,
-      "source": "AIPAC PAC"
+      "sources": {
+        "AIPAC PAC": 5000.0
+      }
     },
     {
       "amount": 5000.0,
@@ -2118,7 +2365,9 @@
       "party": "Republican",
       "recipient_id": "starintel:person:fec-candidate-h4nc13116",
       "rows": 1,
-      "source": "AIPAC PAC"
+      "sources": {
+        "AIPAC PAC": 5000.0
+      }
     },
     {
       "amount": 5000.0,
@@ -2138,7 +2387,9 @@
       "party": "Other/unclear",
       "recipient_id": "starintel:org:fec-committee-c00409730",
       "rows": 1,
-      "source": "AIPAC PAC"
+      "sources": {
+        "AIPAC PAC": 5000.0
+      }
     },
     {
       "amount": 5000.0,
@@ -2158,7 +2409,9 @@
       "party": "Other/unclear",
       "recipient_id": "starintel:org:fec-committee-c00433060",
       "rows": 3,
-      "source": "AIPAC PAC"
+      "sources": {
+        "AIPAC PAC": 5000.0
+      }
     },
     {
       "amount": 5000.0,
@@ -2178,30 +2431,9 @@
       "party": "Other/unclear",
       "recipient_id": "starintel:org:fec-committee-c00165159",
       "rows": 3,
-      "source": "AIPAC PAC"
-    },
-    {
-      "amount": 5000.0,
-      "candidate_like": true,
-      "data": {
-        "full_name": "SMITH, D. ADAM",
-        "political_affiliations": [
-          "DEM"
-        ],
-        "public_roles": [
-          "Federal candidate for H WA-09"
-        ]
-      },
-      "dtype": "person",
-      "fec_recipient_committee_ids": [
-        "C00304709"
-      ],
-      "name": "SMITH, D. ADAM",
-      "office": "",
-      "party": "Democratic",
-      "recipient_id": "starintel:person:fec-candidate-h6wa09025",
-      "rows": 1,
-      "source": "Palantir employee PAC"
+      "sources": {
+        "AIPAC PAC": 5000.0
+      }
     },
     {
       "amount": 5000.0,
@@ -2224,50 +2456,9 @@
       "party": "Democratic",
       "recipient_id": "starintel:person:fec-candidate-h8mi11254",
       "rows": 3,
-      "source": "AIPAC PAC"
-    },
-    {
-      "amount": 5000.0,
-      "candidate_like": false,
-      "data": {
-        "name": "WITH HONOR PAC",
-        "org_type": "federal political committee",
-        "registration_number": "C00661272",
-        "website": "https://www.fec.gov/data/committee/C00661272/"
-      },
-      "dtype": "org",
-      "fec_recipient_committee_ids": [
-        "C00661272"
-      ],
-      "name": "WITH HONOR PAC",
-      "office": "",
-      "party": "Other/unclear",
-      "recipient_id": "starintel:org:fec-committee-c00661272",
-      "rows": 1,
-      "source": "AIPAC PAC"
-    },
-    {
-      "amount": 5000.0,
-      "candidate_like": true,
-      "data": {
-        "full_name": "WITTMAN, ROBERT J. MR.",
-        "political_affiliations": [
-          "REP"
-        ],
-        "public_roles": [
-          "Federal candidate for H VA-01"
-        ]
-      },
-      "dtype": "person",
-      "fec_recipient_committee_ids": [
-        "C00441014"
-      ],
-      "name": "WITTMAN, ROBERT J. MR.",
-      "office": "",
-      "party": "Republican",
-      "recipient_id": "starintel:person:fec-candidate-h8va01147",
-      "rows": 2,
-      "source": "Palantir employee PAC"
+      "sources": {
+        "AIPAC PAC": 5000.0
+      }
     },
     {
       "amount": 5000.0,
@@ -2290,7 +2481,9 @@
       "party": "Republican",
       "recipient_id": "starintel:person:fec-candidate-h6tx32225",
       "rows": 1,
-      "source": "AIPAC PAC"
+      "sources": {
+        "AIPAC PAC": 5000.0
+      }
     },
     {
       "amount": 4997.0,
@@ -2313,7 +2506,9 @@
       "party": "Other/unclear",
       "recipient_id": "starintel:person:fec-candidate-h2ca03157",
       "rows": 4,
-      "source": "AIPAC PAC"
+      "sources": {
+        "AIPAC PAC": 4997.0
+      }
     },
     {
       "amount": 4995.0,
@@ -2336,7 +2531,9 @@
       "party": "Republican",
       "recipient_id": "starintel:person:fec-candidate-h6ne03115",
       "rows": 4,
-      "source": "AIPAC PAC"
+      "sources": {
+        "AIPAC PAC": 4995.0
+      }
     },
     {
       "amount": 4994.0,
@@ -2359,30 +2556,9 @@
       "party": "Republican",
       "recipient_id": "starintel:person:fec-candidate-h6al04098",
       "rows": 3,
-      "source": "AIPAC PAC"
-    },
-    {
-      "amount": 4994.0,
-      "candidate_like": true,
-      "data": {
-        "full_name": "AGUILAR, PETE",
-        "political_affiliations": [
-          "DEM"
-        ],
-        "public_roles": [
-          "Federal candidate for H CA-33"
-        ]
-      },
-      "dtype": "person",
-      "fec_recipient_committee_ids": [
-        "C00510461"
-      ],
-      "name": "AGUILAR, PETE",
-      "office": "",
-      "party": "Democratic",
-      "recipient_id": "starintel:person:fec-candidate-h2ca31125",
-      "rows": 2,
-      "source": "AIPAC PAC"
+      "sources": {
+        "AIPAC PAC": 4994.0
+      }
     },
     {
       "amount": 4994.0,
@@ -2405,7 +2581,9 @@
       "party": "Republican",
       "recipient_id": "starintel:person:fec-candidate-h2ga12121",
       "rows": 3,
-      "source": "AIPAC PAC"
+      "sources": {
+        "AIPAC PAC": 4994.0
+      }
     },
     {
       "amount": 4994.0,
@@ -2428,7 +2606,9 @@
       "party": "Republican",
       "recipient_id": "starintel:person:fec-candidate-h6tx02079",
       "rows": 3,
-      "source": "AIPAC PAC"
+      "sources": {
+        "AIPAC PAC": 4994.0
+      }
     },
     {
       "amount": 4994.0,
@@ -2451,7 +2631,9 @@
       "party": "Republican",
       "recipient_id": "starintel:person:fec-candidate-h8in04199",
       "rows": 3,
-      "source": "AIPAC PAC"
+      "sources": {
+        "AIPAC PAC": 4994.0
+      }
     },
     {
       "amount": 4994.0,
@@ -2474,7 +2656,9 @@
       "party": "Republican",
       "recipient_id": "starintel:person:fec-candidate-h8oh12180",
       "rows": 3,
-      "source": "AIPAC PAC"
+      "sources": {
+        "AIPAC PAC": 4994.0
+      }
     },
     {
       "amount": 4994.0,
@@ -2497,7 +2681,9 @@
       "party": "Republican",
       "recipient_id": "starintel:person:fec-candidate-h2mi07123",
       "rows": 3,
-      "source": "AIPAC PAC"
+      "sources": {
+        "AIPAC PAC": 4994.0
+      }
     },
     {
       "amount": 4994.0,
@@ -2520,7 +2706,9 @@
       "party": "Democratic",
       "recipient_id": "starintel:person:fec-candidate-h2oh03125",
       "rows": 3,
-      "source": "AIPAC PAC"
+      "sources": {
+        "AIPAC PAC": 4994.0
+      }
     },
     {
       "amount": 4994.0,
@@ -2543,7 +2731,9 @@
       "party": "Republican",
       "recipient_id": "starintel:person:fec-candidate-h2ak01083",
       "rows": 3,
-      "source": "AIPAC PAC"
+      "sources": {
+        "AIPAC PAC": 4994.0
+      }
     },
     {
       "amount": 4994.0,
@@ -2566,7 +2756,9 @@
       "party": "Republican",
       "recipient_id": "starintel:person:fec-candidate-h4sc01313",
       "rows": 3,
-      "source": "AIPAC PAC"
+      "sources": {
+        "AIPAC PAC": 4994.0
+      }
     },
     {
       "amount": 4994.0,
@@ -2589,7 +2781,9 @@
       "party": "Republican",
       "recipient_id": "starintel:person:fec-candidate-h6fl09070",
       "rows": 2,
-      "source": "AIPAC PAC"
+      "sources": {
+        "AIPAC PAC": 4994.0
+      }
     },
     {
       "amount": 4994.0,
@@ -2612,7 +2806,9 @@
       "party": "Democratic",
       "recipient_id": "starintel:person:fec-candidate-s4nj00185",
       "rows": 2,
-      "source": "AIPAC PAC"
+      "sources": {
+        "AIPAC PAC": 4994.0
+      }
     },
     {
       "amount": 4994.0,
@@ -2635,7 +2831,9 @@
       "party": "Democratic",
       "recipient_id": "starintel:person:fec-candidate-h2oh11169",
       "rows": 2,
-      "source": "AIPAC PAC"
+      "sources": {
+        "AIPAC PAC": 4994.0
+      }
     },
     {
       "amount": 4994.0,
@@ -2658,7 +2856,9 @@
       "party": "Republican",
       "recipient_id": "starintel:person:fec-candidate-h8tn02119",
       "rows": 3,
-      "source": "AIPAC PAC"
+      "sources": {
+        "AIPAC PAC": 4994.0
+      }
     },
     {
       "amount": 4994.0,
@@ -2681,7 +2881,9 @@
       "party": "Republican",
       "recipient_id": "starintel:person:fec-candidate-s4wv00159",
       "rows": 3,
-      "source": "AIPAC PAC"
+      "sources": {
+        "AIPAC PAC": 4994.0
+      }
     },
     {
       "amount": 4994.0,
@@ -2704,7 +2906,9 @@
       "party": "Republican",
       "recipient_id": "starintel:person:fec-candidate-h2oh15228",
       "rows": 3,
-      "source": "AIPAC PAC"
+      "sources": {
+        "AIPAC PAC": 4994.0
+      }
     },
     {
       "amount": 4994.0,
@@ -2727,7 +2931,9 @@
       "party": "Democratic",
       "recipient_id": "starintel:person:fec-candidate-h6fl11126",
       "rows": 3,
-      "source": "AIPAC PAC"
+      "sources": {
+        "AIPAC PAC": 4994.0
+      }
     },
     {
       "amount": 4994.0,
@@ -2750,7 +2956,9 @@
       "party": "Democratic",
       "recipient_id": "starintel:person:fec-candidate-h8fl20032",
       "rows": 2,
-      "source": "AIPAC PAC"
+      "sources": {
+        "AIPAC PAC": 4994.0
+      }
     },
     {
       "amount": 4994.0,
@@ -2773,7 +2981,9 @@
       "party": "Democratic",
       "recipient_id": "starintel:person:fec-candidate-h8ca39174",
       "rows": 3,
-      "source": "AIPAC PAC"
+      "sources": {
+        "AIPAC PAC": 4994.0
+      }
     },
     {
       "amount": 4994.0,
@@ -2796,30 +3006,9 @@
       "party": "Republican",
       "recipient_id": "starintel:person:fec-candidate-h8va06104",
       "rows": 3,
-      "source": "AIPAC PAC"
-    },
-    {
-      "amount": 4994.0,
-      "candidate_like": true,
-      "data": {
-        "full_name": "COLE, TOM",
-        "political_affiliations": [
-          "REP"
-        ],
-        "public_roles": [
-          "Federal candidate for H OK-04"
-        ]
-      },
-      "dtype": "person",
-      "fec_recipient_committee_ids": [
-        "C00379735"
-      ],
-      "name": "COLE, TOM",
-      "office": "",
-      "party": "Republican",
-      "recipient_id": "starintel:person:fec-candidate-h2ok04055",
-      "rows": 3,
-      "source": "AIPAC PAC"
+      "sources": {
+        "AIPAC PAC": 4994.0
+      }
     },
     {
       "amount": 4994.0,
@@ -2842,7 +3031,9 @@
       "party": "Republican",
       "recipient_id": "starintel:person:fec-candidate-s6me00159",
       "rows": 2,
-      "source": "AIPAC PAC"
+      "sources": {
+        "AIPAC PAC": 4994.0
+      }
     },
     {
       "amount": 4994.0,
@@ -2865,10 +3056,87 @@
       "party": "Democratic",
       "recipient_id": "starintel:person:fec-candidate-s0de00092",
       "rows": 3,
-      "source": "AIPAC PAC"
+      "sources": {
+        "AIPAC PAC": 4994.0
+      }
+    },
+    {
+      "amount": 4994.0,
+      "candidate_like": true,
+      "data": {
+        "full_name": "CORREA, LOU",
+        "political_affiliations": [
+          "DEM"
+        ],
+        "public_roles": [
+          "Federal candidate for H CA-46"
+        ]
+      },
+      "dtype": "person",
+      "fec_recipient_committee_ids": [
+        "C00578302"
+      ],
+      "name": "CORREA, LOU",
+      "office": "",
+      "party": "Democratic",
+      "recipient_id": "starintel:person:fec-candidate-h6ca46116",
+      "rows": 3,
+      "sources": {
+        "AIPAC PAC": 4994.0
+      }
+    },
+    {
+      "amount": 4994.0,
+      "candidate_like": true,
+      "data": {
+        "full_name": "CRAWFORD, ERIC ALAN RICK",
+        "political_affiliations": [
+          "REP"
+        ],
+        "public_roles": [
+          "Federal candidate for H AR-01"
+        ]
+      },
+      "dtype": "person",
+      "fec_recipient_committee_ids": [
+        "C00462374"
+      ],
+      "name": "CRAWFORD, ERIC ALAN RICK",
+      "office": "",
+      "party": "Republican",
+      "recipient_id": "starintel:person:fec-candidate-h0ar01083",
+      "rows": 3,
+      "sources": {
+        "AIPAC PAC": 4994.0
+      }
+    },
+    {
+      "amount": 4994.0,
+      "candidate_like": true,
+      "data": {
+        "full_name": "DIAZ-BALART, MARIO",
+        "political_affiliations": [
+          "REP"
+        ],
+        "public_roles": [
+          "Federal candidate for H FL-26"
+        ]
+      },
+      "dtype": "person",
+      "fec_recipient_committee_ids": [
+        "C00376087"
+      ],
+      "name": "DIAZ-BALART, MARIO",
+      "office": "",
+      "party": "Republican",
+      "recipient_id": "starintel:person:fec-candidate-h2fl25018",
+      "rows": 3,
+      "sources": {
+        "AIPAC PAC": 4994.0
+      }
     }
   ],
-  "top_candidate_recipients": [
+  "top_candidate_recipients_by_source": [
     {
       "amount": 70724.0,
       "candidate_like": true,
@@ -4594,6 +4862,1894 @@
       "recipient_id": "starintel:person:fec-candidate-h4nd00061",
       "rows": 3,
       "source": "AIPAC PAC"
+    }
+  ],
+  "top_candidate_recipients_combined": [
+    {
+      "amount": 70724.0,
+      "candidate_like": true,
+      "data": {
+        "full_name": "GOTTHEIMER, JOSH",
+        "political_affiliations": [
+          "DEM"
+        ],
+        "public_roles": [
+          "Federal candidate for H NJ-05"
+        ]
+      },
+      "dtype": "person",
+      "fec_recipient_committee_ids": [
+        "C00573949"
+      ],
+      "name": "GOTTHEIMER, JOSH",
+      "office": "",
+      "party": "Democratic",
+      "recipient_id": "starintel:person:fec-candidate-h6nj05171",
+      "rows": 34,
+      "sources": {
+        "AIPAC PAC": 70724.0
+      }
+    },
+    {
+      "amount": 40175.0,
+      "candidate_like": true,
+      "data": {
+        "full_name": "RILEY, JOSH",
+        "political_affiliations": [
+          "DEM"
+        ],
+        "public_roles": [
+          "Federal candidate for H NY-19"
+        ]
+      },
+      "dtype": "person",
+      "fec_recipient_committee_ids": [
+        "C00793760"
+      ],
+      "name": "RILEY, JOSH",
+      "office": "",
+      "party": "Democratic",
+      "recipient_id": "starintel:person:fec-candidate-h8ny22177",
+      "rows": 18,
+      "sources": {
+        "AIPAC PAC": 40175.0
+      }
+    },
+    {
+      "amount": 21884.0,
+      "candidate_like": true,
+      "data": {
+        "full_name": "SCHOLTEN, HILLARY",
+        "political_affiliations": [
+          "DEM"
+        ],
+        "public_roles": [
+          "Federal candidate for H MI-03"
+        ]
+      },
+      "dtype": "person",
+      "fec_recipient_committee_ids": [
+        "C00711317"
+      ],
+      "name": "SCHOLTEN, HILLARY",
+      "office": "",
+      "party": "Democratic",
+      "recipient_id": "starintel:person:fec-candidate-h0mi03316",
+      "rows": 42,
+      "sources": {
+        "AIPAC PAC": 21884.0
+      }
+    },
+    {
+      "amount": 21800.0,
+      "candidate_like": true,
+      "data": {
+        "full_name": "CUELLAR, HENRY R.",
+        "political_affiliations": [
+          "DEM"
+        ],
+        "public_roles": [
+          "Federal candidate for H TX-28"
+        ]
+      },
+      "dtype": "person",
+      "fec_recipient_committee_ids": [
+        "C00371302"
+      ],
+      "name": "CUELLAR, HENRY R.",
+      "office": "",
+      "party": "Democratic",
+      "recipient_id": "starintel:person:fec-candidate-h2tx23082",
+      "rows": 6,
+      "sources": {
+        "AIPAC PAC": 21800.0
+      }
+    },
+    {
+      "amount": 14994.0,
+      "candidate_like": true,
+      "data": {
+        "full_name": "BELL, WESLEY",
+        "political_affiliations": [
+          "DEM"
+        ],
+        "public_roles": [
+          "Federal candidate for H MO-01"
+        ]
+      },
+      "dtype": "person",
+      "fec_recipient_committee_ids": [
+        "C00842336"
+      ],
+      "name": "BELL, WESLEY",
+      "office": "",
+      "party": "Democratic",
+      "recipient_id": "starintel:person:fec-candidate-h4mo01134",
+      "rows": 4,
+      "sources": {
+        "AIPAC PAC": 14994.0
+      }
+    },
+    {
+      "amount": 14994.0,
+      "candidate_like": true,
+      "data": {
+        "full_name": "PATRONIS, JIMMY JR.",
+        "political_affiliations": [
+          "REP"
+        ],
+        "public_roles": [
+          "Federal candidate for H FL-01"
+        ]
+      },
+      "dtype": "person",
+      "fec_recipient_committee_ids": [
+        "C00893594"
+      ],
+      "name": "PATRONIS, JIMMY JR.",
+      "office": "",
+      "party": "Republican",
+      "recipient_id": "starintel:person:fec-candidate-h6fl01390",
+      "rows": 5,
+      "sources": {
+        "AIPAC PAC": 14994.0
+      }
+    },
+    {
+      "amount": 14994.0,
+      "candidate_like": true,
+      "data": {
+        "full_name": "SULLIVAN, DAN",
+        "political_affiliations": [
+          "REP"
+        ],
+        "public_roles": [
+          "Federal candidate for S AK-00"
+        ]
+      },
+      "dtype": "person",
+      "fec_recipient_committee_ids": [
+        "C00027466",
+        "C00570994"
+      ],
+      "name": "SULLIVAN, DAN",
+      "office": "",
+      "party": "Republican",
+      "recipient_id": "starintel:person:fec-candidate-s4ak00214",
+      "rows": 3,
+      "sources": {
+        "AIPAC PAC": 14994.0
+      }
+    },
+    {
+      "amount": 14494.0,
+      "candidate_like": true,
+      "data": {
+        "full_name": "RICKETTS, PETE",
+        "political_affiliations": [
+          "REP"
+        ],
+        "public_roles": [
+          "Federal candidate for S NE-00"
+        ]
+      },
+      "dtype": "person",
+      "fec_recipient_committee_ids": [
+        "C00832436"
+      ],
+      "name": "RICKETTS, PETE",
+      "office": "",
+      "party": "Republican",
+      "recipient_id": "starintel:person:fec-candidate-s6ne00129",
+      "rows": 4,
+      "sources": {
+        "AIPAC PAC": 14494.0
+      }
+    },
+    {
+      "amount": 13496.0,
+      "candidate_like": true,
+      "data": {
+        "full_name": "CALVERT, KEN",
+        "political_affiliations": [
+          "REP"
+        ],
+        "public_roles": [
+          "Federal candidate for H CA-40"
+        ]
+      },
+      "dtype": "person",
+      "fec_recipient_committee_ids": [
+        "C00257337"
+      ],
+      "name": "CALVERT, KEN",
+      "office": "",
+      "party": "Republican",
+      "recipient_id": "starintel:person:fec-candidate-h2ca37023",
+      "rows": 5,
+      "sources": {
+        "AIPAC PAC": 8496.0,
+        "Palantir employee PAC": 5000.0
+      }
+    },
+    {
+      "amount": 13396.0,
+      "candidate_like": true,
+      "data": {
+        "full_name": "LIEU, TED",
+        "political_affiliations": [
+          "DEM"
+        ],
+        "public_roles": [
+          "Federal candidate for H CA-36"
+        ]
+      },
+      "dtype": "person",
+      "fec_recipient_committee_ids": [
+        "C00556506"
+      ],
+      "name": "LIEU, TED",
+      "office": "",
+      "party": "Democratic",
+      "recipient_id": "starintel:person:fec-candidate-h4ca33119",
+      "rows": 10,
+      "sources": {
+        "AIPAC PAC": 13396.0
+      }
+    },
+    {
+      "amount": 12094.0,
+      "candidate_like": true,
+      "data": {
+        "full_name": "GRAVES, SAMUEL B. JR.",
+        "political_affiliations": [
+          "REP"
+        ],
+        "public_roles": [
+          "Federal candidate for H MO-06"
+        ]
+      },
+      "dtype": "person",
+      "fec_recipient_committee_ids": [
+        "C00359034"
+      ],
+      "name": "GRAVES, SAMUEL B. JR.",
+      "office": "",
+      "party": "Republican",
+      "recipient_id": "starintel:person:fec-candidate-h0mo06073",
+      "rows": 4,
+      "sources": {
+        "AIPAC PAC": 12094.0
+      }
+    },
+    {
+      "amount": 11994.0,
+      "candidate_like": true,
+      "data": {
+        "full_name": "CORNYN, JOHN SEN",
+        "political_affiliations": [
+          "REP"
+        ],
+        "public_roles": [
+          "Federal candidate for S TX-00"
+        ]
+      },
+      "dtype": "person",
+      "fec_recipient_committee_ids": [
+        "C00369033"
+      ],
+      "name": "CORNYN, JOHN SEN",
+      "office": "",
+      "party": "Republican",
+      "recipient_id": "starintel:person:fec-candidate-s2tx00106",
+      "rows": 7,
+      "sources": {
+        "AIPAC PAC": 6994.0,
+        "Palantir employee PAC": 5000.0
+      }
+    },
+    {
+      "amount": 10994.0,
+      "candidate_like": true,
+      "data": {
+        "full_name": "LARSON, JOHN B",
+        "political_affiliations": [
+          "DEM"
+        ],
+        "public_roles": [
+          "Federal candidate for H CT-01"
+        ]
+      },
+      "dtype": "person",
+      "fec_recipient_committee_ids": [
+        "C00330142"
+      ],
+      "name": "LARSON, JOHN B",
+      "office": "",
+      "party": "Democratic",
+      "recipient_id": "starintel:person:fec-candidate-h8ct01046",
+      "rows": 6,
+      "sources": {
+        "AIPAC PAC": 10994.0
+      }
+    },
+    {
+      "amount": 10994.0,
+      "candidate_like": true,
+      "data": {
+        "full_name": "WITTMAN, ROBERT J. MR.",
+        "political_affiliations": [
+          "REP"
+        ],
+        "public_roles": [
+          "Federal candidate for H VA-01"
+        ]
+      },
+      "dtype": "person",
+      "fec_recipient_committee_ids": [
+        "C00441014"
+      ],
+      "name": "WITTMAN, ROBERT J. MR.",
+      "office": "",
+      "party": "Republican",
+      "recipient_id": "starintel:person:fec-candidate-h8va01147",
+      "rows": 7,
+      "sources": {
+        "AIPAC PAC": 5994.0,
+        "Palantir employee PAC": 5000.0
+      }
+    },
+    {
+      "amount": 10494.0,
+      "candidate_like": true,
+      "data": {
+        "full_name": "EMMER, THOMAS EARL JR.",
+        "political_affiliations": [
+          "REP"
+        ],
+        "public_roles": [
+          "Federal candidate for H MN-06"
+        ]
+      },
+      "dtype": "person",
+      "fec_recipient_committee_ids": [
+        "C00545749"
+      ],
+      "name": "EMMER, THOMAS EARL JR.",
+      "office": "",
+      "party": "Republican",
+      "recipient_id": "starintel:person:fec-candidate-h4mn06087",
+      "rows": 6,
+      "sources": {
+        "AIPAC PAC": 10494.0
+      }
+    },
+    {
+      "amount": 10000.0,
+      "candidate_like": true,
+      "data": {
+        "full_name": "FULLER, CLAY",
+        "political_affiliations": [
+          "REP"
+        ],
+        "public_roles": [
+          "Federal candidate for H GA-14"
+        ]
+      },
+      "dtype": "person",
+      "fec_recipient_committee_ids": [
+        "C00931709"
+      ],
+      "name": "FULLER, CLAY",
+      "office": "",
+      "party": "Republican",
+      "recipient_id": "starintel:person:fec-candidate-h0ga14030",
+      "rows": 2,
+      "sources": {
+        "AIPAC PAC": 10000.0
+      }
+    },
+    {
+      "amount": 9994.0,
+      "candidate_like": true,
+      "data": {
+        "full_name": "ALFORD, MARK",
+        "political_affiliations": [
+          "REP"
+        ],
+        "public_roles": [
+          "Federal candidate for H MO-04"
+        ]
+      },
+      "dtype": "person",
+      "fec_recipient_committee_ids": [
+        "C00792598"
+      ],
+      "name": "ALFORD, MARK",
+      "office": "",
+      "party": "Republican",
+      "recipient_id": "starintel:person:fec-candidate-h2mo04207",
+      "rows": 3,
+      "sources": {
+        "AIPAC PAC": 9994.0
+      }
+    },
+    {
+      "amount": 9994.0,
+      "candidate_like": true,
+      "data": {
+        "full_name": "AUCHINCLOSS, JAKE",
+        "political_affiliations": [
+          "DEM"
+        ],
+        "public_roles": [
+          "Federal candidate for H MA-04"
+        ]
+      },
+      "dtype": "person",
+      "fec_recipient_committee_ids": [
+        "C00721449"
+      ],
+      "name": "AUCHINCLOSS, JAKE",
+      "office": "",
+      "party": "Democratic",
+      "recipient_id": "starintel:person:fec-candidate-h0ma04192",
+      "rows": 3,
+      "sources": {
+        "AIPAC PAC": 9994.0
+      }
+    },
+    {
+      "amount": 9994.0,
+      "candidate_like": true,
+      "data": {
+        "full_name": "BEAN, AARON P.",
+        "political_affiliations": [
+          "REP"
+        ],
+        "public_roles": [
+          "Federal candidate for H FL-04"
+        ]
+      },
+      "dtype": "person",
+      "fec_recipient_committee_ids": [
+        "C00816983"
+      ],
+      "name": "BEAN, AARON P.",
+      "office": "",
+      "party": "Republican",
+      "recipient_id": "starintel:person:fec-candidate-h2fl04211",
+      "rows": 4,
+      "sources": {
+        "AIPAC PAC": 9994.0
+      }
+    },
+    {
+      "amount": 9994.0,
+      "candidate_like": true,
+      "data": {
+        "full_name": "BOST, MICHAEL",
+        "political_affiliations": [
+          "REP"
+        ],
+        "public_roles": [
+          "Federal candidate for H IL-12"
+        ]
+      },
+      "dtype": "person",
+      "fec_recipient_committee_ids": [
+        "C00546499"
+      ],
+      "name": "BOST, MICHAEL",
+      "office": "",
+      "party": "Republican",
+      "recipient_id": "starintel:person:fec-candidate-h4il12060",
+      "rows": 4,
+      "sources": {
+        "AIPAC PAC": 9994.0
+      }
+    },
+    {
+      "amount": 9994.0,
+      "candidate_like": true,
+      "data": {
+        "full_name": "BOYLE, BRENDAN F",
+        "political_affiliations": [
+          "DEM"
+        ],
+        "public_roles": [
+          "Federal candidate for H PA-02"
+        ]
+      },
+      "dtype": "person",
+      "fec_recipient_committee_ids": [
+        "C00543363"
+      ],
+      "name": "BOYLE, BRENDAN F",
+      "office": "",
+      "party": "Democratic",
+      "recipient_id": "starintel:person:fec-candidate-h4pa13199",
+      "rows": 3,
+      "sources": {
+        "AIPAC PAC": 9994.0
+      }
+    },
+    {
+      "amount": 9994.0,
+      "candidate_like": true,
+      "data": {
+        "full_name": "BRESNAHAN, ROB",
+        "political_affiliations": [
+          "REP"
+        ],
+        "public_roles": [
+          "Federal candidate for H PA-08"
+        ]
+      },
+      "dtype": "person",
+      "fec_recipient_committee_ids": [
+        "C00852137"
+      ],
+      "name": "BRESNAHAN, ROB",
+      "office": "",
+      "party": "Republican",
+      "recipient_id": "starintel:person:fec-candidate-h4pa08124",
+      "rows": 4,
+      "sources": {
+        "AIPAC PAC": 9994.0
+      }
+    },
+    {
+      "amount": 9994.0,
+      "candidate_like": true,
+      "data": {
+        "full_name": "CLARK, KATHERINE",
+        "political_affiliations": [
+          "DEM"
+        ],
+        "public_roles": [
+          "Federal candidate for H MA-05"
+        ]
+      },
+      "dtype": "person",
+      "fec_recipient_committee_ids": [
+        "C00541888"
+      ],
+      "name": "CLARK, KATHERINE",
+      "office": "",
+      "party": "Democratic",
+      "recipient_id": "starintel:person:fec-candidate-h4ma05084",
+      "rows": 3,
+      "sources": {
+        "AIPAC PAC": 9994.0
+      }
+    },
+    {
+      "amount": 9994.0,
+      "candidate_like": true,
+      "data": {
+        "full_name": "COLE, TOM",
+        "political_affiliations": [
+          "REP"
+        ],
+        "public_roles": [
+          "Federal candidate for H OK-04"
+        ]
+      },
+      "dtype": "person",
+      "fec_recipient_committee_ids": [
+        "C00379735"
+      ],
+      "name": "COLE, TOM",
+      "office": "",
+      "party": "Republican",
+      "recipient_id": "starintel:person:fec-candidate-h2ok04055",
+      "rows": 4,
+      "sources": {
+        "AIPAC PAC": 4994.0,
+        "Palantir employee PAC": 5000.0
+      }
+    },
+    {
+      "amount": 9994.0,
+      "candidate_like": true,
+      "data": {
+        "full_name": "COTTON, THOMAS",
+        "political_affiliations": [
+          "REP"
+        ],
+        "public_roles": [
+          "Federal candidate for S AR-00"
+        ]
+      },
+      "dtype": "person",
+      "fec_recipient_committee_ids": [
+        "C00499988"
+      ],
+      "name": "COTTON, THOMAS",
+      "office": "",
+      "party": "Republican",
+      "recipient_id": "starintel:person:fec-candidate-s4ar00103",
+      "rows": 5,
+      "sources": {
+        "AIPAC PAC": 9994.0
+      }
+    },
+    {
+      "amount": 9994.0,
+      "candidate_like": true,
+      "data": {
+        "full_name": "CRENSHAW, DANIEL",
+        "political_affiliations": [
+          "REP"
+        ],
+        "public_roles": [
+          "Federal candidate for H TX-02"
+        ]
+      },
+      "dtype": "person",
+      "fec_recipient_committee_ids": [
+        "C00660795"
+      ],
+      "name": "CRENSHAW, DANIEL",
+      "office": "",
+      "party": "Republican",
+      "recipient_id": "starintel:person:fec-candidate-h8tx02166",
+      "rows": 3,
+      "sources": {
+        "AIPAC PAC": 9994.0
+      }
+    },
+    {
+      "amount": 9994.0,
+      "candidate_like": true,
+      "data": {
+        "full_name": "DAINES, STEVE",
+        "political_affiliations": [
+          "REP"
+        ],
+        "public_roles": [
+          "Federal candidate for S MT-00"
+        ]
+      },
+      "dtype": "person",
+      "fec_recipient_committee_ids": [
+        "C00491357"
+      ],
+      "name": "DAINES, STEVE",
+      "office": "",
+      "party": "Republican",
+      "recipient_id": "starintel:person:fec-candidate-s2mt00096",
+      "rows": 3,
+      "sources": {
+        "AIPAC PAC": 9994.0
+      }
+    },
+    {
+      "amount": 9994.0,
+      "candidate_like": true,
+      "data": {
+        "full_name": "DAVIS, DON",
+        "political_affiliations": [
+          "DEM"
+        ],
+        "public_roles": [
+          "Federal candidate for H NC-01"
+        ]
+      },
+      "dtype": "person",
+      "fec_recipient_committee_ids": [
+        "C00795211"
+      ],
+      "name": "DAVIS, DON",
+      "office": "",
+      "party": "Democratic",
+      "recipient_id": "starintel:person:fec-candidate-h2nc02287",
+      "rows": 3,
+      "sources": {
+        "AIPAC PAC": 9994.0
+      }
+    },
+    {
+      "amount": 9994.0,
+      "candidate_like": true,
+      "data": {
+        "full_name": "DE LA CRUZ, MONICA",
+        "political_affiliations": [
+          "REP"
+        ],
+        "public_roles": [
+          "Federal candidate for H TX-15"
+        ]
+      },
+      "dtype": "person",
+      "fec_recipient_committee_ids": [
+        "C00765719"
+      ],
+      "name": "DE LA CRUZ, MONICA",
+      "office": "",
+      "party": "Republican",
+      "recipient_id": "starintel:person:fec-candidate-h0tx15124",
+      "rows": 4,
+      "sources": {
+        "AIPAC PAC": 9994.0
+      }
+    },
+    {
+      "amount": 9994.0,
+      "candidate_like": true,
+      "data": {
+        "full_name": "EDWARDS, CHUCK",
+        "political_affiliations": [
+          "REP"
+        ],
+        "public_roles": [
+          "Federal candidate for H NC-11"
+        ]
+      },
+      "dtype": "person",
+      "fec_recipient_committee_ids": [
+        "C00796433"
+      ],
+      "name": "EDWARDS, CHUCK",
+      "office": "",
+      "party": "Republican",
+      "recipient_id": "starintel:person:fec-candidate-h2nc14050",
+      "rows": 4,
+      "sources": {
+        "AIPAC PAC": 9994.0
+      }
+    },
+    {
+      "amount": 9994.0,
+      "candidate_like": true,
+      "data": {
+        "full_name": "FINE, RANDY",
+        "political_affiliations": [
+          "REP"
+        ],
+        "public_roles": [
+          "Federal candidate for H FL-06"
+        ]
+      },
+      "dtype": "person",
+      "fec_recipient_committee_ids": [
+        "C00893271"
+      ],
+      "name": "FINE, RANDY",
+      "office": "",
+      "party": "Republican",
+      "recipient_id": "starintel:person:fec-candidate-h6fl06258",
+      "rows": 4,
+      "sources": {
+        "AIPAC PAC": 9994.0
+      }
+    },
+    {
+      "amount": 9994.0,
+      "candidate_like": true,
+      "data": {
+        "full_name": "GLUESENKAMP PEREZ, MARIE",
+        "political_affiliations": [
+          "DEM"
+        ],
+        "public_roles": [
+          "Federal candidate for H WA-03"
+        ]
+      },
+      "dtype": "person",
+      "fec_recipient_committee_ids": [
+        "C00806174"
+      ],
+      "name": "GLUESENKAMP PEREZ, MARIE",
+      "office": "",
+      "party": "Democratic",
+      "recipient_id": "starintel:person:fec-candidate-h2wa03217",
+      "rows": 3,
+      "sources": {
+        "AIPAC PAC": 9994.0
+      }
+    },
+    {
+      "amount": 9994.0,
+      "candidate_like": true,
+      "data": {
+        "full_name": "JACK, BRIAN",
+        "political_affiliations": [
+          "REP"
+        ],
+        "public_roles": [
+          "Federal candidate for H GA-03"
+        ]
+      },
+      "dtype": "person",
+      "fec_recipient_committee_ids": [
+        "C00872473"
+      ],
+      "name": "JACK, BRIAN",
+      "office": "",
+      "party": "Republican",
+      "recipient_id": "starintel:person:fec-candidate-h4ga03126",
+      "rows": 3,
+      "sources": {
+        "AIPAC PAC": 9994.0
+      }
+    },
+    {
+      "amount": 9994.0,
+      "candidate_like": true,
+      "data": {
+        "full_name": "JORDAN, JAMES D.",
+        "political_affiliations": [
+          "REP"
+        ],
+        "public_roles": [
+          "Federal candidate for H OH-04"
+        ]
+      },
+      "dtype": "person",
+      "fec_recipient_committee_ids": [
+        "C00416594"
+      ],
+      "name": "JORDAN, JAMES D.",
+      "office": "",
+      "party": "Republican",
+      "recipient_id": "starintel:person:fec-candidate-h6oh04082",
+      "rows": 4,
+      "sources": {
+        "AIPAC PAC": 9994.0
+      }
+    },
+    {
+      "amount": 9994.0,
+      "candidate_like": true,
+      "data": {
+        "full_name": "KEAN, THOMAS H. JR.",
+        "political_affiliations": [
+          "REP"
+        ],
+        "public_roles": [
+          "Federal candidate for H NJ-07"
+        ]
+      },
+      "dtype": "person",
+      "fec_recipient_committee_ids": [
+        "C00703058"
+      ],
+      "name": "KEAN, THOMAS H. JR.",
+      "office": "",
+      "party": "Republican",
+      "recipient_id": "starintel:person:fec-candidate-h0nj07261",
+      "rows": 5,
+      "sources": {
+        "AIPAC PAC": 9994.0
+      }
+    },
+    {
+      "amount": 9994.0,
+      "candidate_like": true,
+      "data": {
+        "full_name": "MACKENZIE, RYAN EDWARD",
+        "political_affiliations": [
+          "REP"
+        ],
+        "public_roles": [
+          "Federal candidate for H PA-07"
+        ]
+      },
+      "dtype": "person",
+      "fec_recipient_committee_ids": [
+        "C00846501"
+      ],
+      "name": "MACKENZIE, RYAN EDWARD",
+      "office": "",
+      "party": "Republican",
+      "recipient_id": "starintel:person:fec-candidate-h8pa15195",
+      "rows": 3,
+      "sources": {
+        "AIPAC PAC": 9994.0
+      }
+    },
+    {
+      "amount": 9994.0,
+      "candidate_like": true,
+      "data": {
+        "full_name": "MEEKS, GREGORY W.",
+        "political_affiliations": [
+          "DEM"
+        ],
+        "public_roles": [
+          "Federal candidate for H NY-05"
+        ]
+      },
+      "dtype": "person",
+      "fec_recipient_committee_ids": [
+        "C00430991"
+      ],
+      "name": "MEEKS, GREGORY W.",
+      "office": "",
+      "party": "Democratic",
+      "recipient_id": "starintel:person:fec-candidate-h8ny06048",
+      "rows": 3,
+      "sources": {
+        "AIPAC PAC": 9994.0
+      }
+    },
+    {
+      "amount": 9994.0,
+      "candidate_like": true,
+      "data": {
+        "full_name": "MFUME, KWEISI",
+        "political_affiliations": [
+          "DEM"
+        ],
+        "public_roles": [
+          "Federal candidate for H MD-07"
+        ]
+      },
+      "dtype": "person",
+      "fec_recipient_committee_ids": [
+        "C00726372"
+      ],
+      "name": "MFUME, KWEISI",
+      "office": "",
+      "party": "Democratic",
+      "recipient_id": "starintel:person:fec-candidate-h6md07020",
+      "rows": 3,
+      "sources": {
+        "AIPAC PAC": 9994.0
+      }
+    },
+    {
+      "amount": 9994.0,
+      "candidate_like": true,
+      "data": {
+        "full_name": "MOSKOWITZ, JARED",
+        "political_affiliations": [
+          "DEM"
+        ],
+        "public_roles": [
+          "Federal candidate for H FL-25"
+        ]
+      },
+      "dtype": "person",
+      "fec_recipient_committee_ids": [
+        "C00807628"
+      ],
+      "name": "MOSKOWITZ, JARED",
+      "office": "",
+      "party": "Democratic",
+      "recipient_id": "starintel:person:fec-candidate-h2fl22171",
+      "rows": 3,
+      "sources": {
+        "AIPAC PAC": 9994.0
+      }
+    },
+    {
+      "amount": 9994.0,
+      "candidate_like": true,
+      "data": {
+        "full_name": "MURPHY, GREGORY FRANCIS DR.",
+        "political_affiliations": [
+          "REP"
+        ],
+        "public_roles": [
+          "Federal candidate for H NC-03"
+        ]
+      },
+      "dtype": "person",
+      "fec_recipient_committee_ids": [
+        "C00697649"
+      ],
+      "name": "MURPHY, GREGORY FRANCIS DR.",
+      "office": "",
+      "party": "Republican",
+      "recipient_id": "starintel:person:fec-candidate-h0nc03172",
+      "rows": 4,
+      "sources": {
+        "AIPAC PAC": 9994.0
+      }
+    },
+    {
+      "amount": 9994.0,
+      "candidate_like": true,
+      "data": {
+        "full_name": "NEGUSE, JOSEPH",
+        "political_affiliations": [
+          "DEM"
+        ],
+        "public_roles": [
+          "Federal candidate for H CO-02"
+        ]
+      },
+      "dtype": "person",
+      "fec_recipient_committee_ids": [
+        "C00648253"
+      ],
+      "name": "NEGUSE, JOSEPH",
+      "office": "",
+      "party": "Democratic",
+      "recipient_id": "starintel:person:fec-candidate-h8co02160",
+      "rows": 3,
+      "sources": {
+        "AIPAC PAC": 9994.0
+      }
+    },
+    {
+      "amount": 9994.0,
+      "candidate_like": true,
+      "data": {
+        "full_name": "PFLUGER, AUGUST LEE II",
+        "political_affiliations": [
+          "REP"
+        ],
+        "public_roles": [
+          "Federal candidate for H TX-11"
+        ]
+      },
+      "dtype": "person",
+      "fec_recipient_committee_ids": [
+        "C00719294"
+      ],
+      "name": "PFLUGER, AUGUST LEE II",
+      "office": "",
+      "party": "Republican",
+      "recipient_id": "starintel:person:fec-candidate-h0tx11230",
+      "rows": 3,
+      "sources": {
+        "AIPAC PAC": 9994.0
+      }
+    },
+    {
+      "amount": 9994.0,
+      "candidate_like": true,
+      "data": {
+        "full_name": "RESCHENTHALER, GUY MR.",
+        "political_affiliations": [
+          "REP"
+        ],
+        "public_roles": [
+          "Federal candidate for H PA-14"
+        ]
+      },
+      "dtype": "person",
+      "fec_recipient_committee_ids": [
+        "C00657833"
+      ],
+      "name": "RESCHENTHALER, GUY MR.",
+      "office": "",
+      "party": "Republican",
+      "recipient_id": "starintel:person:fec-candidate-h8pa18199",
+      "rows": 5,
+      "sources": {
+        "AIPAC PAC": 9994.0
+      }
+    },
+    {
+      "amount": 9994.0,
+      "candidate_like": true,
+      "data": {
+        "full_name": "RIVAS, LUZ",
+        "political_affiliations": [
+          "DEM"
+        ],
+        "public_roles": [
+          "Federal candidate for H CA-29"
+        ]
+      },
+      "dtype": "person",
+      "fec_recipient_committee_ids": [
+        "C00857417"
+      ],
+      "name": "RIVAS, LUZ",
+      "office": "",
+      "party": "Democratic",
+      "recipient_id": "starintel:person:fec-candidate-h4ca29141",
+      "rows": 3,
+      "sources": {
+        "AIPAC PAC": 9994.0
+      }
+    },
+    {
+      "amount": 9994.0,
+      "candidate_like": true,
+      "data": {
+        "full_name": "RYAN, PATRICK",
+        "political_affiliations": [
+          "DEM"
+        ],
+        "public_roles": [
+          "Federal candidate for H NY-18"
+        ]
+      },
+      "dtype": "person",
+      "fec_recipient_committee_ids": [
+        "C00815290"
+      ],
+      "name": "RYAN, PATRICK",
+      "office": "",
+      "party": "Democratic",
+      "recipient_id": "starintel:person:fec-candidate-h8ny19223",
+      "rows": 3,
+      "sources": {
+        "AIPAC PAC": 9994.0
+      }
+    },
+    {
+      "amount": 9994.0,
+      "candidate_like": true,
+      "data": {
+        "full_name": "SCHMIDT, DEREK",
+        "political_affiliations": [
+          "REP"
+        ],
+        "public_roles": [
+          "Federal candidate for H KS-02"
+        ]
+      },
+      "dtype": "person",
+      "fec_recipient_committee_ids": [
+        "C00877373"
+      ],
+      "name": "SCHMIDT, DEREK",
+      "office": "",
+      "party": "Republican",
+      "recipient_id": "starintel:person:fec-candidate-h4ks02164",
+      "rows": 4,
+      "sources": {
+        "AIPAC PAC": 9994.0
+      }
+    },
+    {
+      "amount": 9994.0,
+      "candidate_like": true,
+      "data": {
+        "full_name": "SMITH, D. ADAM",
+        "political_affiliations": [
+          "DEM"
+        ],
+        "public_roles": [
+          "Federal candidate for H WA-09"
+        ]
+      },
+      "dtype": "person",
+      "fec_recipient_committee_ids": [
+        "C00304709"
+      ],
+      "name": "SMITH, D. ADAM",
+      "office": "",
+      "party": "Democratic",
+      "recipient_id": "starintel:person:fec-candidate-h6wa09025",
+      "rows": 4,
+      "sources": {
+        "AIPAC PAC": 4994.0,
+        "Palantir employee PAC": 5000.0
+      }
+    },
+    {
+      "amount": 9994.0,
+      "candidate_like": true,
+      "data": {
+        "full_name": "SOTO, DARREN",
+        "political_affiliations": [
+          "DEM"
+        ],
+        "public_roles": [
+          "Federal candidate for H FL-09"
+        ]
+      },
+      "dtype": "person",
+      "fec_recipient_committee_ids": [
+        "C00581074"
+      ],
+      "name": "SOTO, DARREN",
+      "office": "",
+      "party": "Democratic",
+      "recipient_id": "starintel:person:fec-candidate-h6fl09179",
+      "rows": 3,
+      "sources": {
+        "AIPAC PAC": 9994.0
+      }
+    },
+    {
+      "amount": 9994.0,
+      "candidate_like": true,
+      "data": {
+        "full_name": "STRICKLAND, MARILYN",
+        "political_affiliations": [
+          "DEM"
+        ],
+        "public_roles": [
+          "Federal candidate for H WA-10"
+        ]
+      },
+      "dtype": "person",
+      "fec_recipient_committee_ids": [
+        "C00732826"
+      ],
+      "name": "STRICKLAND, MARILYN",
+      "office": "",
+      "party": "Democratic",
+      "recipient_id": "starintel:person:fec-candidate-h0wa10034",
+      "rows": 4,
+      "sources": {
+        "AIPAC PAC": 9994.0
+      }
+    },
+    {
+      "amount": 9994.0,
+      "candidate_like": true,
+      "data": {
+        "full_name": "SUOZZI, THOMAS",
+        "political_affiliations": [
+          "DEM"
+        ],
+        "public_roles": [
+          "Federal candidate for H NY-03"
+        ]
+      },
+      "dtype": "person",
+      "fec_recipient_committee_ids": [
+        "C00607200"
+      ],
+      "name": "SUOZZI, THOMAS",
+      "office": "",
+      "party": "Democratic",
+      "recipient_id": "starintel:person:fec-candidate-h6ny03247",
+      "rows": 3,
+      "sources": {
+        "AIPAC PAC": 9994.0
+      }
+    },
+    {
+      "amount": 9994.0,
+      "candidate_like": true,
+      "data": {
+        "full_name": "SYKES, EMILIA",
+        "political_affiliations": [
+          "DEM"
+        ],
+        "public_roles": [
+          "Federal candidate for H OH-13"
+        ]
+      },
+      "dtype": "person",
+      "fec_recipient_committee_ids": [
+        "C00801274"
+      ],
+      "name": "SYKES, EMILIA",
+      "office": "",
+      "party": "Democratic",
+      "recipient_id": "starintel:person:fec-candidate-h2oh13264",
+      "rows": 3,
+      "sources": {
+        "AIPAC PAC": 9994.0
+      }
+    },
+    {
+      "amount": 9994.0,
+      "candidate_like": true,
+      "data": {
+        "full_name": "TORRES, RITCHIE JOHN",
+        "political_affiliations": [
+          "DEM"
+        ],
+        "public_roles": [
+          "Federal candidate for H NY-15"
+        ]
+      },
+      "dtype": "person",
+      "fec_recipient_committee_ids": [
+        "C00699744"
+      ],
+      "name": "TORRES, RITCHIE JOHN",
+      "office": "",
+      "party": "Democratic",
+      "recipient_id": "starintel:person:fec-candidate-h0ny15160",
+      "rows": 8,
+      "sources": {
+        "AIPAC PAC": 9994.0
+      }
+    },
+    {
+      "amount": 9994.0,
+      "candidate_like": true,
+      "data": {
+        "full_name": "VALADAO, DAVID",
+        "political_affiliations": [
+          "REP"
+        ],
+        "public_roles": [
+          "Federal candidate for H CA-22"
+        ]
+      },
+      "dtype": "person",
+      "fec_recipient_committee_ids": [
+        "C00499392"
+      ],
+      "name": "VALADAO, DAVID",
+      "office": "",
+      "party": "Republican",
+      "recipient_id": "starintel:person:fec-candidate-h2ca20094",
+      "rows": 4,
+      "sources": {
+        "AIPAC PAC": 9994.0
+      }
+    },
+    {
+      "amount": 9994.0,
+      "candidate_like": true,
+      "data": {
+        "full_name": "WASSERMAN SCHULTZ, DEBBIE",
+        "political_affiliations": [
+          "DEM"
+        ],
+        "public_roles": [
+          "Federal candidate for H FL-20"
+        ]
+      },
+      "dtype": "person",
+      "fec_recipient_committee_ids": [
+        "C00385773"
+      ],
+      "name": "WASSERMAN SCHULTZ, DEBBIE",
+      "office": "",
+      "party": "Democratic",
+      "recipient_id": "starintel:person:fec-candidate-h4fl20023",
+      "rows": 3,
+      "sources": {
+        "AIPAC PAC": 9994.0
+      }
+    },
+    {
+      "amount": 9994.0,
+      "candidate_like": true,
+      "data": {
+        "full_name": "WEBER, RANDY",
+        "political_affiliations": [
+          "REP"
+        ],
+        "public_roles": [
+          "Federal candidate for H TX-14"
+        ]
+      },
+      "dtype": "person",
+      "fec_recipient_committee_ids": [
+        "C00502229"
+      ],
+      "name": "WEBER, RANDY",
+      "office": "",
+      "party": "Republican",
+      "recipient_id": "starintel:person:fec-candidate-h2tx14149",
+      "rows": 4,
+      "sources": {
+        "AIPAC PAC": 9994.0
+      }
+    },
+    {
+      "amount": 9994.0,
+      "candidate_like": true,
+      "data": {
+        "full_name": "WESTERMAN, BRUCE",
+        "political_affiliations": [
+          "REP"
+        ],
+        "public_roles": [
+          "Federal candidate for H AR-04"
+        ]
+      },
+      "dtype": "person",
+      "fec_recipient_committee_ids": [
+        "C00548180"
+      ],
+      "name": "WESTERMAN, BRUCE",
+      "office": "",
+      "party": "Republican",
+      "recipient_id": "starintel:person:fec-candidate-h4ar04048",
+      "rows": 4,
+      "sources": {
+        "AIPAC PAC": 9994.0
+      }
+    },
+    {
+      "amount": 9994.0,
+      "candidate_like": true,
+      "data": {
+        "full_name": "WILSON, JOE THE HON.",
+        "political_affiliations": [
+          "REP"
+        ],
+        "public_roles": [
+          "Federal candidate for H SC-02"
+        ]
+      },
+      "dtype": "person",
+      "fec_recipient_committee_ids": [
+        "C00368522"
+      ],
+      "name": "WILSON, JOE THE HON.",
+      "office": "",
+      "party": "Republican",
+      "recipient_id": "starintel:person:fec-candidate-h2sc02059",
+      "rows": 3,
+      "sources": {
+        "AIPAC PAC": 9994.0
+      }
+    },
+    {
+      "amount": 9994.0,
+      "candidate_like": true,
+      "data": {
+        "full_name": "YAKYM, RUDY C. III",
+        "political_affiliations": [
+          "REP"
+        ],
+        "public_roles": [
+          "Federal candidate for H IN-02"
+        ]
+      },
+      "dtype": "person",
+      "fec_recipient_committee_ids": [
+        "C00822767"
+      ],
+      "name": "YAKYM, RUDY C. III",
+      "office": "",
+      "party": "Republican",
+      "recipient_id": "starintel:person:fec-candidate-h2in02295",
+      "rows": 4,
+      "sources": {
+        "AIPAC PAC": 9994.0
+      }
+    },
+    {
+      "amount": 9497.0,
+      "candidate_like": true,
+      "data": {
+        "full_name": "COSTA, JIM",
+        "political_affiliations": [
+          "DEM"
+        ],
+        "public_roles": [
+          "Federal candidate for H CA-21"
+        ]
+      },
+      "dtype": "person",
+      "fec_recipient_committee_ids": [
+        "C00391029"
+      ],
+      "name": "COSTA, JIM",
+      "office": "",
+      "party": "Democratic",
+      "recipient_id": "starintel:person:fec-candidate-h4ca20082",
+      "rows": 5,
+      "sources": {
+        "AIPAC PAC": 9497.0
+      }
+    },
+    {
+      "amount": 9494.0,
+      "candidate_like": true,
+      "data": {
+        "full_name": "BAUMGARTNER, MICHAEL JAMES",
+        "political_affiliations": [
+          "REP"
+        ],
+        "public_roles": [
+          "Federal candidate for H WA-05"
+        ]
+      },
+      "dtype": "person",
+      "fec_recipient_committee_ids": [
+        "C00870758"
+      ],
+      "name": "BAUMGARTNER, MICHAEL JAMES",
+      "office": "",
+      "party": "Republican",
+      "recipient_id": "starintel:person:fec-candidate-h4wa05234",
+      "rows": 5,
+      "sources": {
+        "AIPAC PAC": 9494.0
+      }
+    },
+    {
+      "amount": 8494.0,
+      "candidate_like": true,
+      "data": {
+        "full_name": "VAN EPPS, MATTHEW ROBERT",
+        "political_affiliations": [
+          "REP"
+        ],
+        "public_roles": [
+          "Federal candidate for H TN-07"
+        ]
+      },
+      "dtype": "person",
+      "fec_recipient_committee_ids": [
+        "C00908202"
+      ],
+      "name": "VAN EPPS, MATTHEW ROBERT",
+      "office": "",
+      "party": "Republican",
+      "recipient_id": "starintel:person:fec-candidate-h6tn07161",
+      "rows": 4,
+      "sources": {
+        "AIPAC PAC": 8494.0
+      }
+    },
+    {
+      "amount": 7494.0,
+      "candidate_like": true,
+      "data": {
+        "full_name": "GRAHAM, LINDSEY O.",
+        "political_affiliations": [
+          "REP"
+        ],
+        "public_roles": [
+          "Federal candidate for S SC-00"
+        ]
+      },
+      "dtype": "person",
+      "fec_recipient_committee_ids": [
+        "C00458828"
+      ],
+      "name": "GRAHAM, LINDSEY O.",
+      "office": "",
+      "party": "Republican",
+      "recipient_id": "starintel:person:fec-candidate-s0sc00149",
+      "rows": 4,
+      "sources": {
+        "AIPAC PAC": 2494.0,
+        "Palantir employee PAC": 5000.0
+      }
+    },
+    {
+      "amount": 7494.0,
+      "candidate_like": true,
+      "data": {
+        "full_name": "MULLIN, MARKWAYNE",
+        "political_affiliations": [
+          "REP"
+        ],
+        "public_roles": [
+          "Federal candidate for S OK-00"
+        ]
+      },
+      "dtype": "person",
+      "fec_recipient_committee_ids": [
+        "C00498345"
+      ],
+      "name": "MULLIN, MARKWAYNE",
+      "office": "",
+      "party": "Republican",
+      "recipient_id": "starintel:person:fec-candidate-s2ok00186",
+      "rows": 4,
+      "sources": {
+        "AIPAC PAC": 4994.0,
+        "Palantir employee PAC": 2500.0
+      }
+    },
+    {
+      "amount": 7494.0,
+      "candidate_like": true,
+      "data": {
+        "full_name": "WOMACK, STEPHEN A THE HON",
+        "political_affiliations": [
+          "REP"
+        ],
+        "public_roles": [
+          "Federal candidate for H AR-03"
+        ]
+      },
+      "dtype": "person",
+      "fec_recipient_committee_ids": [
+        "C00477745"
+      ],
+      "name": "WOMACK, STEPHEN A THE HON",
+      "office": "",
+      "party": "Republican",
+      "recipient_id": "starintel:person:fec-candidate-h0ar03055",
+      "rows": 6,
+      "sources": {
+        "AIPAC PAC": 4994.0,
+        "Palantir employee PAC": 2500.0
+      }
+    },
+    {
+      "amount": 6994.0,
+      "candidate_like": true,
+      "data": {
+        "full_name": "WARNER, MARK ROBERT",
+        "political_affiliations": [
+          "DEM"
+        ],
+        "public_roles": [
+          "Federal candidate for S VA-00"
+        ]
+      },
+      "dtype": "person",
+      "fec_recipient_committee_ids": [
+        "C00438713"
+      ],
+      "name": "WARNER, MARK ROBERT",
+      "office": "",
+      "party": "Democratic",
+      "recipient_id": "starintel:person:fec-candidate-s6va00093",
+      "rows": 5,
+      "sources": {
+        "AIPAC PAC": 4494.0,
+        "Palantir employee PAC": 2500.0
+      }
+    },
+    {
+      "amount": 6494.0,
+      "candidate_like": true,
+      "data": {
+        "full_name": "STUTZMAN, MARLIN A",
+        "political_affiliations": [
+          "REP"
+        ],
+        "public_roles": [
+          "Federal candidate for H IN-03"
+        ]
+      },
+      "dtype": "person",
+      "fec_recipient_committee_ids": [
+        "C00838110"
+      ],
+      "name": "STUTZMAN, MARLIN A",
+      "office": "",
+      "party": "Republican",
+      "recipient_id": "starintel:person:fec-candidate-h0in03198",
+      "rows": 4,
+      "sources": {
+        "AIPAC PAC": 6494.0
+      }
+    },
+    {
+      "amount": 5994.0,
+      "candidate_like": true,
+      "data": {
+        "full_name": "AGUILAR, PETE",
+        "political_affiliations": [
+          "DEM"
+        ],
+        "public_roles": [
+          "Federal candidate for H CA-33"
+        ]
+      },
+      "dtype": "person",
+      "fec_recipient_committee_ids": [
+        "C00510461"
+      ],
+      "name": "AGUILAR, PETE",
+      "office": "",
+      "party": "Democratic",
+      "recipient_id": "starintel:person:fec-candidate-h2ca31125",
+      "rows": 3,
+      "sources": {
+        "AIPAC PAC": 4994.0,
+        "Palantir employee PAC": 1000.0
+      }
+    },
+    {
+      "amount": 5994.0,
+      "candidate_like": true,
+      "data": {
+        "full_name": "HYDE-SMITH, CINDY",
+        "political_affiliations": [
+          "REP"
+        ],
+        "public_roles": [
+          "Federal candidate for S MS-00"
+        ]
+      },
+      "dtype": "person",
+      "fec_recipient_committee_ids": [
+        "C00675348"
+      ],
+      "name": "HYDE-SMITH, CINDY",
+      "office": "",
+      "party": "Republican",
+      "recipient_id": "starintel:person:fec-candidate-s8ms00261",
+      "rows": 4,
+      "sources": {
+        "AIPAC PAC": 5994.0
+      }
+    },
+    {
+      "amount": 5994.0,
+      "candidate_like": true,
+      "data": {
+        "full_name": "KIGGANS, JENNIFER",
+        "political_affiliations": [
+          "REP"
+        ],
+        "public_roles": [
+          "Federal candidate for H VA-02"
+        ]
+      },
+      "dtype": "person",
+      "fec_recipient_committee_ids": [
+        "C00776120"
+      ],
+      "name": "KIGGANS, JENNIFER",
+      "office": "",
+      "party": "Republican",
+      "recipient_id": "starintel:person:fec-candidate-h2va02064",
+      "rows": 5,
+      "sources": {
+        "AIPAC PAC": 5994.0
+      }
+    },
+    {
+      "amount": 5994.0,
+      "candidate_like": true,
+      "data": {
+        "full_name": "MILLER-MEEKS, MARIANNETTE JANE",
+        "political_affiliations": [
+          "REP"
+        ],
+        "public_roles": [
+          "Federal candidate for H IA-01"
+        ]
+      },
+      "dtype": "person",
+      "fec_recipient_committee_ids": [
+        "C00558825"
+      ],
+      "name": "MILLER-MEEKS, MARIANNETTE JANE",
+      "office": "",
+      "party": "Republican",
+      "recipient_id": "starintel:person:fec-candidate-h8ia02043",
+      "rows": 5,
+      "sources": {
+        "AIPAC PAC": 5994.0
+      }
+    },
+    {
+      "amount": 5496.0,
+      "candidate_like": true,
+      "data": {
+        "full_name": "PANETTA, JIMMY",
+        "political_affiliations": [
+          "DEM"
+        ],
+        "public_roles": [
+          "Federal candidate for H CA-19"
+        ]
+      },
+      "dtype": "person",
+      "fec_recipient_committee_ids": [
+        "C00592154"
+      ],
+      "name": "PANETTA, JIMMY",
+      "office": "",
+      "party": "Democratic",
+      "recipient_id": "starintel:person:fec-candidate-h6ca20152",
+      "rows": 5,
+      "sources": {
+        "AIPAC PAC": 5496.0
+      }
+    },
+    {
+      "amount": 5494.0,
+      "candidate_like": true,
+      "data": {
+        "full_name": "FITZPATRICK, BRIAN",
+        "political_affiliations": [
+          "REP"
+        ],
+        "public_roles": [
+          "Federal candidate for H PA-01"
+        ]
+      },
+      "dtype": "person",
+      "fec_recipient_committee_ids": [
+        "C00607416"
+      ],
+      "name": "FITZPATRICK, BRIAN",
+      "office": "",
+      "party": "Republican",
+      "recipient_id": "starintel:person:fec-candidate-h6pa08277",
+      "rows": 5,
+      "sources": {
+        "AIPAC PAC": 5494.0
+      }
+    },
+    {
+      "amount": 5494.0,
+      "candidate_like": true,
+      "data": {
+        "full_name": "SHERMAN, BRAD",
+        "political_affiliations": [
+          "DEM"
+        ],
+        "public_roles": [
+          "Federal candidate for H CA-32"
+        ]
+      },
+      "dtype": "person",
+      "fec_recipient_committee_ids": [
+        "C00308742"
+      ],
+      "name": "SHERMAN, BRAD",
+      "office": "",
+      "party": "Democratic",
+      "recipient_id": "starintel:person:fec-candidate-h6ca24113",
+      "rows": 3,
+      "sources": {
+        "AIPAC PAC": 5494.0
+      }
+    },
+    {
+      "amount": 5000.0,
+      "candidate_like": true,
+      "data": {
+        "full_name": "ALVARADO, RALPH A",
+        "political_affiliations": [
+          "REP"
+        ],
+        "public_roles": [
+          "Federal candidate for H KY-06"
+        ]
+      },
+      "dtype": "person",
+      "fec_recipient_committee_ids": [
+        "C00912303"
+      ],
+      "name": "ALVARADO, RALPH A",
+      "office": "",
+      "party": "Republican",
+      "recipient_id": "starintel:person:fec-candidate-h6ky06192",
+      "rows": 1,
+      "sources": {
+        "AIPAC PAC": 5000.0
+      }
+    },
+    {
+      "amount": 5000.0,
+      "candidate_like": true,
+      "data": {
+        "full_name": "BRITT, KATIE BOYD",
+        "political_affiliations": [
+          "REP"
+        ],
+        "public_roles": [
+          "Federal candidate for S AL-00"
+        ]
+      },
+      "dtype": "person",
+      "fec_recipient_committee_ids": [
+        "C00781443"
+      ],
+      "name": "BRITT, KATIE BOYD",
+      "office": "",
+      "party": "Republican",
+      "recipient_id": "starintel:person:fec-candidate-s2al00145",
+      "rows": 2,
+      "sources": {
+        "Palantir employee PAC": 5000.0
+      }
     }
   ]
 }
