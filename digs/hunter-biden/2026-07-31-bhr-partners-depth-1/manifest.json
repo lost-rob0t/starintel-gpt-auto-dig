@@ -1,0 +1,25 @@
+{
+  "counts": {
+    "investigation-target": 5,
+    "org": 9,
+    "person": 5,
+    "relation": 18,
+    "source": 7
+  },
+  "dataset": "hunter-biden",
+  "files": [
+    "README.md",
+    "sources.md",
+    "starintel-documents.jsonl"
+  ],
+  "generated_at": "2026-07-31T05:20:00Z",
+  "hash_algorithm": "sha256",
+  "schema_version": "0.9.0",
+  "starintel_documents_sha256": "e6a85b1476a749bc9a8f8d3cd9699eb54e911641e3f7b4be5caa74a1af4f43d8",
+  "total": 44,
+  "validation": {
+    "jsonl": "syntax checked",
+    "schema": "pending repository CI",
+    "sources": "public-source review"
+  }
+}
