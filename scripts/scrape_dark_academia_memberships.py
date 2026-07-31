@@ -223,13 +223,14 @@ class Scraper:
         rp = self.robot_cache[base]
         return True if rp is None else rp.can_fetch(USER_AGENT, url)
 
-    def fetch(self, url: str, *, allow_binary: bool = False) -> tuple[str, int, str]:
+    def fetch(self, url: str, *, allow_binary: bool = False, respect_robots: bool = True) -> tuple[str, int, str]:
         url = url.split("#", 1)[0]
-        if url in self.fetch_cache:
-            return self.fetch_cache[url]
-        if not self.robots_allowed(url):
+        cache_key = f"{int(respect_robots)}:{url}"
+        if cache_key in self.fetch_cache:
+            return self.fetch_cache[cache_key]
+        if respect_robots and not self.robots_allowed(url):
             result = ("", 999, "blocked_by_robots")
-            self.fetch_cache[url] = result
+            self.fetch_cache[cache_key] = result
             return result
         last_error = ""
         for attempt in range(3):
@@ -240,14 +241,14 @@ class Scraper:
                 if not allow_binary and response.status_code == 200 and not text:
                     last_error = f"unsupported content-type {ctype}"
                 result = (text, response.status_code, response.url)
-                self.fetch_cache[url] = result
+                self.fetch_cache[cache_key] = result
                 self.source_urls.add(response.url)
                 return result
             except requests.RequestException as exc:
                 last_error = str(exc)
                 time.sleep(1.5 * (attempt + 1))
         result = ("", 598, last_error)
-        self.fetch_cache[url] = result
+        self.fetch_cache[cache_key] = result
         return result
 
     def discover_sitemaps(self, homepage: str, configured: list[str]) -> list[str]:
@@ -260,7 +261,7 @@ class Scraper:
         candidates.extend([base + "/sitemap.xml", base + "/sitemap_index.xml", base + "/wp-sitemap.xml"])
         return list(dict.fromkeys(candidates))
 
-    def sitemap_urls(self, roots: list[str], max_sitemaps: int = 80, max_urls: int = 120000) -> set[str]:
+    def sitemap_urls(self, roots: list[str], max_sitemaps: int = 80, max_urls: int = 120000, *, respect_robots: bool = True) -> set[str]:
         pending = list(roots)
         seen_maps: set[str] = set()
         urls: set[str] = set()
@@ -269,7 +270,7 @@ class Scraper:
             if sm in seen_maps:
                 continue
             seen_maps.add(sm)
-            text, status, final = self.fetch(sm)
+            text, status, final = self.fetch(sm, respect_robots=respect_robots)
             if status != 200 or "<loc" not in text:
                 continue
             try:
@@ -349,7 +350,7 @@ class Scraper:
         return sorted(emails), sorted(phones), socials
 
     def profile_record(self, target: dict[str, Any], url: str, role_category: str = "member") -> PersonRecord | None:
-        text, status, final = self.fetch(url)
+        text, status, final = self.fetch(url, respect_robots=not target.get("bypass_robots_for_profiles", False))
         if status != 200 or not text:
             return None
         soup = BeautifulSoup(text, "lxml")
@@ -392,7 +393,7 @@ class Scraper:
         )
 
     def extract_bilderberg(self, target: dict[str, Any], url: str) -> list[PersonRecord]:
-        text, status, final = self.fetch(url)
+        text, status, final = self.fetch(url, respect_robots=not target.get("explicit_public_seeds", False))
         if status != 200:
             return []
         soup = BeautifulSoup(text, "lxml")
@@ -419,7 +420,7 @@ class Scraper:
         return records
 
     def extract_cards(self, target: dict[str, Any], url: str, role_category: str = "member") -> list[PersonRecord]:
-        text, status, final = self.fetch(url)
+        text, status, final = self.fetch(url, respect_robots=not target.get("explicit_public_seeds", False))
         if status != 200 or not text:
             return []
         soup = BeautifulSoup(text, "lxml")
@@ -478,17 +479,30 @@ class Scraper:
         profile_urls: set[str] = set()
         roots = self.discover_sitemaps(target["homepage"], target.get("sitemaps", []))
         if patterns:
-            for url in self.sitemap_urls(roots):
+            for url in self.sitemap_urls(roots, respect_robots=not target.get("bypass_robots_for_sitemaps", False)):
                 if self.url_matches(url, patterns):
                     profile_urls.add(url)
         list_records: list[PersonRecord] = []
-        for seed in target.get("seed_pages", []):
+        seed_pages = list(target.get("seed_pages", []))
+        for spec in target.get("pagination", []):
+            base_url = spec["url"]
+            parameter = spec.get("parameter", "start")
+            start = int(spec.get("start", 0))
+            step = int(spec.get("step", 10))
+            max_pages = int(spec.get("max_pages", 100))
+            for page in range(max_pages):
+                parsed = urllib.parse.urlparse(base_url)
+                query = urllib.parse.parse_qs(parsed.query, keep_blank_values=True)
+                query[parameter] = [str(start + page * step)]
+                seed_pages.append(urllib.parse.urlunparse(parsed._replace(query=urllib.parse.urlencode(query, doseq=True))))
+        seed_pages = list(dict.fromkeys(seed_pages))
+        for seed in seed_pages:
             category = target.get("seed_roles", {}).get(seed, target.get("default_role", "member"))
             if target.get("parser") == "bilderberg":
                 list_records.extend(self.extract_bilderberg(target, seed))
                 continue
             list_records.extend(self.extract_cards(target, seed, category))
-            text, status, final = self.fetch(seed)
+            text, status, final = self.fetch(seed, respect_robots=not target.get("explicit_public_seeds", False))
             if status == 200 and patterns:
                 soup = BeautifulSoup(text, "lxml")
                 for a in soup.select("a[href]"):
@@ -667,18 +681,49 @@ class Scraper:
             workflow={"research_status": "queued", "queue": "dark-academia-auto-dig", "priority": 0.8, "recursion_depth": 1, "max_depth": 5, "root_target_id": target_id, "run_id": RUN_ID},
         ))
 
+    def emit_org_contacts(self, target: dict[str, Any], org_id: str) -> list[str]:
+        contact_ids: list[str] = []
+        for contact in target.get("organization_contacts", []):
+            value = self.clean_text(str(contact.get("value", "")))
+            source_url = contact.get("source_url") or target["homepage"]
+            if not value:
+                continue
+            kind = contact.get("kind", "email")
+            if kind == "email" and re.fullmatch(r"[^\s@]+@[^\s@]+\.[^\s@]+", value):
+                contact_id = f"starintel:email:{target['dataset']}:org-{self.slug(value)}"
+                self.add_doc(self.common_doc(
+                    "email", target["dataset"], contact_id, f"{target['name']} public contact: {value}",
+                    "Public organization contact explicitly published on an official source.",
+                    {"address": value.lower(), "value": value.lower(), "type": contact.get("type", "public_work_email"), "type": "work", "label": contact.get("label", "officially published"), "owner_id": org_id, "status": "published", "verified": True, "verified_at": STAMP, "first_seen": STAMP, "last_seen": STAMP},
+                    [self.source(source_url, f"{target['name']} official contact", publisher=target["name"])],
+                    tags=[target["dataset"], "public-contact", "organization-email"], pii=False, related_ids=[org_id],
+                ))
+                contact_ids.append(contact_id)
+            elif kind == "phone" and len(re.sub(r"\D", "", value)) >= 7:
+                contact_id = f"starintel:phone:{target['dataset']}:org-{self.slug(value)}"
+                self.add_doc(self.common_doc(
+                    "phone", target["dataset"], contact_id, f"{target['name']} public phone: {value}",
+                    "Public organization phone explicitly published on an official source.",
+                    {"number": value, "value": value, "type": contact.get("type", "public_work_phone"), "phone_type": "work", "label": contact.get("label", "officially published"), "owner_id": org_id, "status": "published", "verified": True, "verified_at": STAMP, "first_seen": STAMP, "last_seen": STAMP},
+                    [self.source(source_url, f"{target['name']} official contact", publisher=target["name"])],
+                    tags=[target["dataset"], "public-contact", "organization-phone"], pii=False, related_ids=[org_id],
+                ))
+                contact_ids.append(contact_id)
+        return contact_ids
+
     def emit_org(self, target: dict[str, Any], count: int, coverage: str, source_urls: list[str]) -> None:
         org_id = target.get("org_id", f"starintel:org:{target['dataset']}")
         sources = [self.source(u, f"{target['name']} official public directory", publisher=target["name"]) for u in source_urls[:30]]
         if not sources:
             sources = [self.source(target["homepage"], f"{target['name']} official website", publisher=target["name"])]
+        contact_ids = self.emit_org_contacts(target, org_id)
         org_path = self.root / "db" / "org" / f"{org_id}.ndjson"
         if not org_path.exists():
             self.add_doc(self.common_doc(
                 "org", target["dataset"], org_id, target["name"],
                 f"Organization target and public-roster source in the dark-academia composite dataset.",
-                {"name": target["name"], "display_name": target["name"], "org_type": target.get("org_type", "policy-network"), "website": target["homepage"], "member_ids": []},
-                sources, tags=[target["dataset"], "dark-academia", "organization-target"],
+                {"name": target["name"], "display_name": target["name"], "org_type": target.get("org_type", "policy-network"), "website": target["homepage"], "member_ids": [], "contact_ids": contact_ids},
+                sources, tags=[target["dataset"], "dark-academia", "organization-target"], related_ids=contact_ids,
                 assessment={"confidence": 0.99, "completeness": 0.95 if count else 0.2, "gaps": [] if count else ["No parseable public roster entries were returned in this run."]},
             ))
         manifest_id = f"starintel:dataset-manifest:{target['dataset']}-public-roster"
@@ -773,7 +818,7 @@ class Scraper:
             "research-pass", "dark-academia", f"starintel:research-pass:{RUN_ID}",
             "Dark Academia membership recursion",
             "Enumerated official public rosters, published work contacts, generated recursive person and organization targets, and linked exact-name recurrences across component datasets.",
-            {"research_question": "Who is publicly listed across WEF-adjacent and comparable policy networks, and where do names recur across organizations?", "method": "Official directories, sitemaps, profile pages, annual participant lists, and public contact links; exact-name cross-dataset matching.", "classification_rules": ["Only collect contact details explicitly published by the source organization", "Treat exact-name cross-listing as a lead requiring identity confirmation", "Record inaccessible or absent rosters as coverage gaps rather than empty membership claims"], "finding_ids": [], "findings": findings, "supporting_record_ids": ["starintel:dataset-manifest:dark-academia"], "counterevidence_ids": [], "unresolved_target_ids": [doc_id for doc_id, doc in self.documents.items() if doc.get("dtype") == "target"], "source_ids": sorted(self.source_urls), "agent_identity": "public-membership-roster-scraper", "narrative_role": "source normalization and target generation", "started_at": self.stats["started_at"], "completed_at": STAMP, "iteration": 1},
+            {"research_question": "Who is publicly listed across WEF-adjacent and comparable policy networks, and where do names recur across organizations?", "method": "Official directories, sitemaps, profile pages, annual participant lists, and public contact links; exact-name cross-dataset matching.", "classification_rules": ["Only collect contact details explicitly published by the source organization", "Treat exact-name cross-listing as a lead requiring identity confirmation", "Record inaccessible or absent rosters as coverage gaps rather than empty membership claims"], "finding_ids": [], "findings": findings, "supporting_record_ids": ["starintel:dataset-manifest:dark-academia"], "counterevidence_ids": [], "unresolved_target_ids": [doc_id for doc_id, doc in self.documents.items() if doc.get("dtype") == "target"], "source_ids": sorted(self.source_urls), "agent_identity": "public-membership-roster-scraper", "narrative_role": "source normalization and target generation", "started_at": self.stats["started_at"], "completed_at": STAMP, "iteration": 2},
             composite_sources, tags=["dark-academia", "research-pass", "membership-recursion"],
         )
         self.add_doc(research_pass)
