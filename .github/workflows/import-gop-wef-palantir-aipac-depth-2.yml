@@ -8,6 +8,7 @@ on:
     types: [opened, synchronize, reopened]
     paths:
       - .github/workflows/import-gop-wef-palantir-aipac-depth-2.yml
+      - scripts/repair-gop-depth2.py
 
 permissions:
   contents: write
@@ -39,107 +40,8 @@ jobs:
           done < <(git diff --name-only da653ea163e3e60859dd32951c6ac922ea4e648b 5287d39628188b541ee972820d3cb1a52c46a147)
           git show '5287d39628188b541ee972820d3cb1a52c46a147:db/person/starintel:person:alex-karp.ndjson' > /tmp/alex-karp-depth-2.ndjson
 
-      - name: Enrich the current Alex Karp record
-        run: |
-          PYTHONPATH=. python3 - <<'PY'
-          from __future__ import annotations
-
-          import json
-          from datetime import datetime
-          from pathlib import Path
-          from typing import Any
-
-          from starintel_doc.validation import validate_document
-
-          path = Path('db/person/starintel:person:alex-karp.ndjson')
-          current = json.loads(path.read_text(encoding='utf-8'))
-          depth2 = json.loads(Path('/tmp/alex-karp-depth-2.ndjson').read_text(encoding='utf-8'))
-
-          def unique_strings(*values: list[Any]) -> list[str]:
-              seen: set[str] = set()
-              result: list[str] = []
-              for collection in values:
-                  for value in collection or []:
-                      text = str(value)
-                      if text not in seen:
-                          seen.add(text)
-                          result.append(text)
-              return result
-
-          def source_key(source: dict[str, Any]) -> tuple[str, str, str]:
-              return (
-                  str(source.get('url') or source.get('uri') or ''),
-                  str(source.get('publisher') or source.get('name') or ''),
-                  str(source.get('title') or ''),
-              )
-
-          sources: list[dict[str, Any]] = []
-          seen_sources: set[tuple[str, str, str]] = set()
-          for source in [*(current.get('sources') or []), *(depth2.get('sources') or [])]:
-              key = source_key(source)
-              if key not in seen_sources:
-                  seen_sources.add(key)
-                  sources.append(source)
-
-          current['aliases'] = unique_strings(current.get('aliases', []), ['Alex Karp'])
-          current['tags'] = unique_strings(current.get('tags', []), depth2.get('tags', []))
-          current['sources'] = sources
-          current['summary'] = current.get('summary') or depth2.get('summary', '')
-
-          data = current.setdefault('data', {})
-          depth2_data = depth2.get('data', {})
-          data.setdefault('full_name', depth2_data.get('full_name', 'Alexander C. Karp'))
-          data.setdefault('positions', depth2_data.get('positions', []))
-          data.setdefault('employers', depth2_data.get('employers', []))
-
-          assessment = current.setdefault('assessment', {})
-          for key, value in (depth2.get('assessment') or {}).items():
-              assessment.setdefault(key, value)
-          assessment['confidence'] = max(
-              float(assessment.get('confidence', 0.0)),
-              float((depth2.get('assessment') or {}).get('confidence', 0.0)),
-          )
-
-          verification = {
-              **(current.get('verification') or {}),
-              **(depth2.get('verification') or {}),
-          }
-          verification['methods'] = unique_strings(
-              (current.get('verification') or {}).get('methods', []),
-              (depth2.get('verification') or {}).get('methods', []),
-          )
-          verification['verified_by'] = unique_strings(
-              (current.get('verification') or {}).get('verified_by', []),
-              (depth2.get('verification') or {}).get('verified_by', []),
-          )
-          current['verification'] = verification
-
-          extensions = current.setdefault('extensions', {})
-          extensions['gop.depth-2'] = {
-              'dataset': depth2.get('dataset'),
-              'provenance': depth2.get('provenance'),
-              'workflow': depth2.get('workflow'),
-              'original_title': depth2.get('title'),
-          }
-
-          def parse_time(value: str) -> datetime:
-              return datetime.fromisoformat(value.replace('Z', '+00:00'))
-
-          current_updated = current.get('date_updated')
-          depth2_updated = depth2.get('date_updated')
-          if depth2_updated and (
-              not current_updated or parse_time(depth2_updated) > parse_time(current_updated)
-          ):
-              current['date_updated'] = depth2_updated
-
-          current['version'] = max(int(current.get('version', 1)), int(depth2.get('version', 1))) + 1
-          validate_document(current)
-          path.write_text(
-              json.dumps(current, sort_keys=True, separators=(',', ':'), ensure_ascii=False) + '\n',
-              encoding='utf-8',
-          )
-          print('alex_karp_sources', len(sources))
-          PY
+      - name: Reconcile canonical and legacy records
+        run: PYTHONPATH=. python3 scripts/repair-gop-depth2.py
 
       - name: Run mandatory merge gate
         run: python3 scripts/validate-for-merge.py
