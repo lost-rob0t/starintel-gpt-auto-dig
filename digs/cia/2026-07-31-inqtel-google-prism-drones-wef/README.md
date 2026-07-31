@@ -30,7 +30,7 @@ The WEF stop condition is met through the official **Google → partner_of → W
 
 ## PRISM engineering pass
 
-The added implementation roster identifies launch-era FBI OTD technical leadership, NSA SIGINT/SSO technical authority, Microsoft Global Criminal Compliance engineers, and a later Meta/WhatsApp portal engineer. See `prism-engineers.csv` and `prism-responsibility.md`. Role classes preserve the difference between direct engineering, technical executive authority, successor systems, and public technical response.
+The implementation roster identifies launch-era FBI OTD technical leadership, NSA SIGINT/SSO technical authority, Microsoft Global Criminal Compliance engineers, and a later Meta/WhatsApp portal engineer. See `prism-engineers.csv` and `prism-responsibility.md`. Role classes preserve the difference between direct engineering, technical executive authority, successor systems, and public technical response.
 
 ## PRISM boundary
 
@@ -40,10 +40,14 @@ The packet does not label PRISM as a CIA-run program. PCLOB’s public descripti
 
 - Dataset: `cia`
 - Schema: `0.9.0`
-- Records: **213**
+- Composite records: **213**
 - Dtypes: claim 13, dataset-manifest 1, event 14, org 27, person 30, relation 75, research-pass 6, source 47
-- Canonical transport: `starintel-documents.jsonl.gz.b64` (gzip+base64; decodes to canonical JSONL)
-- SHA-256: `dc463d1724e2d82f6c9ca5fb5791bb2c60a6ee310ec9c44a75d61390b9191753`
+- Root transport, passes 0–5: `starintel-documents.jsonl.gz.b64`
+  - 142 records
+  - decoded SHA-256: `3e2133459a4126cad4194f42e883d8c3e484a2ee531049f47e4b515f4ff217b3`
+- PRISM engineering transport, pass 6: `prism-engineering-pass-6.jsonl.gz.b64`
+  - 71 records
+  - decoded SHA-256: `0cb4d9e3e4930e3849842401e6025411cb04079d28e0d56e02489e16b3ca910c`
 - Entity roster: `entity-roster.csv`
 - Drone people matrix: `drone-people.csv`
 - WEF edge table: `wef-edges.csv`
@@ -54,13 +58,13 @@ The packet does not label PRISM as a CIA-run program. PCLOB’s public descripti
 
 ## Validation status
 
-Passed locally against the generated packet:
+Passed locally against the composite generated packet:
 
 - JSON parsing
 - unique IDs
 - required common fields
 - source references
 - relation endpoint resolution
-- record counts and SHA-256 generation
+- record counts and transport SHA-256 generation
 
 The repository command `python3 scripts/validate-for-merge.py --site` and canonical `db/` import were **not run** because the execution environment cannot resolve GitHub for a checkout and has no authenticated `gh` CLI. Keep the PR draft until repository CI and the canonical importer complete successfully.
