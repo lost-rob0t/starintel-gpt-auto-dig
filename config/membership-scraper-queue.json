@@ -1,0 +1,53 @@
+{
+  "version": 1,
+  "policy": {
+    "sources": "official-public-only",
+    "contacts": "explicitly-published-professional-only",
+    "issue_per_canonical_list_url": true,
+    "exclude_individual_profiles": true,
+    "max_issue_fanout_per_wave": 500,
+    "preserve_coverage_gaps": true
+  },
+  "waves": [
+    {
+      "id": "wave-2",
+      "branch": "agent/dark-academia-rand-bilderberg-wave-2",
+      "enabled": true,
+      "datasets": [
+        "rand",
+        "bilderberg"
+      ]
+    },
+    {
+      "id": "wave-3",
+      "branch": "agent/dark-academia-institutions-foundations-wave-3",
+      "enabled": true,
+      "datasets": [
+        "international-crisis-group",
+        "hoover-institution",
+        "belfer-center",
+        "heritage-foundation",
+        "center-for-american-progress",
+        "cato-institute",
+        "hudson-institute",
+        "asia-society",
+        "council-of-the-americas",
+        "center-for-global-development",
+        "new-america",
+        "open-society-foundations",
+        "gates-foundation",
+        "ford-foundation",
+        "carnegie-corporation",
+        "rockefeller-brothers-fund",
+        "rusi",
+        "sipri",
+        "odi-global",
+        "quincy-institute",
+        "world-government-summit",
+        "wbcsd",
+        "international-chamber-of-commerce",
+        "eurasia-group"
+      ]
+    }
+  ]
+}
