@@ -1,0 +1,35 @@
+{
+  "counts": {
+    "claim": 4,
+    "dataset-manifest": 1,
+    "financial-observation": 2,
+    "investigation-target": 3,
+    "legal-case": 2,
+    "org": 10,
+    "person": 8,
+    "policy": 1,
+    "relation": 11,
+    "research-pass": 1
+  },
+  "dataset": "cloarida",
+  "files": [
+    "README.md",
+    "sources.md",
+    "manifest.json",
+    "recursive-targets-pass-0.jsonl",
+    "starintel-documents.jsonl"
+  ],
+  "generated_at": "2026-07-31T21:55:00Z",
+  "run": "2026-07-31-ohio-florida-seed",
+  "schema_version": "0.9.0",
+  "starintel_documents_sha256": "a13cf3f3aacf1c011d404c746fa048666442849ca5867f9e6f4dbf3840ccf8e3",
+  "total": 43,
+  "validation": {
+    "json_parse": "passed",
+    "relation_endpoints": "packet-local endpoints checked manually; GitHub CI authoritative",
+    "required_common_fields": "passed by local structural check",
+    "strict_v0_9_schema": "pending GitHub CI",
+    "unique_ids": "passed",
+    "validate_for_merge": "GitHub CI authoritative"
+  }
+}
