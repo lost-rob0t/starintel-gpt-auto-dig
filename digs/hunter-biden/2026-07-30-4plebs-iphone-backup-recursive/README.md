@@ -77,5 +77,6 @@ No password, account credential, authentication token, or explicit private media
 ## Files
 
 - `sources.md` — source ledger and recursive leads.
-- `starintel-documents.jsonl` — typed source and investigation-target records.
-- `manifest.json` — counts, hash, and validation state.
+- `manifest.json` — document inventory and validation state.
+- `db/source/` — nine canonical source records.
+- `db/investigation-target/` — depth-0, depth-1, and depth-2 recursive queue records.
