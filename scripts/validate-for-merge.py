@@ -38,9 +38,22 @@ def validate_generated_schema() -> None:
 def validate_packet_transports() -> None:
     for path in packet_paths(ROOT):
         try:
-            read_transport(path)
+            payload = read_transport(path)
         except Exception as exc:
             raise RuntimeError(f"{path.relative_to(ROOT)}: transport decode failed: {exc}") from exc
+        for number, raw in enumerate(payload.splitlines(), 1):
+            if not raw.strip():
+                continue
+            try:
+                value = json.loads(raw)
+            except json.JSONDecodeError as exc:
+                raise RuntimeError(
+                    f"{path.relative_to(ROOT)}:{number}: invalid JSON: {exc}"
+                ) from exc
+            if not isinstance(value, dict):
+                raise RuntimeError(
+                    f"{path.relative_to(ROOT)}:{number}: expected JSON object"
+                )
 
 
 def validate_corpus() -> None:
