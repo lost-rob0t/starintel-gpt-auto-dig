@@ -123,3 +123,8 @@ The initial official WEF sweep returned no direct match for these eight names. T
 ## Boundary
 
 A WEF profile, meeting appearance, council role, authorship or partner-company employment is evidence of access or participation. It does not by itself establish ideological agreement, command, policy causation or covert control.
+
+
+## Schema normalization
+
+Packet-only organization, employer, standing-rule, required-rule, and pass-count fields were normalized to strict StarIntel v0.9. Original values remain under `extensions.legacy_data`; explicit relation records remain authoritative for employment and WEF links.
