@@ -48,8 +48,7 @@ class NetworkClient:
     def __post_init__(self) -> None:
         if not valid_user_agent(self.user_agent):
             raise ValueError(
-                "InfluenceWatch user agent must be HA-SCRAPED-seeded-run- "
-                "followed by 64 lowercase hex characters"
+                "InfluenceWatch user agent must match ^[0-9a-f]{64}$"
             )
         if self.delay < MIN_REQUEST_DELAY:
             raise ValueError(
