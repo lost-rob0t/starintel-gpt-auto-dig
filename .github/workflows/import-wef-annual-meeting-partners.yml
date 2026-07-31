@@ -22,7 +22,7 @@ permissions:
 
 concurrency:
   group: wef-annual-meeting-partners-${{ github.ref }}
-  cancel-in-progress: false
+  cancel-in-progress: true
 
 jobs:
   import:
