@@ -1,0 +1,75 @@
+name: Import GOP FEC and WEF depth 3
+
+on:
+  pull_request:
+    branches:
+      - main
+      - agent/gop-wef-palantir-aipac-depth-2-rebased
+    types: [opened, synchronize, reopened]
+    paths:
+      - .github/workflows/import-gop-fec-wef-depth-3-rebased.yml
+      - scripts/reconcile-gop-depth3-records.py
+
+permissions:
+  contents: write
+
+jobs:
+  import:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - name: Check out import branch
+        uses: actions/checkout@v6
+        with:
+          ref: agent/gop-fec-wef-depth-3-rebased
+          fetch-depth: 1
+
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.13"
+
+      - name: Restore validated depth-3 output
+        shell: bash
+        run: |
+          set -euo pipefail
+          old_base=5287d39628188b541ee972820d3cb1a52c46a147
+          old_final=9d9d37c56148d06884d09989f576bf273b644335
+          git fetch --no-tags --depth=1 origin "$old_base"
+          git fetch --no-tags --depth=1 origin "$old_final"
+          mkdir -p /tmp/gop-depth3-modified
+
+          while IFS=$'\t' read -r status path; do
+            case "$status" in
+              A)
+                git checkout "$old_final" -- "$path"
+                ;;
+              M)
+                mkdir -p "/tmp/gop-depth3-modified/$(dirname "$path")"
+                git show "$old_final:$path" > "/tmp/gop-depth3-modified/$path"
+                ;;
+              *)
+                echo "Unexpected depth-3 change status: $status $path" >&2
+                exit 1
+                ;;
+            esac
+          done < <(
+            git diff --name-status "$old_base" "$old_final" -- \
+              db \
+              digs/gop/2026-07-31-fec-wef-depth-3
+          )
+
+      - name: Reconcile changed canonical records
+        run: PYTHONPATH=. python3 scripts/reconcile-gop-depth3-records.py
+
+      - name: Run mandatory merge gate
+        run: python3 scripts/validate-for-merge.py
+
+      - name: Commit imported depth-3 corpus
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add db digs/gop/2026-07-31-fec-wef-depth-3
+          git diff --cached --check
+          git commit -m "Restore GOP FEC and WEF depth 3 corpus"
+          git push origin HEAD:agent/gop-fec-wef-depth-3-rebased
