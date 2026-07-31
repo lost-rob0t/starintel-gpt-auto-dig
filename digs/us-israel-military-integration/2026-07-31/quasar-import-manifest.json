@@ -1,0 +1,169 @@
+{
+  "_id": "starintel:dataset-manifest:us-israel-military-integration:2026-07-31-pass-2:quasar",
+  "dataset": "us-israel-military-integration",
+  "dtype": "dataset-manifest",
+  "schema_version": "0.9.0",
+  "version": 1,
+  "date_added": "2026-07-31T05:57:00Z",
+  "date_updated": "2026-07-31T05:57:00Z",
+  "title": "Quasar import manifest — U.S.–Israel Military Integration Pass 2",
+  "summary": "Decode the gzip/base64 transport to JSONL before Quasar import; incremental pass linked to the 2026-07-26 baseline.",
+  "status": "complete",
+  "language": "en",
+  "tags": [
+    "quasar",
+    "auto-dig",
+    "military-integration",
+    "us-israel",
+    "recursive-pass-2"
+  ],
+  "sources": [],
+  "evidence": [],
+  "assessment": {
+    "confidence": 1.0,
+    "caveats": [
+      "This is an incremental packet linked to the 2026-07-26 baseline.",
+      "The repository stores the payload as gzip-compressed base64 transport. Decode it before Quasar import."
+    ]
+  },
+  "verification": {
+    "status": "verified",
+    "verified": true,
+    "methods": [
+      "json-parse",
+      "unique-id-check",
+      "gzip",
+      "base64",
+      "sha256",
+      "record-count"
+    ]
+  },
+  "handling": {
+    "visibility": "public",
+    "classification": "unclassified",
+    "pii": false,
+    "sensitive": false
+  },
+  "data": {
+    "manifest_type": "quasar-import",
+    "name": "U.S.–Israel Military Integration — Pass 2",
+    "actor": "auto-dig",
+    "consumer_path": "/import",
+    "incremental": true,
+    "parent_packet": "digs/us-israel-military-integration/2026-07-26",
+    "prerequisite_document_ids": [
+      "starintel:target:us-israel-military-integration",
+      "starintel:research-pass:us-israel-military-integration-1",
+      "starintel:org:us-centcom",
+      "starintel:org:us-dod",
+      "starintel:org:idf",
+      "starintel:org:israel-mod",
+      "starintel:org:wrsa-i",
+      "starintel:person:amir-baram"
+    ],
+    "target_options": [
+      {
+        "action": "save-and-open-graph",
+        "graph_name": "U.S.–Israel Military Integration",
+        "review_status": "all"
+      }
+    ],
+    "document_ids": [
+      "starintel:target:us-israel-military-integration-pass-2",
+      "starintel:research-pass:us-israel-military-integration-2",
+      "starintel:analysis:us-israel-operational-industrial-integration-pass-2",
+      "starintel:org:us-israel-operational-headquarters-reference",
+      "starintel:org:mead-cdoc",
+      "starintel:org:r2s",
+      "starintel:org:office-defense-cooperation-washington",
+      "starintel:org:cmcc-gaza",
+      "starintel:org:us-israel-defense-industrial-base-working-group",
+      "starintel:org:us-navair",
+      "starintel:org:lockheed-martin-aeronautics",
+      "starintel:org:raytheon",
+      "starintel:org:rafael",
+      "starintel:org:us-marine-corps",
+      "starintel:event:dpag-2025-operational-integration-tour",
+      "starintel:event:us-israel-security-framework-talks-2026",
+      "starintel:event:operation-epic-fury-2026",
+      "starintel:event:operation-roaring-lion-2026",
+      "starintel:event:israel-f35-contract-actions-2025",
+      "starintel:event:us-israel-sosa-2023",
+      "starintel:person:daniel-zimmerman",
+      "starintel:person:daniel-holler",
+      "starintel:person:omer-haim",
+      "starintel:person:yechiel-leiter",
+      "starintel:person:mike-huckabee",
+      "starintel:person:hidai-zilberman",
+      "starintel:location:r2s-east-camden",
+      "starintel:location:al-udeid-air-base",
+      "starintel:claim:operational-headquarters-structure-unresolved",
+      "starintel:claim:post-2028-framework-industrial-shift",
+      "starintel:claim:wrsa-i-accountability-control-failures",
+      "starintel:claim:operational-industrial-interdependence-threshold",
+      "starintel:relation:dpag-visited-operational-headquarters-reference",
+      "starintel:relation:us-thaad-operated-alongside-israeli-air-defense",
+      "starintel:relation:baram-leads-israeli-framework-team",
+      "starintel:relation:holler-leads-us-framework-team",
+      "starintel:relation:leiter-coordinates-israeli-framework-team",
+      "starintel:relation:huckabee-leads-us-framework-team",
+      "starintel:relation:r2s-produces-tamir-for-israel",
+      "starintel:relation:r2s-produces-skyhunter-for-usmc",
+      "starintel:relation:mead-cdoc-coordinates-regional-air-defense",
+      "starintel:relation:roaring-lion-joint-with-us-armed-forces",
+      "starintel:relation:epic-fury-commanded-by-centcom",
+      "starintel:relation:navair-contracts-israel-specific-f35-development",
+      "starintel:relation:centcom-oversees-wrsa-i",
+      "starintel:relation:omer-haim-directs-odc-washington",
+      "starintel:relation:baram-zimmerman-discussed-cmcc",
+      "starintel:relation:sosa-provides-reciprocal-priority-support",
+      "starintel:relation:sosa-established-dib-working-group",
+      "starintel:relation:raytheon-and-rafael-own-r2s"
+    ],
+    "counts_by_dtype": {
+      "analysis": 1,
+      "claim": 4,
+      "event": 6,
+      "location": 2,
+      "org": 11,
+      "person": 6,
+      "relation": 18,
+      "research-pass": 1,
+      "target": 1
+    },
+    "record_count": 50,
+    "hash_algorithm": "sha256",
+    "content_hash": "5d22b16ee986db9906147090cf9b0f9ca965c58839054e939a969f2ff4a03626",
+    "files": [
+      {
+        "path": "starintel-documents.jsonl.gz.b64",
+        "name": "starintel-documents.jsonl.gz.b64",
+        "role": "documents-transport",
+        "media_type": "text/plain",
+        "encoding": "base64",
+        "compression": "gzip",
+        "decoded_name": "starintel-documents.jsonl",
+        "decoded_media_type": "application/x-ndjson",
+        "record_count": 50,
+        "hash_algorithm": "sha256",
+        "decoded_content_hash": "5d22b16ee986db9906147090cf9b0f9ca965c58839054e939a969f2ff4a03626",
+        "transport_hash_algorithm": "sha256",
+        "transport_content_hash": "ba7fa799fa9ab10d4a9cab21c62535d1d26b7f1bd4444d4f49380af72a5839ed",
+        "gzip_content_hash": "87031847b695be44f8036ff4697f9415deb40138176cc8206b55dc8c43824680"
+      }
+    ],
+    "schema_versions": [
+      "0.9.0"
+    ],
+    "generated_at": "2026-07-31T05:57:00Z"
+  },
+  "extensions": {
+    "quasar": {
+      "import_mode": "bulk-manifest",
+      "preferred_file": "starintel-documents.jsonl",
+      "open_graph_after_import": true,
+      "graph_name": "U.S.–Israel Military Integration",
+      "reveal_unreviewed": true
+    }
+  }
+}

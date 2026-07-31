@@ -1,0 +1,14 @@
+{
+  "canonical_wef_id": "starintel:org:world-economic-forum",
+  "content_hash": "87b06cc8ae39484160c7115e6f565ea2192d78f12a2d8fbd49e5899328e54b16",
+  "counts_by_dtype": {
+    "org": 167,
+    "relation": 826,
+    "research-pass": 1
+  },
+  "dataset": "wef",
+  "generated_at": "2026-07-31T05:21:00Z",
+  "hash_algorithm": "sha256",
+  "record_count": 994,
+  "schema_version": "0.9.0"
+}
