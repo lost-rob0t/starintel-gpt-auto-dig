@@ -12,66 +12,51 @@
       "venture_capital"
     ],
     "intersections": [
-      [
-        "aharon_institute_policy",
-        "foundation_advisory"
-      ],
-      [
-        "aharon_institute_policy",
-        "government_education_reform"
-      ],
-      [
-        "aharon_institute_policy",
-        "israel_democracy_institute"
-      ],
-      [
-        "aharon_institute_policy",
-        "pnima_civic_network"
-      ],
-      [
-        "aharon_institute_policy",
-        "venture_capital"
-      ],
-      [
-        "foundation_advisory",
-        "government_education_reform"
-      ],
-      [
-        "foundation_advisory",
-        "israel_democracy_institute"
-      ],
-      [
-        "foundation_advisory",
-        "pnima_civic_network"
-      ],
-      [
-        "foundation_advisory",
-        "venture_capital"
-      ],
-      [
-        "government_education_reform",
-        "israel_democracy_institute"
-      ],
-      [
-        "government_education_reform",
-        "pnima_civic_network"
-      ],
-      [
-        "government_education_reform",
-        "venture_capital"
-      ],
-      [
-        "israel_democracy_institute",
-        "pnima_civic_network"
-      ],
-      [
-        "israel_democracy_institute",
-        "venture_capital"
-      ],
-      [
-        "pnima_civic_network",
-        "venture_capital"
-      ]
+      ["aharon_institute_policy", "foundation_advisory"],
+      ["aharon_institute_policy", "government_education_reform"],
+      ["aharon_institute_policy", "israel_democracy_institute"],
+      ["aharon_institute_policy", "pnima_civic_network"],
+      ["aharon_institute_policy", "venture_capital"],
+      ["foundation_advisory", "government_education_reform"],
+      ["foundation_advisory", "israel_democracy_institute"],
+      ["foundation_advisory", "pnima_civic_network"],
+      ["foundation_advisory", "venture_capital"],
+      ["government_education_reform", "israel_democracy_institute"],
+      ["government_education_reform", "pnima_civic_network"],
+      ["government_education_reform", "venture_capital"],
+      ["israel_democracy_institute", "pnima_civic_network"],
+      ["israel_democracy_institute", "venture_capital"],
+      ["pnima_civic_network", "venture_capital"]
+    ]
+  },
+  {
+    "person": "Yair Schindel",
+    "membership_count": 6,
+    "pairwise_intersection_count": 15,
+    "memberships": [
+      "amoon_venture_capital",
+      "digital_israel",
+      "health_8400_network",
+      "maoz_cofounder",
+      "shayetet_13",
+      "startup_nation_central"
+    ],
+    "intersections": [
+      ["amoon_venture_capital", "digital_israel"],
+      ["amoon_venture_capital", "health_8400_network"],
+      ["amoon_venture_capital", "maoz_cofounder"],
+      ["amoon_venture_capital", "shayetet_13"],
+      ["amoon_venture_capital", "startup_nation_central"],
+      ["digital_israel", "health_8400_network"],
+      ["digital_israel", "maoz_cofounder"],
+      ["digital_israel", "shayetet_13"],
+      ["digital_israel", "startup_nation_central"],
+      ["health_8400_network", "maoz_cofounder"],
+      ["health_8400_network", "shayetet_13"],
+      ["health_8400_network", "startup_nation_central"],
+      ["maoz_cofounder", "shayetet_13"],
+      ["maoz_cofounder", "startup_nation_central"],
+      ["shayetet_13", "startup_nation_central"]
     ]
   },
   {
@@ -86,46 +71,40 @@
       "rothschild_philanthropy"
     ],
     "intersections": [
-      [
-        "foundation_management",
-        "knesset_defense_oversight_staff"
-      ],
-      [
-        "foundation_management",
-        "meridor_family"
-      ],
-      [
-        "foundation_management",
-        "military_intelligence_collection_unit"
-      ],
-      [
-        "foundation_management",
-        "rothschild_philanthropy"
-      ],
-      [
-        "knesset_defense_oversight_staff",
-        "meridor_family"
-      ],
-      [
-        "knesset_defense_oversight_staff",
-        "military_intelligence_collection_unit"
-      ],
-      [
-        "knesset_defense_oversight_staff",
-        "rothschild_philanthropy"
-      ],
-      [
-        "meridor_family",
-        "military_intelligence_collection_unit"
-      ],
-      [
-        "meridor_family",
-        "rothschild_philanthropy"
-      ],
-      [
-        "military_intelligence_collection_unit",
-        "rothschild_philanthropy"
-      ]
+      ["foundation_management", "knesset_defense_oversight_staff"],
+      ["foundation_management", "meridor_family"],
+      ["foundation_management", "military_intelligence_collection_unit"],
+      ["foundation_management", "rothschild_philanthropy"],
+      ["knesset_defense_oversight_staff", "meridor_family"],
+      ["knesset_defense_oversight_staff", "military_intelligence_collection_unit"],
+      ["knesset_defense_oversight_staff", "rothschild_philanthropy"],
+      ["meridor_family", "military_intelligence_collection_unit"],
+      ["meridor_family", "rothschild_philanthropy"],
+      ["military_intelligence_collection_unit", "rothschild_philanthropy"]
+    ]
+  },
+  {
+    "person": "Liat Nadai Arad",
+    "membership_count": 5,
+    "pairwise_intersection_count": 10,
+    "memberships": [
+      "biocatch_board",
+      "hospital_ai_leadership",
+      "maoz_board",
+      "military_intelligence_cyber_command",
+      "technology_company_management"
+    ],
+    "intersections": [
+      ["biocatch_board", "hospital_ai_leadership"],
+      ["biocatch_board", "maoz_board"],
+      ["biocatch_board", "military_intelligence_cyber_command"],
+      ["biocatch_board", "technology_company_management"],
+      ["hospital_ai_leadership", "maoz_board"],
+      ["hospital_ai_leadership", "military_intelligence_cyber_command"],
+      ["hospital_ai_leadership", "technology_company_management"],
+      ["maoz_board", "military_intelligence_cyber_command"],
+      ["maoz_board", "technology_company_management"],
+      ["military_intelligence_cyber_command", "technology_company_management"]
     ]
   },
   {
@@ -140,46 +119,54 @@
       "military_intelligence_research_command"
     ],
     "intersections": [
-      [
-        "educational_technology_leadership",
-        "foundation_advisory"
-      ],
-      [
-        "educational_technology_leadership",
-        "idf_general_officer"
-      ],
-      [
-        "educational_technology_leadership",
-        "military_academies_command"
-      ],
-      [
-        "educational_technology_leadership",
-        "military_intelligence_research_command"
-      ],
-      [
-        "foundation_advisory",
-        "idf_general_officer"
-      ],
-      [
-        "foundation_advisory",
-        "military_academies_command"
-      ],
-      [
-        "foundation_advisory",
-        "military_intelligence_research_command"
-      ],
-      [
-        "idf_general_officer",
-        "military_academies_command"
-      ],
-      [
-        "idf_general_officer",
-        "military_intelligence_research_command"
-      ],
-      [
-        "military_academies_command",
-        "military_intelligence_research_command"
-      ]
+      ["educational_technology_leadership", "foundation_advisory"],
+      ["educational_technology_leadership", "idf_general_officer"],
+      ["educational_technology_leadership", "military_academies_command"],
+      ["educational_technology_leadership", "military_intelligence_research_command"],
+      ["foundation_advisory", "idf_general_officer"],
+      ["foundation_advisory", "military_academies_command"],
+      ["foundation_advisory", "military_intelligence_research_command"],
+      ["idf_general_officer", "military_academies_command"],
+      ["idf_general_officer", "military_intelligence_research_command"],
+      ["military_academies_command", "military_intelligence_research_command"]
+    ]
+  },
+  {
+    "person": "Dadi Perlmutter",
+    "membership_count": 4,
+    "pairwise_intersection_count": 6,
+    "memberships": [
+      "double_tech_launch",
+      "government_human_capital_committee",
+      "government_policy_adoption",
+      "intel_executive"
+    ],
+    "intersections": [
+      ["double_tech_launch", "government_human_capital_committee"],
+      ["double_tech_launch", "government_policy_adoption"],
+      ["double_tech_launch", "intel_executive"],
+      ["government_human_capital_committee", "government_policy_adoption"],
+      ["government_human_capital_committee", "intel_executive"],
+      ["government_policy_adoption", "intel_executive"]
+    ]
+  },
+  {
+    "person": "Doron Latzer",
+    "membership_count": 4,
+    "pairwise_intersection_count": 6,
+    "memberships": [
+      "elbit_counsel",
+      "idf_computing_alumni_entrepreneurship",
+      "maoz_board",
+      "unit_8200_alumni_entrepreneurship"
+    ],
+    "intersections": [
+      ["elbit_counsel", "idf_computing_alumni_entrepreneurship"],
+      ["elbit_counsel", "maoz_board"],
+      ["elbit_counsel", "unit_8200_alumni_entrepreneurship"],
+      ["idf_computing_alumni_entrepreneurship", "maoz_board"],
+      ["idf_computing_alumni_entrepreneurship", "unit_8200_alumni_entrepreneurship"],
+      ["maoz_board", "unit_8200_alumni_entrepreneurship"]
     ]
   },
   {
@@ -193,30 +180,31 @@
       "venture_capital"
     ],
     "intersections": [
-      [
-        "beit_issie_shapiro_endowment",
-        "foundation_board_chair"
-      ],
-      [
-        "beit_issie_shapiro_endowment",
-        "technology_company_boards"
-      ],
-      [
-        "beit_issie_shapiro_endowment",
-        "venture_capital"
-      ],
-      [
-        "foundation_board_chair",
-        "technology_company_boards"
-      ],
-      [
-        "foundation_board_chair",
-        "venture_capital"
-      ],
-      [
-        "technology_company_boards",
-        "venture_capital"
-      ]
+      ["beit_issie_shapiro_endowment", "foundation_board_chair"],
+      ["beit_issie_shapiro_endowment", "technology_company_boards"],
+      ["beit_issie_shapiro_endowment", "venture_capital"],
+      ["foundation_board_chair", "technology_company_boards"],
+      ["foundation_board_chair", "venture_capital"],
+      ["technology_company_boards", "venture_capital"]
+    ]
+  },
+  {
+    "person": "Erez Askal",
+    "membership_count": 4,
+    "pairwise_intersection_count": 6,
+    "memberships": [
+      "double_tech_launch_communications",
+      "national_ai_directorate",
+      "national_ai_plan",
+      "pmo_digital_government"
+    ],
+    "intersections": [
+      ["double_tech_launch_communications", "national_ai_directorate"],
+      ["double_tech_launch_communications", "national_ai_plan"],
+      ["double_tech_launch_communications", "pmo_digital_government"],
+      ["national_ai_directorate", "national_ai_plan"],
+      ["national_ai_directorate", "pmo_digital_government"],
+      ["national_ai_plan", "pmo_digital_government"]
     ]
   },
   {
@@ -230,165 +218,100 @@
       "state_regulatory_intervention"
     ],
     "intersections": [
-      [
-        "foundation_family",
-        "industrial_ownership"
-      ],
-      [
-        "foundation_family",
-        "netanyahu_direct"
-      ],
-      [
-        "foundation_family",
-        "state_regulatory_intervention"
-      ],
-      [
-        "industrial_ownership",
-        "netanyahu_direct"
-      ],
-      [
-        "industrial_ownership",
-        "state_regulatory_intervention"
-      ],
-      [
-        "netanyahu_direct",
-        "state_regulatory_intervention"
-      ]
+      ["foundation_family", "industrial_ownership"],
+      ["foundation_family", "netanyahu_direct"],
+      ["foundation_family", "state_regulatory_intervention"],
+      ["industrial_ownership", "netanyahu_direct"],
+      ["industrial_ownership", "state_regulatory_intervention"],
+      ["netanyahu_direct", "state_regulatory_intervention"]
     ]
   },
   {
     "person": "Bella Abrahams",
     "membership_count": 3,
     "pairwise_intersection_count": 3,
-    "memberships": [
-      "5p2_formation",
-      "industry_volunteer_mobilization",
-      "intel_israel"
-    ],
+    "memberships": ["5p2_formation", "industry_volunteer_mobilization", "intel_israel"],
     "intersections": [
-      [
-        "5p2_formation",
-        "industry_volunteer_mobilization"
-      ],
-      [
-        "5p2_formation",
-        "intel_israel"
-      ],
-      [
-        "industry_volunteer_mobilization",
-        "intel_israel"
-      ]
+      ["5p2_formation", "industry_volunteer_mobilization"],
+      ["5p2_formation", "intel_israel"],
+      ["industry_volunteer_mobilization", "intel_israel"]
     ]
   },
   {
     "person": "Gideon Sa'ar",
     "membership_count": 3,
     "pairwise_intersection_count": 3,
+    "memberships": ["education_ministry", "foundation_award_event", "netanyahu_government"],
+    "intersections": [
+      ["education_ministry", "foundation_award_event"],
+      ["education_ministry", "netanyahu_government"],
+      ["foundation_award_event", "netanyahu_government"]
+    ]
+  },
+  {
+    "person": "Meirav Zarbiv",
+    "membership_count": 3,
+    "pairwise_intersection_count": 3,
     "memberships": [
-      "education_ministry",
-      "foundation_award_event",
-      "netanyahu_government"
+      "education_ministry_innovation_leadership",
+      "foundation_high_tech_matriculation_advisory",
+      "maoz_education_network"
     ],
     "intersections": [
-      [
-        "education_ministry",
-        "foundation_award_event"
-      ],
-      [
-        "education_ministry",
-        "netanyahu_government"
-      ],
-      [
-        "foundation_award_event",
-        "netanyahu_government"
-      ]
+      ["education_ministry_innovation_leadership", "foundation_high_tech_matriculation_advisory"],
+      ["education_ministry_innovation_leadership", "maoz_education_network"],
+      ["foundation_high_tech_matriculation_advisory", "maoz_education_network"]
     ]
   },
   {
     "person": "Michal Beller",
     "membership_count": 3,
     "pairwise_intersection_count": 3,
-    "memberships": [
-      "5p2_measurement_partner",
-      "foundation_governance_or_advice",
-      "rama_founder"
-    ],
+    "memberships": ["5p2_measurement_partner", "foundation_governance_or_advice", "rama_founder"],
     "intersections": [
-      [
-        "5p2_measurement_partner",
-        "foundation_governance_or_advice"
-      ],
-      [
-        "5p2_measurement_partner",
-        "rama_founder"
-      ],
-      [
-        "foundation_governance_or_advice",
-        "rama_founder"
-      ]
+      ["5p2_measurement_partner", "foundation_governance_or_advice"],
+      ["5p2_measurement_partner", "rama_founder"],
+      ["foundation_governance_or_advice", "rama_founder"]
     ]
   },
   {
     "person": "Michal Cohen",
     "membership_count": 3,
     "pairwise_intersection_count": 3,
-    "memberships": [
-      "5p2_founder_institution",
-      "education_ministry_leadership",
-      "rashi_leadership"
-    ],
+    "memberships": ["5p2_founder_institution", "education_ministry_leadership", "rashi_leadership"],
     "intersections": [
-      [
-        "5p2_founder_institution",
-        "education_ministry_leadership"
-      ],
-      [
-        "5p2_founder_institution",
-        "rashi_leadership"
-      ],
-      [
-        "education_ministry_leadership",
-        "rashi_leadership"
-      ]
+      ["5p2_founder_institution", "education_ministry_leadership"],
+      ["5p2_founder_institution", "rashi_leadership"],
+      ["education_ministry_leadership", "rashi_leadership"]
+    ]
+  },
+  {
+    "person": "Sagi Bar",
+    "membership_count": 3,
+    "pairwise_intersection_count": 3,
+    "memberships": ["cyber_education_center", "maoz_education_network", "military_intelligence_technology_rd"],
+    "intersections": [
+      ["cyber_education_center", "maoz_education_network"],
+      ["cyber_education_center", "military_intelligence_technology_rd"],
+      ["maoz_education_network", "military_intelligence_technology_rd"]
     ]
   },
   {
     "person": "Sasha Trump-Weiss",
     "membership_count": 3,
     "pairwise_intersection_count": 3,
-    "memberships": [
-      "beit_issie_shapiro_board_leadership",
-      "multigenerational_philanthropy",
-      "trump_family_descendant"
-    ],
+    "memberships": ["beit_issie_shapiro_board_leadership", "multigenerational_philanthropy", "trump_family_descendant"],
     "intersections": [
-      [
-        "beit_issie_shapiro_board_leadership",
-        "multigenerational_philanthropy"
-      ],
-      [
-        "beit_issie_shapiro_board_leadership",
-        "trump_family_descendant"
-      ],
-      [
-        "multigenerational_philanthropy",
-        "trump_family_descendant"
-      ]
+      ["beit_issie_shapiro_board_leadership", "multigenerational_philanthropy"],
+      ["beit_issie_shapiro_board_leadership", "trump_family_descendant"],
+      ["multigenerational_philanthropy", "trump_family_descendant"]
     ]
   },
   {
     "person": "Eddie Trump",
     "membership_count": 2,
     "pairwise_intersection_count": 1,
-    "memberships": [
-      "foundation_family",
-      "industrial_ownership"
-    ],
-    "intersections": [
-      [
-        "foundation_family",
-        "industrial_ownership"
-      ]
-    ]
+    "memberships": ["foundation_family", "industrial_ownership"],
+    "intersections": [["foundation_family", "industrial_ownership"]]
   }
 ]
