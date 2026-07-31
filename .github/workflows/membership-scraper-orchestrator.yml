@@ -1,0 +1,121 @@
+name: Membership scraper orchestrator
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "config/membership-scraper-queue.json"
+      - "scripts/run_membership_scraper_wave.py"
+      - "scripts/run_with_membership_url_capture.py"
+      - "scripts/membership_list_surface_candidates.py"
+      - "scripts/sync_membership_list_issues.py"
+      - ".github/workflows/membership-scraper-orchestrator.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  issues: write
+
+concurrency:
+  group: membership-scraper-orchestrator
+  cancel-in-progress: false
+
+jobs:
+  prepare:
+    runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.queue.outputs.matrix }}
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          ref: main
+
+      - id: queue
+        name: Load enabled scraper waves
+        shell: bash
+        run: |
+          python - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+
+          queue = json.loads(Path("config/membership-scraper-queue.json").read_text(encoding="utf-8"))
+          include = [
+              {"id": wave["id"], "branch": wave["branch"]}
+              for wave in queue.get("waves", [])
+              if wave.get("enabled") is True
+          ]
+          with open(os.environ["GITHUB_OUTPUT"], "a", encoding="utf-8") as handle:
+              handle.write("matrix=" + json.dumps({"include": include}, separators=(",", ":")) + "\n")
+          print(json.dumps({"enabled_waves": include}, indent=2))
+          PY
+
+  cleanup:
+    needs: prepare
+    runs-on: ubuntu-latest
+    timeout-minutes: 180
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          ref: main
+
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+
+      - name: Drain invalid profile and homepage tickets
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          python scripts/sync_membership_list_issues.py \
+            --repository "$GITHUB_REPOSITORY" \
+            --cleanup-only \
+            --cleanup-passes 30 \
+            --report reports/membership-list-cleanup-orchestrator.json
+
+  scrape:
+    needs: [prepare, cleanup]
+    strategy:
+      fail-fast: false
+      max-parallel: 1
+      matrix: ${{ fromJSON(needs.prepare.outputs.matrix) }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 350
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          ref: ${{ matrix.branch }}
+          fetch-depth: 0
+
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+
+      - name: Load the canonical runner from main
+        shell: bash
+        run: |
+          set -euo pipefail
+          git fetch origin main --depth=1
+          for path in \
+            scripts/run_membership_scraper_wave.py \
+            scripts/run_with_membership_url_capture.py \
+            scripts/membership_list_surface_candidates.py \
+            scripts/sync_membership_list_issues.py; do
+            mkdir -p "$(dirname "$path")"
+            git show "origin/main:${path}" > "$path"
+            chmod +x "$path"
+          done
+          python scripts/membership_list_surface_candidates.py --self-test
+
+      - name: Install public-web parsing dependencies
+        run: python -m pip install --disable-pip-version-check requests beautifulsoup4 lxml
+
+      - name: Run queued organization scraper wave
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PYTHONUNBUFFERED: "1"
+        run: |
+          python scripts/run_membership_scraper_wave.py \
+            --wave "${{ matrix.id }}" \
+            --branch "${{ matrix.branch }}" \
+            --root .
