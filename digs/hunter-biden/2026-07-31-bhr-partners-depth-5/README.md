@@ -62,3 +62,4 @@ Congressional questions, characterizations, and requests are not converted into 
 13. `sources.md`
 14. `target-matrix.md`
 15. `manifest.json`
+16. packet manifest self-reference
