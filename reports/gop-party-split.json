@@ -1,0 +1,43 @@
+{
+  "combined": {
+    "Democratic": 0.0,
+    "Other/unclear": 0.0,
+    "Republican": 0.0,
+    "total": 0.0
+  },
+  "matched_relation_rows": 0,
+  "packet": "digs/gop/2026-07-31-fec-wef-depth-3/starintel-documents.jsonl",
+  "relation_data_field_inventory": {},
+  "sources": {
+    "AIPAC PAC": {
+      "amounts": {
+        "Democratic": 0.0,
+        "Other/unclear": 0.0,
+        "Republican": 0.0,
+        "total": 0.0
+      },
+      "rows": {
+        "Democratic": 0,
+        "Other/unclear": 0,
+        "Republican": 0,
+        "total": 0
+      }
+    },
+    "Palantir employee PAC": {
+      "amounts": {
+        "Democratic": 0.0,
+        "Other/unclear": 0.0,
+        "Republican": 0.0,
+        "total": 0.0
+      },
+      "rows": {
+        "Democratic": 0,
+        "Other/unclear": 0,
+        "Republican": 0,
+        "total": 0
+      }
+    }
+  },
+  "top_all_recipients": [],
+  "top_candidate_recipients": []
+}
