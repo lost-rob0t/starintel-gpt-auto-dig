@@ -69,7 +69,7 @@ def parse_args(argv: Sequence[str] | None = None) -> argparse.Namespace:
     parser.add_argument(
         "--manifest-only",
         action="store_true",
-        help="Decrypt Manifest.db but do not extract the indexed files.",
+        help="Decrypt Manifest.db but do not extract payload files.",
     )
     parser.add_argument(
         "--skip-call-history",
@@ -130,6 +130,7 @@ def run(args: argparse.Namespace) -> dict[str, object]:
     output_directory = args.output.expanduser().resolve()
     output_directory.mkdir(parents=True, exist_ok=True)
     report_path = (args.report or (output_directory / "extraction-report.json")).expanduser().resolve()
+    extract_call_history = not args.manifest_only and not args.skip_call_history
 
     passphrase = resolve_passphrase(args)
     started_at = utc_now()
@@ -144,7 +145,7 @@ def run(args: argparse.Namespace) -> dict[str, object]:
         "domain_like": args.domain_like,
         "incremental": bool(args.incremental),
         "manifest_only": bool(args.manifest_only),
-        "call_history": "skipped" if args.skip_call_history else "pending",
+        "call_history": "pending" if extract_call_history else "skipped",
         "extracted_files": 0,
     }
 
@@ -155,7 +156,7 @@ def run(args: argparse.Namespace) -> dict[str, object]:
     report["manifest_path"] = str(manifest_path)
     report["manifest_sha256"] = sha256_file(manifest_path)
 
-    if not args.skip_call_history:
+    if extract_call_history:
         call_history_path = output_directory / "call_history.sqlite"
         try:
             backup.extract_file(
