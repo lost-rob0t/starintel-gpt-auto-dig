@@ -22,14 +22,11 @@ class WefTransportDiagnostics(unittest.TestCase):
         ]
         encoded = "".join(values)
         lengths = [len(value) for value in values]
-        boundaries: list[int] = []
-        offset = 0
-        for value in values[:-1]:
-            offset += len(value)
-            boundaries.append(offset)
+        boundaries = list(range(20_000, len(encoded), 20_000))
         padding_at = encoded.find("=")
         if padding_at >= 0:
             boundaries.append(padding_at)
+        boundaries = sorted(set(boundaries))
 
         print(
             f"DIAG compact parts={len(parts)} lengths={lengths} total={len(encoded)} "
@@ -51,7 +48,7 @@ class WefTransportDiagnostics(unittest.TestCase):
             if recovered is not None:
                 break
 
-        self.assertIsNotNone(recovered, "No single-character repair succeeded at a chunk boundary")
+        self.assertIsNotNone(recovered, "No single-character repair succeeded at a logical chunk boundary")
         assert recovered is not None
         position, character, payload = recovered
         lines = [line for line in payload.decode("utf-8").splitlines() if line.strip()]
