@@ -35,7 +35,7 @@ The evidence indicates a likely conflation between two unrelated entities:
 1. **Trump University** was a U.S. real-estate seminar and mentoring company founded by Donald Trump, Michael Sexton and another person. New York courts described it as unlicensed and later renamed Trump Entrepreneur Initiative. No reviewed source connects it to Netanyahu or an Israeli school.
 2. The **Eddie and Jules Trump Family Foundation** is an Israeli education philanthropy founded in 2011. It works with the Israeli education system and partnered with the Ministry of Education, the Rashi Foundation and Intel Israel on mathematics and science programs. The foundation is named for Eddie and Jules Trump, not Donald Trump.
 
-The Israeli foundation is a surname collision, not evidence that Donald Trump and Netanyahu operated a school together.
+The Israeli foundation is a surname collision, not evidence that Donald Trump and Netanyahu operated a school together. **Organizationally unrelated to Donald Trump does not mean analytically unrelated:** its state–philanthropy–industry–defense education network is documented as a depth-6 continuation of the existing [Greater Israel dataset](../../greater-israel/2026-07-31-israel-education-state-industry-pipeline/README.md).
 
 ## Recursive depth report
 
@@ -108,7 +108,7 @@ That contradiction is worth resolving, but the endorsement remains a political c
 - Eddie and Jules Trump Family Foundation:
   <https://www.trump.org.il/en/partner/trump-foundation>
 - Foundation–Ministry education coalition:
-  <https://www.trump.org.il/en/grant/5p2>
+  <https://www.trump.org.il/en/grant/promoting-excellence-in-math-and-sciences>
 - Globes — Ramat Gan judgment:
   <https://en.globes.co.il/en/article-1000410609>
 - Globes — Netanya proposal:
