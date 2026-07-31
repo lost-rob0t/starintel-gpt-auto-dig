@@ -19,7 +19,7 @@ permissions:
   contents: write
 
 concurrency:
-  group: dnc-bulk-generation-${{ github.event.pull_request.head.ref || github.ref }}
+  group: dnc-fec-oppexp-${{ github.event.pull_request.head.ref || github.ref }}
   cancel-in-progress: false
 
 jobs:
@@ -29,7 +29,7 @@ jobs:
       (github.event_name != 'pull_request' ||
        github.event.pull_request.head.ref == 'agent/dnc-fec-project-veritas-seed')
     runs-on: ubuntu-latest
-    timeout-minutes: 90
+    timeout-minutes: 120
     env:
       PYTHONPATH: .
       TARGET_BRANCH: ${{ github.event.pull_request.head.ref || github.ref_name }}
@@ -46,6 +46,38 @@ jobs:
       - name: Generate official FEC operating-expenditure corpus
         run: python3 scripts/import_dnc_fec_oppexp.py
 
+      - name: Compress canonical transport into GitHub-safe parts
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          from __future__ import annotations
+
+          import base64
+          import gzip
+          from pathlib import Path
+
+          root = Path('digs/dnc/2026-07-31-fec-operating-expenditures-2026')
+          source = root / 'starintel-documents.jsonl'
+          payload = source.read_bytes()
+          encoded = base64.b64encode(gzip.compress(payload, compresslevel=9, mtime=0)).decode('ascii')
+          chunk_size = 32_000_000
+          names: list[str] = []
+          for index, start in enumerate(range(0, len(encoded), chunk_size)):
+              name = f'starintel-documents.jsonl.gz.b64.part-{index:04d}'
+              (root / name).write_text(encoded[start:start + chunk_size] + '\n', encoding='utf-8')
+              names.append(name)
+          (root / 'starintel-documents.jsonl.gz.b64.parts').write_text(
+              ''.join(f'{name}\n' for name in names),
+              encoding='utf-8',
+          )
+          source.unlink()
+          print({
+              'raw_bytes': len(payload),
+              'encoded_bytes': len(encoded),
+              'parts': len(names),
+          })
+          PY
+
       - name: Validate complete repository
         run: python3 scripts/validate-for-merge.py --site
 
@@ -61,4 +93,5 @@ jobs:
             exit 0
           fi
           git commit -m 'Add 2026 DNC FEC operating-expenditure corpus [skip ci]'
+          git pull --rebase origin "${TARGET_BRANCH}"
           git push origin HEAD:${TARGET_BRANCH}
