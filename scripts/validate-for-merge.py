@@ -47,8 +47,12 @@ def validate_packet_transports() -> None:
             try:
                 value = json.loads(raw)
             except json.JSONDecodeError as exc:
+                start = max(0, exc.pos - 120)
+                end = min(len(raw), exc.pos + 120)
+                excerpt = raw[start:end]
                 raise RuntimeError(
-                    f"{path.relative_to(ROOT)}:{number}: invalid JSON: {exc}"
+                    f"{path.relative_to(ROOT)}:{number}: invalid JSON: {exc}; "
+                    f"excerpt[{start}:{end}]={excerpt!r}"
                 ) from exc
             if not isinstance(value, dict):
                 raise RuntimeError(
