@@ -113,7 +113,7 @@ def is_list_path(url: str) -> bool:
         return False
     parts = urlsplit(url)
     segments = path_segments(url)
-    if not segments:
+    if not segments or segments == ["news"]:
         return False
     last = segments[-1]
     if listish_segment(last):
@@ -134,7 +134,8 @@ def local_evidence(container: dict[str, Any], key: str) -> str:
 
 
 def qualifies(url: str, evidence: str) -> bool:
-    if is_profile_path(url):
+    segments = path_segments(url)
+    if not segments or segments == ["news"] or is_profile_path(url):
         return False
     return is_list_path(url) or bool(LIST_TEXT_RE.search(evidence))
 
