@@ -1,0 +1,192 @@
+{
+  "dataset": "trump-thiel-circle",
+  "run_id": "trump-thiel-circle-seed-2026-07-31",
+  "generated_at": "2026-07-31T06:39:00Z",
+  "roster_source": "https://www.whitehouse.gov/administration/cabinet/",
+  "shared_next_pass": {
+    "financial": [
+      "OGE ethics agreement",
+      "periodic transaction reports",
+      "financial-disclosure amendments",
+      "divestiture certificates"
+    ],
+    "influence": [
+      "FEC contributions",
+      "OpenSecrets donors",
+      "lobbying disclosures",
+      "transition-team roles",
+      "PAC and nonprofit Form 990 records"
+    ],
+    "institutional": [
+      "agency contracts",
+      "grants",
+      "waivers",
+      "recusal memos",
+      "inspector-general reports",
+      "court dockets"
+    ],
+    "network": [
+      "connected organization officers",
+      "directors",
+      "major donors",
+      "clients",
+      "portfolio companies",
+      "family-controlled entities"
+    ],
+    "connection_test": [
+      "direct Trump appointment or representation",
+      "Vance political/venture connection",
+      "Thiel funding, employment, portfolio, or board connection"
+    ]
+  },
+  "stop_condition": "Do not label a lead corrupt unless evidence supports the classification; retain dismissals, denials, rebuttals, and no-action dispositions.",
+  "targets": [
+    {
+      "target_id": "starintel:person:scott-bessent",
+      "name": "Scott Bessent",
+      "office": "Secretary of the Treasury",
+      "priority": 0.85,
+      "status": "queued"
+    },
+    {
+      "target_id": "starintel:person:todd-blanche",
+      "name": "Todd Blanche",
+      "office": "Acting Attorney General",
+      "priority": 1.0,
+      "status": "queued"
+    },
+    {
+      "target_id": "starintel:person:doug-burgum",
+      "name": "Doug Burgum",
+      "office": "Secretary of the Interior",
+      "priority": 0.85,
+      "status": "queued"
+    },
+    {
+      "target_id": "starintel:person:doug-collins",
+      "name": "Doug Collins",
+      "office": "Secretary of Veterans Affairs",
+      "priority": 1.0,
+      "status": "queued"
+    },
+    {
+      "target_id": "starintel:person:sean-duffy",
+      "name": "Sean Duffy",
+      "office": "Secretary of Transportation",
+      "priority": 0.95,
+      "status": "queued"
+    },
+    {
+      "target_id": "starintel:person:william-j-pulte",
+      "name": "William J. Pulte",
+      "office": "Acting Director of National Intelligence",
+      "priority": 1.0,
+      "status": "queued"
+    },
+    {
+      "target_id": "starintel:person:jamieson-greer",
+      "name": "Jamieson Greer",
+      "office": "United States Trade Representative",
+      "priority": 0.9,
+      "status": "queued"
+    },
+    {
+      "target_id": "starintel:person:pete-hegseth",
+      "name": "Pete Hegseth",
+      "office": "Secretary of War",
+      "priority": 0.85,
+      "status": "queued"
+    },
+    {
+      "target_id": "starintel:person:robert-f-kennedy-jr",
+      "name": "Robert F. Kennedy Jr.",
+      "office": "Secretary of Health and Human Services",
+      "priority": 0.85,
+      "status": "queued"
+    },
+    {
+      "target_id": "starintel:person:kelly-loeffler",
+      "name": "Kelly Loeffler",
+      "office": "Administrator of the Small Business Administration",
+      "priority": 0.85,
+      "status": "queued"
+    },
+    {
+      "target_id": "starintel:person:howard-lutnick",
+      "name": "Howard Lutnick",
+      "office": "Secretary of Commerce",
+      "priority": 1.0,
+      "status": "queued"
+    },
+    {
+      "target_id": "starintel:person:linda-mcmahon",
+      "name": "Linda McMahon",
+      "office": "Secretary of Education",
+      "priority": 0.85,
+      "status": "queued"
+    },
+    {
+      "target_id": "starintel:person:markwayne-mullin",
+      "name": "Markwayne Mullin",
+      "office": "Secretary of Homeland Security",
+      "priority": 0.85,
+      "status": "queued"
+    },
+    {
+      "target_id": "starintel:person:john-ratcliffe",
+      "name": "John Ratcliffe",
+      "office": "Director of the Central Intelligence Agency",
+      "priority": 0.85,
+      "status": "queued"
+    },
+    {
+      "target_id": "starintel:person:brooke-rollins",
+      "name": "Brooke Rollins",
+      "office": "Secretary of Agriculture",
+      "priority": 0.9,
+      "status": "queued"
+    },
+    {
+      "target_id": "starintel:person:marco-rubio",
+      "name": "Marco Rubio",
+      "office": "Secretary of State",
+      "priority": 0.85,
+      "status": "queued"
+    },
+    {
+      "target_id": "starintel:person:keith-sonderling",
+      "name": "Keith E. Sonderling",
+      "office": "Acting Secretary of Labor",
+      "priority": 0.9,
+      "status": "queued"
+    },
+    {
+      "target_id": "starintel:person:scott-turner",
+      "name": "Scott Turner",
+      "office": "Secretary of Housing and Urban Development",
+      "priority": 0.9,
+      "status": "queued"
+    },
+    {
+      "target_id": "starintel:person:russ-vought",
+      "name": "Russ Vought",
+      "office": "Director of the Office of Management and Budget",
+      "priority": 0.95,
+      "status": "queued"
+    },
+    {
+      "target_id": "starintel:person:chris-wright",
+      "name": "Chris Wright",
+      "office": "Secretary of Energy",
+      "priority": 0.95,
+      "status": "queued"
+    },
+    {
+      "target_id": "starintel:person:lee-zeldin",
+      "name": "Lee Zeldin",
+      "office": "Administrator of the Environmental Protection Agency",
+      "priority": 0.95,
+      "status": "queued"
+    }
+  ]
+}
