@@ -5,6 +5,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 BUILDER = ROOT / "scripts" / "starintel_site" / "builder.py"
+SITE_BUILD = ROOT / "scripts" / "build_research_site.py"
 DASHBOARD_JS = ROOT / "site-assets" / "dashboard.js"
 
 
@@ -23,6 +24,13 @@ class DatasetCatalogTests(unittest.TestCase):
         self.assertIn('target = f"dataset-{slug(topic_id)}"', source)
         self.assertIn('downloads / "topic-manifest.json"', source)
         self.assertIn('downloads / "starintel-documents.jsonl"', source)
+
+    def test_bundled_wef_shapers_are_materialized_for_site_indexing(self) -> None:
+        source = SITE_BUILD.read_text(encoding="utf-8")
+        self.assertIn("materialize_wef_shapers_import", source)
+        self.assertIn('".wef-shapers-compact"', source)
+        self.assertIn("WEF_SHAPERS_EXPECTED_RECORDS = 12_187", source)
+        self.assertIn("WEF_SHAPERS_EXPECTED_SHA256", source)
 
     def test_document_browser_supports_exact_dataset_links(self) -> None:
         source = DASHBOARD_JS.read_text(encoding="utf-8")
