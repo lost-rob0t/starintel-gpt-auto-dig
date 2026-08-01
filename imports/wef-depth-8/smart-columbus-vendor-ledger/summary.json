@@ -1,0 +1,51 @@
+{
+  "counts_by_collector": {
+    "auditor": 2,
+    "legistar": 19
+  },
+  "counts_by_kind": {
+    "auditor-dataset-index": 1,
+    "auditor-dataset-row": 1,
+    "legistar-matter": 19
+  },
+  "files": [
+    {
+      "path": "imports/wef-depth-8/smart-columbus-vendor-ledger/auditor-observations.jsonl",
+      "records": 2
+    },
+    {
+      "path": "imports/wef-depth-8/smart-columbus-vendor-ledger/legistar-observations.jsonl",
+      "records": 19
+    }
+  ],
+  "matched_keywords": {
+    "WEF": 2,
+    "membership dues": 4,
+    "memorandum of understanding": 15
+  },
+  "observation_count": 21,
+  "source_urls": [
+    "https://dlstpprodeastus001.blob.core.windows.net/claire-knowledge-store/City%20of%20Columbus%20-%20Self%20Help%20Instructions%20-%20Vendor%20Payments.pdf",
+    "https://webapi.legistar.com/v1/columbus/Matters/129922",
+    "https://webapi.legistar.com/v1/columbus/Matters/132473",
+    "https://webapi.legistar.com/v1/columbus/Matters/132559",
+    "https://webapi.legistar.com/v1/columbus/Matters/134020",
+    "https://webapi.legistar.com/v1/columbus/Matters/134772",
+    "https://webapi.legistar.com/v1/columbus/Matters/134775",
+    "https://webapi.legistar.com/v1/columbus/Matters/134926",
+    "https://webapi.legistar.com/v1/columbus/Matters/135366",
+    "https://webapi.legistar.com/v1/columbus/Matters/135520",
+    "https://webapi.legistar.com/v1/columbus/Matters/135610",
+    "https://webapi.legistar.com/v1/columbus/Matters/135765",
+    "https://webapi.legistar.com/v1/columbus/Matters/136135",
+    "https://webapi.legistar.com/v1/columbus/Matters/136217",
+    "https://webapi.legistar.com/v1/columbus/Matters/136430",
+    "https://webapi.legistar.com/v1/columbus/Matters/136690",
+    "https://webapi.legistar.com/v1/columbus/Matters/136780",
+    "https://webapi.legistar.com/v1/columbus/Matters/137399",
+    "https://webapi.legistar.com/v1/columbus/Matters/137529",
+    "https://webapi.legistar.com/v1/columbus/Matters/137628",
+    "https://www.columbusauditor.org/Data-Hub/data-sets-explorer/"
+  ],
+  "target_id": "starintel:investigation-target:wef-depth-7-wef-columbus-public-records"
+}
