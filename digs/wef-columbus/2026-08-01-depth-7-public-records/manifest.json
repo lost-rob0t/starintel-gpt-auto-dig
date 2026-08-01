@@ -1,0 +1,49 @@
+{
+  "counts_by_dtype": {
+    "analysis": 2,
+    "contract": 3,
+    "event": 1,
+    "financial-observation": 3,
+    "investigation-target": 2,
+    "org": 1,
+    "person": 1,
+    "relation": 2,
+    "research-pass": 1
+  },
+  "dataset": "wef",
+  "document_count": 16,
+  "files": [
+    {
+      "compression": "gzip",
+      "decoded_content_hash": "3573d1f07da6398f96ad0894eab74e083daa75bd086eb370847db92e2328254c",
+      "encoding": "base64",
+      "gzip_content_hash": "775f51ff9c75f42ab0f1c5a9d525a840822cbaafe259c3cc00b51c1f031153d6",
+      "path": "starintel-documents.jsonl.gz.b64",
+      "record_count": 16,
+      "transport_content_hash": "bb467528f1bce0def69df678d427b00bc2b249c4117f78bba6724979abe6b911"
+    }
+  ],
+  "generated_at": "2026-08-01T23:58:00Z",
+  "normalized_jsonl_sha256": "3573d1f07da6398f96ad0894eab74e083daa75bd086eb370847db92e2328254c",
+  "records": [
+    "starintel:org:smart-columbus",
+    "starintel:person:robert-ward-smart-columbus-filing-representative",
+    "starintel:event:smart-columbus-llc-ohio-formation-2018",
+    "starintel:relation:robert-ward-executed-smart-columbus-formation-filing",
+    "starintel:relation:city-columbus-smart-columbus-operational-support-2023-2026",
+    "starintel:contract:city-smart-columbus-operational-support-2023-authorization",
+    "starintel:contract:city-smart-columbus-operational-support-2025-authorization",
+    "starintel:contract:city-smart-columbus-operational-support-2026-authorization",
+    "starintel:financial-observation:smart-columbus-operational-support-coding-2023",
+    "starintel:financial-observation:smart-columbus-operational-support-coding-2025",
+    "starintel:financial-observation:smart-columbus-operational-support-coding-2026",
+    "starintel:analysis:smart-columbus-counterparty-and-vendor-identity-gap-depth-7",
+    "starintel:analysis:wef-columbus-public-records-routing-depth-7",
+    "starintel:investigation-target:wef-depth-8-smart-columbus-vendor-ledger-and-contracts",
+    "starintel:investigation-target:wef-depth-8-columbus-correspondence-travel-and-profile-authorization",
+    "starintel:research-pass:wef-columbus-depth-7-2026-08-01"
+  ],
+  "recursion_depth": 7,
+  "run_id": "wef-columbus-depth-7-2026-08-01",
+  "schema_version": "0.9.0"
+}
