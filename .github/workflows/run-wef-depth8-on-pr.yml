@@ -1,4 +1,4 @@
-name: Run WEF depth 8 collector on stacked PR
+name: Parse WEF depth 8 membership attachment
 
 on:
   pull_request:
@@ -8,11 +8,11 @@ permissions:
   contents: write
 
 concurrency:
-  group: wef-depth8-vendor-ledger-pr
+  group: wef-depth8-membership-attachment
   cancel-in-progress: false
 
 jobs:
-  collect:
+  parse:
     if: >-
       github.event.pull_request.head.repo.full_name == github.repository &&
       github.head_ref == 'agent/wef-columbus-depth-7-public-records'
@@ -23,67 +23,110 @@ jobs:
           ref: agent/wef-columbus-depth-7-public-records
           fetch-depth: 0
 
-      - name: Run bounded collectors
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          set -euo pipefail
-          out=imports/wef-depth-8/smart-columbus-vendor-ledger
-          rm -rf "$out"
-          mkdir -p "$out"
-          target='starintel:investigation-target:wef-depth-7-wef-columbus-public-records'
-
-          python3 scripts/wef_depth7_scrape.py \
-            --target "$target" \
-            --collector legistar \
-            --output "$out/legistar-observations.jsonl"
-
-          python3 scripts/wef_depth7_scrape.py \
-            --target "$target" \
-            --collector auditor \
-            --auditor-download \
-            --auditor-hit-limit 500 \
-            --output "$out/auditor-observations.jsonl"
-
-      - name: Summarize observations
+      - name: Download and parse 2026 membership workbook
         shell: python
         run: |
           from __future__ import annotations
 
+          import io
           import json
-          from collections import Counter
+          import re
+          import urllib.request
+          import zipfile
+          import xml.etree.ElementTree as ET
           from pathlib import Path
 
-          root = Path('imports/wef-depth-8/smart-columbus-vendor-ledger')
-          rows = []
-          files = []
-          for path in sorted(root.glob('*-observations.jsonl')):
-              parsed = [json.loads(line) for line in path.read_text(encoding='utf-8').splitlines() if line.strip()]
-              rows.extend(parsed)
-              files.append({'path': str(path), 'records': len(parsed)})
+          source_url = 'https://webapi.legistar.com/v1/columbus/Matters/136135/Attachments/157814/File'
+          request = urllib.request.Request(source_url, headers={'User-Agent': 'StarIntel-AutoDig/1.0'})
+          with urllib.request.urlopen(request, timeout=60) as response:
+              body = response.read(25_000_000)
+              headers = dict(response.headers.items())
 
-          summary = {
-              'target_id': 'starintel:investigation-target:wef-depth-7-wef-columbus-public-records',
-              'observation_count': len(rows),
-              'files': files,
-              'counts_by_collector': dict(sorted(Counter(row.get('collector') for row in rows).items())),
-              'counts_by_kind': dict(sorted(Counter(row.get('kind') for row in rows).items())),
-              'source_urls': sorted({row.get('source_url') for row in rows if row.get('source_url')}),
-              'matched_keywords': dict(sorted(Counter(keyword for row in rows for keyword in row.get('matched_keywords', [])).items())),
+          if not body.startswith(b'PK'):
+              raise SystemExit(f'attachment is not an XLSX zip: prefix={body[:16]!r}')
+
+          ns = {'a': 'http://schemas.openxmlformats.org/spreadsheetml/2006/main'}
+          rel_ns = {'r': 'http://schemas.openxmlformats.org/package/2006/relationships'}
+
+          with zipfile.ZipFile(io.BytesIO(body)) as archive:
+              shared = []
+              if 'xl/sharedStrings.xml' in archive.namelist():
+                  root = ET.fromstring(archive.read('xl/sharedStrings.xml'))
+                  for item in root.findall('a:si', ns):
+                      shared.append(''.join(node.text or '' for node in item.iter() if node.tag.endswith('}t')))
+
+              workbook = ET.fromstring(archive.read('xl/workbook.xml'))
+              relationships = ET.fromstring(archive.read('xl/_rels/workbook.xml.rels'))
+              rel_targets = {
+                  rel.attrib['Id']: rel.attrib['Target']
+                  for rel in relationships.findall('r:Relationship', rel_ns)
+              }
+
+              sheets = []
+              for sheet in workbook.findall('a:sheets/a:sheet', ns):
+                  rel_id = sheet.attrib['{http://schemas.openxmlformats.org/officeDocument/2006/relationships}id']
+                  target = rel_targets[rel_id].lstrip('/')
+                  path = target if target.startswith('xl/') else f'xl/{target}'
+                  root = ET.fromstring(archive.read(path))
+                  rows = []
+                  for row in root.findall('.//a:sheetData/a:row', ns):
+                      cells = []
+                      for cell in row.findall('a:c', ns):
+                          ref = cell.attrib.get('r', '')
+                          col = re.sub(r'\d', '', ref)
+                          value = ''
+                          cell_type = cell.attrib.get('t')
+                          if cell_type == 'inlineStr':
+                              value = ''.join(node.text or '' for node in cell.iter() if node.tag.endswith('}t'))
+                          else:
+                              value_node = cell.find('a:v', ns)
+                              raw = value_node.text if value_node is not None and value_node.text is not None else ''
+                              if cell_type == 's' and raw:
+                                  value = shared[int(raw)]
+                              else:
+                                  value = raw
+                          cells.append({'column': col, 'value': value})
+                      if cells:
+                          rows.append({'row': int(row.attrib.get('r', len(rows) + 1)), 'cells': cells})
+                  sheets.append({'name': sheet.attrib.get('name', path), 'path': path, 'rows': rows})
+
+          terms = [
+              'world economic forum', 'wef', 'global shapers', 'young global leaders',
+              'davos', 'centre for urban transformation', 'center for urban transformation'
+          ]
+          hits = []
+          for sheet in sheets:
+              for row in sheet['rows']:
+                  text = ' | '.join(cell['value'] for cell in row['cells'])
+                  matched = [term for term in terms if term in text.casefold()]
+                  if matched:
+                      hits.append({'sheet': sheet['name'], 'row': row['row'], 'matched_terms': matched, 'text': text})
+
+          output = {
+              'source_url': source_url,
+              'matter_id': 136135,
+              'matter_file': '0223-2026',
+              'attachment_id': 157814,
+              'attachment_name': '2026 Citywide membership funding.xlsx',
+              'headers': headers,
+              'workbook_size_bytes': len(body),
+              'sheet_count': len(sheets),
+              'row_count': sum(len(sheet['rows']) for sheet in sheets),
+              'direct_wef_hits': hits,
+              'sheets': sheets,
           }
-          (root / 'summary.json').write_text(json.dumps(summary, ensure_ascii=False, indent=2, sort_keys=True) + '\n', encoding='utf-8')
-          print(json.dumps(summary, ensure_ascii=False, indent=2, sort_keys=True))
+          out = Path('imports/wef-depth-8/smart-columbus-vendor-ledger/citywide-memberships-2026.json')
+          out.parent.mkdir(parents=True, exist_ok=True)
+          out.write_text(json.dumps(output, ensure_ascii=False, indent=2, sort_keys=True) + '\n', encoding='utf-8')
+          print(json.dumps({key: output[key] for key in ('workbook_size_bytes', 'sheet_count', 'row_count', 'direct_wef_hits')}, ensure_ascii=False, indent=2))
 
-      - name: Commit observations
+      - name: Commit parsed membership evidence
         run: |
           set -euo pipefail
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git rm -f .starintel-triggers/wef-depth8-memberships || true
           git rm -f .github/workflows/run-wef-depth8-vendor-ledger.yml || true
-          git add imports/wef-depth-8/smart-columbus-vendor-ledger
-          if git diff --cached --quiet; then
-            echo 'No collector changes to commit'
-            exit 0
-          fi
-          git commit -m 'Collect WEF depth 8 vendor ledger observations'
+          git add imports/wef-depth-8/smart-columbus-vendor-ledger/citywide-memberships-2026.json
+          git commit -m 'Parse 2026 citywide membership funding attachment'
           git push origin HEAD:agent/wef-columbus-depth-7-public-records
