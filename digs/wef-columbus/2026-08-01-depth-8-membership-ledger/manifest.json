@@ -1,0 +1,21 @@
+{
+  "counts_by_dtype": {
+    "analysis": 1,
+    "financial-observation": 1,
+    "investigation-target": 1,
+    "research-pass": 1
+  },
+  "dataset": "wef",
+  "document_count": 4,
+  "generated_at": "2026-08-01T23:54:00Z",
+  "normalized_jsonl_sha256": "c92b452cbd2fedb83d152e0ec3b483abc0af0acbde20dede011082723d758e37",
+  "records": [
+    "starintel:financial-observation:columbus-citywide-membership-authorization-2026-depth-8",
+    "starintel:analysis:wef-columbus-membership-roster-gap-depth-8",
+    "starintel:investigation-target:wef-depth-9-citywide-membership-purchase-orders-and-vendors",
+    "starintel:research-pass:wef-columbus-depth-8-membership-2026-08-01"
+  ],
+  "recursion_depth": 8,
+  "run_id": "wef-columbus-depth-8-membership-2026-08-01",
+  "schema_version": "0.9.0"
+}
