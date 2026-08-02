@@ -1,0 +1,17 @@
+{
+  "bucket": 2,
+  "bucket_count": 32,
+  "counts": {
+    "employment": 3540,
+    "investigation-target": 5,
+    "org": 683,
+    "person": 3361
+  },
+  "dataset": "dnc",
+  "document_part_count": 1,
+  "document_sha256": "485340e098c64a22df68b2e776f98d932fadf43b803c452b67d73138a43e1e2a",
+  "generated_at": "2026-07-31T08:55:00Z",
+  "schema_version": "0.9.0",
+  "source_id": "starintel:source:fec-individual-contributions-2026-c00010603-canonical",
+  "total_documents": 7589
+}

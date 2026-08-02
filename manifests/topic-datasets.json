@@ -144,6 +144,26 @@
           "rhbdbc@icloud.com"
         ]
       }
+    },
+    {
+      "id": "dnc",
+      "title": "DNC",
+      "subtitle": "Democratic National Committee leadership, FEC records, vendors, enforcement matters, and attributed Project Veritas reporting",
+      "match": {
+        "targets": [
+          "dnc",
+          "democratic-national-committee"
+        ],
+        "datasets": [
+          "dnc",
+          "democratic-national-committee"
+        ],
+        "terms": [
+          "democratic national committee",
+          "dnc services corp",
+          "C00010603"
+        ]
+      }
     }
   ]
 }

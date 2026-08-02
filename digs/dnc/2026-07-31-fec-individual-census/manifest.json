@@ -1,0 +1,35 @@
+{
+  "committee_id": "C00010603",
+  "cycle": 2026,
+  "duplicate_sub_id_rows": 447946,
+  "entity_type_rows": {
+    "IND": 895864,
+    "ORG": 26,
+    "PAC": 2
+  },
+  "matching_rows": 895892,
+  "raw_source_members": {
+    "by_date/itcont_2026_20000901_20250227.txt": 12516,
+    "by_date/itcont_2026_20250228_20250410.txt": 31650,
+    "by_date/itcont_2026_20250411_20250522.txt": 38062,
+    "by_date/itcont_2026_20250523_20250629.txt": 39354,
+    "by_date/itcont_2026_20250630_20250730.txt": 35585,
+    "by_date/itcont_2026_20250731_20250828.txt": 36951,
+    "by_date/itcont_2026_20250829_20250925.txt": 37848,
+    "by_date/itcont_2026_20250926_20251021.txt": 43037,
+    "by_date/itcont_2026_20251022_20251116.txt": 41560,
+    "by_date/itcont_2026_20251117_20251212.txt": 40486,
+    "by_date/itcont_2026_20251213_20260118.txt": 31316,
+    "by_date/itcont_2026_20260119_20260306.txt": 11780,
+    "by_date/itcont_2026_20260306_20260416.txt": 18301,
+    "by_date/itcont_2026_20260417_20260528.txt": 27300,
+    "by_date/itcont_2026_20260529_33120101.txt": 2200,
+    "itcont.txt": 447946
+  },
+  "source_scoped_identities": 104721,
+  "source_scoped_people": 104710,
+  "unique_employer_values": 21810,
+  "unique_employment_tuples": 114825,
+  "unique_fec_sub_ids": 447946,
+  "zip_sha256": "623e6b8a97168bac9c14ac85fec628c3ca08089334bcb9fa6ab5941390885821"
+}

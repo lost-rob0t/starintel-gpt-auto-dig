@@ -1,0 +1,28 @@
+{
+  "bucket_count": 32,
+  "committee_id": "C00010603",
+  "counts": {
+    "employment": 112850,
+    "investigation-target": 160,
+    "org": 21821,
+    "person": 104710,
+    "source": 1
+  },
+  "cycle": 2026,
+  "dataset": "dnc",
+  "employer_organizations": 21810,
+  "employment_records": 112850,
+  "generated_at": "2026-07-31T08:55:00Z",
+  "non_individual_contributors": 11,
+  "postal_codes_emitted": false,
+  "raw_matching_rows": 447946,
+  "raw_reported_amount_sum": 64563887.0,
+  "raw_source_part_count": 1,
+  "raw_source_sha256": "b6cefef775dde81893715a2fca1dea46928ce5907bbc1994d2a2ee319776ea59",
+  "schema_version": "0.9.0",
+  "source_id": "starintel:source:fec-individual-contributions-2026-c00010603-canonical",
+  "source_scoped_people": 104710,
+  "total_documents": 239542,
+  "unique_fec_records": 447946,
+  "zip_sha256": "623e6b8a97168bac9c14ac85fec628c3ca08089334bcb9fa6ab5941390885821"
+}

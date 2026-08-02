@@ -1,0 +1,13 @@
+name: Generate DNC organization targets
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  manual:
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo 'The existing organization queue is frozen; FEC partitions carry bounded batch targets.'

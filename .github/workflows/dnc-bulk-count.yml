@@ -1,0 +1,13 @@
+name: Count DNC bulk rows
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  census:
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo 'The committed census is authoritative for this source snapshot.'

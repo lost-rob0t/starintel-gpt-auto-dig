@@ -1,0 +1,69 @@
+name: Generate DNC FEC Democratic committees
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - agent/dnc-fec-project-veritas-seed
+    paths:
+      - scripts/import_dnc_fec_democratic_committees.py
+      - .github/workflows/dnc-fec-democratic-committees.yml
+
+permissions:
+  contents: write
+
+concurrency:
+  group: dnc-fec-democratic-committees-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  generate:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    timeout-minutes: 240
+    env:
+      PYTHONPATH: .
+      TARGET_BRANCH: ${{ github.ref_name }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: ${{ env.TARGET_BRANCH }}
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Generate official FEC Democratic committee corpus
+        run: python3 scripts/import_dnc_fec_democratic_committees.py
+
+      - name: Enforce GitHub-safe partition sizes
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          root = Path('digs/dnc/2026-07-31-fec-democratic-committees-2026')
+          limit = 95_000_000
+          oversized = [(str(path), path.stat().st_size) for path in root.rglob('*') if path.is_file() and path.stat().st_size > limit]
+          if oversized:
+              raise SystemExit(f'oversized generated files: {oversized}')
+          print({'largest': max((path.stat().st_size, str(path)) for path in root.rglob('*') if path.is_file())})
+          PY
+
+      - name: Validate complete repository
+        run: python3 scripts/validate-for-merge.py --site
+
+      - name: Commit generated packet
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add digs/dnc/2026-07-31-fec-democratic-committees-2026
+          if git diff --cached --quiet; then
+            echo 'Generated packet is unchanged.'
+            exit 0
+          fi
+          git commit -m 'Add FEC Democratic committee infrastructure [skip ci]'
+          git pull --rebase origin "${TARGET_BRANCH}"
+          git push origin HEAD:${TARGET_BRANCH}

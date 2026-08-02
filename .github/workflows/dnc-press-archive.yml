@@ -1,0 +1,82 @@
+name: Generate DNC press archive
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - agent/dnc-fec-project-veritas-seed
+    paths:
+      - scripts/import_dnc_press_archive.py
+      - scripts/generate_dnc_press_targets.py
+      - .github/workflows/dnc-press-archive.yml
+
+permissions:
+  contents: write
+
+concurrency:
+  group: dnc-press-archive-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  generate:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    timeout-minutes: 240
+    env:
+      PYTHONPATH: .
+      TARGET_BRANCH: ${{ github.ref_name }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: ${{ env.TARGET_BRANCH }}
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install archive parser
+        run: python3 -m pip install --disable-pip-version-check 'beautifulsoup4>=4.12,<5'
+
+      - name: Generate official DNC press-release corpus
+        run: python3 scripts/import_dnc_press_archive.py
+
+      - name: Generate exhaustive recursive press targets
+        run: python3 scripts/generate_dnc_press_targets.py
+
+      - name: Enforce GitHub-safe generated files
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          roots = [
+              Path('digs/dnc/2026-07-31-official-press-archive'),
+              Path('digs/dnc/2026-07-31-official-press-targets'),
+          ]
+          limit = 95_000_000
+          files = [path for root in roots for path in root.rglob('*') if path.is_file()]
+          oversized = [(str(path), path.stat().st_size) for path in files if path.stat().st_size > limit]
+          if oversized:
+              raise SystemExit(f'oversized generated files: {oversized}')
+          print({'largest': max((path.stat().st_size, str(path)) for path in files)})
+          PY
+
+      - name: Validate complete repository
+        run: python3 scripts/validate-for-merge.py --site
+
+      - name: Commit generated packets
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add \
+            digs/dnc/2026-07-31-official-press-archive \
+            digs/dnc/2026-07-31-official-press-targets
+          if git diff --cached --quiet; then
+            echo 'Generated packets are unchanged.'
+            exit 0
+          fi
+          git commit -m 'Add official DNC press archive and recursive targets [skip ci]'
+          git pull --rebase origin "${TARGET_BRANCH}"
+          git push origin HEAD:${TARGET_BRANCH}

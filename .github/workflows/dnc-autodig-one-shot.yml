@@ -1,0 +1,196 @@
+# explicit-trigger: 2026-07-31T18:58:00-04:00
+name: DNC AutoDig one-shot materialization
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - agent/dnc-fec-project-veritas-seed
+    paths:
+      - .github/workflows/dnc-autodig-one-shot.yml
+
+permissions:
+  contents: write
+
+env:
+  PYTHONPATH: .
+  TARGET_BRANCH: agent/dnc-fec-project-veritas-seed
+
+jobs:
+  generate:
+    if: github.actor != 'github-actions[bot]'
+    strategy:
+      fail-fast: false
+      max-parallel: 8
+      matrix:
+        include:
+          - lane: press
+            command: |
+              python3 scripts/import_dnc_press_archive.py
+              python3 scripts/generate_dnc_press_targets.py
+            paths: |
+              digs/dnc/2026-07-31-official-press-archive
+              digs/dnc/2026-07-31-official-press-targets
+          - lane: fec-committees
+            command: python3 scripts/import_dnc_fec_democratic_committees.py
+            paths: digs/dnc/2026-07-31-fec-democratic-committees-2026
+          - lane: official-party-structure
+            command: python3 scripts/import_dnc_official_party_structure.py
+            paths: digs/dnc/2026-07-31-official-party-structure
+          - lane: fec-candidates
+            command: python3 scripts/import_dnc_fec_democratic_candidates.py
+            paths: digs/dnc/2026-07-31-fec-democratic-candidates-2026
+          - lane: institutional-structure
+            command: python3 scripts/import_dnc_institutional_structure.py
+            paths: digs/dnc/2026-07-31-institutional-structure
+          - lane: fec-committee-transactions
+            command: python3 scripts/import_dnc_fec_committee_transactions.py
+            paths: digs/dnc/2026-07-31-fec-democratic-committee-transactions-2026
+          - lane: fec-independent-expenditures
+            command: python3 scripts/import_dnc_fec_independent_expenditures.py
+            paths: digs/dnc/2026-07-31-fec-independent-expenditures-democratic-candidates-2026
+          - lane: convention-governance
+            command: |
+              python3 - <<'PY'
+              from pathlib import Path
+              path = Path('scripts/seed_dnc_convention_governance.py')
+              source = path.read_text(encoding='utf-8')
+              old = '''def event_document(document_id: str, title: str, event_type: str, summary: str, source_ids: list[str], start: str | None, end: str | None, when: str) -> dict[str, Any]:
+                  data: dict[str, Any] = {"event_type": event_type}
+                  temporal: dict[str, Any] = {}
+                  if start:
+                      temporal["start_at"] = start
+                  if end:
+                      temporal["end_at"] = end
+              '''.replace('              ', '')
+              new = '''def event_document(document_id: str, title: str, event_type: str, summary: str, source_ids: list[str], start: str | None, end: str | None, when: str) -> dict[str, Any]:
+                  data: dict[str, Any] = {"event_kind": event_type, "name": title}
+                  temporal: dict[str, Any] = {"observed_at": when}
+                  if start:
+                      temporal["valid_from"] = start
+                  if end:
+                      temporal["valid_to"] = end
+              '''.replace('              ', '')
+              if old in source:
+                  path.write_text(source.replace(old, new, 1), encoding='utf-8')
+              elif '"event_kind": event_type' not in source:
+                  raise SystemExit('convention event schema is neither old nor normalized')
+              PY
+              python3 scripts/seed_dnc_convention_governance.py
+            paths: |
+              scripts/seed_dnc_convention_governance.py
+              digs/dnc/2026-07-31-convention-governance
+    runs-on: ubuntu-latest
+    timeout-minutes: 540
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+          ref: ${{ env.TARGET_BRANCH }}
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install generation dependencies
+        run: python3 -m pip install --disable-pip-version-check 'beautifulsoup4>=4.12,<5'
+
+      - name: Generate lane
+        shell: bash
+        run: ${{ matrix.command }}
+
+      - name: Enforce GitHub-safe files
+        shell: bash
+        env:
+          GENERATED_PATHS: ${{ matrix.paths }}
+        run: |
+          python3 - <<'PY'
+          import os
+          from pathlib import Path
+          roots = [Path(value) for value in os.environ['GENERATED_PATHS'].splitlines() if value.strip()]
+          files = [path for root in roots for path in ([root] if root.is_file() else root.rglob('*')) if path.is_file()]
+          if not files:
+              raise SystemExit('lane emitted no files')
+          oversized = [(str(path), path.stat().st_size) for path in files if path.stat().st_size > 95_000_000]
+          if oversized:
+              raise SystemExit(f'oversized generated files: {oversized}')
+          print({'files': len(files), 'largest': max((path.stat().st_size, str(path)) for path in files)})
+          PY
+
+      - name: Package lane
+        shell: bash
+        env:
+          GENERATED_PATHS: ${{ matrix.paths }}
+        run: |
+          mapfile -t paths < <(printf '%s\n' "$GENERATED_PATHS" | sed '/^[[:space:]]*$/d')
+          tar -czf "${{ matrix.lane }}.tar.gz" "${paths[@]}"
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: dnc-lane-${{ matrix.lane }}
+          path: ${{ matrix.lane }}.tar.gz
+          if-no-files-found: error
+          retention-days: 3
+          compression-level: 0
+
+  materialize:
+    if: always() && github.actor != 'github-actions[bot]'
+    needs: generate
+    runs-on: ubuntu-latest
+    timeout-minutes: 540
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: ${{ env.TARGET_BRANCH }}
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: dnc-lane-*
+          path: /tmp/dnc-lanes
+
+      - name: Materialize successful lane artifacts
+        shell: bash
+        run: |
+          set -euo pipefail
+          mapfile -t archives < <(find /tmp/dnc-lanes -type f -name '*.tar.gz' -print | sort)
+          if [ "${#archives[@]}" -eq 0 ]; then
+            echo 'No DNC lane artifacts were produced.' >&2
+            exit 1
+          fi
+          for archive in "${archives[@]}"; do
+            echo "Extracting ${archive}"
+            tar -xzf "${archive}" -C .
+          done
+          printf '%s\n' "${archives[@]}" > /tmp/dnc-successful-lanes.txt
+
+      - name: Validate complete repository
+        run: python3 scripts/validate-for-merge.py --site
+
+      - name: Commit every successful packet atomically
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add \
+            scripts/seed_dnc_convention_governance.py \
+            digs/dnc/2026-07-31-official-press-archive \
+            digs/dnc/2026-07-31-official-press-targets \
+            digs/dnc/2026-07-31-fec-democratic-committees-2026 \
+            digs/dnc/2026-07-31-official-party-structure \
+            digs/dnc/2026-07-31-fec-democratic-candidates-2026 \
+            digs/dnc/2026-07-31-institutional-structure \
+            digs/dnc/2026-07-31-fec-democratic-committee-transactions-2026 \
+            digs/dnc/2026-07-31-fec-independent-expenditures-democratic-candidates-2026
+          if git diff --cached --quiet; then
+            echo 'Successful packets are unchanged.'
+            exit 0
+          fi
+          git commit -m 'Materialize expanded DNC AutoDig packets [skip ci]'
+          git pull --rebase origin "${TARGET_BRANCH}"
+          git push origin HEAD:${TARGET_BRANCH}

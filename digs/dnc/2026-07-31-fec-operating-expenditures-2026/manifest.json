@@ -1,0 +1,21 @@
+{
+  "committee_id": "C00010603",
+  "counts": {
+    "financial-observation": 28517,
+    "org": 1310,
+    "person": 721,
+    "relation": 28517,
+    "source": 1
+  },
+  "cycle": 2026,
+  "dataset": "dnc",
+  "document_sha256": "135657094393e46b871243dc12ac378f652a61ab97b51f84cf80fa1e7f1b2752",
+  "generated_at": "2026-07-31T06:45:00Z",
+  "raw_matching_rows": 28517,
+  "raw_source_member": "oppexp.txt",
+  "raw_source_psv_sha256": "a9e44cd469bf4a2c9a2763aa008c630f26d47f3078fbe3118e61e1b1890e070b",
+  "raw_source_zip_sha256": "b3a1b0ff1091909ed08efb13739e833bc72e29288bc6814a510b4c77d4acd8f7",
+  "reconciliation": "none; all raw amendment and memo rows preserved",
+  "schema_version": "0.9.0",
+  "total_documents": 59066
+}

@@ -1,0 +1,87 @@
+name: Generate DNC convention governance
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - agent/dnc-fec-project-veritas-seed
+    paths:
+      - scripts/seed_dnc_convention_governance.py
+      - .github/workflows/dnc-convention-governance.yml
+
+permissions:
+  contents: write
+
+concurrency:
+  group: dnc-convention-governance-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  generate:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    timeout-minutes: 180
+    env:
+      PYTHONPATH: .
+      TARGET_BRANCH: ${{ github.ref_name }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: ${{ env.TARGET_BRANCH }}
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Normalize convention event schema
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+
+          path = Path('scripts/seed_dnc_convention_governance.py')
+          source = path.read_text(encoding='utf-8')
+          old = '''def event_document(document_id: str, title: str, event_type: str, summary: str, source_ids: list[str], start: str | None, end: str | None, when: str) -> dict[str, Any]:
+              data: dict[str, Any] = {"event_type": event_type}
+              temporal: dict[str, Any] = {}
+              if start:
+                  temporal["start_at"] = start
+              if end:
+                  temporal["end_at"] = end
+          '''.replace('          ', '')
+          new = '''def event_document(document_id: str, title: str, event_type: str, summary: str, source_ids: list[str], start: str | None, end: str | None, when: str) -> dict[str, Any]:
+              data: dict[str, Any] = {"event_kind": event_type, "name": title}
+              temporal: dict[str, Any] = {"observed_at": when}
+              if start:
+                  temporal["valid_from"] = start
+              if end:
+                  temporal["valid_to"] = end
+          '''.replace('          ', '')
+          if old not in source:
+              raise SystemExit('expected event_document schema block was not found')
+          path.write_text(source.replace(old, new, 1), encoding='utf-8')
+          PY
+
+      - name: Generate convention governance corpus
+        run: python3 scripts/seed_dnc_convention_governance.py
+
+      - name: Validate complete repository
+        run: python3 scripts/validate-for-merge.py --site
+
+      - name: Commit normalized generator and packet
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add \
+            scripts/seed_dnc_convention_governance.py \
+            digs/dnc/2026-07-31-convention-governance
+          if git diff --cached --quiet; then
+            echo 'Generated packet is unchanged.'
+            exit 0
+          fi
+          git commit -m 'Add DNC convention governance and audit targets [skip ci]'
+          git pull --rebase origin "${TARGET_BRANCH}"
+          git push origin HEAD:${TARGET_BRANCH}

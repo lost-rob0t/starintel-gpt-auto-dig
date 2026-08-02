@@ -1,0 +1,35 @@
+{
+  "counts": {
+    "investigation-target": 12,
+    "org": 3,
+    "relation": 3,
+    "source": 3
+  },
+  "dataset": "dnc",
+  "generated_at": "2026-07-31T23:59:00Z",
+  "packet_status": "seeded_primary_sources_and_recursive_targets",
+  "schema_version": "0.9.0",
+  "source_documents": [
+    {
+      "source_id": "starintel:source:dnc-charter-bylaws-2025-10",
+      "title": "DNC Charter and Bylaws — October 2025",
+      "uri": "https://democrats.org/wp-content/uploads/2025/10/DNC-Charter-Bylaws-10.2025.pdf"
+    },
+    {
+      "source_id": "starintel:source:dnc-2024-call-for-convention",
+      "title": "2024 Call for the Democratic National Convention",
+      "uri": "https://democrats.org/wp-content/uploads/2023/03/2024-Call-for-Convention.pdf"
+    },
+    {
+      "source_id": "starintel:source:dnc-2024-delegate-selection-rules",
+      "title": "2024 Delegate Selection Rules — Final Revised",
+      "uri": "https://democrats.org/wp-content/uploads/2023/05/2024-Delegate-Selection-Rules-Final-Revised-9.8.22.pdf"
+    }
+  ],
+  "total_documents": 21,
+  "total_targets": 12,
+  "validation": {
+    "current_status": "static_seed_committed",
+    "page_level_materialization": "queued"
+  }
+}

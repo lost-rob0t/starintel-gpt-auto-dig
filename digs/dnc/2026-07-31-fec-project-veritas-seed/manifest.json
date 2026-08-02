@@ -1,0 +1,71 @@
+{
+  "combined_documents_sha256": "c5b91d968251622a4cf3196802a50472e6c35e13855a059be0902a6a6ab77f84",
+  "counts": {
+    "investigation-target": 5,
+    "org": 12,
+    "person": 9,
+    "relation": 31,
+    "source": 15
+  },
+  "dataset": "dnc",
+  "document_files": [
+    {
+      "count": 15,
+      "path": "sources.jsonl",
+      "sha256": "c7eb9a56cf5a7ca3d94b0ee91aca648c781bda0dff891c5ff065f4414ac31a35"
+    },
+    {
+      "count": 21,
+      "path": "entities.jsonl",
+      "sha256": "fdb68f40a2790645501fd953f42090adc515c6b6e18a0dd6fd06442824d510a2"
+    },
+    {
+      "count": 8,
+      "path": "relations-1.jsonl",
+      "sha256": "fed23393bfeafca0c0299273de26086ca3dcd9b61eefc74e08cc13a55084d871"
+    },
+    {
+      "count": 8,
+      "path": "relations-2.jsonl",
+      "sha256": "f182315822d224553dd90e8191018338e0924b473e84ca44aa2447d84c4cffdc"
+    },
+    {
+      "count": 8,
+      "path": "relations-3.jsonl",
+      "sha256": "bd181946fb37c31e0d7decba41dc7e06c132a6752ff9b03e49945e98c8d5cea2"
+    },
+    {
+      "count": 7,
+      "path": "relations-4.jsonl",
+      "sha256": "69101e4bd79e547fc53946107945bd8568b6d4d316bf50c9e9647bab5d250ea7"
+    },
+    {
+      "count": 5,
+      "path": "investigation-targets.jsonl",
+      "sha256": "b1579cc31dc337db4e93ee578f4cc3f98b0c390b73044fcdc9b8adfb665e42e4"
+    }
+  ],
+  "files": [
+    "README.md",
+    "sources.md",
+    "sources.jsonl",
+    "entities.jsonl",
+    "relations-1.jsonl",
+    "relations-2.jsonl",
+    "relations-3.jsonl",
+    "relations-4.jsonl",
+    "investigation-targets.jsonl"
+  ],
+  "generated_at": "2026-07-31T05:33:00Z",
+  "hash_algorithm": "sha256",
+  "schema_version": "0.9.0",
+  "total": 72,
+  "validation": {
+    "jsonl": "syntax checked",
+    "relation_endpoints": "resolved within packet",
+    "schema": "pending repository CI",
+    "sources": "public-source review",
+    "target_seeds": "resolved within packet",
+    "unique_ids": "passed"
+  }
+}

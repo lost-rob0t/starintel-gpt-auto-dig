@@ -1,0 +1,13 @@
+name: Build DNC public record queue
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  manual:
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo 'The existing person queue is frozen; FEC partitions carry bounded batch targets.'
