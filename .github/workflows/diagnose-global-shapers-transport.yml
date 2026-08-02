@@ -26,7 +26,7 @@ jobs:
         with:
           python-version: "3.13"
 
-      - name: Test exact transport boundaries
+      - name: Test exact transport boundaries and surviving rows
         shell: bash
         run: |
           set +e
@@ -39,14 +39,64 @@ jobs:
           echo "recovery_exit=${status}"
           cat /tmp/recovery-report.json
           python - <<'PY'
+          import base64
+          import json
+          import lzma
           from pathlib import Path
+
           paths = sorted(Path("imports/.wef-shapers-compact").glob("part-*"))
-          lengths = [len("".join(path.read_text().split())) for path in paths]
-          print({
+          chunks = ["".join(path.read_text().split()) for path in paths]
+          encoded = "".join(chunks)
+          compressed = base64.b64decode(encoded + "=" * ((-len(encoded)) % 4), validate=True)
+          decompressor = lzma.LZMADecompressor(format=lzma.FORMAT_XZ)
+          output = []
+          error = ""
+          consumed = 0
+          for offset in range(0, len(compressed), 16):
+              block = compressed[offset:offset + 16]
+              try:
+                  output.append(decompressor.decompress(block))
+                  consumed = offset + len(block)
+              except lzma.LZMAError as exc:
+                  error = f"{type(exc).__name__}: {exc}"
+                  consumed = offset
+                  break
+          payload = b"".join(output)
+          complete = payload[:payload.rfind(b"\n") + 1] if b"\n" in payload else b""
+          valid_rows = []
+          invalid_line = None
+          ids = set()
+          for number, line in enumerate(complete.decode("utf-8", errors="replace").splitlines(), 1):
+              if not line.strip():
+                  continue
+              try:
+                  value = json.loads(line)
+              except json.JSONDecodeError as exc:
+                  invalid_line = {"line": number, "error": str(exc)}
+                  break
+              valid_rows.append(value)
+              if isinstance(value, list) and value:
+                  ids.add(str(value[0]))
+              elif isinstance(value, dict):
+                  data = value.get("data") if isinstance(value.get("data"), dict) else {}
+                  identifier = data.get("_id") or data.get("id") or value.get("_id") or value.get("id")
+                  if identifier is not None:
+                      ids.add(str(identifier))
+          print(json.dumps({
               "paths": [str(path) for path in paths],
-              "lengths": lengths,
-              "total": sum(lengths),
-              "mod4": sum(lengths) % 4,
-          })
+              "lengths": [len(chunk) for chunk in chunks],
+              "encoded_length": len(encoded),
+              "encoded_mod4": len(encoded) % 4,
+              "compressed_bytes": len(compressed),
+              "compressed_bytes_consumed": consumed,
+              "decompressor_eof": decompressor.eof,
+              "decompression_error": error,
+              "decompressed_bytes": len(payload),
+              "complete_jsonl_bytes": len(complete),
+              "valid_rows": len(valid_rows),
+              "unique_ids": len(ids),
+              "invalid_line": invalid_line,
+              "trailing_payload_bytes": len(payload) - len(complete),
+          }, indent=2))
           PY
           exit 0
