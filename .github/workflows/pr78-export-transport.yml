@@ -1,0 +1,27 @@
+name: Temporary PR 78 transport export
+
+on:
+  pull_request:
+    types:
+      - synchronize
+
+permissions:
+  contents: read
+
+jobs:
+  export:
+    if: github.event.pull_request.number == 1956
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          ref: agent/pr-78-takeover-fix
+      - uses: actions/upload-artifact@v4
+        with:
+          name: pr78-shapers-transport
+          path: |
+            imports/.wef-shapers-compact
+            imports/.wef-shapers-source
+            scripts/import_legacy_shapers_alumni.py
+          if-no-files-found: error
+          retention-days: 1
