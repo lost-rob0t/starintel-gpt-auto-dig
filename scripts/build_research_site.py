@@ -47,6 +47,13 @@ def infer_target(dataset: str, mappings: dict[str, str]) -> str:
     return candidate or slug(dataset)
 
 
+def packet_paths(root: Path) -> list[Path]:
+    paths = list(root.glob("*/*/starintel-documents.jsonl"))
+    paths += list(root.glob("*/*/starintel-documents.jsonl.gz.b64"))
+    paths += list(root.glob("*/*/starintel-documents.jsonl.gz.b64.parts"))
+    return sorted(paths)
+
+
 def filter_excluded(workspace: Path, config: dict[str, Any]) -> None:
     raw_ids = config.get("excluded_document_ids", [])
     if not isinstance(raw_ids, list):
@@ -54,11 +61,8 @@ def filter_excluded(workspace: Path, config: dict[str, Any]) -> None:
     excluded = {str(value) for value in raw_ids}
     if not excluded:
         return
-    paths = list(workspace.glob("*/*/starintel-documents.jsonl"))
-    paths += list(workspace.glob("*/*/starintel-documents.jsonl.gz.b64"))
-    paths += list(workspace.glob("*/*/starintel-documents.jsonl.gz.b64.parts"))
     handled: set[Path] = set()
-    for path in sorted(paths):
+    for path in packet_paths(workspace):
         if path.parent in handled:
             continue
         handled.add(path.parent)
@@ -77,6 +81,43 @@ def filter_excluded(workspace: Path, config: dict[str, Any]) -> None:
             candidate.unlink()
 
 
+def deduplicate_packets(workspace: Path) -> None:
+    """Collapse byte-equivalent duplicate IDs while rejecting conflicting records."""
+    handled: set[Path] = set()
+    for path in packet_paths(workspace):
+        if path.parent in handled:
+            continue
+        handled.add(path.parent)
+        preferred = path.parent / "starintel-documents.jsonl"
+        selected = preferred if preferred.exists() else path
+        documents = [json.loads(line) for line in read_transport(selected).splitlines() if line.strip()]
+        by_id: dict[str, dict[str, Any]] = {}
+        ordered: list[dict[str, Any]] = []
+        duplicate_count = 0
+        for document in documents:
+            doc_id = str(document.get("_id", ""))
+            previous = by_id.get(doc_id)
+            if previous is None:
+                by_id[doc_id] = document
+                ordered.append(document)
+                continue
+            if previous != document:
+                raise ValueError(f"{selected}: conflicting duplicate _id {doc_id}")
+            duplicate_count += 1
+        if not duplicate_count:
+            continue
+        preferred.write_text(
+            "".join(
+                json.dumps(document, ensure_ascii=False, separators=(",", ":"), sort_keys=True) + "\n"
+                for document in ordered
+            ),
+            encoding="utf-8",
+        )
+        for candidate in path.parent.glob("starintel-documents.jsonl.gz.b64*"):
+            candidate.unlink()
+        print(f"Collapsed {duplicate_count} identical duplicate record(s) in {selected}")
+
+
 def materialize_input(digs_root: Path, db_root: Path, workspace: Path, config: dict[str, Any]) -> None:
     if workspace.exists():
         shutil.rmtree(workspace)
@@ -84,6 +125,7 @@ def materialize_input(digs_root: Path, db_root: Path, workspace: Path, config: d
     if digs_root.exists():
         shutil.copytree(digs_root, workspace, dirs_exist_ok=True)
     filter_excluded(workspace, config)
+    deduplicate_packets(workspace)
 
     mappings = config.get("database_targets", {})
     if not isinstance(mappings, dict):
