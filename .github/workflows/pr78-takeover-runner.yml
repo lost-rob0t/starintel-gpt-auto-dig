@@ -1,15 +1,16 @@
 name: Temporary PR 78 takeover runner
 
 on:
-  push:
-    branches:
-      - agent/pr-78-takeover-fix
+  pull_request:
+    types:
+      - ready_for_review
 
 permissions:
   contents: write
 
 jobs:
   repair:
+    if: github.event.pull_request.number == 1956
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
