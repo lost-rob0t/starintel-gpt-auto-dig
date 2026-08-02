@@ -29,7 +29,11 @@ class AutoDigQuasarBuildTest(unittest.TestCase):
         )
 
         self.assertIn('id="quasar-frame"', rendered)
-        self.assertIn('src="app/index.html?host=auto-dig"', rendered)
+        self.assertIn('data-src="app/index.html?host=auto-dig"', rendered)
+        self.assertNotIn(
+            '<iframe id="quasar-frame" title="Quasar graph editor" src=',
+            rendered,
+        )
         self.assertIn("host.js", rendered)
         self.assertIn("sandbox=", rendered)
         self.assertNotIn("allow-top-navigation", rendered)
@@ -107,6 +111,8 @@ class AutoDigQuasarBuildTest(unittest.TestCase):
         )
 
         self.assertIn('const GRAPH_ROUTE = "/graph"', host)
+        self.assertIn('frameUrl.searchParams.set("dataset", datasetId);', host)
+        self.assertIn("frame.src = frameUrl.href;", host)
         self.assertIn("navigateToGraphAfterDatasetLoad();", host)
         self.assertIn("const dataset = await loadDataset(id);", host)
         handshake = host.split("handshake: async", 1)[1].split(
