@@ -471,8 +471,8 @@
       "relation": 9232
     },
     "documents": 14310,
-    "gzip_sha256": "220858c17a9eb6d92338379343a7f3a8187b1147df195e19f43add00b690f92c",
-    "jsonl_sha256": "735e85cb09b2c18c88d4a33e898224be350fbdf8542608b753bf644e65524686",
+    "gzip_sha256": "61057bd2f81ada3d9e2bf025eb2badbdec110ce089c8c530132781d9395d797d",
+    "jsonl_sha256": "88cb065a3f9b9dea1651180d8e522a3c6f044f929c3a500cfc69c6cb539144e5",
     "schema_validated_documents": 14310
   },
   "packet_path": "digs/global-shapers/global-shapers-current-members-api",
@@ -644,7 +644,7 @@
   "people": 4652,
   "profile_seed_file": "imports/global-shapers/generated-current-profile-seeds.jsonl",
   "raw_rows": 4652,
-  "retrieved_at": "2026-08-02T12:41:52.738468Z",
+  "retrieved_at": "2026-08-02T12:43:51.544969Z",
   "run": "global-shapers-current-members-api",
   "status": "complete"
 }
