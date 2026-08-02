@@ -1,0 +1,2913 @@
+{
+  "resolutions": [
+    {
+      "description": "CAO memberships Q4 2025",
+      "invoice": {
+        "Description": "25- Q4 CBA membership",
+        "DocumentDate": "2026-01-06",
+        "DocumentNum": null,
+        "InvoiceAmount": "3465.0000000000000000",
+        "InvoiceDate": "2026-01-13",
+        "InvoiceId": "2025Q4-CBA",
+        "LedgerVoucher": "APIN111443904",
+        "OrderAccount": "004702",
+        "PurchId": "PO546667",
+        "PurchaseType": "Purchase order",
+        "Qty": "3465.0000000000000000",
+        "SourceDocumentHeader": "5642049418",
+        "SourceDocumentLine": "5655296922",
+        "VIJournal_RECID": "5639312015",
+        "VendGroup": "Vendor"
+      },
+      "invoice_debit_rows": [
+        {
+          "AccountNum": "004702",
+          "AmountCur": "-3465.0000000000000000",
+          "Invoice": "2025Q4-CBA",
+          "PaymMode": "WARRANT",
+          "Payment_RECID": "5644217119",
+          "TransDate": "2026-01-13",
+          "TransType": "Purchase Order",
+          "Txt": "25- Q4 CBA membership",
+          "VendorName": "Columbus Bar Association",
+          "Voucher": "APIN111443904"
+        },
+        {
+          "AccountNum": "004702",
+          "AmountCur": "3465.0000000000000000",
+          "Invoice": "2025Q4-CBA",
+          "PaymMode": "WARRANT",
+          "Payment_RECID": "5644226793",
+          "TransDate": "2026-01-14",
+          "TransType": "Settlement",
+          "Txt": null,
+          "VendorName": "Columbus Bar Association",
+          "Voucher": "APPY141898325"
+        },
+        {
+          "AccountNum": "004702",
+          "AmountCur": "-3465.0000000000000000",
+          "Invoice": "2025Q4-CBA",
+          "PaymMode": "WARRANT",
+          "Payment_RECID": "5644226794",
+          "TransDate": "2026-01-14",
+          "TransType": "Settlement",
+          "Txt": null,
+          "VendorName": "Columbus Bar Association",
+          "Voucher": "APPY141898325"
+        }
+      ],
+      "positive_payment_candidates": [
+        {
+          "checks": [
+            {
+              "AmountCur": "3465.0000000000000000",
+              "Cancel": "NO",
+              "ChequeNum": "672421",
+              "ChequeStatus": "Paid",
+              "Cheque_RECID": "5638197660",
+              "ClearedDate": "2026-01-22",
+              "Escheated": "NO",
+              "PayeeName": "Columbus Bar Association",
+              "PaymentMode": "WARRANT",
+              "PhysicalAddress": "230 West Street, Suite 100\nColumbus, OH 43215 \nUSA",
+              "TransDate": "2026-01-14",
+              "Voucher": "APPY141897538"
+            }
+          ],
+          "days_after_invoice": 1,
+          "payment": {
+            "AccountNum": "004702",
+            "AmountCur": "3465.0000000000000000",
+            "Invoice": null,
+            "PaymMode": "WARRANT",
+            "Payment_RECID": "5644226792",
+            "TransDate": "2026-01-14",
+            "TransType": "Payment",
+            "Txt": null,
+            "VendorName": "Columbus Bar Association",
+            "Voucher": "APPY141897538"
+          }
+        },
+        {
+          "checks": [],
+          "days_after_invoice": 1,
+          "payment": {
+            "AccountNum": "004702",
+            "AmountCur": "3465.0000000000000000",
+            "Invoice": "2025Q4-CBA",
+            "PaymMode": "WARRANT",
+            "Payment_RECID": "5644226793",
+            "TransDate": "2026-01-14",
+            "TransType": "Settlement",
+            "Txt": null,
+            "VendorName": "Columbus Bar Association",
+            "Voucher": "APPY141898325"
+          }
+        }
+      ],
+      "purchase_id": "PO546667",
+      "selected": {
+        "checks": [
+          {
+            "AmountCur": "3465.0000000000000000",
+            "Cancel": "NO",
+            "ChequeNum": "672421",
+            "ChequeStatus": "Paid",
+            "Cheque_RECID": "5638197660",
+            "ClearedDate": "2026-01-22",
+            "Escheated": "NO",
+            "PayeeName": "Columbus Bar Association",
+            "PaymentMode": "WARRANT",
+            "PhysicalAddress": "230 West Street, Suite 100\nColumbus, OH 43215 \nUSA",
+            "TransDate": "2026-01-14",
+            "Voucher": "APPY141897538"
+          }
+        ],
+        "days_after_invoice": 1,
+        "paid_checks": [
+          {
+            "AmountCur": "3465.0000000000000000",
+            "Cancel": "NO",
+            "ChequeNum": "672421",
+            "ChequeStatus": "Paid",
+            "Cheque_RECID": "5638197660",
+            "ClearedDate": "2026-01-22",
+            "Escheated": "NO",
+            "PayeeName": "Columbus Bar Association",
+            "PaymentMode": "WARRANT",
+            "PhysicalAddress": "230 West Street, Suite 100\nColumbus, OH 43215 \nUSA",
+            "TransDate": "2026-01-14",
+            "Voucher": "APPY141897538"
+          }
+        ],
+        "payment": {
+          "AccountNum": "004702",
+          "AmountCur": "3465.0000000000000000",
+          "Invoice": null,
+          "PaymMode": "WARRANT",
+          "Payment_RECID": "5644226792",
+          "TransDate": "2026-01-14",
+          "TransType": "Payment",
+          "Txt": null,
+          "VendorName": "Columbus Bar Association",
+          "Voucher": "APPY141897538"
+        }
+      },
+      "source_document_line": "5655294468",
+      "status": "confirmed_paid",
+      "vendor_account": "004702",
+      "vendor_names": [
+        "Columbus Bar Association"
+      ]
+    },
+    {
+      "description": "Hannah News Service Subscription|period: 2/15/26-2/14/27.",
+      "invoice": {
+        "Description": "26-subscription",
+        "DocumentDate": "2025-12-18",
+        "DocumentNum": null,
+        "InvoiceAmount": "6000.0000000000000000",
+        "InvoiceDate": "2026-01-12",
+        "InvoiceId": "17275",
+        "LedgerVoucher": "APIN111443212",
+        "OrderAccount": "005065",
+        "PurchId": "PO546243",
+        "PurchaseType": "Purchase order",
+        "Qty": "6000.0000000000000000",
+        "SourceDocumentHeader": "5642045782",
+        "SourceDocumentLine": "5655284928",
+        "VIJournal_RECID": "5639309612",
+        "VendGroup": "Vendor"
+      },
+      "invoice_debit_rows": [
+        {
+          "AccountNum": "005065",
+          "AmountCur": "-6000.0000000000000000",
+          "Invoice": "17275",
+          "PaymMode": "WARRANT",
+          "Payment_RECID": "5644214716",
+          "TransDate": "2026-01-12",
+          "TransType": "Purchase Order",
+          "Txt": "26-subscription",
+          "VendorName": "Hannah News Service",
+          "Voucher": "APIN111443212"
+        },
+        {
+          "AccountNum": "005065",
+          "AmountCur": "6000.0000000000000000",
+          "Invoice": "17275",
+          "PaymMode": "WARRANT",
+          "Payment_RECID": "5644226861",
+          "TransDate": "2026-01-14",
+          "TransType": "Settlement",
+          "Txt": null,
+          "VendorName": "Hannah News Service",
+          "Voucher": "APPY141898354"
+        },
+        {
+          "AccountNum": "005065",
+          "AmountCur": "-6000.0000000000000000",
+          "Invoice": "17275",
+          "PaymMode": "WARRANT",
+          "Payment_RECID": "5644226862",
+          "TransDate": "2026-01-14",
+          "TransType": "Settlement",
+          "Txt": null,
+          "VendorName": "Hannah News Service",
+          "Voucher": "APPY141898354"
+        }
+      ],
+      "positive_payment_candidates": [
+        {
+          "checks": [
+            {
+              "AmountCur": "6000.0000000000000000",
+              "Cancel": "NO",
+              "ChequeNum": "672512",
+              "ChequeStatus": "Paid",
+              "Cheque_RECID": "5638197751",
+              "ClearedDate": "2026-01-22",
+              "Escheated": "NO",
+              "PayeeName": "Hannah News Service",
+              "PaymentMode": "WARRANT",
+              "PhysicalAddress": "21 W Broad St Ste 1000\nColumbus, OH 43215 \nUSA",
+              "TransDate": "2026-01-14",
+              "Voucher": "APPY141897548"
+            }
+          ],
+          "days_after_invoice": 2,
+          "payment": {
+            "AccountNum": "005065",
+            "AmountCur": "6000.0000000000000000",
+            "Invoice": null,
+            "PaymMode": "WARRANT",
+            "Payment_RECID": "5644226860",
+            "TransDate": "2026-01-14",
+            "TransType": "Payment",
+            "Txt": null,
+            "VendorName": "Hannah News Service",
+            "Voucher": "APPY141897548"
+          }
+        },
+        {
+          "checks": [],
+          "days_after_invoice": 2,
+          "payment": {
+            "AccountNum": "005065",
+            "AmountCur": "6000.0000000000000000",
+            "Invoice": "17275",
+            "PaymMode": "WARRANT",
+            "Payment_RECID": "5644226861",
+            "TransDate": "2026-01-14",
+            "TransType": "Settlement",
+            "Txt": null,
+            "VendorName": "Hannah News Service",
+            "Voucher": "APPY141898354"
+          }
+        }
+      ],
+      "purchase_id": "PO546243",
+      "selected": {
+        "checks": [
+          {
+            "AmountCur": "6000.0000000000000000",
+            "Cancel": "NO",
+            "ChequeNum": "672512",
+            "ChequeStatus": "Paid",
+            "Cheque_RECID": "5638197751",
+            "ClearedDate": "2026-01-22",
+            "Escheated": "NO",
+            "PayeeName": "Hannah News Service",
+            "PaymentMode": "WARRANT",
+            "PhysicalAddress": "21 W Broad St Ste 1000\nColumbus, OH 43215 \nUSA",
+            "TransDate": "2026-01-14",
+            "Voucher": "APPY141897548"
+          }
+        ],
+        "days_after_invoice": 2,
+        "paid_checks": [
+          {
+            "AmountCur": "6000.0000000000000000",
+            "Cancel": "NO",
+            "ChequeNum": "672512",
+            "ChequeStatus": "Paid",
+            "Cheque_RECID": "5638197751",
+            "ClearedDate": "2026-01-22",
+            "Escheated": "NO",
+            "PayeeName": "Hannah News Service",
+            "PaymentMode": "WARRANT",
+            "PhysicalAddress": "21 W Broad St Ste 1000\nColumbus, OH 43215 \nUSA",
+            "TransDate": "2026-01-14",
+            "Voucher": "APPY141897548"
+          }
+        ],
+        "payment": {
+          "AccountNum": "005065",
+          "AmountCur": "6000.0000000000000000",
+          "Invoice": null,
+          "PaymMode": "WARRANT",
+          "Payment_RECID": "5644226860",
+          "TransDate": "2026-01-14",
+          "TransType": "Payment",
+          "Txt": null,
+          "VendorName": "Hannah News Service",
+          "Voucher": "APPY141897548"
+        }
+      },
+      "source_document_line": "5655274594",
+      "status": "confirmed_paid",
+      "vendor_account": "005065",
+      "vendor_names": [
+        "Hannah News Service"
+      ]
+    },
+    {
+      "description": "Professional associations- Central Ohio Mayors & Managers Association 2026 members dues.",
+      "invoice": {
+        "Description": "26-member dues",
+        "DocumentDate": "2026-01-09",
+        "DocumentNum": null,
+        "InvoiceAmount": "500.0000000000000000",
+        "InvoiceDate": "2026-01-13",
+        "InvoiceId": "COMMA-2026",
+        "LedgerVoucher": "APIN111443952",
+        "OrderAccount": "020444",
+        "PurchId": "PO546966",
+        "PurchaseType": "Purchase order",
+        "Qty": "1.0000000000000000",
+        "SourceDocumentHeader": "5642058341",
+        "SourceDocumentLine": "5655308402",
+        "VIJournal_RECID": "5639311340",
+        "VendGroup": "Vendor"
+      },
+      "invoice_debit_rows": [
+        {
+          "AccountNum": "020444",
+          "AmountCur": "-500.0000000000000000",
+          "Invoice": "COMMA-2026",
+          "PaymMode": "WARRANT",
+          "Payment_RECID": "5644228239",
+          "TransDate": "2026-01-14",
+          "TransType": "Settlement",
+          "Txt": null,
+          "VendorName": "CENTRAL OHIO MAYORS & MANAGERS ASSOCIATION",
+          "Voucher": "APPY141898978"
+        },
+        {
+          "AccountNum": "020444",
+          "AmountCur": "500.0000000000000000",
+          "Invoice": "COMMA-2026",
+          "PaymMode": "WARRANT",
+          "Payment_RECID": "5644228238",
+          "TransDate": "2026-01-14",
+          "TransType": "Settlement",
+          "Txt": null,
+          "VendorName": "CENTRAL OHIO MAYORS & MANAGERS ASSOCIATION",
+          "Voucher": "APPY141898978"
+        },
+        {
+          "AccountNum": "020444",
+          "AmountCur": "-500.0000000000000000",
+          "Invoice": "COMMA-2026",
+          "PaymMode": "WARRANT",
+          "Payment_RECID": "5644216444",
+          "TransDate": "2026-01-13",
+          "TransType": "Purchase Order",
+          "Txt": "26-member dues",
+          "VendorName": "CENTRAL OHIO MAYORS & MANAGERS ASSOCIATION",
+          "Voucher": "APIN111443952"
+        }
+      ],
+      "positive_payment_candidates": [
+        {
+          "checks": [
+            {
+              "AmountCur": "500.0000000000000000",
+              "Cancel": "NO",
+              "ChequeNum": "672413",
+              "ChequeStatus": "Paid",
+              "Cheque_RECID": "5638197652",
+              "ClearedDate": "2026-04-01",
+              "Escheated": "NO",
+              "PayeeName": "CENTRAL OHIO MAYORS & MANAGERS ASSOCIATION",
+              "PaymentMode": "WARRANT",
+              "PhysicalAddress": "2242 East Main Street\nBexley, OH 43209 \nUSA",
+              "TransDate": "2026-01-14",
+              "Voucher": "APPY141897676"
+            }
+          ],
+          "days_after_invoice": 1,
+          "payment": {
+            "AccountNum": "020444",
+            "AmountCur": "500.0000000000000000",
+            "Invoice": null,
+            "PaymMode": "WARRANT",
+            "Payment_RECID": "5644228237",
+            "TransDate": "2026-01-14",
+            "TransType": "Payment",
+            "Txt": null,
+            "VendorName": "CENTRAL OHIO MAYORS & MANAGERS ASSOCIATION",
+            "Voucher": "APPY141897676"
+          }
+        },
+        {
+          "checks": [],
+          "days_after_invoice": 1,
+          "payment": {
+            "AccountNum": "020444",
+            "AmountCur": "500.0000000000000000",
+            "Invoice": "COMMA-2026",
+            "PaymMode": "WARRANT",
+            "Payment_RECID": "5644228238",
+            "TransDate": "2026-01-14",
+            "TransType": "Settlement",
+            "Txt": null,
+            "VendorName": "CENTRAL OHIO MAYORS & MANAGERS ASSOCIATION",
+            "Voucher": "APPY141898978"
+          }
+        }
+      ],
+      "purchase_id": "PO546966",
+      "selected": {
+        "checks": [
+          {
+            "AmountCur": "500.0000000000000000",
+            "Cancel": "NO",
+            "ChequeNum": "672413",
+            "ChequeStatus": "Paid",
+            "Cheque_RECID": "5638197652",
+            "ClearedDate": "2026-04-01",
+            "Escheated": "NO",
+            "PayeeName": "CENTRAL OHIO MAYORS & MANAGERS ASSOCIATION",
+            "PaymentMode": "WARRANT",
+            "PhysicalAddress": "2242 East Main Street\nBexley, OH 43209 \nUSA",
+            "TransDate": "2026-01-14",
+            "Voucher": "APPY141897676"
+          }
+        ],
+        "days_after_invoice": 1,
+        "paid_checks": [
+          {
+            "AmountCur": "500.0000000000000000",
+            "Cancel": "NO",
+            "ChequeNum": "672413",
+            "ChequeStatus": "Paid",
+            "Cheque_RECID": "5638197652",
+            "ClearedDate": "2026-04-01",
+            "Escheated": "NO",
+            "PayeeName": "CENTRAL OHIO MAYORS & MANAGERS ASSOCIATION",
+            "PaymentMode": "WARRANT",
+            "PhysicalAddress": "2242 East Main Street\nBexley, OH 43209 \nUSA",
+            "TransDate": "2026-01-14",
+            "Voucher": "APPY141897676"
+          }
+        ],
+        "payment": {
+          "AccountNum": "020444",
+          "AmountCur": "500.0000000000000000",
+          "Invoice": null,
+          "PaymMode": "WARRANT",
+          "Payment_RECID": "5644228237",
+          "TransDate": "2026-01-14",
+          "TransType": "Payment",
+          "Txt": null,
+          "VendorName": "CENTRAL OHIO MAYORS & MANAGERS ASSOCIATION",
+          "Voucher": "APPY141897676"
+        }
+      },
+      "source_document_line": "5655305456",
+      "status": "confirmed_paid",
+      "vendor_account": "020444",
+      "vendor_names": [
+        "CENTRAL OHIO MAYORS & MANAGERS ASSOCIATION"
+      ]
+    },
+    {
+      "description": "National PELRA 2026 membership renewal for Jenna Jeffers.",
+      "invoice": {
+        "Description": "26- J. Jeffers annual membership",
+        "DocumentDate": "2026-01-01",
+        "DocumentNum": null,
+        "InvoiceAmount": "215.0000000000000000",
+        "InvoiceDate": "2026-01-13",
+        "InvoiceId": "20787",
+        "LedgerVoucher": "APIN111443947",
+        "OrderAccount": "001891",
+        "PurchId": "PO546851",
+        "PurchaseType": "Purchase order",
+        "Qty": "1.0000000000000000",
+        "SourceDocumentHeader": "5642058349",
+        "SourceDocumentLine": "5655314347",
+        "VIJournal_RECID": "5639311335",
+        "VendGroup": "Vendor"
+      },
+      "invoice_debit_rows": [
+        {
+          "AccountNum": "001891",
+          "AmountCur": "-215.0000000000000000",
+          "Invoice": "20787",
+          "PaymMode": "WARRANT",
+          "Payment_RECID": "5644216439",
+          "TransDate": "2026-01-13",
+          "TransType": "Purchase Order",
+          "Txt": "26- J. Jeffers annual membership",
+          "VendorName": "National Public Employer Labor Relations Association",
+          "Voucher": "APIN111443947"
+        },
+        {
+          "AccountNum": "001891",
+          "AmountCur": "-215.0000000000000000",
+          "Invoice": "20787",
+          "PaymMode": "WARRANT",
+          "Payment_RECID": "5644226462",
+          "TransDate": "2026-01-14",
+          "TransType": "Settlement",
+          "Txt": null,
+          "VendorName": "National Public Employer Labor Relations Association",
+          "Voucher": "APPY141898184"
+        },
+        {
+          "AccountNum": "001891",
+          "AmountCur": "215.0000000000000000",
+          "Invoice": "20787",
+          "PaymMode": "WARRANT",
+          "Payment_RECID": "5644226461",
+          "TransDate": "2026-01-14",
+          "TransType": "Settlement",
+          "Txt": null,
+          "VendorName": "National Public Employer Labor Relations Association",
+          "Voucher": "APPY141898184"
+        }
+      ],
+      "positive_payment_candidates": [
+        {
+          "checks": [],
+          "days_after_invoice": 1,
+          "payment": {
+            "AccountNum": "001891",
+            "AmountCur": "215.0000000000000000",
+            "Invoice": "20651",
+            "PaymMode": "WARRANT",
+            "Payment_RECID": "5644226459",
+            "TransDate": "2026-01-14",
+            "TransType": "Settlement",
+            "Txt": null,
+            "VendorName": "National Public Employer Labor Relations Association",
+            "Voucher": "APPY141898183"
+          }
+        },
+        {
+          "checks": [],
+          "days_after_invoice": 1,
+          "payment": {
+            "AccountNum": "001891",
+            "AmountCur": "215.0000000000000000",
+            "Invoice": "19783",
+            "PaymMode": "WARRANT",
+            "Payment_RECID": "5644226463",
+            "TransDate": "2026-01-14",
+            "TransType": "Settlement",
+            "Txt": null,
+            "VendorName": "National Public Employer Labor Relations Association",
+            "Voucher": "APPY141898185"
+          }
+        },
+        {
+          "checks": [],
+          "days_after_invoice": 10,
+          "payment": {
+            "AccountNum": "001891",
+            "AmountCur": "215.0000000000000000",
+            "Invoice": "21053",
+            "PaymMode": "WARRANT",
+            "Payment_RECID": "5644254324",
+            "TransDate": "2026-01-23",
+            "TransType": "Settlement",
+            "Txt": null,
+            "VendorName": "National Public Employer Labor Relations Association",
+            "Voucher": "APPY141903144"
+          }
+        },
+        {
+          "checks": [
+            {
+              "AmountCur": "215.0000000000000000",
+              "Cancel": "NO",
+              "ChequeNum": "              684939",
+              "ChequeStatus": "Paid",
+              "Cheque_RECID": "5638220265",
+              "ClearedDate": "2026-05-04",
+              "Escheated": "NO",
+              "PayeeName": "National PELRA",
+              "PaymentMode": "WARRANT",
+              "PhysicalAddress": "288 Hawthorn Village Commons\nSuite 103\nVernon Hills, IL 60061 \nUSA",
+              "TransDate": "2026-04-06",
+              "Voucher": "APPY141944676"
+            }
+          ],
+          "days_after_invoice": 83,
+          "payment": {
+            "AccountNum": "001891",
+            "AmountCur": "215.0000000000000000",
+            "Invoice": null,
+            "PaymMode": "WARRANT",
+            "Payment_RECID": "5644450055",
+            "TransDate": "2026-04-06",
+            "TransType": "Payment",
+            "Txt": null,
+            "VendorName": "National Public Employer Labor Relations Association",
+            "Voucher": "APPY141944676"
+          }
+        },
+        {
+          "checks": [],
+          "days_after_invoice": 10,
+          "payment": {
+            "AccountNum": "001891",
+            "AmountCur": "215.0000000000000000",
+            "Invoice": "21304",
+            "PaymMode": "WARRANT",
+            "Payment_RECID": "5644254316",
+            "TransDate": "2026-01-23",
+            "TransType": "Settlement",
+            "Txt": null,
+            "VendorName": "National Public Employer Labor Relations Association",
+            "Voucher": "APPY141903140"
+          }
+        },
+        {
+          "checks": [],
+          "days_after_invoice": 66,
+          "payment": {
+            "AccountNum": "001891",
+            "AmountCur": "215.0000000000000000",
+            "Invoice": "20805",
+            "PaymMode": "WARRANT",
+            "Payment_RECID": "5644402133",
+            "TransDate": "2026-03-20",
+            "TransType": "Settlement",
+            "Txt": null,
+            "VendorName": "National Public Employer Labor Relations Association",
+            "Voucher": "APPY141935616"
+          }
+        },
+        {
+          "checks": [],
+          "days_after_invoice": 1,
+          "payment": {
+            "AccountNum": "001891",
+            "AmountCur": "215.0000000000000000",
+            "Invoice": "21464",
+            "PaymMode": "WARRANT",
+            "Payment_RECID": "5644226465",
+            "TransDate": "2026-01-14",
+            "TransType": "Settlement",
+            "Txt": null,
+            "VendorName": "National Public Employer Labor Relations Association",
+            "Voucher": "APPY141898186"
+          }
+        },
+        {
+          "checks": [],
+          "days_after_invoice": 1,
+          "payment": {
+            "AccountNum": "001891",
+            "AmountCur": "215.0000000000000000",
+            "Invoice": "20895",
+            "PaymMode": "WARRANT",
+            "Payment_RECID": "5644226469",
+            "TransDate": "2026-01-14",
+            "TransType": "Settlement",
+            "Txt": null,
+            "VendorName": "National Public Employer Labor Relations Association",
+            "Voucher": "APPY141898188"
+          }
+        },
+        {
+          "checks": [],
+          "days_after_invoice": 10,
+          "payment": {
+            "AccountNum": "001891",
+            "AmountCur": "215.0000000000000000",
+            "Invoice": "20028",
+            "PaymMode": "WARRANT",
+            "Payment_RECID": "5644254318",
+            "TransDate": "2026-01-23",
+            "TransType": "Settlement",
+            "Txt": null,
+            "VendorName": "National Public Employer Labor Relations Association",
+            "Voucher": "APPY141903141"
+          }
+        },
+        {
+          "checks": [],
+          "days_after_invoice": 66,
+          "payment": {
+            "AccountNum": "001891",
+            "AmountCur": "215.0000000000000000",
+            "Invoice": "21150",
+            "PaymMode": "WARRANT",
+            "Payment_RECID": "5644402135",
+            "TransDate": "2026-03-20",
+            "TransType": "Settlement",
+            "Txt": null,
+            "VendorName": "National Public Employer Labor Relations Association",
+            "Voucher": "APPY141935617"
+          }
+        },
+        {
+          "checks": [],
+          "days_after_invoice": 1,
+          "payment": {
+            "AccountNum": "001891",
+            "AmountCur": "215.0000000000000000",
+            "Invoice": "20097",
+            "PaymMode": "WARRANT",
+            "Payment_RECID": "5644226473",
+            "TransDate": "2026-01-14",
+            "TransType": "Settlement",
+            "Txt": null,
+            "VendorName": "National Public Employer Labor Relations Association",
+            "Voucher": "APPY141898190"
+          }
+        },
+        {
+          "checks": [],
+          "days_after_invoice": 83,
+          "payment": {
+            "AccountNum": "001891",
+            "AmountCur": "215.0000000000000000",
+            "Invoice": "20801",
+            "PaymMode": "WARRANT",
+            "Payment_RECID": "5644450056",
+            "TransDate": "2026-04-06",
+            "TransType": "Settlement",
+            "Txt": null,
+            "VendorName": "National Public Employer Labor Relations Association",
+            "Voucher": "APPY141945459"
+          }
+        },
+        {
+          "checks": [],
+          "days_after_invoice": 1,
+          "payment": {
+            "AccountNum": "001891",
+            "AmountCur": "215.0000000000000000",
+            "Invoice": "20787",
+            "PaymMode": "WARRANT",
+            "Payment_RECID": "5644226461",
+            "TransDate": "2026-01-14",
+            "TransType": "Settlement",
+            "Txt": null,
+            "VendorName": "National Public Employer Labor Relations Association",
+            "Voucher": "APPY141898184"
+          }
+        },
+        {
+          "checks": [],
+          "days_after_invoice": 22,
+          "payment": {
+            "AccountNum": "001891",
+            "AmountCur": "215.0000000000000000",
+            "Invoice": "21672",
+            "PaymMode": "WARRANT",
+            "Payment_RECID": "5644284831",
+            "TransDate": "2026-02-04",
+            "TransType": "Settlement",
+            "Txt": null,
+            "VendorName": "National Public Employer Labor Relations Association",
+            "Voucher": "APPY141908712"
+          }
+        },
+        {
+          "checks": [],
+          "days_after_invoice": 1,
+          "payment": {
+            "AccountNum": "001891",
+            "AmountCur": "215.0000000000000000",
+            "Invoice": "20357",
+            "PaymMode": "WARRANT",
+            "Payment_RECID": "5644226471",
+            "TransDate": "2026-01-14",
+            "TransType": "Settlement",
+            "Txt": null,
+            "VendorName": "National Public Employer Labor Relations Association",
+            "Voucher": "APPY141898189"
+          }
+        },
+        {
+          "checks": [],
+          "days_after_invoice": 1,
+          "payment": {
+            "AccountNum": "001891",
+            "AmountCur": "215.0000000000000000",
+            "Invoice": "20395",
+            "PaymMode": "WARRANT",
+            "Payment_RECID": "5644226467",
+            "TransDate": "2026-01-14",
+            "TransType": "Settlement",
+            "Txt": null,
+            "VendorName": "National Public Employer Labor Relations Association",
+            "Voucher": "APPY141898187"
+          }
+        },
+        {
+          "checks": [],
+          "days_after_invoice": 10,
+          "payment": {
+            "AccountNum": "001891",
+            "AmountCur": "215.0000000000000000",
+            "Invoice": "20017",
+            "PaymMode": "WARRANT",
+            "Payment_RECID": "5644254320",
+            "TransDate": "2026-01-23",
+            "TransType": "Settlement",
+            "Txt": null,
+            "VendorName": "National Public Employer Labor Relations Association",
+            "Voucher": "APPY141903142"
+          }
+        },
+        {
+          "checks": [],
+          "days_after_invoice": 10,
+          "payment": {
+            "AccountNum": "001891",
+            "AmountCur": "215.0000000000000000",
+            "Invoice": "22157",
+            "PaymMode": "WARRANT",
+            "Payment_RECID": "5644254322",
+            "TransDate": "2026-01-23",
+            "TransType": "Settlement",
+            "Txt": null,
+            "VendorName": "National Public Employer Labor Relations Association",
+            "Voucher": "APPY141903143"
+          }
+        },
+        {
+          "checks": [],
+          "days_after_invoice": 22,
+          "payment": {
+            "AccountNum": "001891",
+            "AmountCur": "215.0000000000000000",
+            "Invoice": "19819",
+            "PaymMode": "WARRANT",
+            "Payment_RECID": "5644284829",
+            "TransDate": "2026-02-04",
+            "TransType": "Settlement",
+            "Txt": null,
+            "VendorName": "National Public Employer Labor Relations Association",
+            "Voucher": "APPY141908711"
+          }
+        }
+      ],
+      "purchase_id": "PO546851",
+      "selected": {
+        "checks": [
+          {
+            "AmountCur": "215.0000000000000000",
+            "Cancel": "NO",
+            "ChequeNum": "              684939",
+            "ChequeStatus": "Paid",
+            "Cheque_RECID": "5638220265",
+            "ClearedDate": "2026-05-04",
+            "Escheated": "NO",
+            "PayeeName": "National PELRA",
+            "PaymentMode": "WARRANT",
+            "PhysicalAddress": "288 Hawthorn Village Commons\nSuite 103\nVernon Hills, IL 60061 \nUSA",
+            "TransDate": "2026-04-06",
+            "Voucher": "APPY141944676"
+          }
+        ],
+        "days_after_invoice": 83,
+        "paid_checks": [
+          {
+            "AmountCur": "215.0000000000000000",
+            "Cancel": "NO",
+            "ChequeNum": "              684939",
+            "ChequeStatus": "Paid",
+            "Cheque_RECID": "5638220265",
+            "ClearedDate": "2026-05-04",
+            "Escheated": "NO",
+            "PayeeName": "National PELRA",
+            "PaymentMode": "WARRANT",
+            "PhysicalAddress": "288 Hawthorn Village Commons\nSuite 103\nVernon Hills, IL 60061 \nUSA",
+            "TransDate": "2026-04-06",
+            "Voucher": "APPY141944676"
+          }
+        ],
+        "payment": {
+          "AccountNum": "001891",
+          "AmountCur": "215.0000000000000000",
+          "Invoice": null,
+          "PaymMode": "WARRANT",
+          "Payment_RECID": "5644450055",
+          "TransDate": "2026-04-06",
+          "TransType": "Payment",
+          "Txt": null,
+          "VendorName": "National Public Employer Labor Relations Association",
+          "Voucher": "APPY141944676"
+        }
+      },
+      "source_document_line": "5655296964",
+      "status": "confirmed_paid",
+      "vendor_account": "001891",
+      "vendor_names": [
+        "National Public Employer Labor Relations Association"
+      ]
+    },
+    {
+      "description": "Professional associations- OGFOA 2026 annual membership renewal for Kyle Sever-Hart",
+      "invoice": {
+        "Description": "26- Kyle Sever-Hart membership renewal",
+        "DocumentDate": "2025-11-03",
+        "DocumentNum": null,
+        "InvoiceAmount": "100.0000000000000000",
+        "InvoiceDate": "2026-01-22",
+        "InvoiceId": "16659",
+        "LedgerVoucher": "APIN111447220",
+        "OrderAccount": "004879",
+        "PurchId": "PO547990",
+        "PurchaseType": "Purchase order",
+        "Qty": "1.0000000000000000",
+        "SourceDocumentHeader": "5642077135",
+        "SourceDocumentLine": "5655346588",
+        "VIJournal_RECID": "5639319604",
+        "VendGroup": "Vendor"
+      },
+      "invoice_debit_rows": [
+        {
+          "AccountNum": "004879",
+          "AmountCur": "100.0000000000000000",
+          "Invoice": "16659",
+          "PaymMode": "WARRANT",
+          "Payment_RECID": "5644254503",
+          "TransDate": "2026-01-23",
+          "TransType": "Settlement",
+          "Txt": null,
+          "VendorName": "OHIO GOVERNMENT FINANCE OFFICERS ASSOCIATION",
+          "Voucher": "APPY141903217"
+        },
+        {
+          "AccountNum": "004879",
+          "AmountCur": "-100.0000000000000000",
+          "Invoice": "16659",
+          "PaymMode": "WARRANT",
+          "Payment_RECID": "5644254504",
+          "TransDate": "2026-01-23",
+          "TransType": "Settlement",
+          "Txt": null,
+          "VendorName": "OHIO GOVERNMENT FINANCE OFFICERS ASSOCIATION",
+          "Voucher": "APPY141903217"
+        },
+        {
+          "AccountNum": "004879",
+          "AmountCur": "-100.0000000000000000",
+          "Invoice": "16659",
+          "PaymMode": "WARRANT",
+          "Payment_RECID": "5644242708",
+          "TransDate": "2026-01-22",
+          "TransType": "Purchase Order",
+          "Txt": "26- Kyle Sever-Hart membership renewal",
+          "VendorName": "OHIO GOVERNMENT FINANCE OFFICERS ASSOCIATION",
+          "Voucher": "APIN111447220"
+        }
+      ],
+      "positive_payment_candidates": [
+        {
+          "checks": [],
+          "days_after_invoice": 15,
+          "payment": {
+            "AccountNum": "004879",
+            "AmountCur": "100.0000000000000000",
+            "Invoice": "017048",
+            "PaymMode": "WARRANT",
+            "Payment_RECID": "5644289339",
+            "TransDate": "2026-02-06",
+            "TransType": "Settlement",
+            "Txt": null,
+            "VendorName": "OHIO GOVERNMENT FINANCE OFFICERS ASSOCIATION",
+            "Voucher": "APPY141909999"
+          }
+        },
+        {
+          "checks": [
+            {
+              "AmountCur": "100.0000000000000000",
+              "Cancel": "NO",
+              "ChequeNum": "673653",
+              "ChequeStatus": "Paid",
+              "Cheque_RECID": "5638200508",
+              "ClearedDate": "2026-02-09",
+              "Escheated": "NO",
+              "PayeeName": "Ohio GFOA",
+              "PaymentMode": "WARRANT",
+              "PhysicalAddress": "400 W Wilson Bridge Road \nSuite 120\nWorthington, OH 43085 \nUSA",
+              "TransDate": "2026-01-23",
+              "Voucher": "APPY141902685"
+            }
+          ],
+          "days_after_invoice": 1,
+          "payment": {
+            "AccountNum": "004879",
+            "AmountCur": "100.0000000000000000",
+            "Invoice": null,
+            "PaymMode": "WARRANT",
+            "Payment_RECID": "5644254502",
+            "TransDate": "2026-01-23",
+            "TransType": "Payment",
+            "Txt": null,
+            "VendorName": "OHIO GOVERNMENT FINANCE OFFICERS ASSOCIATION",
+            "Voucher": "APPY141902685"
+          }
+        },
+        {
+          "checks": [],
+          "days_after_invoice": 1,
+          "payment": {
+            "AccountNum": "004879",
+            "AmountCur": "100.0000000000000000",
+            "Invoice": "16659",
+            "PaymMode": "WARRANT",
+            "Payment_RECID": "5644254503",
+            "TransDate": "2026-01-23",
+            "TransType": "Settlement",
+            "Txt": null,
+            "VendorName": "OHIO GOVERNMENT FINANCE OFFICERS ASSOCIATION",
+            "Voucher": "APPY141903217"
+          }
+        },
+        {
+          "checks": [
+            {
+              "AmountCur": "100.0000000000000000",
+              "Cancel": "NO",
+              "ChequeNum": "675340",
+              "ChequeStatus": "Paid",
+              "Cheque_RECID": "5638204000",
+              "ClearedDate": "2026-03-02",
+              "Escheated": "NO",
+              "PayeeName": "Ohio GFOA",
+              "PaymentMode": "WARRANT",
+              "PhysicalAddress": "400 W Wilson Bridge Road \nSuite 120\nWorthington, OH 43085 \nUSA",
+              "TransDate": "2026-02-06",
+              "Voucher": "APPY141909399"
+            }
+          ],
+          "days_after_invoice": 15,
+          "payment": {
+            "AccountNum": "004879",
+            "AmountCur": "100.0000000000000000",
+            "Invoice": null,
+            "PaymMode": "WARRANT",
+            "Payment_RECID": "5644289338",
+            "TransDate": "2026-02-06",
+            "TransType": "Payment",
+            "Txt": null,
+            "VendorName": "OHIO GOVERNMENT FINANCE OFFICERS ASSOCIATION",
+            "Voucher": "APPY141909399"
+          }
+        }
+      ],
+      "purchase_id": "PO547990",
+      "selected": {
+        "checks": [
+          {
+            "AmountCur": "100.0000000000000000",
+            "Cancel": "NO",
+            "ChequeNum": "673653",
+            "ChequeStatus": "Paid",
+            "Cheque_RECID": "5638200508",
+            "ClearedDate": "2026-02-09",
+            "Escheated": "NO",
+            "PayeeName": "Ohio GFOA",
+            "PaymentMode": "WARRANT",
+            "PhysicalAddress": "400 W Wilson Bridge Road \nSuite 120\nWorthington, OH 43085 \nUSA",
+            "TransDate": "2026-01-23",
+            "Voucher": "APPY141902685"
+          }
+        ],
+        "days_after_invoice": 1,
+        "paid_checks": [
+          {
+            "AmountCur": "100.0000000000000000",
+            "Cancel": "NO",
+            "ChequeNum": "673653",
+            "ChequeStatus": "Paid",
+            "Cheque_RECID": "5638200508",
+            "ClearedDate": "2026-02-09",
+            "Escheated": "NO",
+            "PayeeName": "Ohio GFOA",
+            "PaymentMode": "WARRANT",
+            "PhysicalAddress": "400 W Wilson Bridge Road \nSuite 120\nWorthington, OH 43085 \nUSA",
+            "TransDate": "2026-01-23",
+            "Voucher": "APPY141902685"
+          }
+        ],
+        "payment": {
+          "AccountNum": "004879",
+          "AmountCur": "100.0000000000000000",
+          "Invoice": null,
+          "PaymMode": "WARRANT",
+          "Payment_RECID": "5644254502",
+          "TransDate": "2026-01-23",
+          "TransType": "Payment",
+          "Txt": null,
+          "VendorName": "OHIO GOVERNMENT FINANCE OFFICERS ASSOCIATION",
+          "Voucher": "APPY141902685"
+        }
+      },
+      "source_document_line": "5655341676",
+      "status": "confirmed_paid_closest_unique",
+      "vendor_account": "004879",
+      "vendor_names": [
+        "OHIO GOVERNMENT FINANCE OFFICERS ASSOCIATION"
+      ]
+    },
+    {
+      "description": "Professional associations- National PELRA 2026 annual membership for Lynnda Hickey",
+      "invoice": {
+        "Description": "NPELRA dues for Lynnda Hickey",
+        "DocumentDate": "2026-01-01",
+        "DocumentNum": null,
+        "InvoiceAmount": "215.0000000000000000",
+        "InvoiceDate": "2026-04-03",
+        "InvoiceId": "20801",
+        "LedgerVoucher": "APIN111475818",
+        "OrderAccount": "001891",
+        "PurchId": "PO559530",
+        "PurchaseType": "Purchase order",
+        "Qty": "1.0000000000000000",
+        "SourceDocumentHeader": "5642185685",
+        "SourceDocumentLine": "5655767430",
+        "VIJournal_RECID": "5639373437",
+        "VendGroup": "Vendor"
+      },
+      "invoice_debit_rows": [
+        {
+          "AccountNum": "001891",
+          "AmountCur": "-215.0000000000000000",
+          "Invoice": "20801",
+          "PaymMode": "WARRANT",
+          "Payment_RECID": "5644436041",
+          "TransDate": "2026-04-03",
+          "TransType": "Purchase Order",
+          "Txt": "NPELRA dues for Lynnda Hickey",
+          "VendorName": "National Public Employer Labor Relations Association",
+          "Voucher": "APIN111475818"
+        },
+        {
+          "AccountNum": "001891",
+          "AmountCur": "-215.0000000000000000",
+          "Invoice": "20801",
+          "PaymMode": "WARRANT",
+          "Payment_RECID": "5644450057",
+          "TransDate": "2026-04-06",
+          "TransType": "Settlement",
+          "Txt": null,
+          "VendorName": "National Public Employer Labor Relations Association",
+          "Voucher": "APPY141945459"
+        },
+        {
+          "AccountNum": "001891",
+          "AmountCur": "215.0000000000000000",
+          "Invoice": "20801",
+          "PaymMode": "WARRANT",
+          "Payment_RECID": "5644450056",
+          "TransDate": "2026-04-06",
+          "TransType": "Settlement",
+          "Txt": null,
+          "VendorName": "National Public Employer Labor Relations Association",
+          "Voucher": "APPY141945459"
+        }
+      ],
+      "positive_payment_candidates": [
+        {
+          "checks": [
+            {
+              "AmountCur": "215.0000000000000000",
+              "Cancel": "NO",
+              "ChequeNum": "              684939",
+              "ChequeStatus": "Paid",
+              "Cheque_RECID": "5638220265",
+              "ClearedDate": "2026-05-04",
+              "Escheated": "NO",
+              "PayeeName": "National PELRA",
+              "PaymentMode": "WARRANT",
+              "PhysicalAddress": "288 Hawthorn Village Commons\nSuite 103\nVernon Hills, IL 60061 \nUSA",
+              "TransDate": "2026-04-06",
+              "Voucher": "APPY141944676"
+            }
+          ],
+          "days_after_invoice": 3,
+          "payment": {
+            "AccountNum": "001891",
+            "AmountCur": "215.0000000000000000",
+            "Invoice": null,
+            "PaymMode": "WARRANT",
+            "Payment_RECID": "5644450055",
+            "TransDate": "2026-04-06",
+            "TransType": "Payment",
+            "Txt": null,
+            "VendorName": "National Public Employer Labor Relations Association",
+            "Voucher": "APPY141944676"
+          }
+        },
+        {
+          "checks": [],
+          "days_after_invoice": 3,
+          "payment": {
+            "AccountNum": "001891",
+            "AmountCur": "215.0000000000000000",
+            "Invoice": "20801",
+            "PaymMode": "WARRANT",
+            "Payment_RECID": "5644450056",
+            "TransDate": "2026-04-06",
+            "TransType": "Settlement",
+            "Txt": null,
+            "VendorName": "National Public Employer Labor Relations Association",
+            "Voucher": "APPY141945459"
+          }
+        }
+      ],
+      "purchase_id": "PO559530",
+      "selected": {
+        "checks": [
+          {
+            "AmountCur": "215.0000000000000000",
+            "Cancel": "NO",
+            "ChequeNum": "              684939",
+            "ChequeStatus": "Paid",
+            "Cheque_RECID": "5638220265",
+            "ClearedDate": "2026-05-04",
+            "Escheated": "NO",
+            "PayeeName": "National PELRA",
+            "PaymentMode": "WARRANT",
+            "PhysicalAddress": "288 Hawthorn Village Commons\nSuite 103\nVernon Hills, IL 60061 \nUSA",
+            "TransDate": "2026-04-06",
+            "Voucher": "APPY141944676"
+          }
+        ],
+        "days_after_invoice": 3,
+        "paid_checks": [
+          {
+            "AmountCur": "215.0000000000000000",
+            "Cancel": "NO",
+            "ChequeNum": "              684939",
+            "ChequeStatus": "Paid",
+            "Cheque_RECID": "5638220265",
+            "ClearedDate": "2026-05-04",
+            "Escheated": "NO",
+            "PayeeName": "National PELRA",
+            "PaymentMode": "WARRANT",
+            "PhysicalAddress": "288 Hawthorn Village Commons\nSuite 103\nVernon Hills, IL 60061 \nUSA",
+            "TransDate": "2026-04-06",
+            "Voucher": "APPY141944676"
+          }
+        ],
+        "payment": {
+          "AccountNum": "001891",
+          "AmountCur": "215.0000000000000000",
+          "Invoice": null,
+          "PaymMode": "WARRANT",
+          "Payment_RECID": "5644450055",
+          "TransDate": "2026-04-06",
+          "TransType": "Payment",
+          "Txt": null,
+          "VendorName": "National Public Employer Labor Relations Association",
+          "Voucher": "APPY141944676"
+        }
+      },
+      "source_document_line": "5655755000",
+      "status": "confirmed_paid",
+      "vendor_account": "001891",
+      "vendor_names": [
+        "National Public Employer Labor Relations Association"
+      ]
+    },
+    {
+      "description": "Professional associations- OMAA 2026 annual membership for City Attorney Klein.",
+      "invoice": {
+        "Description": "CAO- membership",
+        "DocumentDate": "2026-02-20",
+        "DocumentNum": null,
+        "InvoiceAmount": "1200.0000000000000000",
+        "InvoiceDate": "2026-04-03",
+        "InvoiceId": "OMAA 2026",
+        "LedgerVoucher": "APIN111475821",
+        "OrderAccount": "004440",
+        "PurchId": "PO559559",
+        "PurchaseType": "Purchase order",
+        "Qty": "1.0000000000000000",
+        "SourceDocumentHeader": "5642185674",
+        "SourceDocumentLine": "5655767419",
+        "VIJournal_RECID": "5639373439",
+        "VendGroup": "Vendor"
+      },
+      "invoice_debit_rows": [
+        {
+          "AccountNum": "004440",
+          "AmountCur": "-1200.0000000000000000",
+          "Invoice": "OMAA 2026",
+          "PaymMode": "WARRANT",
+          "Payment_RECID": "5644450107",
+          "TransDate": "2026-04-06",
+          "TransType": "Settlement",
+          "Txt": null,
+          "VendorName": "Ohio Municipal Attorneys Association",
+          "Voucher": "APPY141945478"
+        },
+        {
+          "AccountNum": "004440",
+          "AmountCur": "-1200.0000000000000000",
+          "Invoice": "OMAA 2026",
+          "PaymMode": "WARRANT",
+          "Payment_RECID": "5644436043",
+          "TransDate": "2026-04-03",
+          "TransType": "Purchase Order",
+          "Txt": "CAO- membership",
+          "VendorName": "Ohio Municipal Attorneys Association",
+          "Voucher": "APIN111475821"
+        },
+        {
+          "AccountNum": "004440",
+          "AmountCur": "1200.0000000000000000",
+          "Invoice": "OMAA 2026",
+          "PaymMode": "WARRANT",
+          "Payment_RECID": "5644450106",
+          "TransDate": "2026-04-06",
+          "TransType": "Settlement",
+          "Txt": null,
+          "VendorName": "Ohio Municipal Attorneys Association",
+          "Voucher": "APPY141945478"
+        }
+      ],
+      "positive_payment_candidates": [
+        {
+          "checks": [
+            {
+              "AmountCur": "1200.0000000000000000",
+              "Cancel": null,
+              "ChequeNum": "              684948",
+              "ChequeStatus": "Paid",
+              "Cheque_RECID": "5638220274",
+              "ClearedDate": null,
+              "Escheated": "NO",
+              "PayeeName": "Ohio Municipal Attorneys Association",
+              "PaymentMode": null,
+              "PhysicalAddress": "175 S Third St Ste 510\nColumbus, OH 43215-7100 \nUSA",
+              "TransDate": "2026-04-06",
+              "Voucher": "APPY141944688"
+            }
+          ],
+          "days_after_invoice": 3,
+          "payment": {
+            "AccountNum": "004440",
+            "AmountCur": "1200.0000000000000000",
+            "Invoice": null,
+            "PaymMode": "WARRANT",
+            "Payment_RECID": "5644450105",
+            "TransDate": "2026-04-06",
+            "TransType": "Payment",
+            "Txt": null,
+            "VendorName": "Ohio Municipal Attorneys Association",
+            "Voucher": "APPY141944688"
+          }
+        },
+        {
+          "checks": [],
+          "days_after_invoice": 3,
+          "payment": {
+            "AccountNum": "004440",
+            "AmountCur": "1200.0000000000000000",
+            "Invoice": "OMAA 2026",
+            "PaymMode": "WARRANT",
+            "Payment_RECID": "5644450106",
+            "TransDate": "2026-04-06",
+            "TransType": "Settlement",
+            "Txt": null,
+            "VendorName": "Ohio Municipal Attorneys Association",
+            "Voucher": "APPY141945478"
+          }
+        }
+      ],
+      "purchase_id": "PO559559",
+      "selected": {
+        "checks": [
+          {
+            "AmountCur": "1200.0000000000000000",
+            "Cancel": null,
+            "ChequeNum": "              684948",
+            "ChequeStatus": "Paid",
+            "Cheque_RECID": "5638220274",
+            "ClearedDate": null,
+            "Escheated": "NO",
+            "PayeeName": "Ohio Municipal Attorneys Association",
+            "PaymentMode": null,
+            "PhysicalAddress": "175 S Third St Ste 510\nColumbus, OH 43215-7100 \nUSA",
+            "TransDate": "2026-04-06",
+            "Voucher": "APPY141944688"
+          }
+        ],
+        "days_after_invoice": 3,
+        "paid_checks": [
+          {
+            "AmountCur": "1200.0000000000000000",
+            "Cancel": null,
+            "ChequeNum": "              684948",
+            "ChequeStatus": "Paid",
+            "Cheque_RECID": "5638220274",
+            "ClearedDate": null,
+            "Escheated": "NO",
+            "PayeeName": "Ohio Municipal Attorneys Association",
+            "PaymentMode": null,
+            "PhysicalAddress": "175 S Third St Ste 510\nColumbus, OH 43215-7100 \nUSA",
+            "TransDate": "2026-04-06",
+            "Voucher": "APPY141944688"
+          }
+        ],
+        "payment": {
+          "AccountNum": "004440",
+          "AmountCur": "1200.0000000000000000",
+          "Invoice": null,
+          "PaymMode": "WARRANT",
+          "Payment_RECID": "5644450105",
+          "TransDate": "2026-04-06",
+          "TransType": "Payment",
+          "Txt": null,
+          "VendorName": "Ohio Municipal Attorneys Association",
+          "Voucher": "APPY141944688"
+        }
+      },
+      "source_document_line": "5655755048",
+      "status": "confirmed_paid",
+      "vendor_account": "004440",
+      "vendor_names": [
+        "Ohio Municipal Attorneys Association"
+      ]
+    },
+    {
+      "description": "CBA membership/dues for City Attorney Klein; 3/1/26-3/1/27.",
+      "invoice": {
+        "Description": "CAO-membership",
+        "DocumentDate": "2026-02-09",
+        "DocumentNum": null,
+        "InvoiceAmount": "250.0000000000000000",
+        "InvoiceDate": "2026-04-03",
+        "InvoiceId": "610500",
+        "LedgerVoucher": "APIN111475819",
+        "OrderAccount": "004702",
+        "PurchId": "PO559508",
+        "PurchaseType": "Purchase order",
+        "Qty": "1.0000000000000000",
+        "SourceDocumentHeader": "5642185669",
+        "SourceDocumentLine": "5655767413",
+        "VIJournal_RECID": "5639373438",
+        "VendGroup": "Vendor"
+      },
+      "invoice_debit_rows": [
+        {
+          "AccountNum": "004702",
+          "AmountCur": "-250.0000000000000000",
+          "Invoice": "610500",
+          "PaymMode": "WARRANT",
+          "Payment_RECID": "5644436042",
+          "TransDate": "2026-04-03",
+          "TransType": "Purchase Order",
+          "Txt": "CAO-membership",
+          "VendorName": "Columbus Bar Association",
+          "Voucher": "APIN111475819"
+        },
+        {
+          "AccountNum": "004702",
+          "AmountCur": "-250.0000000000000000",
+          "Invoice": "610500",
+          "PaymMode": "WARRANT",
+          "Payment_RECID": "5644450124",
+          "TransDate": "2026-04-06",
+          "TransType": "Settlement",
+          "Txt": null,
+          "VendorName": "Columbus Bar Association",
+          "Voucher": "APPY141945485"
+        },
+        {
+          "AccountNum": "004702",
+          "AmountCur": "250.0000000000000000",
+          "Invoice": "610500",
+          "PaymMode": "WARRANT",
+          "Payment_RECID": "5644450123",
+          "TransDate": "2026-04-06",
+          "TransType": "Settlement",
+          "Txt": null,
+          "VendorName": "Columbus Bar Association",
+          "Voucher": "APPY141945485"
+        }
+      ],
+      "positive_payment_candidates": [
+        {
+          "checks": [
+            {
+              "AmountCur": "250.0000000000000000",
+              "Cancel": "NO",
+              "ChequeNum": "              684816",
+              "ChequeStatus": "Paid",
+              "Cheque_RECID": "5638220142",
+              "ClearedDate": "2026-04-16",
+              "Escheated": "NO",
+              "PayeeName": "Columbus Bar Association",
+              "PaymentMode": "WARRANT",
+              "PhysicalAddress": "230 West Street, Suite 100\nColumbus, OH 43215 \nUSA",
+              "TransDate": "2026-04-06",
+              "Voucher": "APPY141944691"
+            }
+          ],
+          "days_after_invoice": 3,
+          "payment": {
+            "AccountNum": "004702",
+            "AmountCur": "250.0000000000000000",
+            "Invoice": null,
+            "PaymMode": "WARRANT",
+            "Payment_RECID": "5644450122",
+            "TransDate": "2026-04-06",
+            "TransType": "Payment",
+            "Txt": null,
+            "VendorName": "Columbus Bar Association",
+            "Voucher": "APPY141944691"
+          }
+        },
+        {
+          "checks": [],
+          "days_after_invoice": 3,
+          "payment": {
+            "AccountNum": "004702",
+            "AmountCur": "250.0000000000000000",
+            "Invoice": "610500",
+            "PaymMode": "WARRANT",
+            "Payment_RECID": "5644450123",
+            "TransDate": "2026-04-06",
+            "TransType": "Settlement",
+            "Txt": null,
+            "VendorName": "Columbus Bar Association",
+            "Voucher": "APPY141945485"
+          }
+        }
+      ],
+      "purchase_id": "PO559508",
+      "selected": {
+        "checks": [
+          {
+            "AmountCur": "250.0000000000000000",
+            "Cancel": "NO",
+            "ChequeNum": "              684816",
+            "ChequeStatus": "Paid",
+            "Cheque_RECID": "5638220142",
+            "ClearedDate": "2026-04-16",
+            "Escheated": "NO",
+            "PayeeName": "Columbus Bar Association",
+            "PaymentMode": "WARRANT",
+            "PhysicalAddress": "230 West Street, Suite 100\nColumbus, OH 43215 \nUSA",
+            "TransDate": "2026-04-06",
+            "Voucher": "APPY141944691"
+          }
+        ],
+        "days_after_invoice": 3,
+        "paid_checks": [
+          {
+            "AmountCur": "250.0000000000000000",
+            "Cancel": "NO",
+            "ChequeNum": "              684816",
+            "ChequeStatus": "Paid",
+            "Cheque_RECID": "5638220142",
+            "ClearedDate": "2026-04-16",
+            "Escheated": "NO",
+            "PayeeName": "Columbus Bar Association",
+            "PaymentMode": "WARRANT",
+            "PhysicalAddress": "230 West Street, Suite 100\nColumbus, OH 43215 \nUSA",
+            "TransDate": "2026-04-06",
+            "Voucher": "APPY141944691"
+          }
+        ],
+        "payment": {
+          "AccountNum": "004702",
+          "AmountCur": "250.0000000000000000",
+          "Invoice": null,
+          "PaymMode": "WARRANT",
+          "Payment_RECID": "5644450122",
+          "TransDate": "2026-04-06",
+          "TransType": "Payment",
+          "Txt": null,
+          "VendorName": "Columbus Bar Association",
+          "Voucher": "APPY141944691"
+        }
+      },
+      "source_document_line": "5655754930",
+      "status": "confirmed_paid",
+      "vendor_account": "004702",
+      "vendor_names": [
+        "Columbus Bar Association"
+      ]
+    },
+    {
+      "description": "Professional associations-IMLA 26-27 membership for Columbus City Attorney Klein.",
+      "invoice": {
+        "Description": "CAO- membership",
+        "DocumentDate": "2025-12-05",
+        "DocumentNum": null,
+        "InvoiceAmount": "6597.0000000000000000",
+        "InvoiceDate": "2026-04-03",
+        "InvoiceId": "1008445",
+        "LedgerVoucher": "APIN111475817",
+        "OrderAccount": "024370",
+        "PurchId": "PO559503",
+        "PurchaseType": "Purchase order",
+        "Qty": "1.0000000000000000",
+        "SourceDocumentHeader": "5642185667",
+        "SourceDocumentLine": "5655767410",
+        "VIJournal_RECID": "5639373436",
+        "VendGroup": "Vendor"
+      },
+      "invoice_debit_rows": [
+        {
+          "AccountNum": "024370",
+          "AmountCur": "-6597.0000000000000000",
+          "Invoice": "1008445",
+          "PaymMode": "WARRANT",
+          "Payment_RECID": "5644436040",
+          "TransDate": "2026-04-03",
+          "TransType": "Purchase Order",
+          "Txt": "CAO- membership",
+          "VendorName": "INTERNATIONAL MUNICIPAL LAWYERS ASSOCIATION",
+          "Voucher": "APIN111475817"
+        },
+        {
+          "AccountNum": "024370",
+          "AmountCur": "6597.0000000000000000",
+          "Invoice": "1008445",
+          "PaymMode": "WARRANT",
+          "Payment_RECID": "5644450680",
+          "TransDate": "2026-04-06",
+          "TransType": "Settlement",
+          "Txt": null,
+          "VendorName": "INTERNATIONAL MUNICIPAL LAWYERS ASSOCIATION",
+          "Voucher": "APPY141945729"
+        },
+        {
+          "AccountNum": "024370",
+          "AmountCur": "-6597.0000000000000000",
+          "Invoice": "1008445",
+          "PaymMode": "WARRANT",
+          "Payment_RECID": "5644450681",
+          "TransDate": "2026-04-06",
+          "TransType": "Settlement",
+          "Txt": null,
+          "VendorName": "INTERNATIONAL MUNICIPAL LAWYERS ASSOCIATION",
+          "Voucher": "APPY141945729"
+        }
+      ],
+      "positive_payment_candidates": [
+        {
+          "checks": [],
+          "days_after_invoice": 3,
+          "payment": {
+            "AccountNum": "024370",
+            "AmountCur": "6597.0000000000000000",
+            "Invoice": "1008445",
+            "PaymMode": "WARRANT",
+            "Payment_RECID": "5644450680",
+            "TransDate": "2026-04-06",
+            "TransType": "Settlement",
+            "Txt": null,
+            "VendorName": "INTERNATIONAL MUNICIPAL LAWYERS ASSOCIATION",
+            "Voucher": "APPY141945729"
+          }
+        },
+        {
+          "checks": [
+            {
+              "AmountCur": "6597.0000000000000000",
+              "Cancel": "NO",
+              "ChequeNum": "              684878",
+              "ChequeStatus": "Paid",
+              "Cheque_RECID": "5638220204",
+              "ClearedDate": "2026-04-15",
+              "Escheated": "NO",
+              "PayeeName": "INTERNATIONAL MUNICIPAL LAWYERS ASSOCIATION",
+              "PaymentMode": "WARRANT",
+              "PhysicalAddress": "PO BOX 200016\nPittsburgh, PA 15251-0016 \nUSA",
+              "TransDate": "2026-04-06",
+              "Voucher": "APPY141944761"
+            }
+          ],
+          "days_after_invoice": 3,
+          "payment": {
+            "AccountNum": "024370",
+            "AmountCur": "6597.0000000000000000",
+            "Invoice": null,
+            "PaymMode": "WARRANT",
+            "Payment_RECID": "5644450679",
+            "TransDate": "2026-04-06",
+            "TransType": "Payment",
+            "Txt": null,
+            "VendorName": "INTERNATIONAL MUNICIPAL LAWYERS ASSOCIATION",
+            "Voucher": "APPY141944761"
+          }
+        }
+      ],
+      "purchase_id": "PO559503",
+      "selected": {
+        "checks": [
+          {
+            "AmountCur": "6597.0000000000000000",
+            "Cancel": "NO",
+            "ChequeNum": "              684878",
+            "ChequeStatus": "Paid",
+            "Cheque_RECID": "5638220204",
+            "ClearedDate": "2026-04-15",
+            "Escheated": "NO",
+            "PayeeName": "INTERNATIONAL MUNICIPAL LAWYERS ASSOCIATION",
+            "PaymentMode": "WARRANT",
+            "PhysicalAddress": "PO BOX 200016\nPittsburgh, PA 15251-0016 \nUSA",
+            "TransDate": "2026-04-06",
+            "Voucher": "APPY141944761"
+          }
+        ],
+        "days_after_invoice": 3,
+        "paid_checks": [
+          {
+            "AmountCur": "6597.0000000000000000",
+            "Cancel": "NO",
+            "ChequeNum": "              684878",
+            "ChequeStatus": "Paid",
+            "Cheque_RECID": "5638220204",
+            "ClearedDate": "2026-04-15",
+            "Escheated": "NO",
+            "PayeeName": "INTERNATIONAL MUNICIPAL LAWYERS ASSOCIATION",
+            "PaymentMode": "WARRANT",
+            "PhysicalAddress": "PO BOX 200016\nPittsburgh, PA 15251-0016 \nUSA",
+            "TransDate": "2026-04-06",
+            "Voucher": "APPY141944761"
+          }
+        ],
+        "payment": {
+          "AccountNum": "024370",
+          "AmountCur": "6597.0000000000000000",
+          "Invoice": null,
+          "PaymMode": "WARRANT",
+          "Payment_RECID": "5644450679",
+          "TransDate": "2026-04-06",
+          "TransType": "Payment",
+          "Txt": null,
+          "VendorName": "INTERNATIONAL MUNICIPAL LAWYERS ASSOCIATION",
+          "Voucher": "APPY141944761"
+        }
+      },
+      "source_document_line": "5655754913",
+      "status": "confirmed_paid",
+      "vendor_account": "024370",
+      "vendor_names": [
+        "INTERNATIONAL MUNICIPAL LAWYERS ASSOCIATION"
+      ]
+    },
+    {
+      "description": "Professional associations-2026 Membership Dues",
+      "invoice": {
+        "Description": "City of Columbus  cust#000003399O",
+        "DocumentDate": "2026-03-01",
+        "DocumentNum": null,
+        "InvoiceAmount": "33151.0000000000000000",
+        "InvoiceDate": "2026-04-03",
+        "InvoiceId": "197129",
+        "LedgerVoucher": "APIN111475825",
+        "OrderAccount": "009135",
+        "PurchId": "PO559536",
+        "PurchaseType": "Purchase order",
+        "Qty": "1.0000000000000000",
+        "SourceDocumentHeader": "5642185693",
+        "SourceDocumentLine": "5655767439",
+        "VIJournal_RECID": "5639373443",
+        "VendGroup": "Vendor"
+      },
+      "invoice_debit_rows": [
+        {
+          "AccountNum": "009135",
+          "AmountCur": "-33151.0000000000000000",
+          "Invoice": "197129",
+          "PaymMode": "WARRANT",
+          "Payment_RECID": "5644436047",
+          "TransDate": "2026-04-03",
+          "TransType": "Purchase Order",
+          "Txt": "City of Columbus  cust#000003399O",
+          "VendorName": "National League of Cities",
+          "Voucher": "APIN111475825"
+        },
+        {
+          "AccountNum": "009135",
+          "AmountCur": "33151.0000000000000000",
+          "Invoice": "197129",
+          "PaymMode": "WARRANT",
+          "Payment_RECID": "5644450498",
+          "TransDate": "2026-04-06",
+          "TransType": "Settlement",
+          "Txt": null,
+          "VendorName": "National League of Cities",
+          "Voucher": "APPY141945653"
+        },
+        {
+          "AccountNum": "009135",
+          "AmountCur": "-33151.0000000000000000",
+          "Invoice": "197129",
+          "PaymMode": "WARRANT",
+          "Payment_RECID": "5644450499",
+          "TransDate": "2026-04-06",
+          "TransType": "Settlement",
+          "Txt": null,
+          "VendorName": "National League of Cities",
+          "Voucher": "APPY141945653"
+        }
+      ],
+      "positive_payment_candidates": [
+        {
+          "checks": [],
+          "days_after_invoice": 3,
+          "payment": {
+            "AccountNum": "009135",
+            "AmountCur": "33151.0000000000000000",
+            "Invoice": "197129",
+            "PaymMode": "WARRANT",
+            "Payment_RECID": "5644450498",
+            "TransDate": "2026-04-06",
+            "TransType": "Settlement",
+            "Txt": null,
+            "VendorName": "National League of Cities",
+            "Voucher": "APPY141945653"
+          }
+        },
+        {
+          "checks": [
+            {
+              "AmountCur": "33151.0000000000000000",
+              "Cancel": "NO",
+              "ChequeNum": "              684938",
+              "ChequeStatus": "Paid",
+              "Cheque_RECID": "5638220264",
+              "ClearedDate": "2026-04-16",
+              "Escheated": "NO",
+              "PayeeName": "National League of Cities",
+              "PaymentMode": "WARRANT",
+              "PhysicalAddress": "Lockbox 4047\nPO Box 70511\nPhiladelphia, PA 19176-0511 \nUSA",
+              "TransDate": "2026-04-06",
+              "Voucher": "APPY141944731"
+            }
+          ],
+          "days_after_invoice": 3,
+          "payment": {
+            "AccountNum": "009135",
+            "AmountCur": "33151.0000000000000000",
+            "Invoice": null,
+            "PaymMode": "WARRANT",
+            "Payment_RECID": "5644450497",
+            "TransDate": "2026-04-06",
+            "TransType": "Payment",
+            "Txt": null,
+            "VendorName": "National League of Cities",
+            "Voucher": "APPY141944731"
+          }
+        }
+      ],
+      "purchase_id": "PO559536",
+      "selected": {
+        "checks": [
+          {
+            "AmountCur": "33151.0000000000000000",
+            "Cancel": "NO",
+            "ChequeNum": "              684938",
+            "ChequeStatus": "Paid",
+            "Cheque_RECID": "5638220264",
+            "ClearedDate": "2026-04-16",
+            "Escheated": "NO",
+            "PayeeName": "National League of Cities",
+            "PaymentMode": "WARRANT",
+            "PhysicalAddress": "Lockbox 4047\nPO Box 70511\nPhiladelphia, PA 19176-0511 \nUSA",
+            "TransDate": "2026-04-06",
+            "Voucher": "APPY141944731"
+          }
+        ],
+        "days_after_invoice": 3,
+        "paid_checks": [
+          {
+            "AmountCur": "33151.0000000000000000",
+            "Cancel": "NO",
+            "ChequeNum": "              684938",
+            "ChequeStatus": "Paid",
+            "Cheque_RECID": "5638220264",
+            "ClearedDate": "2026-04-16",
+            "Escheated": "NO",
+            "PayeeName": "National League of Cities",
+            "PaymentMode": "WARRANT",
+            "PhysicalAddress": "Lockbox 4047\nPO Box 70511\nPhiladelphia, PA 19176-0511 \nUSA",
+            "TransDate": "2026-04-06",
+            "Voucher": "APPY141944731"
+          }
+        ],
+        "payment": {
+          "AccountNum": "009135",
+          "AmountCur": "33151.0000000000000000",
+          "Invoice": null,
+          "PaymMode": "WARRANT",
+          "Payment_RECID": "5644450497",
+          "TransDate": "2026-04-06",
+          "TransType": "Payment",
+          "Txt": null,
+          "VendorName": "National League of Cities",
+          "Voucher": "APPY141944731"
+        }
+      },
+      "source_document_line": "5655755013",
+      "status": "confirmed_paid",
+      "vendor_account": "009135",
+      "vendor_names": [
+        "National League of Cities"
+      ]
+    },
+    {
+      "description": "Professional associations- membership period; Jan 1| December 31| 2026.",
+      "invoice": {
+        "Description": "CoC OML dues 1/1/26 thru 12/31/26",
+        "DocumentDate": "2026-04-08",
+        "DocumentNum": null,
+        "InvoiceAmount": "36116.0000000000000000",
+        "InvoiceDate": "2026-04-09",
+        "InvoiceId": "2026 OML dues",
+        "LedgerVoucher": "APIN111480966",
+        "OrderAccount": "006222",
+        "PurchId": "PO560455",
+        "PurchaseType": "Purchase order",
+        "Qty": "1.0000000000000000",
+        "SourceDocumentHeader": "5642199505",
+        "SourceDocumentLine": "5655896250",
+        "VIJournal_RECID": "5639384314",
+        "VendGroup": "Vendor"
+      },
+      "invoice_debit_rows": [
+        {
+          "AccountNum": "006222",
+          "AmountCur": "-36116.0000000000000000",
+          "Invoice": "2026 OML dues",
+          "PaymMode": "WARRANT",
+          "Payment_RECID": "5644469443",
+          "TransDate": "2026-04-10",
+          "TransType": "Settlement",
+          "Txt": null,
+          "VendorName": "Ohio Municipal League",
+          "Voucher": "APPY141951181"
+        },
+        {
+          "AccountNum": "006222",
+          "AmountCur": "36116.0000000000000000",
+          "Invoice": "2026 OML dues",
+          "PaymMode": "WARRANT",
+          "Payment_RECID": "5644469442",
+          "TransDate": "2026-04-10",
+          "TransType": "Settlement",
+          "Txt": null,
+          "VendorName": "Ohio Municipal League",
+          "Voucher": "APPY141951181"
+        },
+        {
+          "AccountNum": "006222",
+          "AmountCur": "-36116.0000000000000000",
+          "Invoice": "2026 OML dues",
+          "PaymMode": "WARRANT",
+          "Payment_RECID": "5644455168",
+          "TransDate": "2026-04-09",
+          "TransType": "Purchase Order",
+          "Txt": "CoC OML dues 1/1/26 thru 12/31/26",
+          "VendorName": "Ohio Municipal League",
+          "Voucher": "APIN111480966"
+        }
+      ],
+      "positive_payment_candidates": [
+        {
+          "checks": [],
+          "days_after_invoice": 1,
+          "payment": {
+            "AccountNum": "006222",
+            "AmountCur": "36116.0000000000000000",
+            "Invoice": "2026 OML dues",
+            "PaymMode": "WARRANT",
+            "Payment_RECID": "5644469442",
+            "TransDate": "2026-04-10",
+            "TransType": "Settlement",
+            "Txt": null,
+            "VendorName": "Ohio Municipal League",
+            "Voucher": "APPY141951181"
+          }
+        },
+        {
+          "checks": [
+            {
+              "AmountCur": "36116.0000000000000000",
+              "Cancel": "NO",
+              "ChequeNum": "              686052",
+              "ChequeStatus": "Paid",
+              "Cheque_RECID": "5638221969",
+              "ClearedDate": "2026-04-17",
+              "Escheated": "NO",
+              "PayeeName": "Ohio Municipal League",
+              "PaymentMode": "WARRANT",
+              "PhysicalAddress": "175 S 3Rd St Ste 510\nColumbus, OH 43215-7100 \nUSA",
+              "TransDate": "2026-04-10",
+              "Voucher": "APPY141949061"
+            }
+          ],
+          "days_after_invoice": 1,
+          "payment": {
+            "AccountNum": "006222",
+            "AmountCur": "36116.0000000000000000",
+            "Invoice": null,
+            "PaymMode": "WARRANT",
+            "Payment_RECID": "5644469441",
+            "TransDate": "2026-04-10",
+            "TransType": "Payment",
+            "Txt": null,
+            "VendorName": "Ohio Municipal League",
+            "Voucher": "APPY141949061"
+          }
+        }
+      ],
+      "purchase_id": "PO560455",
+      "selected": {
+        "checks": [
+          {
+            "AmountCur": "36116.0000000000000000",
+            "Cancel": "NO",
+            "ChequeNum": "              686052",
+            "ChequeStatus": "Paid",
+            "Cheque_RECID": "5638221969",
+            "ClearedDate": "2026-04-17",
+            "Escheated": "NO",
+            "PayeeName": "Ohio Municipal League",
+            "PaymentMode": "WARRANT",
+            "PhysicalAddress": "175 S 3Rd St Ste 510\nColumbus, OH 43215-7100 \nUSA",
+            "TransDate": "2026-04-10",
+            "Voucher": "APPY141949061"
+          }
+        ],
+        "days_after_invoice": 1,
+        "paid_checks": [
+          {
+            "AmountCur": "36116.0000000000000000",
+            "Cancel": "NO",
+            "ChequeNum": "              686052",
+            "ChequeStatus": "Paid",
+            "Cheque_RECID": "5638221969",
+            "ClearedDate": "2026-04-17",
+            "Escheated": "NO",
+            "PayeeName": "Ohio Municipal League",
+            "PaymentMode": "WARRANT",
+            "PhysicalAddress": "175 S 3Rd St Ste 510\nColumbus, OH 43215-7100 \nUSA",
+            "TransDate": "2026-04-10",
+            "Voucher": "APPY141949061"
+          }
+        ],
+        "payment": {
+          "AccountNum": "006222",
+          "AmountCur": "36116.0000000000000000",
+          "Invoice": null,
+          "PaymMode": "WARRANT",
+          "Payment_RECID": "5644469441",
+          "TransDate": "2026-04-10",
+          "TransType": "Payment",
+          "Txt": null,
+          "VendorName": "Ohio Municipal League",
+          "Voucher": "APPY141949061"
+        }
+      },
+      "source_document_line": "5655788587",
+      "status": "confirmed_paid",
+      "vendor_account": "006222",
+      "vendor_names": [
+        "Ohio Municipal League"
+      ]
+    },
+    {
+      "description": "Professional associations- NIGP 2026 annual membership",
+      "invoice": {
+        "Description": "FIN-NIGP citywide membership",
+        "DocumentDate": "2026-04-30",
+        "DocumentNum": null,
+        "InvoiceAmount": "6425.0000000000000000",
+        "InvoiceDate": "2026-05-01",
+        "InvoiceId": "659020",
+        "LedgerVoucher": "APIN111502025",
+        "OrderAccount": "009148",
+        "PurchId": "PO561654",
+        "PurchaseType": "Purchase order",
+        "Qty": "1.0000000000000000",
+        "SourceDocumentHeader": "5642244930",
+        "SourceDocumentLine": "5656118083",
+        "VIJournal_RECID": "5639415215",
+        "VendGroup": "Vendor"
+      },
+      "invoice_debit_rows": [
+        {
+          "AccountNum": "009148",
+          "AmountCur": "-6425.0000000000000000",
+          "Invoice": "659020",
+          "PaymMode": "WARRANT",
+          "Payment_RECID": "5644532569",
+          "TransDate": "2026-05-01",
+          "TransType": "Purchase Order",
+          "Txt": "FIN-NIGP citywide membership",
+          "VendorName": "National Institute of Governmental Purchasing Inc",
+          "Voucher": "APIN111502025"
+        },
+        {
+          "AccountNum": "009148",
+          "AmountCur": "6425.0000000000000000",
+          "Invoice": "659020",
+          "PaymMode": "WARRANT",
+          "Payment_RECID": "5644551300",
+          "TransDate": "2026-05-01",
+          "TransType": "Settlement",
+          "Txt": null,
+          "VendorName": "National Institute of Governmental Purchasing Inc",
+          "Voucher": "APPY141977103"
+        },
+        {
+          "AccountNum": "009148",
+          "AmountCur": "-6425.0000000000000000",
+          "Invoice": "659020",
+          "PaymMode": "WARRANT",
+          "Payment_RECID": "5644551301",
+          "TransDate": "2026-05-01",
+          "TransType": "Settlement",
+          "Txt": null,
+          "VendorName": "National Institute of Governmental Purchasing Inc",
+          "Voucher": "APPY141977103"
+        }
+      ],
+      "positive_payment_candidates": [
+        {
+          "checks": [],
+          "days_after_invoice": 0,
+          "payment": {
+            "AccountNum": "009148",
+            "AmountCur": "6425.0000000000000000",
+            "Invoice": "659020",
+            "PaymMode": "WARRANT",
+            "Payment_RECID": "5644551300",
+            "TransDate": "2026-05-01",
+            "TransType": "Settlement",
+            "Txt": null,
+            "VendorName": "National Institute of Governmental Purchasing Inc",
+            "Voucher": "APPY141977103"
+          }
+        },
+        {
+          "checks": [
+            {
+              "AmountCur": "6425.0000000000000000",
+              "Cancel": "NO",
+              "ChequeNum": "690797",
+              "ChequeStatus": "Paid",
+              "Cheque_RECID": "5638229123",
+              "ClearedDate": "2026-05-15",
+              "Escheated": "NO",
+              "PayeeName": "National Institute of Governmental",
+              "PaymentMode": "WARRANT",
+              "PhysicalAddress": "Purchasing Inc, DBA NIGP\n12007 Sunrise Valley Dr Ste 110\nReston, VA 20191 \nUSA",
+              "TransDate": "2026-05-01",
+              "Voucher": "APPY141975890"
+            }
+          ],
+          "days_after_invoice": 0,
+          "payment": {
+            "AccountNum": "009148",
+            "AmountCur": "6425.0000000000000000",
+            "Invoice": null,
+            "PaymMode": "WARRANT",
+            "Payment_RECID": "5644551299",
+            "TransDate": "2026-05-01",
+            "TransType": "Payment",
+            "Txt": null,
+            "VendorName": "National Institute of Governmental Purchasing Inc",
+            "Voucher": "APPY141975890"
+          }
+        }
+      ],
+      "purchase_id": "PO561654",
+      "selected": {
+        "checks": [
+          {
+            "AmountCur": "6425.0000000000000000",
+            "Cancel": "NO",
+            "ChequeNum": "690797",
+            "ChequeStatus": "Paid",
+            "Cheque_RECID": "5638229123",
+            "ClearedDate": "2026-05-15",
+            "Escheated": "NO",
+            "PayeeName": "National Institute of Governmental",
+            "PaymentMode": "WARRANT",
+            "PhysicalAddress": "Purchasing Inc, DBA NIGP\n12007 Sunrise Valley Dr Ste 110\nReston, VA 20191 \nUSA",
+            "TransDate": "2026-05-01",
+            "Voucher": "APPY141975890"
+          }
+        ],
+        "days_after_invoice": 0,
+        "paid_checks": [
+          {
+            "AmountCur": "6425.0000000000000000",
+            "Cancel": "NO",
+            "ChequeNum": "690797",
+            "ChequeStatus": "Paid",
+            "Cheque_RECID": "5638229123",
+            "ClearedDate": "2026-05-15",
+            "Escheated": "NO",
+            "PayeeName": "National Institute of Governmental",
+            "PaymentMode": "WARRANT",
+            "PhysicalAddress": "Purchasing Inc, DBA NIGP\n12007 Sunrise Valley Dr Ste 110\nReston, VA 20191 \nUSA",
+            "TransDate": "2026-05-01",
+            "Voucher": "APPY141975890"
+          }
+        ],
+        "payment": {
+          "AccountNum": "009148",
+          "AmountCur": "6425.0000000000000000",
+          "Invoice": null,
+          "PaymMode": "WARRANT",
+          "Payment_RECID": "5644551299",
+          "TransDate": "2026-05-01",
+          "TransType": "Payment",
+          "Txt": null,
+          "VendorName": "National Institute of Governmental Purchasing Inc",
+          "Voucher": "APPY141975890"
+        }
+      },
+      "source_document_line": "5655917716",
+      "status": "confirmed_paid",
+      "vendor_account": "009148",
+      "vendor_names": [
+        "National Institute of Governmental Purchasing Inc"
+      ]
+    },
+    {
+      "description": "Professional associations-ICMA 26-27 membership renewal for Director Christopher S. Long",
+      "invoice": {
+        "Description": "FIN DIR-membership renewal",
+        "DocumentDate": "2026-04-20",
+        "DocumentNum": null,
+        "InvoiceAmount": "200.0000000000000000",
+        "InvoiceDate": "2026-04-21",
+        "InvoiceId": "1077764 (26-27)",
+        "LedgerVoucher": "APIN111491222",
+        "OrderAccount": "026492",
+        "PurchId": "PO562125",
+        "PurchaseType": "Purchase order",
+        "Qty": "1.0000000000000000",
+        "SourceDocumentHeader": "5642215662",
+        "SourceDocumentLine": "5655946539",
+        "VIJournal_RECID": "5639398527",
+        "VendGroup": "Vendor"
+      },
+      "invoice_debit_rows": [
+        {
+          "AccountNum": "026492",
+          "AmountCur": "-200.0000000000000000",
+          "Invoice": "1077764 (26-27)",
+          "PaymMode": "WARRANT",
+          "Payment_RECID": "5644514941",
+          "TransDate": "2026-04-22",
+          "TransType": "Settlement",
+          "Txt": null,
+          "VendorName": "INTERNATIONAL CITY/COUNTY MANAGEMENT ASSOCIATION",
+          "Voucher": "APPY141964796"
+        },
+        {
+          "AccountNum": "026492",
+          "AmountCur": "-200.0000000000000000",
+          "Invoice": "1077764 (26-27)",
+          "PaymMode": "WARRANT",
+          "Payment_RECID": "5644492629",
+          "TransDate": "2026-04-21",
+          "TransType": "Purchase Order",
+          "Txt": "FIN DIR-membership renewal",
+          "VendorName": "INTERNATIONAL CITY/COUNTY MANAGEMENT ASSOCIATION",
+          "Voucher": "APIN111491222"
+        },
+        {
+          "AccountNum": "026492",
+          "AmountCur": "200.0000000000000000",
+          "Invoice": "1077764 (26-27)",
+          "PaymMode": "WARRANT",
+          "Payment_RECID": "5644514940",
+          "TransDate": "2026-04-22",
+          "TransType": "Settlement",
+          "Txt": null,
+          "VendorName": "INTERNATIONAL CITY/COUNTY MANAGEMENT ASSOCIATION",
+          "Voucher": "APPY141964796"
+        }
+      ],
+      "positive_payment_candidates": [
+        {
+          "checks": [],
+          "days_after_invoice": 1,
+          "payment": {
+            "AccountNum": "026492",
+            "AmountCur": "200.0000000000000000",
+            "Invoice": "1077764 (26-27)",
+            "PaymMode": "WARRANT",
+            "Payment_RECID": "5644514940",
+            "TransDate": "2026-04-22",
+            "TransType": "Settlement",
+            "Txt": null,
+            "VendorName": "INTERNATIONAL CITY/COUNTY MANAGEMENT ASSOCIATION",
+            "Voucher": "APPY141964796"
+          }
+        },
+        {
+          "checks": [
+            {
+              "AmountCur": "200.0000000000000000",
+              "Cancel": "NO",
+              "ChequeNum": "              688582",
+              "ChequeStatus": "Paid",
+              "Cheque_RECID": "5638225670",
+              "ClearedDate": "2026-04-30",
+              "Escheated": "NO",
+              "PayeeName": "INTERNATIONAL CITY/COUNTY",
+              "PaymentMode": "WARRANT",
+              "PhysicalAddress": "MANAGEMENT ASSOCIATION\nPO BOX 79403\nBaltimore, MD 21279-0403 \nUSA",
+              "TransDate": "2026-04-22",
+              "Voucher": "APPY141962165"
+            }
+          ],
+          "days_after_invoice": 1,
+          "payment": {
+            "AccountNum": "026492",
+            "AmountCur": "200.0000000000000000",
+            "Invoice": null,
+            "PaymMode": "WARRANT",
+            "Payment_RECID": "5644514939",
+            "TransDate": "2026-04-22",
+            "TransType": "Payment",
+            "Txt": null,
+            "VendorName": "INTERNATIONAL CITY/COUNTY MANAGEMENT ASSOCIATION",
+            "Voucher": "APPY141962165"
+          }
+        }
+      ],
+      "purchase_id": "PO562125",
+      "selected": {
+        "checks": [
+          {
+            "AmountCur": "200.0000000000000000",
+            "Cancel": "NO",
+            "ChequeNum": "              688582",
+            "ChequeStatus": "Paid",
+            "Cheque_RECID": "5638225670",
+            "ClearedDate": "2026-04-30",
+            "Escheated": "NO",
+            "PayeeName": "INTERNATIONAL CITY/COUNTY",
+            "PaymentMode": "WARRANT",
+            "PhysicalAddress": "MANAGEMENT ASSOCIATION\nPO BOX 79403\nBaltimore, MD 21279-0403 \nUSA",
+            "TransDate": "2026-04-22",
+            "Voucher": "APPY141962165"
+          }
+        ],
+        "days_after_invoice": 1,
+        "paid_checks": [
+          {
+            "AmountCur": "200.0000000000000000",
+            "Cancel": "NO",
+            "ChequeNum": "              688582",
+            "ChequeStatus": "Paid",
+            "Cheque_RECID": "5638225670",
+            "ClearedDate": "2026-04-30",
+            "Escheated": "NO",
+            "PayeeName": "INTERNATIONAL CITY/COUNTY",
+            "PaymentMode": "WARRANT",
+            "PhysicalAddress": "MANAGEMENT ASSOCIATION\nPO BOX 79403\nBaltimore, MD 21279-0403 \nUSA",
+            "TransDate": "2026-04-22",
+            "Voucher": "APPY141962165"
+          }
+        ],
+        "payment": {
+          "AccountNum": "026492",
+          "AmountCur": "200.0000000000000000",
+          "Invoice": null,
+          "PaymMode": "WARRANT",
+          "Payment_RECID": "5644514939",
+          "TransDate": "2026-04-22",
+          "TransType": "Payment",
+          "Txt": null,
+          "VendorName": "INTERNATIONAL CITY/COUNTY MANAGEMENT ASSOCIATION",
+          "Voucher": "APPY141962165"
+        }
+      },
+      "source_document_line": "5655938599",
+      "status": "confirmed_paid",
+      "vendor_account": "026492",
+      "vendor_names": [
+        "INTERNATIONAL CITY/COUNTY MANAGEMENT ASSOCIATION"
+      ]
+    },
+    {
+      "description": "Professional associations- Group Co-Opp membership",
+      "invoice": {
+        "Description": "FIN/Purch-2026-27 membership",
+        "DocumentDate": "2026-05-27",
+        "DocumentNum": null,
+        "InvoiceAmount": "440.0000000000000000",
+        "InvoiceDate": "2026-06-08",
+        "InvoiceId": "05272026001",
+        "LedgerVoucher": "APIN111482400",
+        "OrderAccount": "003924",
+        "PurchId": "PO569995",
+        "PurchaseType": "Purchase order",
+        "Qty": "11.0000000000000000",
+        "SourceDocumentHeader": "5642300035",
+        "SourceDocumentLine": "5656666724",
+        "VIJournal_RECID": "5639460800",
+        "VendGroup": "Vendor"
+      },
+      "invoice_debit_rows": [
+        {
+          "AccountNum": "003924",
+          "AmountCur": "440.0000000000000000",
+          "Invoice": "05272026001",
+          "PaymMode": "WARRANT",
+          "Payment_RECID": "5644679169",
+          "TransDate": "2026-06-10",
+          "TransType": "Settlement",
+          "Txt": null,
+          "VendorName": "Central Ohio Organization of Public Purchasers",
+          "Voucher": "APPY141959493"
+        },
+        {
+          "AccountNum": "003924",
+          "AmountCur": "-440.0000000000000000",
+          "Invoice": "05272026001",
+          "PaymMode": "WARRANT",
+          "Payment_RECID": "5644679170",
+          "TransDate": "2026-06-10",
+          "TransType": "Settlement",
+          "Txt": null,
+          "VendorName": "Central Ohio Organization of Public Purchasers",
+          "Voucher": "APPY141959493"
+        },
+        {
+          "AccountNum": "003924",
+          "AmountCur": "-440.0000000000000000",
+          "Invoice": "05272026001",
+          "PaymMode": "WARRANT",
+          "Payment_RECID": "5644661404",
+          "TransDate": "2026-06-08",
+          "TransType": "Purchase Order",
+          "Txt": "FIN/Purch-2026-27 membership",
+          "VendorName": "Central Ohio Organization of Public Purchasers",
+          "Voucher": "APIN111482400"
+        }
+      ],
+      "positive_payment_candidates": [
+        {
+          "checks": [],
+          "days_after_invoice": 2,
+          "payment": {
+            "AccountNum": "003924",
+            "AmountCur": "440.0000000000000000",
+            "Invoice": "05272026001",
+            "PaymMode": "WARRANT",
+            "Payment_RECID": "5644679169",
+            "TransDate": "2026-06-10",
+            "TransType": "Settlement",
+            "Txt": null,
+            "VendorName": "Central Ohio Organization of Public Purchasers",
+            "Voucher": "APPY141959493"
+          }
+        },
+        {
+          "checks": [
+            {
+              "AmountCur": "440.0000000000000000",
+              "Cancel": "NO",
+              "ChequeNum": "696018",
+              "ChequeStatus": "Paid",
+              "Cheque_RECID": "5638238484",
+              "ClearedDate": "2026-06-29",
+              "Escheated": "NO",
+              "PayeeName": "CO-OPP",
+              "PaymentMode": "WARRANT",
+              "PhysicalAddress": "Treasurer, CO-OPP\nPO Box 2122\nColumbus, OH 43216-2122 \nUSA",
+              "TransDate": "2026-06-10",
+              "Voucher": "APPY141959035"
+            }
+          ],
+          "days_after_invoice": 2,
+          "payment": {
+            "AccountNum": "003924",
+            "AmountCur": "440.0000000000000000",
+            "Invoice": null,
+            "PaymMode": "WARRANT",
+            "Payment_RECID": "5644679168",
+            "TransDate": "2026-06-10",
+            "TransType": "Payment",
+            "Txt": null,
+            "VendorName": "Central Ohio Organization of Public Purchasers",
+            "Voucher": "APPY141959035"
+          }
+        }
+      ],
+      "purchase_id": "PO569995",
+      "selected": {
+        "checks": [
+          {
+            "AmountCur": "440.0000000000000000",
+            "Cancel": "NO",
+            "ChequeNum": "696018",
+            "ChequeStatus": "Paid",
+            "Cheque_RECID": "5638238484",
+            "ClearedDate": "2026-06-29",
+            "Escheated": "NO",
+            "PayeeName": "CO-OPP",
+            "PaymentMode": "WARRANT",
+            "PhysicalAddress": "Treasurer, CO-OPP\nPO Box 2122\nColumbus, OH 43216-2122 \nUSA",
+            "TransDate": "2026-06-10",
+            "Voucher": "APPY141959035"
+          }
+        ],
+        "days_after_invoice": 2,
+        "paid_checks": [
+          {
+            "AmountCur": "440.0000000000000000",
+            "Cancel": "NO",
+            "ChequeNum": "696018",
+            "ChequeStatus": "Paid",
+            "Cheque_RECID": "5638238484",
+            "ClearedDate": "2026-06-29",
+            "Escheated": "NO",
+            "PayeeName": "CO-OPP",
+            "PaymentMode": "WARRANT",
+            "PhysicalAddress": "Treasurer, CO-OPP\nPO Box 2122\nColumbus, OH 43216-2122 \nUSA",
+            "TransDate": "2026-06-10",
+            "Voucher": "APPY141959035"
+          }
+        ],
+        "payment": {
+          "AccountNum": "003924",
+          "AmountCur": "440.0000000000000000",
+          "Invoice": null,
+          "PaymMode": "WARRANT",
+          "Payment_RECID": "5644679168",
+          "TransDate": "2026-06-10",
+          "TransType": "Payment",
+          "Txt": null,
+          "VendorName": "Central Ohio Organization of Public Purchasers",
+          "Voucher": "APPY141959035"
+        }
+      },
+      "source_document_line": "5656560574",
+      "status": "confirmed_paid",
+      "vendor_account": "003924",
+      "vendor_names": [
+        "Central Ohio Organization of Public Purchasers"
+      ]
+    },
+    {
+      "description": "Professional associations- SHRM membership for Jennifer Moore- 9/1/2026-8/31/2027",
+      "invoice": {
+        "Description": "FIN-HR J. Moore SHRM annual membership",
+        "DocumentDate": "2026-06-15",
+        "DocumentNum": null,
+        "InvoiceAmount": "299.0000000000000000",
+        "InvoiceDate": "2026-06-29",
+        "InvoiceId": "SO4468279",
+        "LedgerVoucher": "APIN111500282",
+        "OrderAccount": "006495",
+        "PurchId": "PO572190",
+        "PurchaseType": "Purchase order",
+        "Qty": "1.0000000000000000",
+        "SourceDocumentHeader": "5642349436",
+        "SourceDocumentLine": "5657094134",
+        "VIJournal_RECID": "5639501723",
+        "VendGroup": "Vendor"
+      },
+      "invoice_debit_rows": [
+        {
+          "AccountNum": "006495",
+          "AmountCur": "299.0000000000000000",
+          "Invoice": "SO4468279",
+          "PaymMode": "WARRANT",
+          "Payment_RECID": "5644761845",
+          "TransDate": "2026-07-01",
+          "TransType": "Settlement",
+          "Txt": null,
+          "VendorName": "Society for Human Resource Management",
+          "Voucher": "APPY141994279"
+        },
+        {
+          "AccountNum": "006495",
+          "AmountCur": "-299.0000000000000000",
+          "Invoice": "SO4468279",
+          "PaymMode": "WARRANT",
+          "Payment_RECID": "5644750327",
+          "TransDate": "2026-06-29",
+          "TransType": "Purchase Order",
+          "Txt": "FIN-HR J. Moore SHRM annual membership",
+          "VendorName": "Society for Human Resource Management",
+          "Voucher": "APIN111500282"
+        },
+        {
+          "AccountNum": "006495",
+          "AmountCur": "-299.0000000000000000",
+          "Invoice": "SO4468279",
+          "PaymMode": "WARRANT",
+          "Payment_RECID": "5644761846",
+          "TransDate": "2026-07-01",
+          "TransType": "Settlement",
+          "Txt": null,
+          "VendorName": "Society for Human Resource Management",
+          "Voucher": "APPY141994279"
+        }
+      ],
+      "positive_payment_candidates": [
+        {
+          "checks": [],
+          "days_after_invoice": 2,
+          "payment": {
+            "AccountNum": "006495",
+            "AmountCur": "299.0000000000000000",
+            "Invoice": "SO4468279",
+            "PaymMode": "WARRANT",
+            "Payment_RECID": "5644761845",
+            "TransDate": "2026-07-01",
+            "TransType": "Settlement",
+            "Txt": null,
+            "VendorName": "Society for Human Resource Management",
+            "Voucher": "APPY141994279"
+          }
+        },
+        {
+          "checks": [
+            {
+              "AmountCur": "299.0000000000000000",
+              "Cancel": "NO",
+              "ChequeNum": "699889",
+              "ChequeStatus": "Paid",
+              "Cheque_RECID": "5638245175",
+              "ClearedDate": "2026-07-07",
+              "Escheated": "NO",
+              "PayeeName": "Society for Human Resource Management",
+              "PaymentMode": "WARRANT",
+              "PhysicalAddress": "PO Box 23779\nNew York, NY 10087 \nUSA",
+              "TransDate": "2026-07-01",
+              "Voucher": "APPY141991865"
+            }
+          ],
+          "days_after_invoice": 2,
+          "payment": {
+            "AccountNum": "006495",
+            "AmountCur": "299.0000000000000000",
+            "Invoice": null,
+            "PaymMode": "WARRANT",
+            "Payment_RECID": "5644761844",
+            "TransDate": "2026-07-01",
+            "TransType": "Payment",
+            "Txt": null,
+            "VendorName": "Society for Human Resource Management",
+            "Voucher": "APPY141991865"
+          }
+        }
+      ],
+      "purchase_id": "PO572190",
+      "selected": {
+        "checks": [
+          {
+            "AmountCur": "299.0000000000000000",
+            "Cancel": "NO",
+            "ChequeNum": "699889",
+            "ChequeStatus": "Paid",
+            "Cheque_RECID": "5638245175",
+            "ClearedDate": "2026-07-07",
+            "Escheated": "NO",
+            "PayeeName": "Society for Human Resource Management",
+            "PaymentMode": "WARRANT",
+            "PhysicalAddress": "PO Box 23779\nNew York, NY 10087 \nUSA",
+            "TransDate": "2026-07-01",
+            "Voucher": "APPY141991865"
+          }
+        ],
+        "days_after_invoice": 2,
+        "paid_checks": [
+          {
+            "AmountCur": "299.0000000000000000",
+            "Cancel": "NO",
+            "ChequeNum": "699889",
+            "ChequeStatus": "Paid",
+            "Cheque_RECID": "5638245175",
+            "ClearedDate": "2026-07-07",
+            "Escheated": "NO",
+            "PayeeName": "Society for Human Resource Management",
+            "PaymentMode": "WARRANT",
+            "PhysicalAddress": "PO Box 23779\nNew York, NY 10087 \nUSA",
+            "TransDate": "2026-07-01",
+            "Voucher": "APPY141991865"
+          }
+        ],
+        "payment": {
+          "AccountNum": "006495",
+          "AmountCur": "299.0000000000000000",
+          "Invoice": null,
+          "PaymMode": "WARRANT",
+          "Payment_RECID": "5644761844",
+          "TransDate": "2026-07-01",
+          "TransType": "Payment",
+          "Txt": null,
+          "VendorName": "Society for Human Resource Management",
+          "Voucher": "APPY141991865"
+        }
+      },
+      "source_document_line": "5656958585",
+      "status": "confirmed_paid",
+      "vendor_account": "006495",
+      "vendor_names": [
+        "Society for Human Resource Management"
+      ]
+    },
+    {
+      "description": "2026 Annual Membership for US Conference of Mayors||",
+      "invoice": {
+        "Description": "26 Member Billing (Jan-Jun 2026)",
+        "DocumentDate": "2026-01-01",
+        "DocumentNum": null,
+        "InvoiceAmount": "32673.0000000000000000",
+        "InvoiceDate": "2026-01-06",
+        "InvoiceId": "INV006249",
+        "LedgerVoucher": "APIN111440225",
+        "OrderAccount": "009149",
+        "PurchId": "PO539482",
+        "PurchaseType": "Purchase order",
+        "Qty": "32673.0000000000000000",
+        "SourceDocumentHeader": "5642040348",
+        "SourceDocumentLine": "5655268699",
+        "VIJournal_RECID": "5639301778",
+        "VendGroup": "Vendor"
+      },
+      "invoice_debit_rows": [
+        {
+          "AccountNum": "009149",
+          "AmountCur": "-32673.0000000000000000",
+          "Invoice": "INV006249",
+          "PaymMode": "WARRANT",
+          "Payment_RECID": "5644201413",
+          "TransDate": "2026-01-07",
+          "TransType": "Settlement",
+          "Txt": null,
+          "VendorName": "U.S. Conference of Mayors",
+          "Voucher": "APPY141893919"
+        },
+        {
+          "AccountNum": "009149",
+          "AmountCur": "32673.0000000000000000",
+          "Invoice": "INV006249",
+          "PaymMode": "WARRANT",
+          "Payment_RECID": "5644201412",
+          "TransDate": "2026-01-07",
+          "TransType": "Settlement",
+          "Txt": null,
+          "VendorName": "U.S. Conference of Mayors",
+          "Voucher": "APPY141893919"
+        },
+        {
+          "AccountNum": "009149",
+          "AmountCur": "-32673.0000000000000000",
+          "Invoice": "INV006249",
+          "PaymMode": "WARRANT",
+          "Payment_RECID": "5644188132",
+          "TransDate": "2026-01-06",
+          "TransType": "Purchase Order",
+          "Txt": "26 Member Billing (Jan-Jun 2026)",
+          "VendorName": "U.S. Conference of Mayors",
+          "Voucher": "APIN111440225"
+        }
+      ],
+      "positive_payment_candidates": [
+        {
+          "checks": [
+            {
+              "AmountCur": "32673.0000000000000000",
+              "Cancel": "NO",
+              "ChequeNum": "671737",
+              "ChequeStatus": "Paid",
+              "Cheque_RECID": "5638193341",
+              "ClearedDate": "2026-01-20",
+              "Escheated": "NO",
+              "PayeeName": "U.S. Conference of Mayors",
+              "PaymentMode": "WARRANT",
+              "PhysicalAddress": "P O Box 826902\nPhiladelphia, PA 19182-6902 \nUSA",
+              "TransDate": "2026-01-07",
+              "Voucher": "APPY141893113"
+            }
+          ],
+          "days_after_invoice": 1,
+          "payment": {
+            "AccountNum": "009149",
+            "AmountCur": "32673.0000000000000000",
+            "Invoice": null,
+            "PaymMode": "WARRANT",
+            "Payment_RECID": "5644201411",
+            "TransDate": "2026-01-07",
+            "TransType": "Payment",
+            "Txt": null,
+            "VendorName": "U.S. Conference of Mayors",
+            "Voucher": "APPY141893113"
+          }
+        },
+        {
+          "checks": [],
+          "days_after_invoice": 1,
+          "payment": {
+            "AccountNum": "009149",
+            "AmountCur": "32673.0000000000000000",
+            "Invoice": "INV006249",
+            "PaymMode": "WARRANT",
+            "Payment_RECID": "5644201412",
+            "TransDate": "2026-01-07",
+            "TransType": "Settlement",
+            "Txt": null,
+            "VendorName": "U.S. Conference of Mayors",
+            "Voucher": "APPY141893919"
+          }
+        }
+      ],
+      "purchase_id": "PO539482",
+      "selected": {
+        "checks": [
+          {
+            "AmountCur": "32673.0000000000000000",
+            "Cancel": "NO",
+            "ChequeNum": "671737",
+            "ChequeStatus": "Paid",
+            "Cheque_RECID": "5638193341",
+            "ClearedDate": "2026-01-20",
+            "Escheated": "NO",
+            "PayeeName": "U.S. Conference of Mayors",
+            "PaymentMode": "WARRANT",
+            "PhysicalAddress": "P O Box 826902\nPhiladelphia, PA 19182-6902 \nUSA",
+            "TransDate": "2026-01-07",
+            "Voucher": "APPY141893113"
+          }
+        ],
+        "days_after_invoice": 1,
+        "paid_checks": [
+          {
+            "AmountCur": "32673.0000000000000000",
+            "Cancel": "NO",
+            "ChequeNum": "671737",
+            "ChequeStatus": "Paid",
+            "Cheque_RECID": "5638193341",
+            "ClearedDate": "2026-01-20",
+            "Escheated": "NO",
+            "PayeeName": "U.S. Conference of Mayors",
+            "PaymentMode": "WARRANT",
+            "PhysicalAddress": "P O Box 826902\nPhiladelphia, PA 19182-6902 \nUSA",
+            "TransDate": "2026-01-07",
+            "Voucher": "APPY141893113"
+          }
+        ],
+        "payment": {
+          "AccountNum": "009149",
+          "AmountCur": "32673.0000000000000000",
+          "Invoice": null,
+          "PaymMode": "WARRANT",
+          "Payment_RECID": "5644201411",
+          "TransDate": "2026-01-07",
+          "TransType": "Payment",
+          "Txt": null,
+          "VendorName": "U.S. Conference of Mayors",
+          "Voucher": "APPY141893113"
+        }
+      },
+      "source_document_line": "5654984748",
+      "status": "confirmed_paid",
+      "vendor_account": "009149",
+      "vendor_names": [
+        "U.S. Conference of Mayors"
+      ]
+    }
+  ],
+  "summary": {
+    "authorization_ceiling": "150000",
+    "compatible_candidate_count": 16,
+    "invoice_resolution_count": 16,
+    "method_boundary": "Positive payment rows were matched by vendor account, exact absolute amount, 0-120 day date window, and paid bank-check voucher. Unique or uniquely closest paid candidates are classified confirmed; unresolved collisions remain ambiguous.",
+    "remaining_ceiling_after_confirmed_checks": "22369.0000000000000000",
+    "status_counts": {
+      "confirmed_paid": 15,
+      "confirmed_paid_closest_unique": 1
+    },
+    "target_id": "starintel:investigation-target:wef-depth-10-citywide-membership-authorization-reconciliation",
+    "unique_confirmed_paid_check_count": 15,
+    "unique_confirmed_paid_check_total": "127631.0000000000000000"
+  }
+}
