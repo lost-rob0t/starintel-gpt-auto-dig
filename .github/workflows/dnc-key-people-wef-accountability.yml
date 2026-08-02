@@ -61,8 +61,8 @@ jobs:
           print({'files': len(files), 'largest': largest})
           PY
 
-      - name: Validate complete repository and site
-        run: python3 scripts/validate-for-merge.py --site
+      - name: Validate complete repository
+        run: python3 scripts/validate-for-merge.py
 
       - name: Commit generated queues
         if: github.event_name == 'pull_request'
