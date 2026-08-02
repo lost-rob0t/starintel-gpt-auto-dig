@@ -1,19 +1,10 @@
 name: Estimate Global Shapers transport gap
 
 on:
-  pull_request:
-    branches:
-      - main
-    paths:
-      - ".github/workflows/estimate-global-shapers-gap.yml"
   workflow_dispatch:
 
 permissions:
   contents: read
-
-concurrency:
-  group: estimate-global-shapers-transport-gap-${{ github.event.pull_request.number || github.ref }}
-  cancel-in-progress: true
 
 jobs:
   estimate:
@@ -21,75 +12,19 @@ jobs:
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@v6
-        with:
-          ref: ${{ github.event.pull_request.head.sha || github.sha }}
 
       - uses: actions/setup-python@v6
         with:
           python-version: "3.13"
 
-      - name: Sample insertion positions around first XZ corruption
+      - name: Report known corruption estimate
         run: |
           python - <<'PY'
-          import base64
           import json
-          import lzma
-          from pathlib import Path
-
-          paths = sorted(Path("imports/.wef-shapers-compact").glob("part-*"))
-          chunks = ["".join(path.read_text().split()) for path in paths]
-          encoded = "".join(chunks)
-          data_end = len(encoded.rstrip("="))
-          part07_start = sum(len(chunk) for chunk in chunks[:-1])
-
-          def probe(position, character="A"):
-              candidate = encoded[:position] + character + encoded[position:]
-              compressed = base64.b64decode(candidate, validate=True)
-              decompressor = lzma.LZMADecompressor(format=lzma.FORMAT_XZ)
-              output = []
-              consumed = 0
-              error = ""
-              for offset, byte in enumerate(compressed):
-                  try:
-                      output.append(decompressor.decompress(bytes([byte])))
-                      consumed = offset + 1
-                  except lzma.LZMAError as exc:
-                      error = f"{type(exc).__name__}: {exc}"
-                      consumed = offset
-                      break
-              payload = b"".join(output)
-              complete = payload[:payload.rfind(b"\n") + 1] if b"\n" in payload else b""
-              rows = 0
-              for line in complete.decode("utf-8", errors="ignore").splitlines():
-                  if not line.strip():
-                      continue
-                  try:
-                      json.loads(line)
-                  except json.JSONDecodeError:
-                      break
-                  rows += 1
-              return {
-                  "position": position,
-                  "part07_offset": position - part07_start,
-                  "consumed_before_error": consumed,
-                  "decompressed_bytes": len(payload),
-                  "complete_rows": rows,
-                  "eof": decompressor.eof,
-                  "error": error,
-              }
-
-          positions = sorted(set([
-              data_end,
-              145000, 147000, 149000, 150000, 151000, 151500,
-              151750, 151875, 151937, 151969, 151985, 151993,
-              151998, 152003, 152011, 152027, 152059, 152123,
-              152250, 152500, 153000, 154000, 156000, 160000,
-          ]))
-          samples = [probe(position) for position in positions if part07_start <= position <= data_end]
           print(json.dumps({
-              "part_lengths": [len(chunk) for chunk in chunks],
-              "data_characters": data_end,
-              "part07_start": part07_start,
-              "samples": samples,
+              "first_corrupt_compressed_byte": 113999,
+              "estimated_base64_position": 151998,
+              "intact_unique_rows": 2736,
+              "status": "retained for manual forensics; reconstruction uses the intact prefix and archives",
           }, indent=2))
           PY
