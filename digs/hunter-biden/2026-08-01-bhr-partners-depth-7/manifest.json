@@ -22,14 +22,34 @@
       "sha256": "b6c375952473d17407d2df1287d26fa91c4b0bd91181729a9a8cd629d17d232b"
     },
     {
-      "path": "relations.jsonl",
-      "count": 22,
-      "sha256": "8d29ae04bf76e2e7fedc9492cba961c913ce6f89be823b7a3fd6e9cd96d165b9"
+      "path": "relations-1.jsonl",
+      "count": 6,
+      "sha256": "9eae60a0c1175e827821bd9c17f65d9998dedcb539db4b3277f6f1c809205296"
     },
     {
-      "path": "investigation-targets.jsonl",
-      "count": 10,
-      "sha256": "524e04432a07b79811607aa4850471a7fecfa94a05ba7e8a85eef1a071b9d363"
+      "path": "relations-2.jsonl",
+      "count": 6,
+      "sha256": "ea4e9d972452babb4cf64c239e5c389b65458b41ea2984d47d8c03394da715d2"
+    },
+    {
+      "path": "relations-3.jsonl",
+      "count": 5,
+      "sha256": "f5bd89f1cbcc7aedd2df0f762351578a37a16b49375a4483b470d8b1b1a539a1"
+    },
+    {
+      "path": "relations-4.jsonl",
+      "count": 5,
+      "sha256": "860e2bce106e8092a5dfc8b71a99897d64942eea51c49d7fc9716301467cf53c"
+    },
+    {
+      "path": "investigation-targets-1.jsonl",
+      "count": 5,
+      "sha256": "7965249f7284dedbafb6be7a6347c85898f910791270f78e09c2cc94a56738d9"
+    },
+    {
+      "path": "investigation-targets-2.jsonl",
+      "count": 5,
+      "sha256": "f7c9a16d123ea243d4bd0668639958e7d99d194c94509ff313732a627fed49d7"
     }
   ],
   "files": [
@@ -37,8 +57,12 @@
     "sources.md",
     "sources.jsonl",
     "entities.jsonl",
-    "relations.jsonl",
-    "investigation-targets.jsonl"
+    "relations-1.jsonl",
+    "relations-2.jsonl",
+    "relations-3.jsonl",
+    "relations-4.jsonl",
+    "investigation-targets-1.jsonl",
+    "investigation-targets-2.jsonl"
   ],
   "validation": {
     "jsonl": "syntax checked",
