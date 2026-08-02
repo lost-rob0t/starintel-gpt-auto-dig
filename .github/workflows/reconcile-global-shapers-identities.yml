@@ -1,0 +1,97 @@
+name: Reconcile Global Shapers identities
+
+on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - "digs/global-shapers/global-shapers-current-members-api/**"
+      - "digs/wef/global-shapers-legacy-intact-prefix/**"
+      - "scripts/reconcile_global_shapers_identities.py"
+      - ".github/workflows/reconcile-global-shapers-identities.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: reconcile-global-shapers-identities-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  reconcile:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      TARGET_BRANCH: ${{ github.head_ref || github.ref_name }}
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.13"
+
+      - name: Build cross-source identity ledger
+        run: |
+          python scripts/reconcile_global_shapers_identities.py \
+            --root . \
+            --current-packet digs/global-shapers/global-shapers-current-members-api \
+            --legacy-packet digs/wef/global-shapers-legacy-intact-prefix \
+            --report reports/global-shapers-identity-reconciliation.json \
+            --minimum-current 4600 \
+            --minimum-legacy 2700
+
+      - name: Verify reconciliation invariants
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+
+          report = json.loads(Path("reports/global-shapers-identity-reconciliation.json").read_text(encoding="utf-8"))
+          assert report["status"] == "complete", report
+          assert report["input_people_by_source"]["current-api"] == 4652
+          assert report["input_people_by_source"]["legacy-prefix"] == 2736
+          assert report["input_people"] == 7388
+          assert 4652 <= report["reconciled_unique_people"] <= 7388
+          assert report["duplicates_reconciled"] == report["input_people"] - report["reconciled_unique_people"]
+          print(json.dumps({
+              "input_people": report["input_people"],
+              "reconciled_unique_people": report["reconciled_unique_people"],
+              "duplicates_reconciled": report["duplicates_reconciled"],
+              "cross_source_components": report["cross_source_components"],
+              "strong_match_events": report["strong_match_events"],
+              "name_hub_match_events": report["name_hub_match_events"],
+              "possible_name_only_overlap_count": report["possible_name_only_overlap_count"],
+          }, indent=2))
+          PY
+
+      - name: Commit identity ledger
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add \
+            reports/global-shapers-identity-reconciliation.json \
+            reports/global-shapers-identity-reconciliation.md
+          if ! git diff --cached --quiet; then
+            count=$(python -c 'import json; print(json.load(open("reports/global-shapers-identity-reconciliation.json"))["reconciled_unique_people"])')
+            git commit -m "Reconcile ${count} current and historical Global Shapers identities"
+            git pull --rebase origin "${TARGET_BRANCH}"
+            git push origin "HEAD:${TARGET_BRANCH}"
+          fi
+
+      - name: Upload identity ledger
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: global-shapers-identity-reconciliation
+          path: |
+            reports/global-shapers-identity-reconciliation.json
+            reports/global-shapers-identity-reconciliation.md
+          if-no-files-found: warn
+          retention-days: 14
