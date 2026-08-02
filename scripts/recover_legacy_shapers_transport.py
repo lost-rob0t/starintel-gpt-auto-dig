@@ -49,12 +49,24 @@ def validate_payload(payload: bytes) -> tuple[list[Any], int]:
     return values, len(ids)
 
 
-def decode_candidate(encoded: str) -> tuple[bytes, int] | None:
+def write_validated_payload(output: Path, payload: bytes) -> tuple[int, str]:
+    values, _ = validate_payload(payload)
+    normalized = payload if payload.endswith(b"\n") else payload + b"\n"
+    output.parent.mkdir(parents=True, exist_ok=True)
+    output.write_bytes(normalized)
+    return len(values), hashlib.sha256(normalized).hexdigest()
+
+
+def decode_base64(encoded: str) -> bytes | None:
     try:
-        compressed = base64.b64decode(padded(encoded), validate=True)
+        return base64.b64decode(padded(encoded), validate=True)
     except binascii.Error:
         return None
-    if not compressed.startswith(b"\xfd7zXZ\x00"):
+
+
+def decode_candidate(encoded: str) -> tuple[bytes, int] | None:
+    compressed = decode_base64(encoded)
+    if compressed is None or not compressed.startswith(b"\xfd7zXZ\x00"):
         return None
     try:
         payload = lzma.decompress(compressed)
@@ -62,6 +74,47 @@ def decode_candidate(encoded: str) -> tuple[bytes, int] | None:
     except (lzma.LZMAError, UnicodeDecodeError, json.JSONDecodeError, ValueError):
         return None
     return payload, len(values)
+
+
+def salvage_truncated_xz(encoded: str, chunk_size: int = 64) -> tuple[bytes, dict[str, Any]] | None:
+    compressed = decode_base64(encoded)
+    if compressed is None or not compressed.startswith(b"\xfd7zXZ\x00"):
+        return None
+
+    decompressor = lzma.LZMADecompressor(format=lzma.FORMAT_XZ)
+    chunks: list[bytes] = []
+    error = ""
+    consumed = 0
+    for offset in range(0, len(compressed), chunk_size):
+        block = compressed[offset:offset + chunk_size]
+        try:
+            chunks.append(decompressor.decompress(block))
+            consumed = offset + len(block)
+        except lzma.LZMAError as exc:
+            error = f"{type(exc).__name__}: {exc}"
+            consumed = offset
+            break
+
+    payload = b"".join(chunks)
+    candidates = [payload]
+    last_newline = payload.rfind(b"\n")
+    if last_newline >= 0:
+        candidates.append(payload[:last_newline + 1])
+
+    for candidate in candidates:
+        try:
+            values, _ = validate_payload(candidate)
+        except (UnicodeDecodeError, json.JSONDecodeError, ValueError):
+            continue
+        return candidate, {
+            "compressed_bytes": len(compressed),
+            "compressed_bytes_consumed": consumed,
+            "decompressor_eof": decompressor.eof,
+            "decompression_error": error,
+            "raw_rows": len(values),
+            "payload_bytes": len(candidate),
+        }
+    return None
 
 
 def ordered_deltas(radius: int) -> list[int]:
@@ -79,8 +132,6 @@ def candidate_positions(lengths: list[int], radius: int) -> list[int]:
         cursor += length
         boundaries.append(cursor)
 
-    # A truncated final copy is the dominant failure mode. Test the file end,
-    # exact chunk boundaries, and only then nearby offsets and file start.
     anchors = [total, *reversed(boundaries), 0]
     seen: set[int] = set()
     positions: list[int] = []
@@ -107,17 +158,37 @@ def recover_transport(
     direct = decode_candidate(encoded)
     if direct is not None:
         payload, raw_rows = direct
-        output.parent.mkdir(parents=True, exist_ok=True)
-        output.write_bytes(payload if payload.endswith(b"\n") else payload + b"\n")
+        raw_rows, payload_sha = write_validated_payload(output, payload)
         report = {
             "status": "already-valid",
             "parts": [str(path) for path in paths],
             "part_lengths": lengths,
             "encoded_length": len(encoded),
             "encoded_sha256": hashlib.sha256(encoded.encode()).hexdigest(),
-            "payload_sha256": hashlib.sha256(output.read_bytes()).hexdigest(),
+            "payload_sha256": payload_sha,
             "raw_rows": raw_rows,
             "unique_people": EXPECTED_UNIQUE_PEOPLE,
+        }
+        if report_path:
+            report_path.parent.mkdir(parents=True, exist_ok=True)
+            report_path.write_text(json.dumps(report, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+        return report
+
+    salvaged = salvage_truncated_xz(encoded)
+    if salvaged is not None:
+        payload, salvage = salvaged
+        raw_rows, payload_sha = write_validated_payload(output, payload)
+        report = {
+            "status": "salvaged-truncated-xz",
+            "parts": [str(path) for path in paths],
+            "part_lengths": lengths,
+            "encoded_length": len(encoded),
+            "encoded_length_mod_4": len(encoded) % 4,
+            "encoded_sha256": hashlib.sha256(encoded.encode()).hexdigest(),
+            "payload_sha256": payload_sha,
+            "raw_rows": raw_rows,
+            "unique_people": EXPECTED_UNIQUE_PEOPLE,
+            "salvage": salvage,
         }
         if report_path:
             report_path.parent.mkdir(parents=True, exist_ok=True)
@@ -135,11 +206,10 @@ def recover_transport(
             decoded = decode_candidate(repaired)
             if decoded is None:
                 continue
-            payload, raw_rows = decoded
-            output.parent.mkdir(parents=True, exist_ok=True)
-            output.write_bytes(payload if payload.endswith(b"\n") else payload + b"\n")
+            payload, _ = decoded
+            raw_rows, payload_sha = write_validated_payload(output, payload)
             report = {
-                "status": "recovered",
+                "status": "recovered-inserted-base64-character",
                 "parts": [str(path) for path in paths],
                 "part_lengths": lengths,
                 "encoded_length_before": len(encoded),
@@ -149,7 +219,7 @@ def recover_transport(
                 "boundary_radius": radius,
                 "attempts": attempts,
                 "repaired_encoded_sha256": hashlib.sha256(repaired.encode()).hexdigest(),
-                "payload_sha256": hashlib.sha256(output.read_bytes()).hexdigest(),
+                "payload_sha256": payload_sha,
                 "raw_rows": raw_rows,
                 "unique_people": EXPECTED_UNIQUE_PEOPLE,
             }
@@ -172,14 +242,14 @@ def recover_transport(
         report_path.parent.mkdir(parents=True, exist_ok=True)
         report_path.write_text(json.dumps(report, indent=2, sort_keys=True) + "\n", encoding="utf-8")
     raise RuntimeError(
-        "unable to recover retained transport by inserting one Base64 character "
-        f"near {len(positions)} chunk-boundary positions; part lengths={lengths}"
+        "unable to salvage or repair retained transport; "
+        f"part lengths={lengths}, encoded length={len(encoded)}"
     )
 
 
 def main() -> int:
     parser = argparse.ArgumentParser(
-        description="Recover the one-character-truncated retained Global Shapers XZ/Base64 transport."
+        description="Recover a truncated retained Global Shapers XZ/Base64 transport."
     )
     parser.add_argument(
         "--parts",
