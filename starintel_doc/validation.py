@@ -127,7 +127,7 @@ def normalize_legacy_document(document: dict[str, Any]) -> dict[str, Any]:
             )
         data["medium"] = legacy_value
         del data["file_format"]
-        document.setdefault("provenance", {}).setdefault(
+        document.setdefault("lineage", {}).setdefault(
             "migration_notes", []
         ).append("normalized legacy source data.file_format to data.medium")
     return document
