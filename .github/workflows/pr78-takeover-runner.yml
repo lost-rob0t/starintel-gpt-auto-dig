@@ -3,11 +3,10 @@ name: Temporary PR 78 takeover runner
 on:
   pull_request:
     types:
-      - ready_for_review
       - synchronize
 
 permissions:
-  contents: write
+  contents: read
 
 jobs:
   repair:
@@ -19,100 +18,69 @@ jobs:
           ref: agent/pr-78-takeover-fix
           fetch-depth: 0
 
-      - name: Execute branch repair script
+      - name: Diagnose compact Shapers transport
         shell: bash
         run: |
           set -euo pipefail
-          sed -n "/python3 <<'PY'/,/^          PY$/p" .github/workflows/pr78-takeover.yml \
-            | sed '1d;$d;s/^          //' > /tmp/pr78-takeover.py
           python3 - <<'PY'
-          from pathlib import Path
-
-          path = Path('/tmp/pr78-takeover.py')
-          source = path.read_text(encoding='utf-8')
-          source = source.replace(
-              'functions = "\\n".join(line[10:] if line.startswith("          ") else line for line in functions.splitlines()).strip()',
-              'functions = functions.strip()',
-          )
-          path.write_text(source, encoding='utf-8')
-          PY
-          python3 /tmp/pr78-takeover.py
-          cat > tests/test_wef_shapers_transport.py <<'PYTEST'
           from __future__ import annotations
 
           import base64
-          import hashlib
           import lzma
-          import sys
-          import tempfile
-          import unittest
+          import string
           from pathlib import Path
 
-          ROOT = Path(__file__).resolve().parents[1]
-          SCRIPTS = ROOT / "scripts"
-          if str(ROOT) not in sys.path:
-              sys.path.insert(0, str(ROOT))
-          if str(SCRIPTS) not in sys.path:
-              sys.path.insert(0, str(SCRIPTS))
-
-          from build_research_site import (
-              WEF_SHAPERS_EXPECTED_RECORDS,
-              WEF_SHAPERS_EXPECTED_SHA256,
-              decode_part_bundle,
-              materialize_wef_shapers_import,
-              parse_jsonl_payload,
+          directory = Path('imports/.wef-shapers-compact')
+          encoded = ''.join(
+              ''.join(path.read_text(encoding='utf-8').lstrip('\ufeff').split())
+              for path in sorted(directory.glob('part-*'))
           )
+          print('original_chars', len(encoded))
+          encoded = encoded[:151_980] + '1' + encoded[151_980:]
+          print('inserted_chars', len(encoded))
+          alphabet = string.ascii_uppercase + string.ascii_lowercase + string.digits + '+/'
 
+          def progress(compressed: bytes, chunk_size: int = 256) -> tuple[int, bool, int]:
+              decoder = lzma.LZMADecompressor()
+              offset = 0
+              output = 0
+              while offset < len(compressed):
+                  chunk = compressed[offset:offset + chunk_size]
+                  try:
+                      data = decoder.decompress(chunk)
+                  except lzma.LZMAError:
+                      return offset, False, output
+                  output += len(data)
+                  offset += len(chunk)
+                  if decoder.eof:
+                      return len(compressed), True, output
+              return offset, decoder.eof, output
 
-          class WefShapersTransportTests(unittest.TestCase):
-              def test_recursively_unwraps_nested_base64_xz_layers(self) -> None:
-                  row = '["person-id",1,2,"First","","Last","","",null,"person",null,[]]\n'
-                  inner = base64.b64encode(lzma.compress(row.encode())).decode()
-                  outer = base64.b64encode(lzma.compress(inner.encode())).decode()
-                  with tempfile.TemporaryDirectory() as directory:
-                      parts = Path(directory)
-                      (parts / "part-00").write_text(outer, encoding="utf-8")
-                      parsed = []
-                      for payload in decode_part_bundle(parts):
-                          try:
-                              values, _ = parse_jsonl_payload(payload, parts)
-                          except ValueError:
-                              continue
-                          if values and isinstance(values[0], list):
-                              parsed = values
-                              break
-                  self.assertEqual(len(parsed), 1)
-                  self.assertEqual(parsed[0][0], "person-id")
+          candidates = []
+          for position in range(160_350, 160_650):
+              original = encoded[position]
+              for character in alphabet:
+                  if character == original:
+                      continue
+                  candidate = encoded[:position] + character + encoded[position + 1:]
+                  try:
+                      compressed = base64.b64decode(candidate, validate=True)
+                  except Exception:
+                      continue
+                  consumed, eof, output = progress(compressed)
+                  candidates.append((consumed, eof, output, position, original, character))
+          candidates.sort(reverse=True)
+          print('TOP_CANDIDATES')
+          for item in candidates[:40]:
+              print(item)
 
-              def test_materializes_verified_real_bundle(self) -> None:
-                  with tempfile.TemporaryDirectory() as directory:
-                      workspace = Path(directory)
-                      materialize_wef_shapers_import(workspace)
-                      packet = workspace / "wef" / "db-wef-global-shapers-alumni" / "starintel-documents.jsonl"
-                      payload = packet.read_text(encoding="utf-8")
-                      self.assertEqual(
-                          sum(1 for line in payload.splitlines() if line.strip()),
-                          WEF_SHAPERS_EXPECTED_RECORDS,
-                      )
-                      self.assertEqual(
-                          hashlib.sha256(payload.encode()).hexdigest(),
-                          WEF_SHAPERS_EXPECTED_SHA256,
-                      )
-
-
-          if __name__ == "__main__":
-              unittest.main()
-          PYTEST
-          rm -f .github/workflows/pr78-takeover.yml .pr78-takeover-trigger
-          python3 -m compileall -q scripts tests
-          python3 -m unittest \
-            tests.test_build_research_site \
-            tests.test_dataset_catalog \
-            tests.test_wef_shapers_transport -v
-          python3 scripts/validate-for-merge.py
-
-          git config user.name "starintel-auto-dig-maintainer"
-          git config user.email "actions@users.noreply.github.com"
-          git add -A
-          git commit -m "Repair nested Global Shapers site materialization"
-          git push origin HEAD:agent/pr-78-takeover-fix
+          for consumed, eof, output, position, original, character in candidates[:40]:
+              if not eof:
+                  continue
+              repaired = encoded[:position] + character + encoded[position + 1:]
+              compressed = base64.b64decode(repaired, validate=True)
+              payload = lzma.decompress(compressed)
+              print('SUCCESS', position, original, character, len(payload), payload[:80])
+              Path('/tmp/repaired-layer.bin').write_bytes(payload)
+              break
+          PY
