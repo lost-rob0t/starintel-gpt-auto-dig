@@ -27,6 +27,8 @@ No reconciled payee names the World Economic Forum, Global Shapers, Young Global
 
 The public Accounting Distribution dataset omits the main-account code, so the published data cannot directly prove account `63975` on each row. Compatibility is based on all six available authorization dimensions: Finance / Financial Management / General Fund / Contractual Services / Financial management / General Fund Operating.
 
+The large working joins were reduced to `reconciliation-compact.json`; the canonical packet preserves the evidence boundary, payee totals, line-item identifiers, and unresolved residual without retaining duplicate intermediate payloads.
+
 ## Depth 11 target
 
 `starintel:investigation-target:wef-depth-11-citywide-membership-main-account-and-residual`
