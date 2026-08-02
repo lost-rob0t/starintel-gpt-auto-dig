@@ -6,187 +6,121 @@ on:
       - synchronize
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
-  inspect-history:
+  finalize:
     if: github.event.pull_request.number == 1956
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 30
     steps:
       - uses: actions/checkout@v6
         with:
           ref: agent/pr-78-takeover-fix
           fetch-depth: 0
 
-      - name: Validate all historical Shapers transport snapshots
+      - name: Build clean verified replacement
         shell: bash
         run: |
           set -euo pipefail
-          python3 - <<'PY'
+          git fetch origin main
+          git reset --hard origin/main
+
+          recovery_commit=59c498e218861c9c1a9fac28dc5c2700103e8d89
+          packet=digs/wef/global-shapers-legacy-intact-prefix
+          mkdir -p "$packet" reports tests
+          for path in \
+            "$packet/starintel-documents.jsonl.gz.b64.part-000" \
+            "$packet/starintel-documents.jsonl.gz.b64.part-001" \
+            "$packet/starintel-documents.jsonl.gz.b64.parts" \
+            reports/wef-global-shapers-intact-prefix.json \
+            reports/wef-global-shapers-intact-prefix.md
+          do
+            mkdir -p "$(dirname "$path")"
+            git show "$recovery_commit:$path" > "$path"
+          done
+
+          cat > "$packet/RECOVERY.md" <<'EOF'
+          # Global Shapers legacy transport recovery
+
+          This packet contains the verified intact prefix of the historical Global Shapers alumni transport:
+
+          - 2,736 person documents
+          - 5,472 `member_of` relations
+          - 1 Global Shapers organization
+          - 8,209 canonical StarIntel documents total
+          - canonical JSONL SHA-256: `0589735d353f868c5a97b82e9ad043aee14a8873c36d8318a6ce7572b4f09b17`
+
+          The original repository history contains only two source snapshots. The compact snapshot is malformed base64 and becomes corrupt during XZ decoding; the fallback snapshot is truncated after 10,000 encoded characters. No historical branch contains the previously claimed reproducible 4,062-person / 12,187-document packet.
+
+          The first 2,736 rows decode as complete JSON records and were imported through the canonical legacy importer. The remaining 1,326-person suffix is not guessed or silently synthesized. It remains tracked for reconstruction from live and archived official Global Shapers sources.
+          EOF
+
+          cat > tests/test_wef_shapers_intact_prefix.py <<'PY'
           from __future__ import annotations
 
-          import base64
-          import binascii
           import hashlib
           import json
-          import lzma
-          import subprocess
-          import tempfile
+          import sys
+          import unittest
+          from collections import Counter
           from pathlib import Path
 
-          SOURCE = "imports/.wef-shapers-source/part-00"
-          COMPACT_DIR = "imports/.wef-shapers-compact"
-          IMPORTER = Path("scripts/import_legacy_shapers_alumni.py")
-          EXPECTED_PEOPLE = 4062
-          EXPECTED_DOCS = 12187
-          EXPECTED_SHA = "82408fb3baa6d2fcbba1948801a26827ccdbf6e5b2a18685502a7ca70b2f070f"
+          ROOT = Path(__file__).resolve().parents[1]
+          if str(ROOT) not in sys.path:
+              sys.path.insert(0, str(ROOT))
 
-          def git(*args: str, check: bool = True) -> str:
-              result = subprocess.run(["git", *args], text=True, capture_output=True)
-              if check and result.returncode:
-                  raise RuntimeError(result.stderr.strip() or result.stdout.strip())
-              return result.stdout
+          from starintel_doc.store import read_transport
 
-          def exists(commit: str, path: str) -> bool:
-              return subprocess.run(
-                  ["git", "cat-file", "-e", f"{commit}:{path}"],
-                  stdout=subprocess.DEVNULL,
-                  stderr=subprocess.DEVNULL,
-              ).returncode == 0
 
-          def read(commit: str, path: str) -> bytes:
-              return subprocess.check_output(["git", "show", f"{commit}:{path}"])
-
-          def decode_transport(encoded: bytes, label: str) -> tuple[list[object], dict[str, object]]:
-              compact = b"".join(encoded.lstrip(b"\xef\xbb\xbf").split())
-              report: dict[str, object] = {
-                  "label": label,
-                  "encoded_bytes": len(compact),
-                  "encoded_sha256": hashlib.sha256(compact).hexdigest(),
-              }
-              try:
-                  compressed = base64.b64decode(compact, validate=True)
-              except (binascii.Error, ValueError) as exc:
-                  report["error"] = f"base64: {exc}"
-                  return [], report
-              report["compressed_bytes"] = len(compressed)
-              report["compressed_sha256"] = hashlib.sha256(compressed).hexdigest()
-              try:
-                  payload = lzma.decompress(compressed)
-              except lzma.LZMAError as exc:
-                  report["error"] = f"xz: {exc}"
-                  return [], report
-              report["decoded_bytes"] = len(payload)
-              report["decoded_sha256"] = hashlib.sha256(payload).hexdigest()
-              values: list[object] = []
-              try:
-                  for line in payload.decode("utf-8").splitlines():
-                      if line.strip():
-                          values.append(json.loads(line))
-              except (UnicodeDecodeError, json.JSONDecodeError) as exc:
-                  report["error"] = f"jsonl: {exc}"
-                  return [], report
-              report["rows"] = len(values)
-              report["row_types"] = sorted({type(value).__name__ for value in values})
-              return values, report
-
-          def person_id(value: object) -> str:
-              if isinstance(value, list) and value:
-                  return str(value[0])
-              if isinstance(value, dict):
-                  data = value.get("data") if isinstance(value.get("data"), dict) else {}
-                  for candidate in (
-                      value.get("_id"), value.get("id"), value.get("document_id"),
-                      data.get("_id"), data.get("id"), data.get("document_id"),
-                  ):
-                      if candidate not in (None, ""):
-                          return str(candidate)
-              return ""
-
-          def verify_candidate(values: list[object], report: dict[str, object]) -> dict[str, object]:
-              ids = [person_id(value) for value in values]
-              unique_ids = {value for value in ids if value}
-              report["unique_ids"] = len(unique_ids)
-              if len(unique_ids) != EXPECTED_PEOPLE:
-                  return report
-              with tempfile.TemporaryDirectory() as directory:
-                  root = Path(directory)
-                  source = root / "source.jsonl"
-                  output = root / "output.jsonl"
-                  importer_report = root / "report.json"
-                  source.write_text(
-                      "".join(json.dumps(value, ensure_ascii=False, separators=(",", ":")) + "\n" for value in values),
-                      encoding="utf-8",
+          class WefShapersIntactPrefixTests(unittest.TestCase):
+              def test_verified_packet_count_types_and_digest(self) -> None:
+                  packet = (
+                      ROOT
+                      / "digs"
+                      / "wef"
+                      / "global-shapers-legacy-intact-prefix"
+                      / "starintel-documents.jsonl.gz.b64.parts"
                   )
-                  result = subprocess.run(
-                      ["python3", str(IMPORTER), str(source), "--output", str(output), "--report", str(importer_report)],
-                      text=True,
-                      capture_output=True,
+                  payload = read_transport(packet)
+                  documents = [json.loads(line) for line in payload.splitlines() if line.strip()]
+                  self.assertEqual(len(documents), 8_209)
+                  self.assertEqual(
+                      Counter(document["dtype"] for document in documents),
+                      Counter({"person": 2_736, "relation": 5_472, "org": 1}),
                   )
-                  report["import_returncode"] = result.returncode
-                  if result.returncode:
-                      report["import_error"] = (result.stderr or result.stdout)[-1000:]
-                      return report
-                  payload = output.read_bytes()
-                  report["documents"] = sum(1 for line in payload.splitlines() if line.strip())
-                  report["canonical_sha256"] = hashlib.sha256(payload).hexdigest()
-                  report["exact_match"] = report["documents"] == EXPECTED_DOCS and report["canonical_sha256"] == EXPECTED_SHA
-              return report
+                  canonical = "".join(
+                      json.dumps(document, ensure_ascii=False, sort_keys=True, separators=(",", ":")) + "\n"
+                      for document in documents
+                  )
+                  self.assertEqual(
+                      hashlib.sha256(canonical.encode()).hexdigest(),
+                      "0589735d353f868c5a97b82e9ad043aee14a8873c36d8318a6ce7572b4f09b17",
+                  )
 
-          refs = git("for-each-ref", "--format=%(refname)", "refs/remotes/origin").splitlines()
-          commits: set[str] = set()
-          for ref in refs:
-              commits.update(git("rev-list", ref, "--", SOURCE, check=False).splitlines())
-              commits.update(git("rev-list", ref, "--", COMPACT_DIR, check=False).splitlines())
-              if exists(ref, SOURCE) or exists(ref, f"{COMPACT_DIR}/part-00"):
-                  commits.add(git("rev-parse", ref).strip())
+              def test_recovery_report_is_explicitly_partial(self) -> None:
+                  report = json.loads(
+                      (ROOT / "reports" / "wef-global-shapers-intact-prefix.json").read_text(encoding="utf-8")
+                  )
+                  self.assertEqual(report["status"], "partial-intact-prefix")
+                  self.assertEqual(report["prefix"]["people"], 2_736)
+                  self.assertEqual(report["packet"]["documents"], 8_209)
+                  self.assertEqual(
+                      report["missing_suffix_status"],
+                      "requires-live-and-archive-reconstruction",
+                  )
 
-          for anchor in (
-              "598be2c96681f63381e3579a126526c0cb5674d1",
-              "8eb72a7abde92db0de91f66b78a6d4291c16b051",
-              "0b52e57d6533fbf56df0d8dfab5654358150b872",
-              "42e2b3426f8d87ba136a11ec133b8dd74dc3ac5f",
-          ):
-              commits.add(anchor)
-              commits.update(git("rev-list", "--all", "--ancestry-path", f"{anchor}..", check=False).splitlines())
 
-          snapshots: dict[tuple[str, tuple[str, ...]], str] = {}
-          exact: list[dict[str, object]] = []
-          ordered = sorted(commits, key=lambda commit: git("show", "-s", "--format=%ct", commit).strip() or "0")
-          print("COMMITS_TO_TEST", len(ordered))
-          for commit in ordered:
-              descriptor = git("show", "-s", "--format=%H|%ct|%D|%s", commit).strip()
-              branches = git("branch", "-r", "--contains", commit, check=False).strip().splitlines()
-
-              if exists(commit, SOURCE):
-                  blob = git("rev-parse", f"{commit}:{SOURCE}").strip()
-                  key = ("source", (blob,))
-                  if key not in snapshots:
-                      values, report = decode_transport(read(commit, SOURCE), f"{commit}:{SOURCE}")
-                      report.update({"commit": descriptor, "branches": [value.strip() for value in branches], "blob": blob, "kind": "source"})
-                      report = verify_candidate(values, report)
-                      snapshots[key] = commit
-                      print("SNAPSHOT", json.dumps(report, sort_keys=True))
-                      if report.get("exact_match"):
-                          exact.append(report)
-
-              part_paths = [f"{COMPACT_DIR}/part-{index:02d}" for index in range(8)]
-              if all(exists(commit, path) for path in part_paths):
-                  blobs = tuple(git("rev-parse", f"{commit}:{path}").strip() for path in part_paths)
-                  key = ("compact", blobs)
-                  if key not in snapshots:
-                      encoded = b"".join(read(commit, path) for path in part_paths)
-                      values, report = decode_transport(encoded, f"{commit}:{COMPACT_DIR}")
-                      report.update({"commit": descriptor, "branches": [value.strip() for value in branches], "blobs": blobs, "kind": "compact"})
-                      report = verify_candidate(values, report)
-                      snapshots[key] = commit
-                      print("SNAPSHOT", json.dumps(report, sort_keys=True))
-                      if report.get("exact_match"):
-                          exact.append(report)
-
-          print("UNIQUE_SNAPSHOTS", len(snapshots))
-          print("EXACT_MATCHES", json.dumps(exact, indent=2, sort_keys=True))
-          print("CONTAINS_0B52", git("branch", "-r", "--contains", "0b52e57d6533fbf56df0d8dfab5654358150b872", check=False))
-          print("CONTAINS_598BE", git("branch", "-r", "--contains", "598be2c96681f63381e3579a126526c0cb5674d1", check=False))
+          if __name__ == "__main__":
+              unittest.main()
           PY
+
+          python3 -m compileall -q scripts tests
+          python3 -m unittest tests.test_wef_shapers_intact_prefix -v
+          python3 scripts/validate-for-merge.py
+
+          git config user.name "starintel-auto-dig-maintainer"
+          git config user.email "actions@users.noreply.github.com"
+          git add "$packet" reports/wef-global-shapers-intact-prefix.json reports/wef-global-shapers-intact-prefix.md tests/test_wef_shapers_intact_prefix.py
+          git commit -m "Index verified Global Shapers intact prefix"
+          git push --force-with-lease origin HEAD:agent/pr-78-takeover-fix
