@@ -46,9 +46,15 @@ jobs:
               for path in sorted(directory.glob("part-*"))
           )
           encoded = list(original[:151_980] + "1" + original[151_980:])
+          measured_old = encoded[160_363]
+          encoded[160_363] = "p"
           compressed = bytearray(base64.b64decode("".join(encoded), validate=True))
-          mutations: list[tuple[int, str, str]] = [(151_980, "<missing>", "1")]
+          mutations: list[tuple[int, str, str]] = [
+              (151_980, "<missing>", "1"),
+              (160_363, measured_old, "p"),
+          ]
           print("transport", {"original_chars": len(original), "repaired_chars": len(encoded), "bytes": len(compressed)})
+          print("seed_mutations", mutations)
 
           def score(chunk_size: int) -> tuple[int, int, int]:
               decoder = lzma.LZMADecompressor()
@@ -110,9 +116,9 @@ jobs:
               coarse.sort(reverse=True)
 
               refined: list[tuple[tuple[int, int, int], int, str, str]] = []
-              for _, position, old_character, character in coarse[:48]:
+              for _, position, old_character, character in coarse[:64]:
                   old, byte_start, old_bytes = patch(position, character)
-                  candidate_score = score(8)
+                  candidate_score = score(4)
                   refined.append((candidate_score, position, old_character, character))
                   restore(position, old, byte_start, old_bytes)
               refined.sort(reverse=True)
@@ -120,15 +126,15 @@ jobs:
 
           for round_number in range(1, 13):
               failure_byte, output_bytes, eof = exact_failure()
-              current_score = score(8)
+              current_score = score(4)
               print("round", round_number, {"failure_byte": failure_byte, "output": output_bytes, "score": current_score, "eof": eof})
               if eof:
                   break
 
               center = failure_byte // 3 * 4
-              best = search_window(center - 20, center + 24)
+              best = search_window(center - 32, center + 36)
               if best is None or best[0] <= current_score:
-                  best = search_window(center - 96, center + 100)
+                  best = search_window(center - 256, center + 260)
               if best is None or best[0] <= current_score:
                   raise SystemExit(f"no improving mutation near compressed byte {failure_byte} / base64 char {center}")
 
