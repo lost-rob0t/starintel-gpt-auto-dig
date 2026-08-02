@@ -144,6 +144,18 @@ def candidate_positions(lengths: list[int], radius: int) -> list[int]:
     return positions
 
 
+def successful_insertion(encoded: str, position: int) -> tuple[str, str, bytes, int] | None:
+    left = encoded[:position]
+    right = encoded[position:]
+    for character in BASE64_ALPHABET:
+        repaired = left + character + right
+        decoded = decode_candidate(repaired)
+        if decoded is not None:
+            payload, raw_rows = decoded
+            return character, repaired, payload, raw_rows
+    return None
+
+
 def recover_transport(
     part_paths: Iterable[Path],
     output: Path,
@@ -165,6 +177,32 @@ def recover_transport(
             "part_lengths": lengths,
             "encoded_length": len(encoded),
             "encoded_sha256": hashlib.sha256(encoded.encode()).hexdigest(),
+            "payload_sha256": payload_sha,
+            "raw_rows": raw_rows,
+            "unique_people": EXPECTED_UNIQUE_PEOPLE,
+        }
+        if report_path:
+            report_path.parent.mkdir(parents=True, exist_ok=True)
+            report_path.write_text(json.dumps(report, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+        return report
+
+    # The retained file ends with normal Base64 padding but has an impossible
+    # number of data characters. The dominant failure mode is one omitted data
+    # character immediately before the existing '=' padding.
+    data_end = len(encoded.rstrip("="))
+    preferred = successful_insertion(encoded, data_end)
+    if preferred is not None:
+        character, repaired, payload, _ = preferred
+        raw_rows, payload_sha = write_validated_payload(output, payload)
+        report = {
+            "status": "recovered-before-base64-padding",
+            "parts": [str(path) for path in paths],
+            "part_lengths": lengths,
+            "encoded_length_before": len(encoded),
+            "encoded_length_after": len(repaired),
+            "insert_position": data_end,
+            "insert_character": character,
+            "repaired_encoded_sha256": hashlib.sha256(repaired.encode()).hexdigest(),
             "payload_sha256": payload_sha,
             "raw_rows": raw_rows,
             "unique_people": EXPECTED_UNIQUE_PEOPLE,
@@ -196,46 +234,46 @@ def recover_transport(
         return report
 
     positions = candidate_positions(lengths, radius)
-    attempts = 0
+    attempts = 64
     for position in positions:
-        left = encoded[:position]
-        right = encoded[position:]
-        for character in BASE64_ALPHABET:
-            attempts += 1
-            repaired = left + character + right
-            decoded = decode_candidate(repaired)
-            if decoded is None:
-                continue
-            payload, _ = decoded
-            raw_rows, payload_sha = write_validated_payload(output, payload)
-            report = {
-                "status": "recovered-inserted-base64-character",
-                "parts": [str(path) for path in paths],
-                "part_lengths": lengths,
-                "encoded_length_before": len(encoded),
-                "encoded_length_after": len(repaired),
-                "insert_position": position,
-                "insert_character": character,
-                "boundary_radius": radius,
-                "attempts": attempts,
-                "repaired_encoded_sha256": hashlib.sha256(repaired.encode()).hexdigest(),
-                "payload_sha256": payload_sha,
-                "raw_rows": raw_rows,
-                "unique_people": EXPECTED_UNIQUE_PEOPLE,
-            }
-            if report_path:
-                report_path.parent.mkdir(parents=True, exist_ok=True)
-                report_path.write_text(json.dumps(report, indent=2, sort_keys=True) + "\n", encoding="utf-8")
-            return report
+        if position == data_end:
+            continue
+        result = successful_insertion(encoded, position)
+        attempts += 64
+        if result is None:
+            continue
+        character, repaired, payload, _ = result
+        raw_rows, payload_sha = write_validated_payload(output, payload)
+        report = {
+            "status": "recovered-inserted-base64-character",
+            "parts": [str(path) for path in paths],
+            "part_lengths": lengths,
+            "encoded_length_before": len(encoded),
+            "encoded_length_after": len(repaired),
+            "insert_position": position,
+            "insert_character": character,
+            "boundary_radius": radius,
+            "attempts": attempts,
+            "repaired_encoded_sha256": hashlib.sha256(repaired.encode()).hexdigest(),
+            "payload_sha256": payload_sha,
+            "raw_rows": raw_rows,
+            "unique_people": EXPECTED_UNIQUE_PEOPLE,
+        }
+        if report_path:
+            report_path.parent.mkdir(parents=True, exist_ok=True)
+            report_path.write_text(json.dumps(report, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+        return report
 
     report = {
         "status": "not-recovered",
         "parts": [str(path) for path in paths],
         "part_lengths": lengths,
         "encoded_length": len(encoded),
+        "encoded_data_characters": data_end,
+        "encoded_padding_characters": len(encoded) - data_end,
         "encoded_length_mod_4": len(encoded) % 4,
         "boundary_radius": radius,
-        "positions_tested": len(positions),
+        "positions_tested": len(positions) + 1,
         "attempts": attempts,
     }
     if report_path:
@@ -243,7 +281,7 @@ def recover_transport(
         report_path.write_text(json.dumps(report, indent=2, sort_keys=True) + "\n", encoding="utf-8")
     raise RuntimeError(
         "unable to salvage or repair retained transport; "
-        f"part lengths={lengths}, encoded length={len(encoded)}"
+        f"part lengths={lengths}, encoded length={len(encoded)}, data characters={data_end}"
     )
 
 
