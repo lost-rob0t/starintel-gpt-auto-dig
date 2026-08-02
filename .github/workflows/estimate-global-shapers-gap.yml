@@ -1,0 +1,85 @@
+name: Estimate Global Shapers transport gap
+
+on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - ".github/workflows/estimate-global-shapers-gap.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  estimate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.13"
+
+      - name: Measure first XZ corruption
+        run: |
+          python - <<'PY'
+          import base64
+          import json
+          import lzma
+          from pathlib import Path
+
+          paths = sorted(Path("imports/.wef-shapers-compact").glob("part-*"))
+          chunks = ["".join(path.read_text().split()) for path in paths]
+          encoded = "".join(chunks)
+          data_end = len(encoded.rstrip("="))
+          candidate = encoded[:data_end] + "A" + encoded[data_end:]
+          compressed = base64.b64decode(candidate, validate=True)
+          decompressor = lzma.LZMADecompressor(format=lzma.FORMAT_XZ)
+          output = []
+          error = ""
+          consumed = 0
+          for offset, byte in enumerate(compressed):
+              try:
+                  output.append(decompressor.decompress(bytes([byte])))
+                  consumed = offset + 1
+              except lzma.LZMAError as exc:
+                  error = f"{type(exc).__name__}: {exc}"
+                  consumed = offset
+                  break
+          payload = b"".join(output)
+          complete = payload[:payload.rfind(b"\n") + 1] if b"\n" in payload else b""
+          rows = 0
+          ids = set()
+          for line in complete.decode("utf-8", errors="ignore").splitlines():
+              if not line.strip():
+                  continue
+              try:
+                  value = json.loads(line)
+              except json.JSONDecodeError:
+                  break
+              rows += 1
+              if isinstance(value, list) and value:
+                  ids.add(str(value[0]))
+              elif isinstance(value, dict):
+                  data = value.get("data") if isinstance(value.get("data"), dict) else {}
+                  identifier = data.get("_id") or data.get("id") or value.get("_id") or value.get("id")
+                  if identifier is not None:
+                      ids.add(str(identifier))
+          estimated = (consumed * 4) // 3
+          print(json.dumps({
+              "part_lengths": [len(chunk) for chunk in chunks],
+              "data_characters": data_end,
+              "compressed_bytes": len(compressed),
+              "consumed_before_error": consumed,
+              "estimated_base64_position": estimated,
+              "estimated_part07_offset": estimated - sum(len(chunk) for chunk in chunks[:-1]),
+              "decompressed_bytes": len(payload),
+              "complete_rows": rows,
+              "unique_ids": len(ids),
+              "error": error,
+          }, indent=2))
+          PY
