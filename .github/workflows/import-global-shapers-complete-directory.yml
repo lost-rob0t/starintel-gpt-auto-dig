@@ -8,9 +8,9 @@ on:
       - "imports/global-shapers/**"
       - "imports/.wef-shapers-compact/**"
       - "scripts/import_legacy_shapers_alumni.py"
-      - "scripts/recover_legacy_shapers_transport.py"
-      - "scripts/restore_legacy_global_shapers_packet.py"
+      - "scripts/salvage_legacy_shapers_prefix.py"
       - "scripts/enumerate_global_shapers_city_hubs.py"
+      - "scripts/enumerate_global_shapers_archives.py"
       - "scripts/run_global_shapers_complete_import.py"
       - "scripts/build_research_site.py"
       - ".github/workflows/import-global-shapers-complete-directory.yml"
@@ -42,53 +42,26 @@ jobs:
         with:
           python-version: "3.13"
 
-      - name: Install public-web, gazetteer, and browser dependencies
+      - name: Install crawler, archive, gazetteer, and browser dependencies
         run: |
           python -m pip install --disable-pip-version-check \
             requests beautifulsoup4 lxml playwright geonamescache
           python -m playwright install --with-deps chromium
 
-      - name: Verify importers and city enumerator
+      - name: Verify import and discovery scripts
         shell: bash
         run: |
           set -euo pipefail
           mkdir -p reports
+          python scripts/salvage_legacy_shapers_prefix.py --help
+          python scripts/enumerate_global_shapers_city_hubs.py --help
+          python scripts/enumerate_global_shapers_archives.py --help
           python scripts/run_global_shapers_complete_import.py --help \
             | tee reports/global-shapers-importer-help.txt
-          python scripts/recover_legacy_shapers_transport.py --help
-          python scripts/restore_legacy_global_shapers_packet.py --help
-          python scripts/enumerate_global_shapers_city_hubs.py --help
           python -m compileall -q scripts starintel_doc
 
-      - name: Recover and restore retained 4,062-person alumni corpus
-        shell: bash
-        run: |
-          set -euo pipefail
-          python scripts/recover_legacy_shapers_transport.py \
-            --parts imports/.wef-shapers-compact \
-            --output .generated/legacy-global-shapers/recovered.compact.jsonl \
-            --report reports/global-shapers-transport-recovery.json \
-            --radius 64
-          python - <<'PY'
-          import base64
-          import lzma
-          import sys
-          from pathlib import Path
-
-          root = Path.cwd()
-          payload = (root / ".generated/legacy-global-shapers/recovered.compact.jsonl").read_bytes()
-          repaired_parts = root / ".generated" / "legacy-global-shapers" / "repaired-parts"
-          repaired_parts.mkdir(parents=True, exist_ok=True)
-          encoded = base64.b64encode(lzma.compress(payload, preset=9)).decode("ascii")
-          (repaired_parts / "part-00").write_text(encoded + "\n", encoding="utf-8")
-
-          sys.path.insert(0, str(root / "scripts"))
-          import restore_legacy_global_shapers_packet as restore
-
-          restore.PARTS = repaired_parts
-          sys.argv = ["restore_legacy_global_shapers_packet.py", "--root", str(root)]
-          raise SystemExit(restore.main())
-          PY
+      - name: Salvage intact 2,736-person legacy prefix
+        run: python scripts/salvage_legacy_shapers_prefix.py --root .
 
       - name: Enumerate world cities and resolve official hub URLs
         run: |
@@ -105,52 +78,79 @@ jobs:
             --workers 64 \
             --timeout 8 \
             --max-clicks 500
+
+      - name: Enumerate archived official profile URLs
+        run: |
+          python scripts/enumerate_global_shapers_archives.py \
+            --output imports/global-shapers/generated-archive-profile-urls.txt \
+            --report reports/global-shapers-archive-urls.json \
+            --common-crawl-indexes 12 \
+            --workers 16 \
+            --timeout 90 \
+            --minimum-urls 1000
+
+      - name: Merge live, hub, and archive profile seeds
+        run: |
+          cat \
+            imports/global-shapers/generated-member-profile-urls.txt \
+            imports/global-shapers/generated-archive-profile-urls.txt \
+            | sed '/^[[:space:]]*$/d' \
+            | sort -u \
+            > imports/global-shapers/generated-all-profile-urls.txt
+          cp imports/global-shapers/generated-all-profile-urls.txt \
+            imports/global-shapers/generated-member-profile-urls.txt
           python - <<'PY'
           import json
           from pathlib import Path
 
-          report = json.loads(Path("reports/global-shapers-city-hubs.json").read_text(encoding="utf-8"))
-          assert report["status"] == "complete", report
-          assert report["hub_url_count"] >= 400, report
+          hubs = json.loads(Path("reports/global-shapers-city-hubs.json").read_text(encoding="utf-8"))
+          archives = json.loads(Path("reports/global-shapers-archive-urls.json").read_text(encoding="utf-8"))
+          prefix = json.loads(Path("reports/wef-global-shapers-intact-prefix.json").read_text(encoding="utf-8"))
+          merged = sum(1 for line in Path("imports/global-shapers/generated-all-profile-urls.txt").read_text().splitlines() if line.strip())
+          assert hubs["hub_url_count"] >= 400, hubs["hub_url_count"]
+          assert archives["profile_url_count"] >= 1000, archives["profile_url_count"]
+          assert prefix["prefix"]["people"] >= 2700, prefix["prefix"]["people"]
           print(json.dumps({
-              "cities": report["city_count"],
-              "resolved_cities": report["resolved_city_count"],
-              "hub_urls": report["hub_url_count"],
-              "profile_seed_urls": report["profile_seed_url_count"],
-              "probes": report["probe_count"],
-              "elapsed_seconds": report["elapsed_seconds"],
+              "intact_legacy_people": prefix["prefix"]["people"],
+              "resolved_hubs": hubs["hub_url_count"],
+              "hub_profile_seeds": hubs["profile_seed_url_count"],
+              "archive_profile_urls": archives["profile_url_count"],
+              "merged_profile_urls": merged,
           }, indent=2))
           PY
 
-      - name: Checkpoint retained corpus and city diagnostics
+      - name: Checkpoint discovery evidence before hydration
         shell: bash
         run: |
           set -euo pipefail
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           for path in \
-            digs/wef/global-shapers-legacy-alumni-4062 \
+            digs/wef/global-shapers-legacy-intact-prefix \
             imports/global-shapers/retained-city-seeds.txt \
             imports/global-shapers/generated-hub-urls.txt \
             imports/global-shapers/generated-member-profile-urls.txt \
+            imports/global-shapers/generated-archive-profile-urls.txt \
+            imports/global-shapers/generated-all-profile-urls.txt \
             reports/global-shapers-importer-help.txt \
-            reports/global-shapers-transport-recovery.json \
             reports/global-shapers-city-hubs.json \
-            reports/wef-global-shapers-alumni-import.json \
-            reports/wef-global-shapers-alumni-import.md
+            reports/global-shapers-archive-urls.json \
+            reports/wef-global-shapers-intact-prefix.json \
+            reports/wef-global-shapers-intact-prefix.md
           do
             if [[ -e "$path" ]]; then git add "$path"; fi
           done
           if ! git diff --cached --quiet; then
+            profiles=$(wc -l < imports/global-shapers/generated-all-profile-urls.txt)
             hubs=$(python -c 'import json; print(json.load(open("reports/global-shapers-city-hubs.json"))["hub_url_count"])')
-            git commit -m "Enumerate ${hubs} Global Shapers hubs"
+            git commit -m "Enumerate ${hubs} hubs and ${profiles} profile URLs"
             git push origin "HEAD:${TARGET_BRANCH}"
           fi
 
       - name: Remove superseded live Global Shapers packet
         run: rm -rf digs/global-shapers/global-shapers-complete-public-directory-*
 
-      - name: Enumerate current members and exposed alumni corpus
+      - name: Hydrate current and archived profile identities
         env:
           GLOBAL_SHAPERS_HUB_URL_FILE: imports/global-shapers/generated-hub-urls.txt
           GLOBAL_SHAPERS_PROFILE_URL_FILE: imports/global-shapers/generated-member-profile-urls.txt
@@ -190,16 +190,19 @@ jobs:
           assert len(people) >= 13000, len(people)
           assert sum((root / "people" / record["url"]).is_file() for record in people) == len(people)
           imported = json.loads(Path("reports/global-shapers-complete-directory.json").read_text(encoding="utf-8"))
-          retained = json.loads(Path("reports/wef-global-shapers-alumni-import.json").read_text(encoding="utf-8"))
+          prefix = json.loads(Path("reports/wef-global-shapers-intact-prefix.json").read_text(encoding="utf-8"))
           hubs = json.loads(Path("reports/global-shapers-city-hubs.json").read_text(encoding="utf-8"))
+          archives = json.loads(Path("reports/global-shapers-archive-urls.json").read_text(encoding="utf-8"))
           assert imported["people"] >= 13000, imported["people"]
-          assert retained["transport"]["counts_by_dtype"]["person"] == 4062
-          assert hubs["hub_url_count"] >= 400, hubs["hub_url_count"]
+          assert prefix["prefix"]["people"] >= 2700
+          assert hubs["hub_url_count"] >= 400
+          assert archives["profile_url_count"] >= 1000
           print(json.dumps({
               "directory_people": len(people),
               "imported_global_shapers": imported["people"],
-              "retained_people": retained["transport"]["counts_by_dtype"]["person"],
+              "intact_legacy_people": prefix["prefix"]["people"],
               "resolved_hubs": hubs["hub_url_count"],
+              "archive_profile_urls": archives["profile_url_count"],
               "alumni_linked": sum("alumni" in record.get("statuses", []) for record in people),
           }, indent=2))
           PY
@@ -234,40 +237,44 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           for path in \
-            digs/wef/global-shapers-legacy-alumni-4062 \
+            digs/wef/global-shapers-legacy-intact-prefix \
             imports/global-shapers/retained-city-seeds.txt \
             imports/global-shapers/generated-hub-urls.txt \
             imports/global-shapers/generated-member-profile-urls.txt \
+            imports/global-shapers/generated-archive-profile-urls.txt \
+            imports/global-shapers/generated-all-profile-urls.txt \
             reports/global-shapers-importer-help.txt \
-            reports/global-shapers-transport-recovery.json \
             reports/global-shapers-city-hubs.json \
-            reports/wef-global-shapers-alumni-import.json \
-            reports/wef-global-shapers-alumni-import.md \
+            reports/global-shapers-archive-urls.json \
+            reports/wef-global-shapers-intact-prefix.json \
+            reports/wef-global-shapers-intact-prefix.md \
             reports/global-shapers-complete-directory.json \
             reports/global-shapers-complete-directory.md
           do
             if [[ -e "$path" ]]; then git add "$path"; fi
           done
           if ! git diff --cached --quiet; then
-            git commit -m "Record Global Shapers crawl diagnostics"
+            git commit -m "Record Global Shapers reconstruction diagnostics"
             git push origin "HEAD:${TARGET_BRANCH}"
           fi
 
-      - name: Upload crawl report
+      - name: Upload reconstruction report
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: global-shapers-complete-directory-report
           path: |
             reports/global-shapers-importer-help.txt
-            reports/global-shapers-transport-recovery.json
             reports/global-shapers-city-hubs.json
+            reports/global-shapers-archive-urls.json
+            reports/wef-global-shapers-intact-prefix.json
+            reports/wef-global-shapers-intact-prefix.md
             reports/global-shapers-complete-directory.json
             reports/global-shapers-complete-directory.md
-            reports/wef-global-shapers-alumni-import.json
-            reports/wef-global-shapers-alumni-import.md
             imports/global-shapers/retained-city-seeds.txt
             imports/global-shapers/generated-hub-urls.txt
             imports/global-shapers/generated-member-profile-urls.txt
+            imports/global-shapers/generated-archive-profile-urls.txt
+            imports/global-shapers/generated-all-profile-urls.txt
           if-no-files-found: warn
           retention-days: 14
