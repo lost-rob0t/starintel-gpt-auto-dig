@@ -1,0 +1,44 @@
+{
+  "counts": {
+    "event": 2,
+    "financial-observation": 2,
+    "person": 6,
+    "relation": 9,
+    "source": 7
+  },
+  "dataset": "dnc",
+  "evidence_handling": {
+    "administrative_reporting_violations_are_not_labeled_criminal_corruption": true,
+    "incidental_wef_mentions_are_not_links": true,
+    "source_scoped_people_require_identity_resolution": true,
+    "wef_link_types_are_distinguished": true
+  },
+  "generated_at": "2026-08-02T03:24:00Z",
+  "official_accountability_dispositions": {
+    "gavin_newsom_fppc_2024": {
+      "case": "FPPC Nos. 21/299 and 21/644",
+      "fine": 13000,
+      "outcome": "stipulated_fine",
+      "violations": 8
+    },
+    "gavin_newsom_fppc_2026": {
+      "case": "FPPC No. 25/1196",
+      "fine": 31500,
+      "outcome": "fine",
+      "violations": 18
+    }
+  },
+  "schema_version": "0.9.0",
+  "total_documents": 26,
+  "verified_wef_links": {
+    "brian_deese": "2013_young_global_leader_honouree",
+    "chelsea_clinton": "2013_young_global_leader_honouree",
+    "jared_polis": "2013_young_global_leader_honouree",
+    "john_kerry": [
+      "agenda_contributor",
+      "first_movers_coalition_government_partnership_lead"
+    ],
+    "kamala_harris": "central_america_public_private_initiative_collaboration",
+    "wes_moore": "documented_wef_discussion_participant"
+  }
+}
