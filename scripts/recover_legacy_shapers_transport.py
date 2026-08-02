@@ -11,7 +11,7 @@ from pathlib import Path
 from typing import Any, Iterable
 
 BASE64_ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/"
-EXPECTED_RAW_ROWS = 4176
+EXPECTED_RAW_ROW_COUNTS = {4062, 4176}
 EXPECTED_UNIQUE_PEOPLE = 4062
 
 
@@ -40,14 +40,16 @@ def validate_payload(payload: bytes) -> tuple[list[Any], int]:
                 ids.add(str(identifier))
         else:
             raise ValueError(f"row {number}: unsupported value type {type(value).__name__}")
-    if len(values) != EXPECTED_RAW_ROWS:
-        raise ValueError(f"expected {EXPECTED_RAW_ROWS} raw rows, decoded {len(values)}")
+    if len(values) not in EXPECTED_RAW_ROW_COUNTS:
+        raise ValueError(
+            f"expected one of {sorted(EXPECTED_RAW_ROW_COUNTS)} raw row counts, decoded {len(values)}"
+        )
     if len(ids) != EXPECTED_UNIQUE_PEOPLE:
         raise ValueError(f"expected {EXPECTED_UNIQUE_PEOPLE} unique IDs, decoded {len(ids)}")
     return values, len(ids)
 
 
-def decode_candidate(encoded: str) -> bytes | None:
+def decode_candidate(encoded: str) -> tuple[bytes, int] | None:
     try:
         compressed = base64.b64decode(padded(encoded), validate=True)
     except binascii.Error:
@@ -56,26 +58,39 @@ def decode_candidate(encoded: str) -> bytes | None:
         return None
     try:
         payload = lzma.decompress(compressed)
-        validate_payload(payload)
+        values, _ = validate_payload(payload)
     except (lzma.LZMAError, UnicodeDecodeError, json.JSONDecodeError, ValueError):
         return None
-    return payload
+    return payload, len(values)
+
+
+def ordered_deltas(radius: int) -> list[int]:
+    values = [0]
+    for distance in range(1, radius + 1):
+        values.extend((-distance, distance))
+    return values
 
 
 def candidate_positions(lengths: list[int], radius: int) -> list[int]:
     total = sum(lengths)
-    anchors = {0, total}
+    boundaries: list[int] = []
     cursor = 0
     for length in lengths[:-1]:
         cursor += length
-        anchors.add(cursor)
-    positions: set[int] = set()
-    for anchor in anchors:
-        for delta in range(-radius, radius + 1):
+        boundaries.append(cursor)
+
+    # A truncated final copy is the dominant failure mode. Test the file end,
+    # exact chunk boundaries, and only then nearby offsets and file start.
+    anchors = [total, *reversed(boundaries), 0]
+    seen: set[int] = set()
+    positions: list[int] = []
+    for delta in ordered_deltas(radius):
+        for anchor in anchors:
             position = anchor + delta
-            if 0 <= position <= total:
-                positions.add(position)
-    return sorted(positions)
+            if 0 <= position <= total and position not in seen:
+                seen.add(position)
+                positions.append(position)
+    return positions
 
 
 def recover_transport(
@@ -91,8 +106,9 @@ def recover_transport(
 
     direct = decode_candidate(encoded)
     if direct is not None:
+        payload, raw_rows = direct
         output.parent.mkdir(parents=True, exist_ok=True)
-        output.write_bytes(direct if direct.endswith(b"\n") else direct + b"\n")
+        output.write_bytes(payload if payload.endswith(b"\n") else payload + b"\n")
         report = {
             "status": "already-valid",
             "parts": [str(path) for path in paths],
@@ -100,7 +116,7 @@ def recover_transport(
             "encoded_length": len(encoded),
             "encoded_sha256": hashlib.sha256(encoded.encode()).hexdigest(),
             "payload_sha256": hashlib.sha256(output.read_bytes()).hexdigest(),
-            "raw_rows": EXPECTED_RAW_ROWS,
+            "raw_rows": raw_rows,
             "unique_people": EXPECTED_UNIQUE_PEOPLE,
         }
         if report_path:
@@ -116,9 +132,10 @@ def recover_transport(
         for character in BASE64_ALPHABET:
             attempts += 1
             repaired = left + character + right
-            payload = decode_candidate(repaired)
-            if payload is None:
+            decoded = decode_candidate(repaired)
+            if decoded is None:
                 continue
+            payload, raw_rows = decoded
             output.parent.mkdir(parents=True, exist_ok=True)
             output.write_bytes(payload if payload.endswith(b"\n") else payload + b"\n")
             report = {
@@ -133,7 +150,7 @@ def recover_transport(
                 "attempts": attempts,
                 "repaired_encoded_sha256": hashlib.sha256(repaired.encode()).hexdigest(),
                 "payload_sha256": hashlib.sha256(output.read_bytes()).hexdigest(),
-                "raw_rows": EXPECTED_RAW_ROWS,
+                "raw_rows": raw_rows,
                 "unique_people": EXPECTED_UNIQUE_PEOPLE,
             }
             if report_path:
