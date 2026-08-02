@@ -16,13 +16,36 @@ jobs:
       - uses: actions/checkout@v6
         with:
           ref: agent/pr-78-takeover-fix
+          fetch-depth: 0
+      - name: Extract historical recovery objects
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p history-recovery/intact-prefix
+          git cat-file blob 204f75b14338a5fe0ccab576bdeb322c9279de58 > history-recovery/restore_legacy_global_shapers_packet.py
+          git cat-file blob 6674fdd6048bf0a93de376e5a939a4821ac670b7 > history-recovery/recover_legacy_shapers_transport.py
+          git cat-file blob 4b82cdc3e19dec78100c0ac57028ea2f68d8557e > history-recovery/locate_legacy_shapers_gap.py
+          git cat-file blob f4b08b43f6daed87626ee158dd7e43c6c1aee311 > history-recovery/salvage_legacy_shapers_prefix.py
+          git cat-file blob 23d932357f85bf4c9994ed57bcc63ec716709bde > history-recovery/intact-prefix/starintel-documents.jsonl.gz.b64.part-000
+          git cat-file blob 51792753617578af4ef6dab3ea5523466da61ca4 > history-recovery/intact-prefix/starintel-documents.jsonl.gz.b64.part-001
+          git cat-file blob 248a84b03bcb6eaee4a7f078b6ed4cca63d121d4 > history-recovery/intact-prefix/starintel-documents.jsonl.gz.b64.parts
+          git cat-file blob e8da8b365c283dbea3ab1165b997577b3a52428d > history-recovery/wef-global-shapers-intact-prefix.json
+          git cat-file blob 2a6d670d8bccd8bb1fe2f29cdec39ba334b6409d > history-recovery/wef-global-shapers-intact-prefix.md
+          git log --all --format='%H %D %s' -- \
+            scripts/restore_legacy_global_shapers_packet.py \
+            scripts/recover_legacy_shapers_transport.py \
+            scripts/locate_legacy_shapers_gap.py \
+            scripts/salvage_legacy_shapers_prefix.py \
+            digs/wef/global-shapers-legacy-intact-prefix \
+            > history-recovery/commits.txt
       - uses: actions/upload-artifact@v4
         with:
-          name: pr78-shapers-transport
+          name: pr78-shapers-recovery
           path: |
             imports/.wef-shapers-compact
             imports/.wef-shapers-source
             scripts/import_legacy_shapers_alumni.py
+            history-recovery
           include-hidden-files: true
           if-no-files-found: error
           retention-days: 1
