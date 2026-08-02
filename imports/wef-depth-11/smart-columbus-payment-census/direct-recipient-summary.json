@@ -1,0 +1,43 @@
+{
+  "boundary": [
+    "The paid-check total is a source-backed floor, not a complete disbursement total if non-check payment modes are absent from Bank Checks.",
+    "The gross ceiling-to-check difference is not an unpaid residual because ordinance ceilings, funding origins, periods, reversals, and contract scopes require ordinance-level reconciliation.",
+    "Project vendors mentioning Smart Columbus were excluded from the direct-recipient total."
+  ],
+  "direct_payee_names": [
+    "Columbus Partnership",
+    "Smart Columbus",
+    "Smart Columbus LLC"
+  ],
+  "direct_vendor_accounts": [
+    "033348",
+    "040255",
+    "045611"
+  ],
+  "direct_void_or_canceled_check_count": 6,
+  "gross_ceiling_to_paid_check_difference": "592622.9600000000000000",
+  "identified_authorization_ceiling": "5916832.50",
+  "method": "Unique paid City Auditor bank-check records filtered to exact direct vendor accounts or exact direct payees.",
+  "paid_by_account": {
+    "033348": "1176882.5000000000000000",
+    "040255": "1860000.0000000000000000",
+    "045611": "2287327.0400000000000000"
+  },
+  "paid_by_payee": {
+    "Columbus Partnership": "3587327.0400000000000000",
+    "Smart Columbus": "349185.3600000000000000",
+    "Smart Columbus LLC": "1387697.1400000000000000"
+  },
+  "paid_by_year": {
+    "2021": "566882.5000000000000000",
+    "2022": "1063574.9800000000000000",
+    "2023": "2195610.3800000000000000",
+    "2024": "712141.6800000000000000",
+    "2025": "55000.0000000000000000",
+    "2026": "731000.0000000000000000"
+  },
+  "paid_check_share_of_identified_ceiling_percent": "89.98",
+  "target_id": "starintel:investigation-target:wef-depth-11-smart-columbus-payment-census-and-vendor-crosswalk",
+  "unique_paid_check_count": 19,
+  "unique_paid_check_total": "5324209.5400000000000000"
+}

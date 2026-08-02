@@ -1,0 +1,189 @@
+{
+  "endpoint_count": 25,
+  "endpoint_errors": [],
+  "endpoints": [
+    {
+      "dataset": "bank_checks_2021",
+      "match_count": 40,
+      "row_count": 59333,
+      "status": "ok",
+      "url": "https://dlstpprodeastus001.blob.core.windows.net/exceldatasets-synapse/TransactionData/BankCheques/CityOfColumbus_DataSet_BankCheques__2021-01-01-2021-12-31.csv"
+    },
+    {
+      "dataset": "bank_checks_2022",
+      "match_count": 30,
+      "row_count": 65142,
+      "status": "ok",
+      "url": "https://dlstpprodeastus001.blob.core.windows.net/exceldatasets-synapse/TransactionData/BankCheques/CityOfColumbus_DataSet_BankCheques__2022-01-01-2022-12-31.csv"
+    },
+    {
+      "dataset": "bank_checks_2023",
+      "match_count": 20,
+      "row_count": 68551,
+      "status": "ok",
+      "url": "https://dlstpprodeastus001.blob.core.windows.net/exceldatasets-synapse/TransactionData/BankCheques/CityOfColumbus_DataSet_BankCheques__2023-01-01-2023-12-31.csv"
+    },
+    {
+      "dataset": "bank_checks_2024",
+      "match_count": 28,
+      "row_count": 67052,
+      "status": "ok",
+      "url": "https://dlstpprodeastus001.blob.core.windows.net/exceldatasets-synapse/TransactionData/BankCheques/CityOfColumbus_DataSet_BankCheques__2024-01-01-2024-12-31.csv"
+    },
+    {
+      "dataset": "bank_checks_2025",
+      "match_count": 26,
+      "row_count": 65686,
+      "status": "ok",
+      "url": "https://dlstpprodeastus001.blob.core.windows.net/exceldatasets-synapse/TransactionData/BankCheques/CityOfColumbus_DataSet_BankCheques__2025-01-01-2025-12-31.csv"
+    },
+    {
+      "dataset": "bank_checks_2026",
+      "match_count": 12,
+      "row_count": 33059,
+      "status": "ok",
+      "url": "https://dlstpprodeastus001.blob.core.windows.net/exceldatasets-synapse/TransactionData/BankCheques/CityOfColumbus_DataSet_BankCheques__2026-01-01-2026-12-31.csv"
+    },
+    {
+      "dataset": "purchase_orders_2021",
+      "match_count": 22,
+      "row_count": 46221,
+      "status": "ok",
+      "url": "https://dlstpprodeastus001.blob.core.windows.net/exceldatasets-synapse/TransactionData/PurchaseOrders/CityOfColumbus_DataSet_PurchaseOrders__2021-01-01-2021-12-31.csv"
+    },
+    {
+      "dataset": "purchase_orders_2022",
+      "match_count": 14,
+      "row_count": 50215,
+      "status": "ok",
+      "url": "https://dlstpprodeastus001.blob.core.windows.net/exceldatasets-synapse/TransactionData/PurchaseOrders/CityOfColumbus_DataSet_PurchaseOrders__2022-01-01-2022-12-31.csv"
+    },
+    {
+      "dataset": "purchase_orders_2023",
+      "match_count": 13,
+      "row_count": 58163,
+      "status": "ok",
+      "url": "https://dlstpprodeastus001.blob.core.windows.net/exceldatasets-synapse/TransactionData/PurchaseOrders/CityOfColumbus_DataSet_PurchaseOrders__2023-01-01-2023-12-31.csv"
+    },
+    {
+      "dataset": "purchase_orders_2024",
+      "match_count": 11,
+      "row_count": 58449,
+      "status": "ok",
+      "url": "https://dlstpprodeastus001.blob.core.windows.net/exceldatasets-synapse/TransactionData/PurchaseOrders/CityOfColumbus_DataSet_PurchaseOrders__2024-01-01-2024-12-31.csv"
+    },
+    {
+      "dataset": "purchase_orders_2025",
+      "match_count": 11,
+      "row_count": 60359,
+      "status": "ok",
+      "url": "https://dlstpprodeastus001.blob.core.windows.net/exceldatasets-synapse/TransactionData/PurchaseOrders/CityOfColumbus_DataSet_PurchaseOrders__2025-01-01-2025-12-31.csv"
+    },
+    {
+      "dataset": "purchase_orders_2026",
+      "match_count": 10,
+      "row_count": 43760,
+      "status": "ok",
+      "url": "https://dlstpprodeastus001.blob.core.windows.net/exceldatasets-synapse/TransactionData/PurchaseOrders/CityOfColumbus_DataSet_PurchaseOrders__2026-01-01-2026-12-31.csv"
+    },
+    {
+      "dataset": "vendor_invoices_2021",
+      "match_count": 38,
+      "row_count": 126832,
+      "status": "ok",
+      "url": "https://dlstpprodeastus001.blob.core.windows.net/exceldatasets-synapse/TransactionData/VendorInvoiceJournals/CityOfColumbus_DataSet_VendorInvoiceJournals__2021-01-01-2021-12-31.csv"
+    },
+    {
+      "dataset": "vendor_invoices_2022",
+      "match_count": 35,
+      "row_count": 146524,
+      "status": "ok",
+      "url": "https://dlstpprodeastus001.blob.core.windows.net/exceldatasets-synapse/TransactionData/VendorInvoiceJournals/CityOfColumbus_DataSet_VendorInvoiceJournals__2022-01-01-2022-12-31.csv"
+    },
+    {
+      "dataset": "vendor_invoices_2023",
+      "match_count": 24,
+      "row_count": 156631,
+      "status": "ok",
+      "url": "https://dlstpprodeastus001.blob.core.windows.net/exceldatasets-synapse/TransactionData/VendorInvoiceJournals/CityOfColumbus_DataSet_VendorInvoiceJournals__2023-01-01-2023-12-31.csv"
+    },
+    {
+      "dataset": "vendor_invoices_2024",
+      "match_count": 27,
+      "row_count": 157323,
+      "status": "ok",
+      "url": "https://dlstpprodeastus001.blob.core.windows.net/exceldatasets-synapse/TransactionData/VendorInvoiceJournals/CityOfColumbus_DataSet_VendorInvoiceJournals__2024-01-01-2024-12-31.csv"
+    },
+    {
+      "dataset": "vendor_invoices_2025",
+      "match_count": 24,
+      "row_count": 161030,
+      "status": "ok",
+      "url": "https://dlstpprodeastus001.blob.core.windows.net/exceldatasets-synapse/TransactionData/VendorInvoiceJournals/CityOfColumbus_DataSet_VendorInvoiceJournals__2025-01-01-2025-12-31.csv"
+    },
+    {
+      "dataset": "vendor_invoices_2026",
+      "match_count": 11,
+      "row_count": 85223,
+      "status": "ok",
+      "url": "https://dlstpprodeastus001.blob.core.windows.net/exceldatasets-synapse/TransactionData/VendorInvoiceJournals/CityOfColumbus_DataSet_VendorInvoiceJournals__2026-01-01-2026-12-31.csv"
+    },
+    {
+      "dataset": "vendor_transactions_2021",
+      "match_count": 82,
+      "row_count": 186195,
+      "status": "ok",
+      "url": "https://dlstpprodeastus001.blob.core.windows.net/exceldatasets-synapse/TransactionData/VendorTransactions/CityOfColumbus_DataSet_VendorTransactions__2021-01-01-2021-12-31.csv"
+    },
+    {
+      "dataset": "vendor_transactions_2022",
+      "match_count": 101,
+      "row_count": 341751,
+      "status": "ok",
+      "url": "https://dlstpprodeastus001.blob.core.windows.net/exceldatasets-synapse/TransactionData/VendorTransactions/CityOfColumbus_DataSet_VendorTransactions__2022-01-01-2022-12-31.csv"
+    },
+    {
+      "dataset": "vendor_transactions_2023",
+      "match_count": 92,
+      "row_count": 541201,
+      "status": "ok",
+      "url": "https://dlstpprodeastus001.blob.core.windows.net/exceldatasets-synapse/TransactionData/VendorTransactions/CityOfColumbus_DataSet_VendorTransactions__2023-01-01-2023-12-31.csv"
+    },
+    {
+      "dataset": "vendor_transactions_2024",
+      "match_count": 113,
+      "row_count": 544913,
+      "status": "ok",
+      "url": "https://dlstpprodeastus001.blob.core.windows.net/exceldatasets-synapse/TransactionData/VendorTransactions/CityOfColumbus_DataSet_VendorTransactions__2024-01-01-2024-12-31.csv"
+    },
+    {
+      "dataset": "vendor_transactions_2025",
+      "match_count": 105,
+      "row_count": 558719,
+      "status": "ok",
+      "url": "https://dlstpprodeastus001.blob.core.windows.net/exceldatasets-synapse/TransactionData/VendorTransactions/CityOfColumbus_DataSet_VendorTransactions__2025-01-01-2025-12-31.csv"
+    },
+    {
+      "dataset": "vendor_transactions_2026",
+      "match_count": 54,
+      "row_count": 293025,
+      "status": "ok",
+      "url": "https://dlstpprodeastus001.blob.core.windows.net/exceldatasets-synapse/TransactionData/VendorTransactions/CityOfColumbus_DataSet_VendorTransactions__2026-01-01-2026-12-31.csv"
+    },
+    {
+      "dataset": "vendors",
+      "match_count": 4,
+      "row_count": 245649,
+      "status": "ok",
+      "url": "https://dlstpprodeastus001.blob.core.windows.net/exceldatasets-synapse/MasterData/Vendors/CityOfColumbus_DataSet_Vendors.csv"
+    }
+  ],
+  "years": [
+    2021,
+    2022,
+    2023,
+    2024,
+    2025,
+    2026
+  ]
+}

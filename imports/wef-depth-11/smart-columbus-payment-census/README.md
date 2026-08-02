@@ -1,13 +1,9 @@
-# Smart Columbus payment census — depth 11
+# Smart Columbus direct-recipient payment census — depth 11
 
-Work in progress.
+- unique paid checks: **19**
+- paid-check total: **$5,324,209.54**
+- direct vendor accounts: `033348, 040255, 045611`
+- identified ordinance ceilings: **$5,916,832.50**
+- gross ceiling-to-check difference: **$592,622.96**
 
-This pass will scan the City of Columbus Auditor datasets for 2021–2026 and reconcile Smart Columbus-related vendor accounts and names across purchase orders, vendor invoices, vendor transactions, and unique paid bank checks.
-
-## Guardrails
-
-- Paid totals will be calculated from unique bank-check records only.
-- Settlement and invoice rows will not be counted as additional cash payments.
-- Canceled, voided, and reissued checks will remain linked in the evidence trail.
-- Vendor accounts `040255`, `033348`, and `045611` will not be merged without source-backed crosswalk evidence.
-- Authorization ceilings will remain separate from paid totals.
+The total uses unique paid bank-check records and excludes project vendors whose descriptions merely mention Smart Columbus. It is a source-backed paid-check floor, not a complete cash-disbursement total or an ordinance-level residual calculation.
