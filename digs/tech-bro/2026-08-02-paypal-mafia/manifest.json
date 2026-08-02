@@ -1,0 +1,39 @@
+{
+  "dataset": "tech-bro",
+  "run_id": "tech-bro-paypal-mafia-2026-08-02",
+  "schema_version": "0.9.0",
+  "generated_at": "2026-08-02T23:12:00Z",
+  "depth": 1,
+  "records": 124,
+  "counts": {
+    "claim": 4,
+    "org": 24,
+    "person": 16,
+    "relation": 63,
+    "research-pass": 1,
+    "source": 16
+  },
+  "input": {
+    "uploaded_infographic": "file_00000000f9fc81f795d663cd88628ecf",
+    "treatment": "lead map only; not cited as evidence"
+  },
+  "payload": {
+    "materialized_file": "starintel-documents.jsonl",
+    "materialized_bytes": 135748,
+    "materialized_sha256": "972b855df769bd4421a0c039514ca26fd6af7efe707ae37268b631c1dc3410a8",
+    "builder": "build.py",
+    "encoding": "base64(gzip(jsonl))",
+    "compressed_file": "payload/starintel-documents.jsonl.gz.b64",
+    "compressed_bytes": 10365,
+    "compressed_sha256": "2d16761b56689c4ccec5e937af6fb7bc23f13dc91fa2b710768d2e80c34aa838"
+  },
+  "next_queue": "research-queue.json",
+  "validation": {
+    "round_trip_json": true,
+    "unique_ids": true,
+    "unresolved_relation_endpoints": [],
+    "unresolved_claim_subjects": [],
+    "dataset_consistent": true,
+    "schema_version_consistent": true
+  }
+}
