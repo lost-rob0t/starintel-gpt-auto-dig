@@ -1,0 +1,29 @@
+{
+  "counts_by_dtype": {
+    "analysis": 3,
+    "financial-observation": 1,
+    "investigation-target": 1,
+    "research-pass": 1
+  },
+  "dataset": "wef",
+  "decoded_bytes": 28631,
+  "document_count": 6,
+  "generated_at": "2026-08-02T01:18:00Z",
+  "gzip_bytes": 4809,
+  "gzip_sha256": "9c90ed172b1101f1027124ef840c27607a53c7a17230a8e1480d87a0a8aa3b84",
+  "normalized_jsonl_sha256": "801133a87e87c6ce092853c7e0f10fdff15614896c5a92ad79d13f9f5082bbb2",
+  "records": [
+    "starintel:financial-observation:columbus-citywide-memberships-127631-paid-2026-depth-10",
+    "starintel:analysis:columbus-citywide-membership-authorization-reconciliation-depth-10",
+    "starintel:analysis:columbus-citywide-membership-payees-depth-10",
+    "starintel:analysis:wef-columbus-membership-ledger-negative-depth-10",
+    "starintel:investigation-target:wef-depth-11-citywide-membership-main-account-and-residual",
+    "starintel:research-pass:wef-columbus-depth-10-membership-reconciliation-2026-08-02"
+  ],
+  "recursion_depth": 10,
+  "run_id": "wef-columbus-depth-10-membership-reconciliation-2026-08-02",
+  "schema_version": "0.9.0",
+  "transport_bytes": 6497,
+  "transport_file": "starintel-documents.jsonl.gz.b64",
+  "transport_sha256": "23b4ecdb39861844b8a17fa9bbcb1fea265ddc9011dabe278a05bf9fb299dbb1"
+}
