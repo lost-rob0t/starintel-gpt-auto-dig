@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import argparse
 import base64
+import binascii
 import gzip
 import hashlib
 import json
@@ -12,11 +13,13 @@ import shutil
 import subprocess
 import sys
 import unicodedata
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Iterable
 
 ROOT = Path(__file__).resolve().parents[1]
 PARTS = ROOT / "imports" / ".wef-shapers-compact"
+LEGACY_SOURCE = ROOT / "imports" / ".wef-shapers-source" / "part-00"
 IMPORTER = ROOT / "scripts" / "import_legacy_shapers_alumni.py"
 EXPECTED_PEOPLE = 4062
 EXPECTED_DOCUMENTS = 12187
@@ -30,6 +33,7 @@ HUB_RE = re.compile(
     r"(?P<city>[A-ZÀ-ÖØ-Þ][A-Za-zÀ-ÖØ-öø-ÿ'’.()\-–—/ ]{1,80}?)\s+Hub\b"
 )
 LEGACY_HUB_RE = re.compile(r"/hubs/(?P<slug>[a-z0-9][a-z0-9-]{1,90})", re.I)
+URL_RE = re.compile(r"https?://[^\s\"'<>]+", re.I)
 
 
 def ascii_slug(value: str) -> str:
@@ -90,28 +94,200 @@ def extract_city_seeds(rows: Iterable[list[Any]]) -> list[str]:
     return [cities[key] for key in sorted(cities)]
 
 
-def restore_source(target: Path) -> dict[str, Any]:
-    part_paths = sorted(PARTS.glob("part-*"))
-    if len(part_paths) != 8:
-        raise RuntimeError(f"expected 8 retained compact parts, found {len(part_paths)}")
-    encoded = "".join("".join(path.read_text(encoding="utf-8").split()) for path in part_paths)
-    compressed = base64.b64decode(encoded, validate=True)
+def decode_xz_base64(encoded: str, label: str) -> tuple[bytes, bytes]:
+    try:
+        compressed = base64.b64decode(encoded, validate=True)
+    except binascii.Error as exc:
+        raise RuntimeError(f"{label}: invalid base64 transport: {exc}") from exc
     if not compressed.startswith(b"\xfd7zXZ\x00"):
-        raise RuntimeError("retained compact source is not an XZ stream")
-    payload = lzma.decompress(compressed)
-    lines = [line for line in payload.decode("utf-8").splitlines() if line.strip()]
-    if len(lines) != EXPECTED_PEOPLE:
-        raise RuntimeError(f"expected {EXPECTED_PEOPLE} retained people, decoded {len(lines)}")
+        raise RuntimeError(f"{label}: decoded transport is not an XZ stream")
+    try:
+        return compressed, lzma.decompress(compressed)
+    except lzma.LZMAError as exc:
+        raise RuntimeError(f"{label}: invalid XZ stream: {exc}") from exc
 
-    rows: list[list[Any]] = []
-    for number, line in enumerate(lines, 1):
-        value = json.loads(line)
-        if not isinstance(value, list) or len(value) != 12:
-            raise RuntimeError(f"retained source line {number}: expected compact 12-field person row")
-        rows.append(value)
 
+def json_lines(payload: bytes, label: str) -> list[Any]:
+    values: list[Any] = []
+    for number, line in enumerate(payload.decode("utf-8").splitlines(), 1):
+        if not line.strip():
+            continue
+        try:
+            values.append(json.loads(line))
+        except json.JSONDecodeError as exc:
+            raise RuntimeError(f"{label}:{number}: invalid JSON: {exc}") from exc
+    return values
+
+
+def first_value(record: dict[str, Any], data: dict[str, Any], *keys: str) -> Any:
+    for container in (data, record):
+        for key in keys:
+            value = container.get(key)
+            if value not in (None, "", [], {}):
+                return value
+    return ""
+
+
+def epoch(value: Any) -> int:
+    if isinstance(value, bool):
+        return 0
+    if isinstance(value, (int, float)):
+        return int(value)
+    if isinstance(value, str):
+        text = value.strip()
+        if not text:
+            return 0
+        try:
+            return int(float(text))
+        except ValueError:
+            pass
+        try:
+            parsed = datetime.fromisoformat(text.replace("Z", "+00:00"))
+        except ValueError:
+            return 0
+        if parsed.tzinfo is None:
+            parsed = parsed.replace(tzinfo=timezone.utc)
+        return int(parsed.timestamp())
+    return 0
+
+
+def clean_text(value: Any) -> str:
+    return value.strip() if isinstance(value, str) else ""
+
+
+def collect_urls(value: Any) -> list[str]:
+    found: dict[str, None] = {}
+    for text in iter_strings(value):
+        for match in URL_RE.findall(text):
+            url = match.rstrip(".,);]}")
+            found.setdefault(url, None)
+    return list(found)
+
+
+def compact_row(value: Any, number: int, label: str) -> list[Any]:
+    if isinstance(value, list):
+        if len(value) != 12:
+            raise RuntimeError(f"{label}:{number}: expected 12 compact fields, found {len(value)}")
+        return value
+    if not isinstance(value, dict):
+        raise RuntimeError(f"{label}:{number}: expected object or 12-field array")
+
+    data = value.get("data") if isinstance(value.get("data"), dict) else {}
+    document_id = first_value(value, data, "_id", "id", "document_id")
+    if document_id in (None, ""):
+        raise RuntimeError(f"{label}:{number}: legacy person has no ID")
+
+    fname = clean_text(first_value(value, data, "fname", "first_name", "given_name"))
+    mname = clean_text(first_value(value, data, "mname", "middle_name", "additional_name"))
+    lname = clean_text(first_value(value, data, "lname", "last_name", "family_name", "surname"))
+    full_name = clean_text(first_value(value, data, "full_name", "display_name", "name", "title"))
+    if full_name and not (fname or mname or lname):
+        parts = full_name.split()
+        if parts:
+            fname = parts[0]
+        if len(parts) > 2:
+            mname = " ".join(parts[1:-1])
+        if len(parts) > 1:
+            lname = parts[-1]
+
+    misc_value = first_value(value, data, "misc", "urls", "links", "profiles")
+    misc: list[str] = []
+    if isinstance(misc_value, list):
+        misc.extend(str(item).strip() for item in misc_value if isinstance(item, str) and item.strip())
+    elif isinstance(misc_value, str) and misc_value.strip():
+        misc.append(misc_value.strip())
+    misc.extend(collect_urls(value.get("sources", [])))
+    misc.extend(collect_urls(value.get("provenance", {})))
+    misc = list(dict.fromkeys(misc))
+
+    added = epoch(first_value(value, data, "date_added", "added", "created_at", "created", "timestamp"))
+    updated = epoch(first_value(value, data, "date_updated", "updated", "updated_at", "modified_at", "modified"))
+    if not updated:
+        updated = added
+
+    return [
+        str(document_id),
+        added,
+        updated,
+        fname,
+        mname,
+        lname,
+        clean_text(first_value(value, data, "gender", "sex")),
+        clean_text(first_value(value, data, "bio", "biography", "summary", "description")),
+        first_value(value, data, "dob", "date_of_birth", "birth_date"),
+        first_value(value, data, "etype", "entity_type", "type"),
+        first_value(value, data, "eid", "external_id", "entity_id"),
+        misc,
+    ]
+
+
+def normalize_rows(values: list[Any], label: str) -> tuple[list[list[Any]], int]:
+    by_id: dict[str, tuple[int, list[Any]]] = {}
+    duplicates = 0
+    for number, value in enumerate(values, 1):
+        row = compact_row(value, number, label)
+        key = str(row[0])
+        old = by_id.get(key)
+        if old is None:
+            by_id[key] = (number, row)
+            continue
+        duplicates += 1
+        old_number, old_row = old
+        if int(row[2]) > int(old_row[2]):
+            by_id[key] = (old_number, row)
+    rows = [row for _, row in sorted(by_id.values(), key=lambda item: item[0])]
+    return rows, duplicates
+
+
+def load_retained_rows() -> tuple[list[list[Any]], dict[str, Any]]:
+    part_paths = sorted(PARTS.glob("part-*"))
+    compact_error = ""
+    if part_paths:
+        encoded = "".join("".join(path.read_text(encoding="utf-8").split()) for path in part_paths)
+        try:
+            compressed, payload = decode_xz_base64(encoded, "compact retained source")
+            rows, duplicates = normalize_rows(json_lines(payload, "compact retained source"), "compact retained source")
+            if len(rows) == EXPECTED_PEOPLE:
+                return rows, {
+                    "source_kind": "compact-parts",
+                    "parts": len(part_paths),
+                    "encoded_sha256": hashlib.sha256(encoded.encode()).hexdigest(),
+                    "compressed_sha256": hashlib.sha256(compressed).hexdigest(),
+                    "decoded_sha256": hashlib.sha256(payload).hexdigest(),
+                    "duplicates_removed": duplicates,
+                }
+            compact_error = f"compact source yielded {len(rows)} unique people"
+        except RuntimeError as exc:
+            compact_error = str(exc)
+
+    if not LEGACY_SOURCE.is_file():
+        raise RuntimeError(f"compact restore failed ({compact_error}); fallback source is absent")
+    encoded = "".join(LEGACY_SOURCE.read_text(encoding="utf-8").split())
+    compressed, payload = decode_xz_base64(encoded, "legacy retained source")
+    values = json_lines(payload, "legacy retained source")
+    rows, duplicates = normalize_rows(values, "legacy retained source")
+    if len(rows) != EXPECTED_PEOPLE:
+        sample_type = type(values[0]).__name__ if values else "empty"
+        raise RuntimeError(
+            f"legacy fallback yielded {len(rows)} unique people from {len(values)} rows "
+            f"({duplicates} duplicates, first type {sample_type}); compact failure: {compact_error}"
+        )
+    return rows, {
+        "source_kind": "legacy-source-fallback",
+        "parts": 1,
+        "encoded_sha256": hashlib.sha256(encoded.encode()).hexdigest(),
+        "compressed_sha256": hashlib.sha256(compressed).hexdigest(),
+        "decoded_sha256": hashlib.sha256(payload).hexdigest(),
+        "duplicates_removed": duplicates,
+        "compact_restore_error": compact_error,
+    }
+
+
+def restore_source(target: Path) -> dict[str, Any]:
+    rows, transport = load_retained_rows()
+    payload = "".join(json.dumps(row, ensure_ascii=False, separators=(",", ":")) + "\n" for row in rows).encode("utf-8")
     target.parent.mkdir(parents=True, exist_ok=True)
-    target.write_bytes(payload if payload.endswith(b"\n") else payload + b"\n")
+    target.write_bytes(payload)
 
     city_seeds = extract_city_seeds(rows)
     RETAINED_CITY_SEEDS.parent.mkdir(parents=True, exist_ok=True)
@@ -121,11 +297,9 @@ def restore_source(target: Path) -> dict[str, Any]:
     )
 
     return {
-        "parts": len(part_paths),
-        "encoded_sha256": hashlib.sha256(encoded.encode()).hexdigest(),
-        "compressed_sha256": hashlib.sha256(compressed).hexdigest(),
-        "source_sha256": hashlib.sha256(target.read_bytes()).hexdigest(),
-        "people": len(lines),
+        **transport,
+        "source_sha256": hashlib.sha256(payload).hexdigest(),
+        "people": len(rows),
         "retained_city_seed_count": len(city_seeds),
         "retained_city_seed_file": str(RETAINED_CITY_SEEDS.relative_to(ROOT)),
     }
@@ -185,6 +359,7 @@ def write_markdown(report: dict[str, Any]) -> None:
         f"- Total canonical documents: **{report['transport']['documents']:,}**\n"
         f"- Canonical output SHA-256: `{report['transport']['output_sha256']}`\n"
         f"- Source rows restored: **{report['source']['people']:,}**\n"
+        f"- Source transport: **{report['source']['source_kind']}**\n"
         f"- Historical city seeds extracted: **{report['source']['retained_city_seed_count']:,}**\n\n"
         "These are retained legacy Global Shapers alumni records. The 12,187-document total "
         "contains 4,062 people and 8,124 relations; it does not represent 12,187 distinct people.\n",
