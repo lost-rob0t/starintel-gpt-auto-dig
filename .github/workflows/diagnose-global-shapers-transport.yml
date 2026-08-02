@@ -1,0 +1,32 @@
+name: Diagnose Global Shapers transport
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  diagnose:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.13"
+
+      - name: Test exact transport boundaries and surviving rows
+        shell: bash
+        run: |
+          set +e
+          python scripts/recover_legacy_shapers_transport.py \
+            --parts imports/.wef-shapers-compact \
+            --output /tmp/recovered.compact.jsonl \
+            --report /tmp/recovery-report.json \
+            --radius 0
+          status=$?
+          echo "recovery_exit=${status}"
+          cat /tmp/recovery-report.json
+          exit 0

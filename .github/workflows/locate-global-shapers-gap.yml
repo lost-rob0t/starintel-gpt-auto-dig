@@ -1,0 +1,36 @@
+name: Locate Global Shapers transport gap
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  locate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.13"
+
+      - name: Run forensic gap locator
+        run: |
+          python scripts/locate_legacy_shapers_gap.py \
+            --parts imports/.wef-shapers-compact \
+            --output /tmp/located.compact.jsonl \
+            --report reports/global-shapers-gap-location.json \
+            --radius 2048 \
+            --workers 32
+
+      - name: Upload location report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: global-shapers-gap-location
+          path: reports/global-shapers-gap-location.json
+          if-no-files-found: error
+          retention-days: 14

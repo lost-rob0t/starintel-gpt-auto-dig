@@ -1,0 +1,91 @@
+{
+  "dataset": "wef",
+  "missing_suffix_status": "requires-live-and-archive-reconstruction",
+  "packet": {
+    "base64_parts": [
+      "starintel-documents.jsonl.gz.b64.part-000",
+      "starintel-documents.jsonl.gz.b64.part-001"
+    ],
+    "counts_by_dtype": {
+      "org": 1,
+      "person": 2736,
+      "relation": 5472
+    },
+    "documents": 8209,
+    "gzip_sha256": "74ea52f893a42edfb71dbd4c8863d35ac29ac46f81b1536b2c9e904588552acd",
+    "output_sha256": "0589735d353f868c5a97b82e9ad043aee14a8873c36d8318a6ce7572b4f09b17"
+  },
+  "packet_path": "digs/wef/global-shapers-legacy-intact-prefix",
+  "prefix": {
+    "city_seeds": 0,
+    "compact_sha256": "85c46236c014cb339ceabd1f7df3933f10c845fcd931e2fd79385f4a1e07574f",
+    "first_rejected_record": {
+      "byte_offset": 492185,
+      "error": "Extra data: line 1 column 70 (char 69)",
+      "kind": "invalid-json",
+      "physical_line": 2737
+    },
+    "matches_previous_observation": true,
+    "people": 2736,
+    "rejected_suffix_bytes": 6220,
+    "unique_ids": 2736,
+    "valid_jsonl_bytes": 492185
+  },
+  "run": "global-shapers-legacy-intact-prefix",
+  "source_encoded_sha256": "6b68da79a4d04f2f9becdf23671182557d7395aed661aaf800f2984001c4928c",
+  "source_parts": [
+    {
+      "characters": 20000,
+      "path": "imports/.wef-shapers-compact/part-00",
+      "sha256": "85cb1b561bd696ea7dcb6a0794876577f253212a2e66e6e550e94276b3ec6734"
+    },
+    {
+      "characters": 20000,
+      "path": "imports/.wef-shapers-compact/part-01",
+      "sha256": "83a5dca79a3b54b7682e9dcffde1b4f52ffd109e2416de6e997ee1e5bf1118ca"
+    },
+    {
+      "characters": 20000,
+      "path": "imports/.wef-shapers-compact/part-02",
+      "sha256": "d44fe0aee0fc71744cd2d9a0b024e2b606b42a5a60ef4fff2f5d1dcd4e983788"
+    },
+    {
+      "characters": 20000,
+      "path": "imports/.wef-shapers-compact/part-03",
+      "sha256": "01206311fd5fec5292f6aebc1c64856370e38b31d7caea2b15e03dc4516bf62c"
+    },
+    {
+      "characters": 20000,
+      "path": "imports/.wef-shapers-compact/part-04",
+      "sha256": "5e34822ccfe90d73f5eec65e6db97d0245f260cae518f041408283eeea2c505f"
+    },
+    {
+      "characters": 20000,
+      "path": "imports/.wef-shapers-compact/part-05",
+      "sha256": "4a367f0d27ead1b3219d625fa1c9a34fbead2432b01eccf1784aef1f42155abe"
+    },
+    {
+      "characters": 20000,
+      "path": "imports/.wef-shapers-compact/part-06",
+      "sha256": "3eedd3fe29ccb953fa43961100e966a34fcbb8ceac38116d5178dbe5322ff58f"
+    },
+    {
+      "characters": 100055,
+      "path": "imports/.wef-shapers-compact/part-07",
+      "sha256": "e14acde34a1b0b5dab370a9440bbe589ff847512892e8b0e0b2f2991b1a6189f"
+    }
+  ],
+  "status": "partial-intact-prefix",
+  "transport": {
+    "compressed_bytes": 180040,
+    "compressed_bytes_consumed": 113999,
+    "decompressed_bytes_before_error": 498405,
+    "encoded_characters": 240055,
+    "encoded_data_characters": 240053,
+    "length_repair_character": "A",
+    "length_repair_position": 240053,
+    "valid_jsonl_bytes": 492185,
+    "xz_eof": false,
+    "xz_error": "LZMAError: Corrupt input data"
+  }
+}

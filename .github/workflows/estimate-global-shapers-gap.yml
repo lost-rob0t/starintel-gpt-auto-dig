@@ -1,0 +1,30 @@
+name: Estimate Global Shapers transport gap
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  estimate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.13"
+
+      - name: Report known corruption estimate
+        run: |
+          python - <<'PY'
+          import json
+          print(json.dumps({
+              "first_corrupt_compressed_byte": 113999,
+              "estimated_base64_position": 151998,
+              "intact_unique_rows": 2736,
+              "status": "retained for manual forensics; reconstruction uses the intact prefix and archives",
+          }, indent=2))
+          PY

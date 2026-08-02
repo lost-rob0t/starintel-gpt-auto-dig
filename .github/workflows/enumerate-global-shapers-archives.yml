@@ -1,0 +1,94 @@
+name: Enumerate Global Shapers archives
+
+on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - "scripts/enumerate_global_shapers_archives.py"
+      - ".github/workflows/enumerate-global-shapers-archives.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: enumerate-global-shapers-archives-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  enumerate:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    env:
+      TARGET_BRANCH: ${{ github.head_ref || github.ref_name }}
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.13"
+
+      - name: Install archive enumeration dependencies
+        run: python -m pip install --disable-pip-version-check requests
+
+      - name: Enumerate Wayback and Common Crawl profile URLs
+        run: |
+          python scripts/enumerate_global_shapers_archives.py \
+            --output imports/global-shapers/generated-archive-profile-urls.txt \
+            --report reports/global-shapers-archive-urls.json \
+            --common-crawl-indexes 24 \
+            --workers 24 \
+            --timeout 120 \
+            --minimum-urls 1000
+
+      - name: Verify archive census
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+
+          report = json.loads(Path("reports/global-shapers-archive-urls.json").read_text(encoding="utf-8"))
+          urls = [line.strip() for line in Path("imports/global-shapers/generated-archive-profile-urls.txt").read_text(encoding="utf-8").splitlines() if line.strip()]
+          assert report["status"] == "complete", report
+          assert len(urls) == report["profile_url_count"]
+          assert len(urls) == len(set(urls))
+          assert all(url.startswith("https://www.globalshapers.org/") for url in urls)
+          print(json.dumps({
+              "archive_profile_urls": len(urls),
+              "wayback_queries": report["wayback_queries"],
+              "common_crawl_indexes_loaded": report["common_crawl_indexes_loaded"],
+              "failed_queries": sum(item["status"] != "complete" for item in report["discoveries"]),
+          }, indent=2))
+          PY
+
+      - name: Commit archive census
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add \
+            imports/global-shapers/generated-archive-profile-urls.txt \
+            reports/global-shapers-archive-urls.json
+          if ! git diff --cached --quiet; then
+            count=$(wc -l < imports/global-shapers/generated-archive-profile-urls.txt)
+            git commit -m "Enumerate ${count} archived Global Shapers profile URLs"
+            git pull --rebase origin "${TARGET_BRANCH}"
+            git push origin "HEAD:${TARGET_BRANCH}"
+          fi
+
+      - name: Upload archive census
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: global-shapers-archive-urls
+          path: |
+            imports/global-shapers/generated-archive-profile-urls.txt
+            reports/global-shapers-archive-urls.json
+          if-no-files-found: warn
+          retention-days: 14

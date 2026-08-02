@@ -108,6 +108,18 @@ def materialize_input(digs_root: Path, db_root: Path, workspace: Path, config: d
         )
 
 
+def validate_people_count(people: dict[str, Any], config: dict[str, Any]) -> None:
+    minimum = config.get("minimum_people_profiles", 0)
+    if isinstance(minimum, bool) or not isinstance(minimum, int) or minimum < 0:
+        raise ValueError("site-config.json: minimum_people_profiles must be a non-negative integer")
+    actual = int(people.get("people", 0))
+    if minimum and actual < minimum:
+        raise RuntimeError(
+            f"people directory completeness gate failed: generated {actual:,} profiles, "
+            f"required at least {minimum:,}"
+        )
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description="Generate a static StarIntel v0.9.0 research explorer.")
     parser.add_argument("--input", type=Path, default=Path("digs"))
@@ -123,6 +135,7 @@ def main() -> int:
         materialize_input(args.input, args.db, args.workspace, config)
         build_site(args.workspace, args.output, args.org_output, args.config, args.assets)
         people = build_people_directory(args.workspace, args.output, args.assets)
+        validate_people_count(people, config)
     except Exception as exc:
         print(f"error: {exc}", file=sys.stderr)
         return 1
