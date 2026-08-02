@@ -1,199 +1,203 @@
 {
-  "dataset_hit_counts": {
-    "bank-checks-2026": 3,
-    "payments-2026": 22,
-    "purchase-order-lines-2026": 2,
-    "purchase-order-lines-expanded-2026": 5,
-    "purchase-orders-2026": 3,
-    "vendor-invoices-2026": 6,
-    "vendors": 4
-  },
   "datasets": {
     "accounting-distribution-2026": {
       "bytes": 183016356,
       "content_type": "application/octet-stream",
-      "row_count": 421111,
-      "sample_keys": [
-        "Prop_0",
-        "Prop_1",
-        "Prop_10",
-        "Prop_11",
-        "Prop_12",
-        "Prop_13",
-        "Prop_14",
-        "Prop_15",
-        "Prop_16",
-        "Prop_17",
-        "Prop_2",
-        "Prop_3",
-        "Prop_4",
-        "Prop_5",
-        "Prop_6",
-        "Prop_7",
-        "Prop_8",
-        "Prop_9"
+      "csv_url": "https://dlstpprodeastus001.blob.core.windows.net/exceldatasets-synapse/TransactionData/AccountingDistribution/CityOfColumbus_DataSet_AccountingDistribution__2026-01-01-2026-12-31.csv",
+      "headers": [
+        "[AcctDist_RECID]",
+        "[SourceDocumentHeader]",
+        "[SourceDocumentLine]",
+        "[TransactionCurrencyAmount]",
+        "[AccountingDate]",
+        "[AllocationFactor]",
+        "[DEPARTMENTNAME]",
+        "[DIVISIONNAME]",
+        "[FUNDNAME]",
+        "[OBJECTCLASSNAME]",
+        "[OPTIONALNAME]",
+        "[PLANNINGAREANAME]",
+        "[PROGRAMNAME]",
+        "[PROJECTNAME]",
+        "[SECTION3NAME]",
+        "[SECTION4NAME]",
+        "[SECTION5NAME]",
+        "[SUBFUNDNAME]"
       ],
-      "url": "https://dlstpprodeastus001.blob.core.windows.net/exceldatasets-synapse/TransactionData/AccountingDistribution/CityOfColumbus_DataSet_AccountingDistribution__2026-01-01-2026-12-31.json"
+      "json_url": "https://dlstpprodeastus001.blob.core.windows.net/exceldatasets-synapse/TransactionData/AccountingDistribution/CityOfColumbus_DataSet_AccountingDistribution__2026-01-01-2026-12-31.json",
+      "row_count": 421111
     },
     "bank-checks-2026": {
       "bytes": 10135986,
       "content_type": "application/octet-stream",
-      "row_count": 33060,
-      "sample_keys": [
-        "Prop_0",
-        "Prop_1",
-        "Prop_10",
-        "Prop_11",
-        "Prop_2",
-        "Prop_3",
-        "Prop_4",
-        "Prop_5",
-        "Prop_6",
-        "Prop_7",
-        "Prop_8",
-        "Prop_9"
+      "csv_url": "https://dlstpprodeastus001.blob.core.windows.net/exceldatasets-synapse/TransactionData/BankCheques/CityOfColumbus_DataSet_BankCheques__2026-01-01-2026-12-31.csv",
+      "headers": [
+        "[Cheque_RECID]",
+        "[ChequeNum]",
+        "[ChequeStatus]",
+        "[AmountCur]",
+        "[TransDate]",
+        "[Voucher]",
+        "[PaymentMode]",
+        "[Cancel]",
+        "[ClearedDate]",
+        "[Escheated]",
+        "[PayeeName]",
+        "[PhysicalAddress]"
       ],
-      "url": "https://dlstpprodeastus001.blob.core.windows.net/exceldatasets-synapse/TransactionData/BankCheques/CityOfColumbus_DataSet_BankCheques__2026-01-01-2026-12-31.json"
+      "json_url": "https://dlstpprodeastus001.blob.core.windows.net/exceldatasets-synapse/TransactionData/BankCheques/CityOfColumbus_DataSet_BankCheques__2026-01-01-2026-12-31.json",
+      "row_count": 33060
     },
     "payments-2026": {
       "bytes": 70327313,
       "content_type": "application/octet-stream",
-      "row_count": 293026,
-      "sample_keys": [
-        "Prop_0",
-        "Prop_1",
-        "Prop_2",
-        "Prop_3",
-        "Prop_4",
-        "Prop_5",
-        "Prop_6",
-        "Prop_7",
-        "Prop_8",
-        "Prop_9"
+      "csv_url": "https://dlstpprodeastus001.blob.core.windows.net/exceldatasets-synapse/TransactionData/VendorTransactions/CityOfColumbus_DataSet_VendorTransactions__2026-01-01-2026-12-31.csv",
+      "headers": [
+        "[Payment_RECID]",
+        "[VendorName]",
+        "[AccountNum]",
+        "[TransDate]",
+        "[Voucher]",
+        "[Invoice]",
+        "[Txt]",
+        "[AmountCur]",
+        "[TransType]",
+        "[PaymMode]"
       ],
-      "url": "https://dlstpprodeastus001.blob.core.windows.net/exceldatasets-synapse/TransactionData/VendorTransactions/CityOfColumbus_DataSet_VendorTransactions__2026-01-01-2026-12-31.json"
+      "json_url": "https://dlstpprodeastus001.blob.core.windows.net/exceldatasets-synapse/TransactionData/VendorTransactions/CityOfColumbus_DataSet_VendorTransactions__2026-01-01-2026-12-31.json",
+      "row_count": 293026
     },
     "purchase-order-lines-2026": {
       "bytes": 25985198,
       "content_type": "application/octet-stream",
-      "row_count": 82578,
-      "sample_keys": [
-        "Prop_0",
-        "Prop_1",
-        "Prop_10",
-        "Prop_11",
-        "Prop_2",
-        "Prop_3",
-        "Prop_4",
-        "Prop_5",
-        "Prop_6",
-        "Prop_7",
-        "Prop_8",
-        "Prop_9"
+      "csv_url": "https://dlstpprodeastus001.blob.core.windows.net/exceldatasets-synapse/TransactionData/PurchaseOrderLines/CityOfColumbus_DataSet_PurchaseOrderLines__2026-01-01-2026-12-31.csv",
+      "headers": [
+        "[POLine_RECID]",
+        "[SourceDocumentLine]",
+        "[PurchId]",
+        "[PurchStatus]",
+        "[LineNumber]",
+        "[DeliveryDate]",
+        "[Name]",
+        "[VendGroup]",
+        "[VendAccount]",
+        "[LineAmount]",
+        "[PurchQty]",
+        "[ProcurementCategory]"
       ],
-      "url": "https://dlstpprodeastus001.blob.core.windows.net/exceldatasets-synapse/TransactionData/PurchaseOrderLines/CityOfColumbus_DataSet_PurchaseOrderLines__2026-01-01-2026-12-31.json"
+      "json_url": "https://dlstpprodeastus001.blob.core.windows.net/exceldatasets-synapse/TransactionData/PurchaseOrderLines/CityOfColumbus_DataSet_PurchaseOrderLines__2026-01-01-2026-12-31.json",
+      "row_count": 82578
     },
     "purchase-order-lines-expanded-2026": {
       "bytes": 44522603,
       "content_type": "application/octet-stream",
-      "row_count": 111490,
-      "sample_keys": [
-        "Prop_0",
-        "Prop_1",
-        "Prop_10",
-        "Prop_11",
-        "Prop_12",
-        "Prop_13",
-        "Prop_14",
-        "Prop_2",
-        "Prop_3",
-        "Prop_4",
-        "Prop_5",
-        "Prop_6",
-        "Prop_7",
-        "Prop_8",
-        "Prop_9"
+      "csv_url": "https://dlstpprodeastus001.blob.core.windows.net/exceldatasets-synapse/TransactionData/PurchaseOrderLinesExpanded/CityOfColumbus_DataSet_PurchaseOrderLinesExpanded__2026-01-01-2026-12-31.csv",
+      "headers": [
+        "[POLine_RECID]",
+        "[SourceDocumentLine]",
+        "[PurchId]",
+        "[PurchName]",
+        "[PurchStatus]",
+        "[LineNumber]",
+        "[Name]",
+        "[VendAccount]",
+        "[LineAmount]",
+        "[PurchQty]",
+        "[ProcurementCategory]",
+        "[AccountingDate]",
+        "[LedgerDimension]",
+        "[TransactionCurrencyAmount]",
+        "[EventType]"
       ],
-      "url": "https://dlstpprodeastus001.blob.core.windows.net/exceldatasets-synapse/TransactionData/PurchaseOrderLinesExpanded/CityOfColumbus_DataSet_PurchaseOrderLinesExpanded__2026-01-01-2026-12-31.json"
+      "json_url": "https://dlstpprodeastus001.blob.core.windows.net/exceldatasets-synapse/TransactionData/PurchaseOrderLinesExpanded/CityOfColumbus_DataSet_PurchaseOrderLinesExpanded__2026-01-01-2026-12-31.json",
+      "row_count": 111490
     },
     "purchase-orders-2026": {
       "bytes": 8783276,
       "content_type": "application/octet-stream",
-      "row_count": 43761,
-      "sample_keys": [
-        "Prop_0",
-        "Prop_1",
-        "Prop_2",
-        "Prop_3",
-        "Prop_4",
-        "Prop_5",
-        "Prop_6",
-        "Prop_7",
-        "Prop_8"
+      "csv_url": "https://dlstpprodeastus001.blob.core.windows.net/exceldatasets-synapse/TransactionData/PurchaseOrders/CityOfColumbus_DataSet_PurchaseOrders__2026-01-01-2026-12-31.csv",
+      "headers": [
+        "[PO_RECID]",
+        "[SourceDocumentHeader]",
+        "[SourceDocumentLine]",
+        "[PurchId]",
+        "[PurchName]",
+        "[OrderAccount]",
+        "[VendGroup]",
+        "[PurchStatus]",
+        "[AccountingDate]"
       ],
-      "url": "https://dlstpprodeastus001.blob.core.windows.net/exceldatasets-synapse/TransactionData/PurchaseOrders/CityOfColumbus_DataSet_PurchaseOrders__2026-01-01-2026-12-31.json"
+      "json_url": "https://dlstpprodeastus001.blob.core.windows.net/exceldatasets-synapse/TransactionData/PurchaseOrders/CityOfColumbus_DataSet_PurchaseOrders__2026-01-01-2026-12-31.json",
+      "row_count": 43761
     },
     "vendor-invoices-2026": {
       "bytes": 30759490,
       "content_type": "application/octet-stream",
-      "row_count": 85224,
-      "sample_keys": [
-        "Prop_0",
-        "Prop_1",
-        "Prop_10",
-        "Prop_11",
-        "Prop_12",
-        "Prop_13",
-        "Prop_14",
-        "Prop_2",
-        "Prop_3",
-        "Prop_4",
-        "Prop_5",
-        "Prop_6",
-        "Prop_7",
-        "Prop_8",
-        "Prop_9"
+      "csv_url": "https://dlstpprodeastus001.blob.core.windows.net/exceldatasets-synapse/TransactionData/VendorInvoiceJournals/CityOfColumbus_DataSet_VendorInvoiceJournals__2026-01-01-2026-12-31.csv",
+      "headers": [
+        "[VIJournal_RECID]",
+        "[SourceDocumentHeader]",
+        "[SourceDocumentLine]",
+        "[VendGroup]",
+        "[PurchId]",
+        "[OrderAccount]",
+        "[InvoiceId]",
+        "[InvoiceDate]",
+        "[Qty]",
+        "[InvoiceAmount]",
+        "[LedgerVoucher]",
+        "[DocumentNum]",
+        "DocumentDate]",
+        "[PurchaseType]",
+        "[Description]"
       ],
-      "url": "https://dlstpprodeastus001.blob.core.windows.net/exceldatasets-synapse/TransactionData/VendorInvoiceJournals/CityOfColumbus_DataSet_VendorInvoiceJournals__2026-01-01-2026-12-31.json"
+      "json_url": "https://dlstpprodeastus001.blob.core.windows.net/exceldatasets-synapse/TransactionData/VendorInvoiceJournals/CityOfColumbus_DataSet_VendorInvoiceJournals__2026-01-01-2026-12-31.json",
+      "row_count": 85224
     },
     "vendors": {
       "bytes": 25731242,
       "content_type": "application/octet-stream",
-      "row_count": 245650,
-      "sample_keys": [
-        "Prop_0",
-        "Prop_1",
-        "Prop_2",
-        "Prop_3",
-        "Prop_4"
+      "csv_url": "https://dlstpprodeastus001.blob.core.windows.net/exceldatasets-synapse/MasterData/Vendors/CityOfColumbus_DataSet_Vendors.csv",
+      "headers": [
+        "[Vendor_RECID]",
+        "[AccountNum]",
+        "[VendorGroup]",
+        "[OneTimeVendor]",
+        "[VendorName]"
       ],
-      "url": "https://dlstpprodeastus001.blob.core.windows.net/exceldatasets-synapse/MasterData/Vendors/CityOfColumbus_DataSet_Vendors.json"
+      "json_url": "https://dlstpprodeastus001.blob.core.windows.net/exceldatasets-synapse/MasterData/Vendors/CityOfColumbus_DataSet_Vendors.json",
+      "row_count": 245650
     }
   },
-  "discovered_identifier_count": 0,
-  "discovered_identifiers": [],
-  "entity_terms": [
-    "center for urban transformation",
-    "centre for urban transformation",
-    "columbus partnership",
-    "davos",
-    "global shapers",
-    "smart columbus",
-    "world economic forum",
-    "young global leaders"
-  ],
-  "hop_counts": {
-    "0": 45
+  "direct_hit_counts": {
+    "smart_columbus": {
+      "accounting-distribution-2026": 3,
+      "bank-checks-2026": 3,
+      "payments-2026": 26,
+      "purchase-order-lines-2026": 2,
+      "purchase-order-lines-expanded-2026": 5,
+      "purchase-orders-2026": 3,
+      "vendor-invoices-2026": 8,
+      "vendors": 8
+    }
   },
-  "parsed_dataset_count": 8,
+  "membership_account_number_count": 0,
+  "membership_join_counts": {
+    "accounting-distribution-2026": 0,
+    "bank-checks-2026": 0,
+    "payments-2026": 0,
+    "purchase-order-lines-2026": 0,
+    "purchase-order-lines-expanded-2026": 0,
+    "purchase-orders-2026": 0,
+    "vendor-invoices-2026": 0,
+    "vendors": 0
+  },
+  "membership_main_account": "63975",
+  "membership_payment_identifier_count": 0,
+  "membership_purchase_id_count": 0,
+  "membership_source_document_header_count": 0,
+  "membership_source_document_line_count": 0,
+  "membership_voucher_count": 0,
   "portal": "https://www.columbusauditor.org/Data-Hub/data-sets-explorer/",
-  "seed_values": [
-    "0223-2026",
-    "040255",
-    "045611",
-    "acpo012949"
-  ],
-  "selected_dataset_count": 8,
-  "target_id": "starintel:investigation-target:wef-depth-9-citywide-membership-purchase-orders-and-vendors",
-  "total_joined_rows": 45
+  "target_id": "starintel:investigation-target:wef-depth-9-citywide-membership-purchase-orders-and-vendors"
 }

@@ -1,0 +1,8 @@
+{"matched_terms": ["045611"], "row": {"[AccountNum]": "X045611", "[OneTimeVendor]": "YES", "[VendorGroup]": "Other", "[VendorName]": "One Time Vendor", "[Vendor_RECID]": "5637390918"}, "row_index": 2743}
+{"matched_terms": ["040255", "smart columbus"], "row": {"[AccountNum]": "040255", "[OneTimeVendor]": "NO", "[VendorGroup]": "Vendor", "[VendorName]": "Smart Columbus", "[Vendor_RECID]": "5637854830"}, "row_index": 4606}
+{"matched_terms": ["020639"], "row": {"[AccountNum]": "X020639", "[OneTimeVendor]": "YES", "[VendorGroup]": "Other", "[VendorName]": "One Time Vendor", "[Vendor_RECID]": "5637266238"}, "row_index": 45218}
+{"matched_terms": ["045611", "columbus partnership"], "row": {"[AccountNum]": "045611", "[OneTimeVendor]": "NO", "[VendorGroup]": "Vendor", "[VendorName]": "Columbus Partnership", "[Vendor_RECID]": "5638265177"}, "row_index": 50806}
+{"matched_terms": ["033348", "smart columbus"], "row": {"[AccountNum]": "033348", "[OneTimeVendor]": "NO", "[VendorGroup]": "Vendor", "[VendorName]": "Smart Columbus LLC", "[Vendor_RECID]": "5637548861"}, "row_index": 64442}
+{"matched_terms": ["040255"], "row": {"[AccountNum]": "X040255", "[OneTimeVendor]": "YES", "[VendorGroup]": "Other", "[VendorName]": "One Time Vendor", "[Vendor_RECID]": "5637366709"}, "row_index": 124900}
+{"matched_terms": ["033348"], "row": {"[AccountNum]": "X033348", "[OneTimeVendor]": "YES", "[VendorGroup]": "Other", "[VendorName]": "One Time Vendor", "[Vendor_RECID]": "5637334483"}, "row_index": 140639}
+{"matched_terms": ["020639", "columbus partnership"], "row": {"[AccountNum]": "020639", "[OneTimeVendor]": "NO", "[VendorGroup]": "Vendor", "[VendorName]": "Columbus Partnership", "[Vendor_RECID]": "5637282577"}, "row_index": 222755}
