@@ -8,6 +8,7 @@ on:
       - "imports/global-shapers/**"
       - "imports/.wef-shapers-compact/**"
       - "scripts/import_legacy_shapers_alumni.py"
+      - "scripts/recover_legacy_shapers_transport.py"
       - "scripts/restore_legacy_global_shapers_packet.py"
       - "scripts/enumerate_global_shapers_city_hubs.py"
       - "scripts/run_global_shapers_complete_import.py"
@@ -48,16 +49,46 @@ jobs:
           python -m playwright install --with-deps chromium
 
       - name: Verify importers and city enumerator
+        shell: bash
         run: |
+          set -euo pipefail
           mkdir -p reports
           python scripts/run_global_shapers_complete_import.py --help \
             | tee reports/global-shapers-importer-help.txt
+          python scripts/recover_legacy_shapers_transport.py --help
           python scripts/restore_legacy_global_shapers_packet.py --help
           python scripts/enumerate_global_shapers_city_hubs.py --help
           python -m compileall -q scripts starintel_doc
 
-      - name: Restore retained 4,062-person alumni corpus first
-        run: python scripts/restore_legacy_global_shapers_packet.py --root .
+      - name: Recover and restore retained 4,062-person alumni corpus
+        shell: bash
+        run: |
+          set -euo pipefail
+          python scripts/recover_legacy_shapers_transport.py \
+            --parts imports/.wef-shapers-compact \
+            --output .generated/legacy-global-shapers/recovered.compact.jsonl \
+            --report reports/global-shapers-transport-recovery.json \
+            --radius 64
+          python - <<'PY'
+          import base64
+          import lzma
+          import sys
+          from pathlib import Path
+
+          root = Path.cwd()
+          payload = (root / ".generated/legacy-global-shapers/recovered.compact.jsonl").read_bytes()
+          repaired_parts = root / ".generated" / "legacy-global-shapers" / "repaired-parts"
+          repaired_parts.mkdir(parents=True, exist_ok=True)
+          encoded = base64.b64encode(lzma.compress(payload, preset=9)).decode("ascii")
+          (repaired_parts / "part-00").write_text(encoded + "\n", encoding="utf-8")
+
+          sys.path.insert(0, str(root / "scripts"))
+          import restore_legacy_global_shapers_packet as restore
+
+          restore.PARTS = repaired_parts
+          sys.argv = ["restore_legacy_global_shapers_packet.py", "--root", str(root)]
+          raise SystemExit(restore.main())
+          PY
 
       - name: Enumerate world cities and resolve official hub URLs
         run: |
@@ -92,18 +123,24 @@ jobs:
           PY
 
       - name: Checkpoint retained corpus and city diagnostics
+        shell: bash
         run: |
+          set -euo pipefail
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add \
+          for path in \
             digs/wef/global-shapers-legacy-alumni-4062 \
             imports/global-shapers/retained-city-seeds.txt \
             imports/global-shapers/generated-hub-urls.txt \
             imports/global-shapers/generated-member-profile-urls.txt \
             reports/global-shapers-importer-help.txt \
+            reports/global-shapers-transport-recovery.json \
             reports/global-shapers-city-hubs.json \
             reports/wef-global-shapers-alumni-import.json \
             reports/wef-global-shapers-alumni-import.md
+          do
+            if [[ -e "$path" ]]; then git add "$path"; fi
+          done
           if ! git diff --cached --quiet; then
             hubs=$(python -c 'import json; print(json.load(open("reports/global-shapers-city-hubs.json"))["hub_url_count"])')
             git commit -m "Enumerate ${hubs} Global Shapers hubs"
@@ -168,14 +205,19 @@ jobs:
           PY
 
       - name: Commit complete public directory packet
+        shell: bash
         run: |
+          set -euo pipefail
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add \
+          for path in \
             digs/global-shapers \
             reports/global-shapers-complete-directory.json \
             reports/global-shapers-complete-directory.md \
             site-config.json
+          do
+            if [[ -e "$path" ]]; then git add "$path"; fi
+          done
           if git diff --cached --quiet; then
             echo "No directory changes to commit"
           else
@@ -186,20 +228,26 @@ jobs:
 
       - name: Commit crawl diagnostics after failure
         if: failure()
+        shell: bash
         run: |
+          set -uo pipefail
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add \
+          for path in \
             digs/wef/global-shapers-legacy-alumni-4062 \
             imports/global-shapers/retained-city-seeds.txt \
             imports/global-shapers/generated-hub-urls.txt \
             imports/global-shapers/generated-member-profile-urls.txt \
             reports/global-shapers-importer-help.txt \
+            reports/global-shapers-transport-recovery.json \
             reports/global-shapers-city-hubs.json \
             reports/wef-global-shapers-alumni-import.json \
             reports/wef-global-shapers-alumni-import.md \
             reports/global-shapers-complete-directory.json \
-            reports/global-shapers-complete-directory.md || true
+            reports/global-shapers-complete-directory.md
+          do
+            if [[ -e "$path" ]]; then git add "$path"; fi
+          done
           if ! git diff --cached --quiet; then
             git commit -m "Record Global Shapers crawl diagnostics"
             git push origin "HEAD:${TARGET_BRANCH}"
@@ -212,6 +260,7 @@ jobs:
           name: global-shapers-complete-directory-report
           path: |
             reports/global-shapers-importer-help.txt
+            reports/global-shapers-transport-recovery.json
             reports/global-shapers-city-hubs.json
             reports/global-shapers-complete-directory.json
             reports/global-shapers-complete-directory.md
