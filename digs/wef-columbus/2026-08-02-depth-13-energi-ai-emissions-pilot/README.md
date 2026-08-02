@@ -4,7 +4,7 @@
 **Date:** 2026-08-02  
 **Recursion depth:** 13  
 **Schema:** StarIntel v0.9.0  
-**Canonical records:** 11
+**Canonical records:** 14
 
 ## Fiscal boundary
 
@@ -28,6 +28,18 @@ Smart Columbus describes a City-funded pilot developed with Energi.AI:
 
 Named participants include OhioHealth, Huntington, Installed Building Products, Bread Financial, and The Ohio State University.
 
+## Participant–investor overlap
+
+Installed Building Products announced in April 2022 that it had invested in Energi.AI and would become the platform's first U.S. client. Smart Columbus later named IBP as a participant in the City-funded pilot.
+
+This overlap is source-backed and material to program-governance review. It does **not** establish favoritism, misuse, or an undisclosed conflict. The reviewed public sources do not disclose:
+
+- participant selection and scoring criteria
+- investor/customer relationship disclosures
+- conflict, recusal, procurement, or duplicate-benefit review
+- whether City-funded access replaced, extended, or supplemented IBP's existing commercial subscription
+- whether IBP received the same free-access package described for participating organizations
+
 ## Legal entity and principals
 
 - legal entity: **ENERGI.AI AS**
@@ -41,7 +53,7 @@ Named participants include OhioHealth, Huntington, Installed Building Products, 
 
 Energi.AI added Mark Kvamme and Aaron Gershenberg to its advisory board in December 2024. The company stated that Kvamme would support U.S. expansion and referenced their mutual Ohio base.
 
-This advisory relationship does not establish City funding, project direction, or a WEF relationship.
+This advisory relationship does not establish City funding, project direction, investment, or a WEF relationship.
 
 ## Data-governance boundary
 
@@ -61,7 +73,7 @@ The reviewed public sources do **not** publish the project-specific agreement, D
 
 ## WEF boundary
 
-No reviewed official WEF source, pilot page, company page, registry record, or fiscal descriptor establishes a direct Energi.AI or pilot relationship with the World Economic Forum.
+No reviewed official WEF source, pilot page, company page, registry record, SEC filing, investor release, or fiscal descriptor establishes a direct Energi.AI or pilot relationship with the World Economic Forum.
 
 This is bounded non-discovery, not proof of absence.
 
@@ -71,8 +83,8 @@ This is bounded non-discovery, not proof of absence.
 
 ## Validation
 
-- 11 JSONL records generated
+- 14 JSONL records generated
 - record IDs are unique
-- normalized JSONL SHA-256: `c657c78eda8268c1f74312b8276436214016ba162e11154b05435f5f911f31d9`
-- deterministic gzip SHA-256: `0b8e1cabb082a43808a97abbdc20f391c25ccb6ad27c9ae2221817e60701a950`
-- base64 transport SHA-256: `75364b7cbe23534387ac58e83dc6c81cbca6401d7e551f16b428547129cf0b5e`
+- normalized JSONL SHA-256: `0b378f489657864a64df49d5fec4f104820dbbff5ad81c435b37913f5c520fce`
+- deterministic gzip SHA-256: `5677e3e30e6447d6e82800201b755227ad9e7fcc862e3f1ddd0c6adba5464e87`
+- base64 transport SHA-256: `53639b6050adacd90a1562facf45fc11c84beaaf3bf8344ebabdbac7e7941579`
