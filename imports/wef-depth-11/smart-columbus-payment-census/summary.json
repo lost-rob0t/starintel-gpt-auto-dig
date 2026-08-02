@@ -1,0 +1,40 @@
+{
+  "bank_check_match_count": 156,
+  "invoice_match_count": 159,
+  "method_boundary": "Cash totals use unique bank-check records with ChequeStatus Paid and no affirmative Cancel flag. Invoice, settlement, and payment rows are linkage evidence only. Invoice IDs are never used as global cross-vendor join keys.",
+  "paid_by_account": {
+    "001029": "152564.4500000000000000",
+    "012381": "15250.0000000000000000",
+    "026824": "591589.8600000000000000",
+    "028572": "659589.6700000000000000",
+    "033348": "1176882.5000000000000000",
+    "040255": "1860000.0000000000000000",
+    "045611": "2287327.0400000000000000",
+    "045837": "3500000.0000000000000000"
+  },
+  "paid_by_payee": {
+    "Columbus Partnership": "3587327.0400000000000000",
+    "Columbus Region Green Fund": "3500000.0000000000000000",
+    "Conference of Minority Transportation Officials": "15250.0000000000000000",
+    "Kapsch TrafficCom USA, Inc.": "659589.6700000000000000",
+    "Perkins Melissa": "63041.1500000000000000",
+    "Siemens Mobility, Inc.": "591589.8600000000000000",
+    "Smart Columbus": "349185.3600000000000000",
+    "Smart Columbus LLC": "1387697.1400000000000000",
+    "Uzuri Kid Kidz  LLC": "89019.3000000000000000",
+    "Uzuri Kid Kidz  LLC  DBA Uepromotions": "504.0000000000000000"
+  },
+  "paid_by_year": {
+    "2021": "1290027.5900000000000000",
+    "2022": "1274995.6800000000000000",
+    "2023": "2321185.2400000000000000",
+    "2024": "4354371.3600000000000000",
+    "2025": "185005.9500000000000000",
+    "2026": "817617.7000000000000000"
+  },
+  "purchase_order_match_count": 81,
+  "unique_paid_check_count": 140,
+  "unique_paid_check_total": "10243203.5200000000000000",
+  "vendor_transaction_match_count": 547,
+  "void_or_canceled_check_count": 10
+}
