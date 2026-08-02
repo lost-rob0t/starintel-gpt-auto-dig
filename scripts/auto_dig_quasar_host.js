@@ -4,6 +4,7 @@
   const PROTOCOL = "auto-dig-quasar.v1";
   const GRAPH_ROUTE = "/graph";
   const frame = document.querySelector("#quasar-frame");
+  if (!frame) throw new Error("Quasar frame was not found");
   const params = new URLSearchParams(location.search);
   const datasetId = params.get("dataset") || "complete-corpus";
   const runId = params.get("run");
@@ -11,6 +12,13 @@
     document.documentElement.dataset.correctionRepository ||
     "lost-rob0t/starintel-gpt-auto-dig";
   let childOrigin = location.origin;
+
+  const frameUrl = new URL(
+    frame.dataset.src || "app/index.html?host=auto-dig",
+    location.href
+  );
+  frameUrl.searchParams.set("dataset", datasetId);
+  frame.src = frameUrl.href;
 
   function notify(type, payload) {
     frame.contentWindow?.postMessage(
