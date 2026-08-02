@@ -1,88 +1,30 @@
 name: Locate Global Shapers transport gap
 
 on:
-  pull_request:
-    branches:
-      - main
-    paths:
-      - "imports/.wef-shapers-compact/**"
-      - "scripts/locate_legacy_shapers_gap.py"
-      - ".github/workflows/locate-global-shapers-gap.yml"
   workflow_dispatch:
 
 permissions:
   contents: read
 
-concurrency:
-  group: locate-global-shapers-transport-gap-${{ github.event.pull_request.number || github.ref }}
-  cancel-in-progress: true
-
 jobs:
   locate:
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 30
     steps:
       - uses: actions/checkout@v6
-        with:
-          ref: ${{ github.event.pull_request.head.sha || github.sha }}
 
       - uses: actions/setup-python@v6
         with:
           python-version: "3.13"
 
-      - name: Search high-signal Base64 window
-        shell: bash
+      - name: Run forensic gap locator
         run: |
-          python - <<'PY'
-          import hashlib
-          import json
-          from pathlib import Path
-          import sys
-
-          sys.path.insert(0, str(Path("scripts").resolve()))
-          import locate_legacy_shapers_gap as locate
-
-          encoded, lengths = locate.read_encoded(Path("imports/.wef-shapers-compact"))
-          center = 151937
-          lower = center - 96
-          upper = center + 96
-          positions = list(range(lower, upper + 1))
-          result = locate.search_positions(encoded, positions, 32)
-          report = {
-              "center": center,
-              "search_lower": lower,
-              "search_upper": upper,
-              "positions": len(positions),
-              "attempts_max": len(positions) * len(locate.ALPHABET),
-              "part_lengths": lengths,
-          }
-          if result is None:
-              report["status"] = "not-found"
-              Path("reports").mkdir(exist_ok=True)
-              Path("reports/global-shapers-gap-location.json").write_text(
-                  json.dumps(report, indent=2, sort_keys=True) + "\n",
-                  encoding="utf-8",
-              )
-              print(json.dumps(report, indent=2, sort_keys=True))
-              raise SystemExit(2)
-
-          position, character, payload = result
-          output = Path("/tmp/located.compact.jsonl")
-          output.write_bytes(payload if payload.endswith(b"\n") else payload + b"\n")
-          report.update({
-              "status": "recovered",
-              "insert_position": position,
-              "insert_character": character,
-              "payload_bytes": len(payload),
-              "payload_sha256": hashlib.sha256(output.read_bytes()).hexdigest(),
-          })
-          Path("reports").mkdir(exist_ok=True)
-          Path("reports/global-shapers-gap-location.json").write_text(
-              json.dumps(report, indent=2, sort_keys=True) + "\n",
-              encoding="utf-8",
-          )
-          print(json.dumps(report, indent=2, sort_keys=True))
-          PY
+          python scripts/locate_legacy_shapers_gap.py \
+            --parts imports/.wef-shapers-compact \
+            --output /tmp/located.compact.jsonl \
+            --report reports/global-shapers-gap-location.json \
+            --radius 2048 \
+            --workers 32
 
       - name: Upload location report
         if: always()
