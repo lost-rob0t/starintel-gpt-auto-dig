@@ -1,0 +1,95 @@
+{
+  "dataset": "hunter-biden",
+  "schema_version": "0.9.0",
+  "generated_at": "2026-08-02T02:10:00Z",
+  "hash_algorithm": "sha256",
+  "counts": {
+    "source": 11,
+    "org": 11,
+    "person": 1,
+    "relation": 30,
+    "investigation-target": 13
+  },
+  "total": 66,
+  "document_files": [
+    {
+      "path": "sources.jsonl",
+      "count": 11,
+      "sha256": "74848f9f1d639bd3a11b38bfde07e6b2a9fba597d59db72a0ca7e174af500d47"
+    },
+    {
+      "path": "entities.jsonl",
+      "count": 12,
+      "sha256": "a9a941be85de019646f12fbb4cb7c6a106defa9a68d04605a455cd6ec68b9e96"
+    },
+    {
+      "path": "relations-1.jsonl",
+      "count": 5,
+      "sha256": "d51a4d0cfb3ffaab8b8f1f47822a9787bc1c142a80e58c5da35fcc58b637058a"
+    },
+    {
+      "path": "relations-2.jsonl",
+      "count": 5,
+      "sha256": "b09c398f6ec61974a3ea7bcc891c048d55ad9af5212f45e1b96d2f2e789c533a"
+    },
+    {
+      "path": "relations-3.jsonl",
+      "count": 5,
+      "sha256": "a450f0dff86852c648ca90801a4fe29f0d656ed52c1c430b54e138d8b3052637"
+    },
+    {
+      "path": "relations-4.jsonl",
+      "count": 5,
+      "sha256": "023288343a6795c5030101d60bb43231b0e712b59b0d909bb9b17b7887daaec1"
+    },
+    {
+      "path": "relations-5.jsonl",
+      "count": 5,
+      "sha256": "39ba17acd6eaa26795a534096738acc1832e26230e4bd407297cb28c58626cc9"
+    },
+    {
+      "path": "relations-6.jsonl",
+      "count": 5,
+      "sha256": "e4393d1d086704004dca3f9b4ebbad9f1856ab1bbb686bf837277ed420334168"
+    },
+    {
+      "path": "investigation-targets-1.jsonl",
+      "count": 5,
+      "sha256": "bcb8d855d487ad3ed1a3b44f468930977f14dc5a9720d3c01294c5f2b0935180"
+    },
+    {
+      "path": "investigation-targets-2.jsonl",
+      "count": 5,
+      "sha256": "8eddb85970af0cf3102e5d73cce892686ec256f37687be63ac4561db4e078aa2"
+    },
+    {
+      "path": "investigation-targets-3.jsonl",
+      "count": 3,
+      "sha256": "2e4822864a05c5eacb93f2f70ab5a44c32800fa498e3b742385d222a2eba9167"
+    }
+  ],
+  "combined_documents_sha256": "18d14fe7c9c39ecf185cad29b5b4aecceb9838a5bc3d2bda38a61d8fe017ada4",
+  "files": [
+    "README.md",
+    "sources.md",
+    "attack-results.md",
+    "sources.jsonl",
+    "entities.jsonl",
+    "relations-1.jsonl",
+    "relations-2.jsonl",
+    "relations-3.jsonl",
+    "relations-4.jsonl",
+    "relations-5.jsonl",
+    "relations-6.jsonl",
+    "investigation-targets-1.jsonl",
+    "investigation-targets-2.jsonl",
+    "investigation-targets-3.jsonl"
+  ],
+  "validation": {
+    "jsonl": "syntax checked",
+    "ids": "unique within packet",
+    "references": "checked against packet and prior BHR packets",
+    "schema": "pending repository CI",
+    "sources": "official, issuer, and source-qualified records separated"
+  }
+}

@@ -1,0 +1,53 @@
+{
+  "dataset": "hunter-biden",
+  "schema_version": "0.9.0",
+  "generated_at": "2026-08-02T00:35:00Z",
+  "hash_algorithm": "sha256",
+  "counts": {
+    "source": 5,
+    "person": 1,
+    "org": 8,
+    "relation": 13,
+    "investigation-target": 10
+  },
+  "total": 37,
+  "document_files": [
+    {
+      "path": "sources.jsonl",
+      "count": 5,
+      "sha256": "93e7a4eae9fa20d35559fa2b2256e79823d8eba1d63242ee9bd3a87b21d1a300"
+    },
+    {
+      "path": "entities.jsonl",
+      "count": 9,
+      "sha256": "a8f3f51c627c5e7a78dbcd6b7391829ad7b3a2268ca695c20991b67ea854d394"
+    },
+    {
+      "path": "relations.jsonl",
+      "count": 13,
+      "sha256": "46eec1cedac17ee6388bfa8a3ce5389df4138ea046c2fe7802d1aad0f644b7c5"
+    },
+    {
+      "path": "investigation-targets.jsonl",
+      "count": 10,
+      "sha256": "8193938f2a8bd90dec9139ad4cfabdf1b047d18f928218edaba044adfa03aa03"
+    }
+  ],
+  "combined_documents_sha256": "1d1ca9ed454d408de1e4c7bbad3f5716f8e6f4685dbf3a9a4ef169ae545d4ba8",
+  "files": [
+    "README.md",
+    "sources.md",
+    "attack-results.md",
+    "sources.jsonl",
+    "entities.jsonl",
+    "relations.jsonl",
+    "investigation-targets.jsonl"
+  ],
+  "validation": {
+    "jsonl": "syntax checked",
+    "ids": "unique within packet",
+    "references": "checked against packet and prior BHR packets",
+    "schema": "pending repository CI",
+    "sources": "official and source-qualified leads separated"
+  }
+}
