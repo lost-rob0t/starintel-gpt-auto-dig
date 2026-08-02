@@ -1,76 +1,199 @@
 {
+  "dataset_hit_counts": {
+    "bank-checks-2026": 3,
+    "payments-2026": 22,
+    "purchase-order-lines-2026": 2,
+    "purchase-order-lines-expanded-2026": 5,
+    "purchase-orders-2026": 3,
+    "vendor-invoices-2026": 6,
+    "vendors": 4
+  },
   "datasets": {
     "accounting-distribution-2026": {
-      "bytes": 194905,
-      "content_type": "text/css; charset=utf-8",
-      "parse_error": "not-json",
-      "url": "https://www.columbusauditor.org/bootstrap.min.css"
+      "bytes": 183016356,
+      "content_type": "application/octet-stream",
+      "row_count": 421111,
+      "sample_keys": [
+        "Prop_0",
+        "Prop_1",
+        "Prop_10",
+        "Prop_11",
+        "Prop_12",
+        "Prop_13",
+        "Prop_14",
+        "Prop_15",
+        "Prop_16",
+        "Prop_17",
+        "Prop_2",
+        "Prop_3",
+        "Prop_4",
+        "Prop_5",
+        "Prop_6",
+        "Prop_7",
+        "Prop_8",
+        "Prop_9"
+      ],
+      "url": "https://dlstpprodeastus001.blob.core.windows.net/exceldatasets-synapse/TransactionData/AccountingDistribution/CityOfColumbus_DataSet_AccountingDistribution__2026-01-01-2026-12-31.json"
     },
     "bank-checks-2026": {
-      "bytes": 194905,
-      "content_type": "text/css; charset=utf-8",
-      "parse_error": "not-json",
-      "url": "https://www.columbusauditor.org/bootstrap.min.css"
+      "bytes": 10135986,
+      "content_type": "application/octet-stream",
+      "row_count": 33060,
+      "sample_keys": [
+        "Prop_0",
+        "Prop_1",
+        "Prop_10",
+        "Prop_11",
+        "Prop_2",
+        "Prop_3",
+        "Prop_4",
+        "Prop_5",
+        "Prop_6",
+        "Prop_7",
+        "Prop_8",
+        "Prop_9"
+      ],
+      "url": "https://dlstpprodeastus001.blob.core.windows.net/exceldatasets-synapse/TransactionData/BankCheques/CityOfColumbus_DataSet_BankCheques__2026-01-01-2026-12-31.json"
     },
     "payments-2026": {
-      "bytes": 194905,
-      "content_type": "text/css; charset=utf-8",
-      "parse_error": "not-json",
-      "url": "https://www.columbusauditor.org/bootstrap.min.css"
+      "bytes": 70327313,
+      "content_type": "application/octet-stream",
+      "row_count": 293026,
+      "sample_keys": [
+        "Prop_0",
+        "Prop_1",
+        "Prop_2",
+        "Prop_3",
+        "Prop_4",
+        "Prop_5",
+        "Prop_6",
+        "Prop_7",
+        "Prop_8",
+        "Prop_9"
+      ],
+      "url": "https://dlstpprodeastus001.blob.core.windows.net/exceldatasets-synapse/TransactionData/VendorTransactions/CityOfColumbus_DataSet_VendorTransactions__2026-01-01-2026-12-31.json"
     },
     "purchase-order-lines-2026": {
-      "bytes": 194905,
-      "content_type": "text/css; charset=utf-8",
-      "parse_error": "not-json",
-      "url": "https://www.columbusauditor.org/bootstrap.min.css"
+      "bytes": 25985198,
+      "content_type": "application/octet-stream",
+      "row_count": 82578,
+      "sample_keys": [
+        "Prop_0",
+        "Prop_1",
+        "Prop_10",
+        "Prop_11",
+        "Prop_2",
+        "Prop_3",
+        "Prop_4",
+        "Prop_5",
+        "Prop_6",
+        "Prop_7",
+        "Prop_8",
+        "Prop_9"
+      ],
+      "url": "https://dlstpprodeastus001.blob.core.windows.net/exceldatasets-synapse/TransactionData/PurchaseOrderLines/CityOfColumbus_DataSet_PurchaseOrderLines__2026-01-01-2026-12-31.json"
     },
     "purchase-order-lines-expanded-2026": {
-      "bytes": 194905,
-      "content_type": "text/css; charset=utf-8",
-      "parse_error": "not-json",
-      "url": "https://www.columbusauditor.org/bootstrap.min.css"
+      "bytes": 44522603,
+      "content_type": "application/octet-stream",
+      "row_count": 111490,
+      "sample_keys": [
+        "Prop_0",
+        "Prop_1",
+        "Prop_10",
+        "Prop_11",
+        "Prop_12",
+        "Prop_13",
+        "Prop_14",
+        "Prop_2",
+        "Prop_3",
+        "Prop_4",
+        "Prop_5",
+        "Prop_6",
+        "Prop_7",
+        "Prop_8",
+        "Prop_9"
+      ],
+      "url": "https://dlstpprodeastus001.blob.core.windows.net/exceldatasets-synapse/TransactionData/PurchaseOrderLinesExpanded/CityOfColumbus_DataSet_PurchaseOrderLinesExpanded__2026-01-01-2026-12-31.json"
     },
     "purchase-orders-2026": {
-      "bytes": 194905,
-      "content_type": "text/css; charset=utf-8",
-      "parse_error": "not-json",
-      "url": "https://www.columbusauditor.org/bootstrap.min.css"
+      "bytes": 8783276,
+      "content_type": "application/octet-stream",
+      "row_count": 43761,
+      "sample_keys": [
+        "Prop_0",
+        "Prop_1",
+        "Prop_2",
+        "Prop_3",
+        "Prop_4",
+        "Prop_5",
+        "Prop_6",
+        "Prop_7",
+        "Prop_8"
+      ],
+      "url": "https://dlstpprodeastus001.blob.core.windows.net/exceldatasets-synapse/TransactionData/PurchaseOrders/CityOfColumbus_DataSet_PurchaseOrders__2026-01-01-2026-12-31.json"
     },
     "vendor-invoices-2026": {
-      "bytes": 194905,
-      "content_type": "text/css; charset=utf-8",
-      "parse_error": "not-json",
-      "url": "https://www.columbusauditor.org/bootstrap.min.css"
+      "bytes": 30759490,
+      "content_type": "application/octet-stream",
+      "row_count": 85224,
+      "sample_keys": [
+        "Prop_0",
+        "Prop_1",
+        "Prop_10",
+        "Prop_11",
+        "Prop_12",
+        "Prop_13",
+        "Prop_14",
+        "Prop_2",
+        "Prop_3",
+        "Prop_4",
+        "Prop_5",
+        "Prop_6",
+        "Prop_7",
+        "Prop_8",
+        "Prop_9"
+      ],
+      "url": "https://dlstpprodeastus001.blob.core.windows.net/exceldatasets-synapse/TransactionData/VendorInvoiceJournals/CityOfColumbus_DataSet_VendorInvoiceJournals__2026-01-01-2026-12-31.json"
     },
     "vendors": {
-      "bytes": 194905,
-      "content_type": "text/css; charset=utf-8",
-      "parse_error": "not-json",
-      "url": "https://www.columbusauditor.org/bootstrap.min.css"
+      "bytes": 25731242,
+      "content_type": "application/octet-stream",
+      "row_count": 245650,
+      "sample_keys": [
+        "Prop_0",
+        "Prop_1",
+        "Prop_2",
+        "Prop_3",
+        "Prop_4"
+      ],
+      "url": "https://dlstpprodeastus001.blob.core.windows.net/exceldatasets-synapse/MasterData/Vendors/CityOfColumbus_DataSet_Vendors.json"
     }
   },
-  "direct_hit_counts": {},
-  "direct_terms": [
-    "ACPO012949",
-    "0223-2026",
-    "63975",
-    "045611",
-    "040255",
-    "SMART COLUMBUS",
-    "COLUMBUS PARTNERSHIP",
-    "WORLD ECONOMIC FORUM",
-    "GLOBAL SHAPERS",
-    "YOUNG GLOBAL LEADERS",
-    "DAVOS",
-    "CENTRE FOR URBAN TRANSFORMATION",
-    "CENTER FOR URBAN TRANSFORMATION"
-  ],
+  "discovered_identifier_count": 0,
   "discovered_identifiers": [],
-  "expanded_hit_counts": {},
-  "parsed_dataset_count": 0,
+  "entity_terms": [
+    "center for urban transformation",
+    "centre for urban transformation",
+    "columbus partnership",
+    "davos",
+    "global shapers",
+    "smart columbus",
+    "world economic forum",
+    "young global leaders"
+  ],
+  "hop_counts": {
+    "0": 45
+  },
+  "parsed_dataset_count": 8,
   "portal": "https://www.columbusauditor.org/Data-Hub/data-sets-explorer/",
+  "seed_values": [
+    "0223-2026",
+    "040255",
+    "045611",
+    "acpo012949"
+  ],
   "selected_dataset_count": 8,
   "target_id": "starintel:investigation-target:wef-depth-9-citywide-membership-purchase-orders-and-vendors",
-  "total_direct_hits": 0,
-  "total_expanded_hits": 0
+  "total_joined_rows": 45
 }

@@ -1,0 +1,4 @@
+{"hop": 0, "matched_by": ["entity:smart columbus:Prop_4", "exact:Prop_1=040255"], "row": {"Prop_0": "5637854830", "Prop_1": "040255", "Prop_2": "Vendor", "Prop_3": "NO", "Prop_4": "Smart Columbus"}, "row_index": 4606}
+{"hop": 0, "matched_by": ["entity:columbus partnership:Prop_4", "exact:Prop_1=045611"], "row": {"Prop_0": "5638265177", "Prop_1": "045611", "Prop_2": "Vendor", "Prop_3": "NO", "Prop_4": "Columbus Partnership"}, "row_index": 50806}
+{"hop": 0, "matched_by": ["entity:smart columbus:Prop_4"], "row": {"Prop_0": "5637548861", "Prop_1": "033348", "Prop_2": "Vendor", "Prop_3": "NO", "Prop_4": "Smart Columbus LLC"}, "row_index": 64442}
+{"hop": 0, "matched_by": ["entity:columbus partnership:Prop_4"], "row": {"Prop_0": "5637282577", "Prop_1": "020639", "Prop_2": "Vendor", "Prop_3": "NO", "Prop_4": "Columbus Partnership"}, "row_index": 222755}
