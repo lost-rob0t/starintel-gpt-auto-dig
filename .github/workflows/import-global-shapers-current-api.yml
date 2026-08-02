@@ -6,6 +6,7 @@ on:
       - main
     paths:
       - "scripts/import_global_shapers_members_api.py"
+      - "scripts/deduplicate_global_shapers_api_packet.py"
       - "scripts/canonicalize_global_shapers_api_packet.py"
       - ".github/workflows/import-global-shapers-current-api.yml"
   workflow_dispatch:
@@ -37,12 +38,14 @@ jobs:
       - name: Install API importer dependencies
         run: python -m pip install --disable-pip-version-check requests
 
-      - name: Verify importer and canonicalizer
+      - name: Verify importer, reconciler, and canonicalizer
         run: |
           python -m py_compile \
             scripts/import_global_shapers_members_api.py \
+            scripts/deduplicate_global_shapers_api_packet.py \
             scripts/canonicalize_global_shapers_api_packet.py
           python scripts/import_global_shapers_members_api.py --help
+          python scripts/deduplicate_global_shapers_api_packet.py --help
           python scripts/canonicalize_global_shapers_api_packet.py --help
 
       - name: Import complete current public roster
@@ -52,6 +55,13 @@ jobs:
             --minimum-people 4600 \
             --max-pages 100 \
             --timeout 90
+
+      - name: Reconcile deterministic hub and relation ID collisions
+        run: |
+          python scripts/deduplicate_global_shapers_api_packet.py \
+            --root . \
+            --packet-dir digs/global-shapers/global-shapers-current-members-api \
+            --report reports/global-shapers-current-api-id-collisions.json
 
       - name: Canonicalize generated API packet
         run: |
@@ -67,6 +77,7 @@ jobs:
           from pathlib import Path
 
           report = json.loads(Path("reports/global-shapers-current-api.json").read_text(encoding="utf-8"))
+          collisions = json.loads(Path("reports/global-shapers-current-api-id-collisions.json").read_text(encoding="utf-8"))
           packet = report["packet"]
           canonicalization = report["canonicalization"]
           assert report["status"] == "complete", report
@@ -76,6 +87,8 @@ jobs:
           assert canonicalization["transformed_people"] == report["people"]
           assert canonicalization["schema_validated_documents"] == packet["documents"]
           assert len(canonicalization["added_root_documents"]) == 3
+          assert collisions["counts_by_dtype_before"]["person"] == report["people"]
+          assert collisions["counts_by_dtype_after"]["person"] == report["people"]
           assert report["page_count_with_data"] >= 20
           assert report["pages"][-1]["rows"] == 0
           if report["expected_live_member_count"] is not None:
@@ -85,6 +98,8 @@ jobs:
               "raw_rows": report["raw_rows"],
               "unique_people": report["people"],
               "duplicate_rows_removed": report["identity"]["duplicate_rows_removed"],
+              "id_collision_documents_removed": collisions["duplicate_documents_removed"],
+              "id_collision_groups": collisions["collision_groups"],
               "hubs": report["identity"]["hubs"],
               "statuses": report["identity"]["status_counts"],
               "identity_kinds": report["identity"]["identity_kinds"],
@@ -117,6 +132,7 @@ jobs:
             imports/global-shapers/generated-current-profile-seeds.jsonl \
             reports/global-shapers-current-api.json \
             reports/global-shapers-current-api.md \
+            reports/global-shapers-current-api-id-collisions.json \
             reports/global-shapers-current-api-validation.json
           if ! git diff --cached --quiet; then
             count=$(python -c 'import json; print(json.load(open("reports/global-shapers-current-api.json"))["people"])')
@@ -133,6 +149,7 @@ jobs:
             digs/global-shapers/global-shapers-current-members-api
             reports/global-shapers-current-api.json
             reports/global-shapers-current-api.md
+            reports/global-shapers-current-api-id-collisions.json
             reports/global-shapers-current-api-validation.json
             imports/global-shapers/generated-hub-names.txt
             imports/global-shapers/generated-current-profile-seeds.jsonl
