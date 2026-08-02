@@ -40,7 +40,7 @@ jobs:
           print('inserted_chars', len(encoded))
           alphabet = string.ascii_uppercase + string.ascii_lowercase + string.digits + '+/'
 
-          def progress(compressed: bytes, chunk_size: int = 256) -> tuple[int, bool, int]:
+          def progress(compressed: bytes, chunk_size: int = 1024) -> tuple[int, bool, int]:
               decoder = lzma.LZMADecompressor()
               offset = 0
               output = 0
@@ -57,7 +57,7 @@ jobs:
               return offset, decoder.eof, output
 
           candidates = []
-          for position in range(160_350, 160_650):
+          for position in range(160_430, 160_511):
               original = encoded[position]
               for character in alphabet:
                   if character == original:
@@ -74,13 +74,12 @@ jobs:
           for item in candidates[:40]:
               print(item)
 
-          for consumed, eof, output, position, original, character in candidates[:40]:
+          for consumed, eof, output, position, original, character in candidates:
               if not eof:
                   continue
               repaired = encoded[:position] + character + encoded[position + 1:]
               compressed = base64.b64decode(repaired, validate=True)
               payload = lzma.decompress(compressed)
-              print('SUCCESS', position, original, character, len(payload), payload[:80])
-              Path('/tmp/repaired-layer.bin').write_bytes(payload)
+              print('SUCCESS', position, original, character, len(payload), payload[:120])
               break
           PY
