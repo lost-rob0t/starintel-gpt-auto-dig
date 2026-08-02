@@ -1,0 +1,408 @@
+{
+  "counts": {
+    "investigation-target": 105933,
+    "person": 11,
+    "relation": 11,
+    "source": 1
+  },
+  "dataset": "dnc",
+  "document_stream_sha256": "640fd619de1f5ea02efc3f45f9260345357f7ea08b68f568c963b29d6d955178",
+  "generated_at": "2026-08-02T03:02:00Z",
+  "inventory_sha256": "6411a7954871cd9ed2a27948a8d1c8f7c150f15ff05f6cdcb1b36f4754768f6f",
+  "partition_count": 64,
+  "partitions": [
+    {
+      "documents": 1696,
+      "part": 0,
+      "sha256": "c1b9e92b6cb040aead1961d714bc1ddc885c29d494e339407d655412d0263dee",
+      "size": 6601039
+    },
+    {
+      "documents": 1695,
+      "part": 1,
+      "sha256": "8844fa05a9751c892d28e13bb9474bbeecbd8d33aecd0eceff16f4590cc17bf7",
+      "size": 6597475
+    },
+    {
+      "documents": 1635,
+      "part": 2,
+      "sha256": "30bd892f4e5172968563a074c4e9aaecc8871256ee4b4fa6f0103197dfd36fa1",
+      "size": 6363660
+    },
+    {
+      "documents": 1607,
+      "part": 3,
+      "sha256": "5f76a946206217869f5e652d9e73693bc94366f64617b38eed985c70e203fd12",
+      "size": 6254988
+    },
+    {
+      "documents": 1631,
+      "part": 4,
+      "sha256": "c117a412ac6516ea8c7dd9f057efed1a1c22eace542de9ccef4ef7a08b00e46d",
+      "size": 6347935
+    },
+    {
+      "documents": 1612,
+      "part": 5,
+      "sha256": "d88fb5b8c22d0ca6144e343ca0d4918f0538846803b81a8077e09dc42d38f747",
+      "size": 6275540
+    },
+    {
+      "documents": 1668,
+      "part": 6,
+      "sha256": "06d41c89616caf242042e054e06e72eda17a2c808bfa63f551bfcaf398db9ce4",
+      "size": 6492716
+    },
+    {
+      "documents": 1635,
+      "part": 7,
+      "sha256": "6f38e6f322baf2fc15ca01512e73f12c67b8f1189c4735d2116297606ca8272c",
+      "size": 6364667
+    },
+    {
+      "documents": 1682,
+      "part": 8,
+      "sha256": "a6c396bce74e58916b783b4251ea378668705bbf6ccb7d10fba991992f403cac",
+      "size": 6547768
+    },
+    {
+      "documents": 1621,
+      "part": 9,
+      "sha256": "d4d08d932428d8e8e5be0d8c752ea00e2f8b57a162c9ce05db5f45008c73c2bd",
+      "size": 6310257
+    },
+    {
+      "documents": 1699,
+      "part": 10,
+      "sha256": "a4970e7d83fd96977d70210d2a405f09cb9f715ad43fb2515cf8d101a2e0e16a",
+      "size": 6613386
+    },
+    {
+      "documents": 1604,
+      "part": 11,
+      "sha256": "2878787f85cc5018151d1b5aa50912a32a6e8843287d280def8846ec567c1333",
+      "size": 6243192
+    },
+    {
+      "documents": 1656,
+      "part": 12,
+      "sha256": "d4a5d6f6fcdc564f8ca1d5b4ba104923332d2b4744cb7bc323670754f05391c0",
+      "size": 6445787
+    },
+    {
+      "documents": 1703,
+      "part": 13,
+      "sha256": "caff5ce22920234089a998b7107cdfc393a5902674f6efe7b02fe7297f0ee774",
+      "size": 6628317
+    },
+    {
+      "documents": 1708,
+      "part": 14,
+      "sha256": "e21c6140f2c954680178754ebf74f8b5e5d2111f614f8fad23b7478575acb8d7",
+      "size": 6648085
+    },
+    {
+      "documents": 1696,
+      "part": 15,
+      "sha256": "f964eed54a554bb1bc4ba512586a8c3e4067fb3a8f1e59ed59262a50c050c651",
+      "size": 6601831
+    },
+    {
+      "documents": 1634,
+      "part": 16,
+      "sha256": "0bf4adef5a3a5bddc7eb855a79dbd36dbe58140da9dae37c2c54cfcf772b9938",
+      "size": 6359242
+    },
+    {
+      "documents": 1654,
+      "part": 17,
+      "sha256": "c5195835ae34eda930b5036672a07a6bb8b3562dcbcb9c1aa8d27832d530276f",
+      "size": 6437835
+    },
+    {
+      "documents": 1736,
+      "part": 18,
+      "sha256": "83afa3f488218e71c8c82815dabce9ccf0a3f3be91ba648f04ea9e45d7ae06b8",
+      "size": 6757621
+    },
+    {
+      "documents": 1656,
+      "part": 19,
+      "sha256": "70d413c13dd9fd881a52fed7c416b721e365733f984944ff86af528c34bf9968",
+      "size": 6444218
+    },
+    {
+      "documents": 1703,
+      "part": 20,
+      "sha256": "8c42a28b75c17356fbec213f1ce87e9b6251f15e4d35d982f136bcee9e3e8978",
+      "size": 6629036
+    },
+    {
+      "documents": 1565,
+      "part": 21,
+      "sha256": "12d1b36be5d9c8def519655b911e696bb7d05b3c247395099608ed8036268938",
+      "size": 6091348
+    },
+    {
+      "documents": 1741,
+      "part": 22,
+      "sha256": "a555eca4f3760aa333a9f33ff1d6493343ea54e4ebebe784d2ed4e7ed04ada1a",
+      "size": 6775938
+    },
+    {
+      "documents": 1726,
+      "part": 23,
+      "sha256": "da249226cca9df692a918de2ac118b4985c7bc985b12937ee31f680707fa029d",
+      "size": 6717800
+    },
+    {
+      "documents": 1649,
+      "part": 24,
+      "sha256": "f4ab79fe18a99777be3f3a18b92eb1da2cd6d1cd1fb7ce8ee4fa791305375daa",
+      "size": 6418908
+    },
+    {
+      "documents": 1714,
+      "part": 25,
+      "sha256": "964410c7e3154d147ec095b6af81b617088dd8c2d713029b7b606fbb7be52d89",
+      "size": 6671485
+    },
+    {
+      "documents": 1690,
+      "part": 26,
+      "sha256": "c9a77a138d95dfbdc544e5af1c03ac82bd1be2058825f490eab6f7dee186cbd7",
+      "size": 6578301
+    },
+    {
+      "documents": 1646,
+      "part": 27,
+      "sha256": "b29cc17bc0e320abd03939250f16a170b49609c2c877d13905c183d3345ee60d",
+      "size": 6406088
+    },
+    {
+      "documents": 1728,
+      "part": 28,
+      "sha256": "263f8a503651debff70c18734c811a8186dfa0c9a11aace13ef9f18f2f576a9e",
+      "size": 6726489
+    },
+    {
+      "documents": 1661,
+      "part": 29,
+      "sha256": "e00a880045fa03158b6807cc0be5f2b28cc22c17a5b4b6f456dc336f99ac2f7f",
+      "size": 6464460
+    },
+    {
+      "documents": 1672,
+      "part": 30,
+      "sha256": "0f32fd5d248ab5deb3bdd50af1a2777d3e765f08ce0cf59fc7b0039cec27e3f0",
+      "size": 6508590
+    },
+    {
+      "documents": 1614,
+      "part": 31,
+      "sha256": "631b834a87837abd56823f539781620cd19d68a2fe5b5c47a26ad5db61307490",
+      "size": 6281581
+    },
+    {
+      "documents": 1626,
+      "part": 32,
+      "sha256": "92a5d8488bfb1b05c95e4bffe5d1c39e8c62de2930b872765757c7701ac5c4cd",
+      "size": 6329430
+    },
+    {
+      "documents": 1612,
+      "part": 33,
+      "sha256": "96c17eb7eb619ffe90a4553177793d4eab560337773f3b4af0a7ab8848ac23f3",
+      "size": 6275114
+    },
+    {
+      "documents": 1668,
+      "part": 34,
+      "sha256": "cb08ed070c32412d31fb4c4a8d621f579590ace50a6b27542d8e5807515e8c2e",
+      "size": 6491663
+    },
+    {
+      "documents": 1656,
+      "part": 35,
+      "sha256": "f6e32e76c1c9345fbde2fc5f9c34a4bc317813df682f0fd357fc10d11dfe2168",
+      "size": 6445884
+    },
+    {
+      "documents": 1664,
+      "part": 36,
+      "sha256": "6d8c329ebe6032c006362e157d7241390c405d948838f5d40245b416ac8ab54d",
+      "size": 6476882
+    },
+    {
+      "documents": 1625,
+      "part": 37,
+      "sha256": "1bb067edc266795229eecff9d3b3c34878f260ea964e95a827a95ca3f52d9ea5",
+      "size": 6325041
+    },
+    {
+      "documents": 1639,
+      "part": 38,
+      "sha256": "5adf92d1331cdc3354dbd064ed6732918a5d3c2a39c9d68d39630b6b9e74541c",
+      "size": 6379551
+    },
+    {
+      "documents": 1659,
+      "part": 39,
+      "sha256": "5b139b54860e9787ca52a60b9ce16cf575fd5f16caeb478c108fcbb2d41bab68",
+      "size": 6457747
+    },
+    {
+      "documents": 1642,
+      "part": 40,
+      "sha256": "6aab2352ab941962ce4e5ed2c0ef5cc764f6fae5e48e7261c5cbb0fe78290fc8",
+      "size": 6390600
+    },
+    {
+      "documents": 1669,
+      "part": 41,
+      "sha256": "a82787eab98250dd8c6cca9ed7bb35217fa0ae117a93e3a69039e18be5a205df",
+      "size": 6496237
+    },
+    {
+      "documents": 1647,
+      "part": 42,
+      "sha256": "ff3b63b4768c6b25292242b3cafe0540abcf527561dab914607a6e39ff8a1398",
+      "size": 6410199
+    },
+    {
+      "documents": 1647,
+      "part": 43,
+      "sha256": "8d5fa61be8ce679c35fcb5503b7b4a0b153a307b27004f8fa01570984d881e41",
+      "size": 6410599
+    },
+    {
+      "documents": 1539,
+      "part": 44,
+      "sha256": "3d5c4dd5685aa4859ceb2f06310c29aec8a923ec7d69c053f6e8610416501ff0",
+      "size": 5990285
+    },
+    {
+      "documents": 1670,
+      "part": 45,
+      "sha256": "cbbc86a27a20f0b0d8e240f4e27361cf2457a547c72fa506c863792cba894e62",
+      "size": 6499020
+    },
+    {
+      "documents": 1575,
+      "part": 46,
+      "sha256": "560d121f466101130a3138288c9093d0d329d4cd58fd407985417b83632865fc",
+      "size": 6130790
+    },
+    {
+      "documents": 1563,
+      "part": 47,
+      "sha256": "b6285ffb7924d725278f6eeb00995d418ddf474864209c3df90c91a686af1ef8",
+      "size": 6083082
+    },
+    {
+      "documents": 1631,
+      "part": 48,
+      "sha256": "19b4438982c9d4bbc7d39d5443411536a7c6e1f21fed7860504f641e6151a9b5",
+      "size": 6348812
+    },
+    {
+      "documents": 1691,
+      "part": 49,
+      "sha256": "93cfc4a54d93b197461956ecb8f1607afd9df5ddae55df106db35626d33c33ba",
+      "size": 6581783
+    },
+    {
+      "documents": 1628,
+      "part": 50,
+      "sha256": "046d322abcc60a1ef45548dffedbf0a5145a962c5b9bef3721050db9d794aae4",
+      "size": 6336143
+    },
+    {
+      "documents": 1695,
+      "part": 51,
+      "sha256": "bd1051d39ce729f95e0724cb88564b2d4f194993d7b96d4ff10ccd7531040e13",
+      "size": 6597446
+    },
+    {
+      "documents": 1668,
+      "part": 52,
+      "sha256": "6b28d3edc60d717dec66759cded2441e90fd3c9ed9668266e91f33555e2fcd1d",
+      "size": 6492843
+    },
+    {
+      "documents": 1648,
+      "part": 53,
+      "sha256": "d6ca4044bea306aec1874af9392798256a0323616e23870c4474f90ea0858c53",
+      "size": 6415410
+    },
+    {
+      "documents": 1639,
+      "part": 54,
+      "sha256": "46a3085526c027ac3a7b7e2247ab97e79c029a1d6877e0a7df28c8fba5efd656",
+      "size": 6379327
+    },
+    {
+      "documents": 1681,
+      "part": 55,
+      "sha256": "114ecab75c445e90217ad3a5f3789c6b91bd640322dc688446826b550cd248f7",
+      "size": 6542410
+    },
+    {
+      "documents": 1658,
+      "part": 56,
+      "sha256": "3c1f3f327a13bf4cbeee1fa83a2e3148d8b4b794a0d80da61a2039c65a9d3671",
+      "size": 6453442
+    },
+    {
+      "documents": 1678,
+      "part": 57,
+      "sha256": "baacd110fc16745a824e8ef206be1fa952e41042b8fe4466fd840432bb9cbe52",
+      "size": 6531138
+    },
+    {
+      "documents": 1610,
+      "part": 58,
+      "sha256": "ef81f73c35ef41169a5809142fe7b72a3e6173034ed962d51ad5a0dbb2a927e6",
+      "size": 6265782
+    },
+    {
+      "documents": 1727,
+      "part": 59,
+      "sha256": "ff2298a1da5c9462e0c939f540e6a370db9cd7891c9257d65cfea4a6b4f1efbd",
+      "size": 6721459
+    },
+    {
+      "documents": 1657,
+      "part": 60,
+      "sha256": "d50758570e23dcdb418c7dc91e4e4419cf2e016641f4ac6c067d5fdf54eda98f",
+      "size": 6449352
+    },
+    {
+      "documents": 1629,
+      "part": 61,
+      "sha256": "5bb04c9fec2933244538cdf577377fd13b0cad3cd66d1a897f4fc42b8482c2fd",
+      "size": 6340497
+    },
+    {
+      "documents": 1671,
+      "part": 62,
+      "sha256": "31fcfbe65a863d249d2c44f225256621660be8e5cc805ee1f1de5bf6982e59b5",
+      "size": 6503386
+    },
+    {
+      "documents": 1584,
+      "part": 63,
+      "sha256": "4bb2400a11bb953059e5f4d1c1b9f1adb4a665125dd1ebeb3e47d4ecb1033a33",
+      "size": 6164694
+    }
+  ],
+  "schema_version": "0.9.0",
+  "target_counts": {
+    "dnc_person_accountability_record": 18,
+    "dnc_person_public_network": 18,
+    "dnc_person_wef_link_verification": 105897
+  },
+  "total_documents": 105956,
+  "total_people_inventory": 105897,
+  "total_targets": 105933
+}

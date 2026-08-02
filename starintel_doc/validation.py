@@ -113,6 +113,15 @@ def validate_value(value: Any, schema: dict[str, Any], path: str = "$") -> None:
                 validate_value(item, additional, f"{path}.{key}")
 
 
+def _document_schema(dtype: str) -> dict[str, Any]:
+    schema = document_schema(dtype)
+    # ``file_format`` is established source metadata in existing v0.9 packets.
+    # Keep validation strict while declaring the field instead of discarding it.
+    if dtype == "source":
+        schema["properties"]["data"]["properties"]["file_format"] = {"type": "string"}
+    return schema
+
+
 def validate_document(document: dict[str, Any]) -> dict[str, Any]:
     if not isinstance(document, dict):
         raise ValidationError("$: expected object")
@@ -124,5 +133,5 @@ def validate_document(document: dict[str, Any]) -> dict[str, Any]:
         raise ValidationError(
             f"$.schema_version: expected {SCHEMA_VERSION!r}, got {document.get('schema_version')!r}"
         )
-    validate_value(document, document_schema(dtype))
+    validate_value(document, _document_schema(dtype))
     return document

@@ -1,0 +1,5 @@
+PR #1944 materialized-head validation trigger
+
+Generated queue parent: c5d08a6f6e2f7bd3dd11ff47c614d94fe722f096
+Purpose: run every required PR workflow against the committed all-person queue before merge.
+Expected generated packet: 64 StarIntel partitions plus manifest and supporting files.

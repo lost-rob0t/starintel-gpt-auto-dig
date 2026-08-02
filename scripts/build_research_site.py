@@ -2,13 +2,16 @@
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import re
 import shutil
 import sys
 from collections import defaultdict
+from contextlib import contextmanager
 from pathlib import Path
-from typing import Any
+from typing import Any, Iterator
+from urllib.parse import quote
 
 ROOT = Path(__file__).resolve().parents[1]
 if str(ROOT) not in sys.path:
@@ -18,7 +21,7 @@ from starintel_doc.store import read_transport
 from starintel_doc.validation import validate_document
 from starintel_site.builder import build_site
 from starintel_site.model import slug
-from starintel_site.people import build_people_directory
+from starintel_site.people_fast import build_people_directory
 
 
 def load_config(path: Path) -> dict[str, Any]:
@@ -47,6 +50,13 @@ def infer_target(dataset: str, mappings: dict[str, str]) -> str:
     return candidate or slug(dataset)
 
 
+def packet_paths(root: Path) -> list[Path]:
+    paths = list(root.glob("*/*/starintel-documents.jsonl"))
+    paths += list(root.glob("*/*/starintel-documents.jsonl.gz.b64"))
+    paths += list(root.glob("*/*/starintel-documents.jsonl.gz.b64.parts"))
+    return sorted(paths)
+
+
 def filter_excluded(workspace: Path, config: dict[str, Any]) -> None:
     raw_ids = config.get("excluded_document_ids", [])
     if not isinstance(raw_ids, list):
@@ -54,11 +64,8 @@ def filter_excluded(workspace: Path, config: dict[str, Any]) -> None:
     excluded = {str(value) for value in raw_ids}
     if not excluded:
         return
-    paths = list(workspace.glob("*/*/starintel-documents.jsonl"))
-    paths += list(workspace.glob("*/*/starintel-documents.jsonl.gz.b64"))
-    paths += list(workspace.glob("*/*/starintel-documents.jsonl.gz.b64.parts"))
     handled: set[Path] = set()
-    for path in sorted(paths):
+    for path in packet_paths(workspace):
         if path.parent in handled:
             continue
         handled.add(path.parent)
@@ -77,6 +84,60 @@ def filter_excluded(workspace: Path, config: dict[str, Any]) -> None:
             candidate.unlink()
 
 
+def compact(document: dict[str, Any]) -> str:
+    return json.dumps(document, ensure_ascii=False, separators=(",", ":"), sort_keys=True)
+
+
+def deduplicate_packets(workspace: Path) -> None:
+    """Preserve packet records while deterministically repairing legacy ID collisions."""
+    handled: set[Path] = set()
+    for path in packet_paths(workspace):
+        if path.parent in handled:
+            continue
+        handled.add(path.parent)
+        preferred = path.parent / "starintel-documents.jsonl"
+        selected = preferred if preferred.exists() else path
+        documents = [json.loads(line) for line in read_transport(selected).splitlines() if line.strip()]
+        by_id: dict[str, dict[str, Any]] = {}
+        ordered: list[dict[str, Any]] = []
+        identical_count = 0
+        collision_count = 0
+        for original in documents:
+            document = original
+            doc_id = str(document.get("_id", ""))
+            previous = by_id.get(doc_id)
+            if previous is None:
+                by_id[doc_id] = document
+                ordered.append(document)
+                continue
+            if previous == document:
+                identical_count += 1
+                continue
+            digest = hashlib.sha256(compact(document).encode("utf-8")).hexdigest()
+            variant_id = f"{doc_id}-variant-{digest}"
+            existing_variant = by_id.get(variant_id)
+            if existing_variant is not None:
+                if existing_variant == document:
+                    identical_count += 1
+                    continue
+                raise ValueError(f"{selected}: irreconcilable duplicate variant {variant_id}")
+            document = dict(document)
+            document["_id"] = variant_id
+            validate_document(document)
+            by_id[variant_id] = document
+            ordered.append(document)
+            collision_count += 1
+        if not (identical_count or collision_count):
+            continue
+        preferred.write_text("".join(compact(document) + "\n" for document in ordered), encoding="utf-8")
+        for candidate in path.parent.glob("starintel-documents.jsonl.gz.b64*"):
+            candidate.unlink()
+        print(
+            f"Normalized duplicate IDs in {selected}: "
+            f"identical={identical_count} preserved_variants={collision_count}"
+        )
+
+
 def materialize_input(digs_root: Path, db_root: Path, workspace: Path, config: dict[str, Any]) -> None:
     if workspace.exists():
         shutil.rmtree(workspace)
@@ -84,6 +145,7 @@ def materialize_input(digs_root: Path, db_root: Path, workspace: Path, config: d
     if digs_root.exists():
         shutil.copytree(digs_root, workspace, dirs_exist_ok=True)
     filter_excluded(workspace, config)
+    deduplicate_packets(workspace)
 
     mappings = config.get("database_targets", {})
     if not isinstance(mappings, dict):
@@ -101,11 +163,95 @@ def materialize_input(digs_root: Path, db_root: Path, workspace: Path, config: d
         packet.parent.mkdir(parents=True, exist_ok=True)
         packet.write_text(
             "".join(
-                json.dumps(document, ensure_ascii=False, separators=(",", ":"), sort_keys=True) + "\n"
+                compact(document) + "\n"
                 for document in sorted(documents, key=lambda item: str(item.get("_id", "")))
             ),
             encoding="utf-8",
         )
+
+
+def _bulk_targets(config: dict[str, Any], explicit: list[str]) -> set[str]:
+    if explicit:
+        return {slug(value) for value in explicit if value.strip()}
+    configured = config.get("bulk_index_targets", ["dnc", "dataset-dnc"])
+    if not isinstance(configured, list):
+        raise ValueError("site-config.json: bulk_index_targets must be a list")
+    return {slug(str(value)) for value in configured if str(value).strip()}
+
+
+@contextmanager
+def suppress_bulk_detail_writes(output: Path, org_output: Path, targets: set[str]) -> Iterator[dict[str, int]]:
+    """Keep complete indexes/downloads while avoiding millions of duplicate detail files.
+
+    Bulk targets retain dashboards, graph/documents indexes, search entries and
+    canonical JSONL downloads. Per-record HTML and duplicate Org files are
+    represented through the indexed document browser instead.
+    """
+    original = Path.write_text
+    stats = {"node_html": 0, "org_files": 0}
+
+    def filtered(path: Path, data: str, *args: Any, **kwargs: Any) -> int:
+        candidate = Path(path)
+        try:
+            relative = candidate.relative_to(output)
+            parts = relative.parts
+            if len(parts) >= 3 and parts[0] in targets and parts[1] == "nodes" and candidate.suffix == ".html":
+                stats["node_html"] += 1
+                return len(data)
+            if (
+                len(parts) >= 3
+                and parts[0] == "org"
+                and parts[1] in targets
+                and candidate.suffix == ".org"
+                and candidate.name != "index.org"
+            ):
+                stats["org_files"] += 1
+                return len(data)
+        except ValueError:
+            pass
+        try:
+            relative = candidate.relative_to(org_output)
+            parts = relative.parts
+            if len(parts) >= 2 and parts[0] in targets and candidate.suffix == ".org" and candidate.name != "index.org":
+                stats["org_files"] += 1
+                return len(data)
+        except ValueError:
+            pass
+        return original(candidate, data, *args, **kwargs)
+
+    Path.write_text = filtered  # type: ignore[method-assign]
+    try:
+        yield stats
+    finally:
+        Path.write_text = original  # type: ignore[method-assign]
+
+
+def rewrite_bulk_search_urls(output: Path, targets: set[str]) -> None:
+    path = output / "search-index.json"
+    if not path.is_file():
+        return
+    records = json.loads(path.read_text(encoding="utf-8"))
+    changed = 0
+    for record in records:
+        target = slug(str(record.get("target") or ""))
+        if target not in targets:
+            continue
+        record["url"] = f"{target}/documents.html?document={quote(str(record.get('id') or ''), safe='')}"
+        changed += 1
+    path.write_text(json.dumps(records, ensure_ascii=False, separators=(",", ":")), encoding="utf-8")
+    print(f"Repointed {changed} bulk search entries to indexed document browsers.")
+
+
+def write_people_only_shell(output: Path) -> None:
+    if output.exists():
+        shutil.rmtree(output)
+    output.mkdir(parents=True)
+    (output / "index.html").write_text(
+        "<!doctype html><html lang=\"en\"><head><meta charset=\"utf-8\"><title>StarIntel People</title></head>"
+        "<body><header><nav><a href=\"people/index.html\">People</a></nav></header>"
+        "<main><h1>People directory</h1><a href=\"people/index.html\">Open people directory</a></main></body></html>",
+        encoding="utf-8",
+    )
 
 
 def main() -> int:
@@ -117,12 +263,27 @@ def main() -> int:
     parser.add_argument("--workspace", type=Path, default=Path(".generated/site-input"))
     parser.add_argument("--config", type=Path, default=Path("site-config.json"))
     parser.add_argument("--assets", type=Path, default=Path("site-assets"))
+    parser.add_argument("--people-only", action="store_true")
+    parser.add_argument("--skip-people", action="store_true")
+    parser.add_argument("--bulk-index-target", action="append", default=[])
     args = parser.parse_args()
+    if args.people_only and args.skip_people:
+        parser.error("--people-only and --skip-people are mutually exclusive")
     try:
         config = load_config(args.config)
         materialize_input(args.input, args.db, args.workspace, config)
-        build_site(args.workspace, args.output, args.org_output, args.config, args.assets)
-        people = build_people_directory(args.workspace, args.output, args.assets)
+        people: dict[str, Any] = {"people": 0, "alumni": 0}
+        if args.people_only:
+            write_people_only_shell(args.output)
+            people = build_people_directory(args.workspace, args.output, args.assets)
+        else:
+            targets = _bulk_targets(config, args.bulk_index_target)
+            with suppress_bulk_detail_writes(args.output, args.org_output, targets) as suppressed:
+                build_site(args.workspace, args.output, args.org_output, args.config, args.assets)
+            rewrite_bulk_search_urls(args.output, targets)
+            print(f"Bulk indexed output: targets={sorted(targets)} suppressed={suppressed}")
+            if not args.skip_people:
+                people = build_people_directory(args.workspace, args.output, args.assets)
     except Exception as exc:
         print(f"error: {exc}", file=sys.stderr)
         return 1
