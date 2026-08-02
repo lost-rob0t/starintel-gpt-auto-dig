@@ -1,0 +1,27 @@
+{
+  "authorization": {
+    "ceiling": 150000,
+    "known_dimensions": {
+      "DEPARTMENTNAME": "finance",
+      "DIVISIONNAME": "financial management",
+      "FUNDNAME": "general fund",
+      "OBJECTCLASSNAME": "contractual services",
+      "PROGRAMNAME": "financial management",
+      "SUBFUNDNAME": "general fund operating"
+    },
+    "omitted_dimension": "The public Accounting Distribution dataset does not expose main account 63975.",
+    "ordinance": "0223-2026"
+  },
+  "authorization_compatible_invoice_count": 16,
+  "authorization_compatible_invoice_total": "127846.0000000000000000",
+  "authorization_compatible_line_count": 16,
+  "authorization_compatible_line_total": "127846.00",
+  "authorization_compatible_paid_check_count": 0,
+  "authorization_compatible_paid_check_total": "0",
+  "remaining_ceiling_after_identified_paid_checks": "150000",
+  "source_candidate_count": 487,
+  "source_document_line_count": 413,
+  "target_id": "starintel:investigation-target:wef-depth-10-citywide-membership-authorization-reconciliation",
+  "wef_hit_count": 0,
+  "wef_hits": []
+}
