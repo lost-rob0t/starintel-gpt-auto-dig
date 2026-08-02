@@ -8,6 +8,7 @@ on:
     paths:
       - scripts/generate_dnc_key_people_wef_accountability.py
       - digs/dnc/2026-08-01-key-people-wef-accountability-seed/**
+      - digs/dnc/2026-07-31-governance-primary-documents/**
       - .github/workflows/dnc-key-people-wef-accountability.yml
   push:
     branches:
@@ -15,13 +16,14 @@ on:
     paths:
       - scripts/generate_dnc_key_people_wef_accountability.py
       - digs/dnc/2026-08-01-key-people-wef-accountability-seed/**
+      - digs/dnc/2026-07-31-governance-primary-documents/**
       - .github/workflows/dnc-key-people-wef-accountability.yml
 
 permissions:
   contents: write
 
 concurrency:
-  group: dnc-key-people-wef-accountability-${{ github.ref }}
+  group: dnc-key-people-wef-accountability-${{ github.event.pull_request.number || github.ref_name }}
   cancel-in-progress: true
 
 jobs:
@@ -45,6 +47,22 @@ jobs:
       - name: Generate universal WEF and key-person accountability queues
         run: python3 scripts/generate_dnc_key_people_wef_accountability.py --all-people
 
+      - name: Normalize legacy governance source fields
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+
+          path = Path('digs/dnc/2026-07-31-governance-primary-documents/starintel-documents.jsonl')
+          source = path.read_text(encoding='utf-8')
+          normalized = source.replace('"file_format":"application/pdf",', '')
+          if normalized == source:
+              print('Governance source fields already normalized.')
+          else:
+              path.write_text(normalized, encoding='utf-8')
+              print('Normalized legacy file_format fields in governance source records.')
+          PY
+
       - name: Enforce GitHub-safe partitions
         shell: bash
         run: |
@@ -64,18 +82,20 @@ jobs:
       - name: Validate complete repository and site
         run: python3 scripts/validate-for-merge.py --site
 
-      - name: Commit generated queues on branch pushes
-        if: github.event_name == 'push'
+      - name: Commit generated queues and normalized governance records
+        if: github.event_name == 'pull_request'
         shell: bash
         run: |
           set -euo pipefail
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add digs/dnc/2026-08-01-key-people-wef-accountability
+          git add \
+            digs/dnc/2026-08-01-key-people-wef-accountability \
+            digs/dnc/2026-07-31-governance-primary-documents/starintel-documents.jsonl
           if git diff --cached --quiet; then
-            echo 'Generated packet is unchanged.'
+            echo 'Generated packet and governance records are unchanged.'
             exit 0
           fi
-          git commit -m 'Materialize DNC people WEF and accountability queues [skip ci]'
+          git commit -m 'Materialize DNC people queues and normalize governance records'
           git pull --rebase origin "${TARGET_BRANCH}"
           git push origin HEAD:${TARGET_BRANCH}
