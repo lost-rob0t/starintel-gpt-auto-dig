@@ -13,10 +13,14 @@ on:
 permissions:
   contents: read
 
+concurrency:
+  group: locate-global-shapers-transport-gap-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
 jobs:
   locate:
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 10
     steps:
       - uses: actions/checkout@v6
         with:
@@ -34,7 +38,7 @@ jobs:
             --parts imports/.wef-shapers-compact \
             --output /tmp/located.compact.jsonl \
             --report reports/global-shapers-gap-location.json \
-            --radius 2048 \
+            --radius 32 \
             --workers 32
           status=$?
           cat reports/global-shapers-gap-location.json
