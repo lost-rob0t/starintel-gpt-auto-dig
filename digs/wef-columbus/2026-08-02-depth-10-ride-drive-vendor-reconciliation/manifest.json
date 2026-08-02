@@ -1,0 +1,30 @@
+{
+  "counts_by_dtype": {
+    "analysis": 3,
+    "financial-observation": 2,
+    "investigation-target": 1,
+    "research-pass": 1
+  },
+  "dataset": "wef",
+  "decoded_bytes": 19072,
+  "document_count": 7,
+  "generated_at": "2026-08-02T02:02:00Z",
+  "gzip_bytes": 3463,
+  "gzip_sha256": "9ef46ca703064558cb0dfca0e95528184ed389bd20ce70c76bff408c3c919791",
+  "normalized_jsonl_sha256": "42dd21e5920457edb77cbea1d56771dd3f5a34f9c631210150adc6dd497a82c0",
+  "records": [
+    "starintel:analysis:smart-columbus-ride-drive-authorization-reconciliation-depth-10",
+    "starintel:analysis:smart-columbus-ride-drive-vendor-account-mismatch-depth-10",
+    "starintel:analysis:smart-columbus-ride-drive-wef-bounded-negative-depth-10",
+    "starintel:financial-observation:smart-columbus-ride-drive-candidate-payment-cluster-depth-10",
+    "starintel:financial-observation:smart-columbus-ride-drive-task-3-payment-depth-10",
+    "starintel:investigation-target:wef-depth-11-ride-drive-invoice-images-vendor-master-and-deliverables",
+    "starintel:research-pass:wef-columbus-depth-10-ride-drive-vendor-reconciliation-2026-08-02"
+  ],
+  "recursion_depth": 10,
+  "run_id": "wef-columbus-depth-10-ride-drive-vendor-reconciliation-2026-08-02",
+  "schema_version": "0.9.0",
+  "transport_bytes": 4681,
+  "transport_file": "starintel-documents.jsonl.gz.b64",
+  "transport_sha256": "8b494924e89a4095f70d69e447b2f31667072b9af9b3b1e60442039c13aa25b3"
+}
