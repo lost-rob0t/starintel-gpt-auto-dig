@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import re
 import shutil
@@ -81,8 +82,12 @@ def filter_excluded(workspace: Path, config: dict[str, Any]) -> None:
             candidate.unlink()
 
 
+def compact(document: dict[str, Any]) -> str:
+    return json.dumps(document, ensure_ascii=False, separators=(",", ":"), sort_keys=True)
+
+
 def deduplicate_packets(workspace: Path) -> None:
-    """Collapse byte-equivalent duplicate IDs while rejecting conflicting records."""
+    """Preserve packet records while deterministically repairing legacy ID collisions."""
     handled: set[Path] = set()
     for path in packet_paths(workspace):
         if path.parent in handled:
@@ -93,29 +98,42 @@ def deduplicate_packets(workspace: Path) -> None:
         documents = [json.loads(line) for line in read_transport(selected).splitlines() if line.strip()]
         by_id: dict[str, dict[str, Any]] = {}
         ordered: list[dict[str, Any]] = []
-        duplicate_count = 0
-        for document in documents:
+        identical_count = 0
+        collision_count = 0
+        for original in documents:
+            document = original
             doc_id = str(document.get("_id", ""))
             previous = by_id.get(doc_id)
             if previous is None:
                 by_id[doc_id] = document
                 ordered.append(document)
                 continue
-            if previous != document:
-                raise ValueError(f"{selected}: conflicting duplicate _id {doc_id}")
-            duplicate_count += 1
-        if not duplicate_count:
+            if previous == document:
+                identical_count += 1
+                continue
+            digest = hashlib.sha256(compact(document).encode("utf-8")).hexdigest()
+            variant_id = f"{doc_id}-variant-{digest}"
+            existing_variant = by_id.get(variant_id)
+            if existing_variant is not None:
+                if existing_variant == document:
+                    identical_count += 1
+                    continue
+                raise ValueError(f"{selected}: irreconcilable duplicate variant {variant_id}")
+            document = dict(document)
+            document["_id"] = variant_id
+            validate_document(document)
+            by_id[variant_id] = document
+            ordered.append(document)
+            collision_count += 1
+        if not (identical_count or collision_count):
             continue
-        preferred.write_text(
-            "".join(
-                json.dumps(document, ensure_ascii=False, separators=(",", ":"), sort_keys=True) + "\n"
-                for document in ordered
-            ),
-            encoding="utf-8",
-        )
+        preferred.write_text("".join(compact(document) + "\n" for document in ordered), encoding="utf-8")
         for candidate in path.parent.glob("starintel-documents.jsonl.gz.b64*"):
             candidate.unlink()
-        print(f"Collapsed {duplicate_count} identical duplicate record(s) in {selected}")
+        print(
+            f"Normalized duplicate IDs in {selected}: "
+            f"identical={identical_count} preserved_variants={collision_count}"
+        )
 
 
 def materialize_input(digs_root: Path, db_root: Path, workspace: Path, config: dict[str, Any]) -> None:
@@ -143,7 +161,7 @@ def materialize_input(digs_root: Path, db_root: Path, workspace: Path, config: d
         packet.parent.mkdir(parents=True, exist_ok=True)
         packet.write_text(
             "".join(
-                json.dumps(document, ensure_ascii=False, separators=(",", ":"), sort_keys=True) + "\n"
+                compact(document) + "\n"
                 for document in sorted(documents, key=lambda item: str(item.get("_id", "")))
             ),
             encoding="utf-8",
