@@ -1,9 +1,9 @@
 name: Import complete Global Shapers directory
 
 on:
-  push:
+  pull_request:
     branches:
-      - agent/global-shapers-13k-directory
+      - main
     paths:
       - "imports/global-shapers/**"
       - "imports/.wef-shapers-compact/**"
@@ -21,7 +21,7 @@ permissions:
   contents: write
 
 concurrency:
-  group: global-shapers-complete-directory
+  group: global-shapers-complete-directory-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: true
 
 jobs:
@@ -29,10 +29,13 @@ jobs:
     if: github.actor != 'github-actions[bot]'
     runs-on: ubuntu-latest
     timeout-minutes: 350
+    env:
+      TARGET_BRANCH: ${{ github.head_ref || github.ref_name }}
     steps:
       - uses: actions/checkout@v6
         with:
           fetch-depth: 0
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
 
       - uses: actions/setup-python@v6
         with:
@@ -46,6 +49,7 @@ jobs:
 
       - name: Verify importers and city enumerator
         run: |
+          mkdir -p reports
           python scripts/run_global_shapers_complete_import.py --help \
             | tee reports/global-shapers-importer-help.txt
           python scripts/restore_legacy_global_shapers_packet.py --help
@@ -103,7 +107,7 @@ jobs:
           if ! git diff --cached --quiet; then
             hubs=$(python -c 'import json; print(json.load(open("reports/global-shapers-city-hubs.json"))["hub_url_count"])')
             git commit -m "Enumerate ${hubs} Global Shapers hubs"
-            git push origin "HEAD:${GITHUB_REF_NAME}"
+            git push origin "HEAD:${TARGET_BRANCH}"
           fi
 
       - name: Remove superseded live Global Shapers packet
@@ -177,7 +181,7 @@ jobs:
           else
             count=$(python -c 'import json; print(json.load(open("reports/global-shapers-complete-directory.json"))["people"])')
             git commit -m "Import ${count} Global Shapers and alumni profiles"
-            git push origin "HEAD:${GITHUB_REF_NAME}"
+            git push origin "HEAD:${TARGET_BRANCH}"
           fi
 
       - name: Commit crawl diagnostics after failure
@@ -198,7 +202,7 @@ jobs:
             reports/global-shapers-complete-directory.md || true
           if ! git diff --cached --quiet; then
             git commit -m "Record Global Shapers crawl diagnostics"
-            git push origin "HEAD:${GITHUB_REF_NAME}"
+            git push origin "HEAD:${TARGET_BRANCH}"
           fi
 
       - name: Upload crawl report
