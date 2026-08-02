@@ -1,0 +1,102 @@
+{
+  "_id": "starintel:dataset-manifest:us-israel-military-integration:2026-08-01-pass-5:quasar",
+  "dataset": "us-israel-military-integration",
+  "dtype": "dataset-manifest",
+  "schema_version": "0.9.0",
+  "version": 1,
+  "date_added": "2026-08-01T22:49:00-04:00",
+  "date_updated": "2026-08-01T22:49:00-04:00",
+  "title": "Quasar import manifest — U.S.–Israel Military Integration Pass 5",
+  "summary": "Incremental key-person, organization-membership, lobbying, FARA, revolving-door and relation-expansion packet.",
+  "status": "complete",
+  "language": "en",
+  "tags": ["quasar", "auto-dig", "military-integration", "us-israel", "recursive-pass-5", "lobbying", "memberships"],
+  "sources": [],
+  "evidence": [],
+  "assessment": {
+    "confidence": 1.0,
+    "caveats": [
+      "This packet captures high-signal public records and is not a claim of exhaustive worldwide membership.",
+      "Lobbying and FARA records document representation and disclosure relationships; they do not by themselves establish misconduct.",
+      "Reported lobbying amounts are filing-specific and span different reporting periods."
+    ]
+  },
+  "verification": {
+    "status": "verified",
+    "verified": true,
+    "methods": ["json-parse", "unique-id-check", "gzip", "base64", "sha256", "record-count", "relation-endpoint-type-check"]
+  },
+  "handling": {"visibility": "public", "classification": "unclassified", "pii": false, "sensitive": false},
+  "data": {
+    "manifest_type": "quasar-import",
+    "name": "U.S.–Israel Military Integration — Pass 5",
+    "actor": "auto-dig",
+    "consumer_path": "/import",
+    "incremental": true,
+    "parent_packets": [
+      "digs/us-israel-military-integration/2026-07-26",
+      "digs/us-israel-military-integration/2026-07-31",
+      "digs/us-israel-military-integration/2026-07-31-pass-3",
+      "digs/us-israel-military-integration/2026-07-31-pass-4"
+    ],
+    "root_target_id": "starintel:investigation-target:us-israel-military-integration-pass-5",
+    "counts_by_dtype": {
+      "analysis": 1,
+      "claim": 3,
+      "fara-filing": 4,
+      "investigation-target": 16,
+      "lobbying-filing": 13,
+      "org": 41,
+      "person": 33,
+      "relation": 140,
+      "research-pass": 1
+    },
+    "record_count": 252,
+    "cumulative_record_count": 643,
+    "selected_lobbying_amount_total_usd": 3520000,
+    "hash_algorithm": "sha256",
+    "content_hash": "52af5421a36212ef650f9c84002e315c1a01de20b36f393bef0acfe54856bf9c",
+    "files": [
+      {
+        "path": "starintel-documents.jsonl.gz.b64",
+        "name": "starintel-documents.jsonl.gz.b64",
+        "role": "documents-transport",
+        "media_type": "text/plain",
+        "encoding": "base64",
+        "compression": "gzip",
+        "decoded_name": "starintel-documents.jsonl",
+        "decoded_media_type": "application/x-ndjson",
+        "record_count": 252,
+        "hash_algorithm": "sha256",
+        "decoded_content_hash": "52af5421a36212ef650f9c84002e315c1a01de20b36f393bef0acfe54856bf9c",
+        "gzip_content_hash": "346b0de9f794c86497365fc1355dc988bc4b269373dbdc85a636e1bcadd08a84",
+        "transport_hash_algorithm": "sha256",
+        "transport_content_hash": "9d00d8fd74b4f4189bcd29b71050201a8a5eda6ac2c79010dcc76b62e37b89ac"
+      },
+      {
+        "path": "key-people-relations.csv",
+        "name": "key-people-relations.csv",
+        "role": "relation-index",
+        "media_type": "text/csv",
+        "record_count": 80,
+        "hash_algorithm": "sha256",
+        "content_hash": "38333ed2cf4d5d4bf2a3d0fc88b8f7dd83b0519a63a4db280fd8491eca031c94"
+      }
+    ],
+    "schema_versions": ["0.9.0"],
+    "generated_at": "2026-08-01T22:49:00-04:00",
+    "target_options": [{"action": "save-and-open-graph", "graph_name": "U.S.–Israel Military Integration", "review_status": "all"}],
+    "document_id_index_count": 252,
+    "document_id_index_hash_algorithm": "sha256",
+    "document_id_index_hash": "66d506cffd118a29d56d18205ae9e6b5c7d134449b0f5888732b93faf382564d"
+  },
+  "extensions": {
+    "quasar": {
+      "import_mode": "bulk-manifest",
+      "preferred_file": "starintel-documents.jsonl",
+      "open_graph_after_import": true,
+      "graph_name": "U.S.–Israel Military Integration",
+      "reveal_unreviewed": true
+    }
+  }
+}
