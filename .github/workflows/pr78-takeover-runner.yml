@@ -9,16 +9,17 @@ permissions:
   contents: read
 
 jobs:
-  repair:
+  recover:
     if: github.event.pull_request.number == 1956
     runs-on: ubuntu-latest
+    timeout-minutes: 30
     steps:
       - uses: actions/checkout@v6
         with:
           ref: agent/pr-78-takeover-fix
           fetch-depth: 0
 
-      - name: Diagnose compact Shapers transport
+      - name: Recover compact Shapers transport deterministically
         shell: bash
         run: |
           set -euo pipefail
@@ -26,65 +27,190 @@ jobs:
           from __future__ import annotations
 
           import base64
+          import hashlib
+          import json
           import lzma
           import string
+          import subprocess
+          import sys
+          import tempfile
           from pathlib import Path
 
-          directory = Path('imports/.wef-shapers-compact')
-          encoded = ''.join(
-              ''.join(path.read_text(encoding='utf-8').lstrip('\ufeff').split())
-              for path in sorted(directory.glob('part-*'))
-          )
-          print('original_chars', len(encoded))
-          encoded = encoded[:151_980] + '1' + encoded[151_980:]
-          print('inserted_chars', len(encoded))
-          alphabet = string.ascii_uppercase + string.ascii_lowercase + string.digits + '+/'
-          compressed = bytearray(base64.b64decode(encoded, validate=True))
-          print('compressed_bytes', len(compressed))
+          EXPECTED_RECORDS = 12_187
+          EXPECTED_SHA256 = "82408fb3baa6d2fcbba1948801a26827ccdbf6e5b2a18685502a7ca70b2f070f"
+          ALPHABET = string.ascii_uppercase + string.ascii_lowercase + string.digits + "+/"
 
-          def progress(chunk_size: int = 4096) -> tuple[int, bool, int]:
+          directory = Path("imports/.wef-shapers-compact")
+          original = "".join(
+              "".join(path.read_text(encoding="utf-8").lstrip("\ufeff").split())
+              for path in sorted(directory.glob("part-*"))
+          )
+          encoded = list(original[:151_980] + "1" + original[151_980:])
+          compressed = bytearray(base64.b64decode("".join(encoded), validate=True))
+          mutations: list[tuple[int, str, str]] = [(151_980, "<missing>", "1")]
+          print("transport", {"original_chars": len(original), "repaired_chars": len(encoded), "bytes": len(compressed)})
+
+          def score(chunk_size: int) -> tuple[int, int, int]:
               decoder = lzma.LZMADecompressor()
               offset = 0
               output = 0
               while offset < len(compressed):
-                  chunk = bytes(compressed[offset:offset + chunk_size])
+                  chunk = bytes(compressed[offset : offset + chunk_size])
                   try:
                       data = decoder.decompress(chunk)
                   except lzma.LZMAError:
-                      return offset, False, output
+                      return 0, offset, output
                   output += len(data)
                   offset += len(chunk)
                   if decoder.eof:
-                      return len(compressed), True, output
-              return offset, decoder.eof, output
+                      return 1, len(compressed), output
+              return int(decoder.eof), offset, output
 
-          candidates = []
-          for position in range(160_430, 160_511):
-              quartet_start = position - (position % 4)
-              quartet = encoded[quartet_start:quartet_start + 4]
-              byte_start = (quartet_start // 4) * 3
-              original_bytes = bytes(compressed[byte_start:byte_start + 3])
-              original_character = encoded[position]
-              local_index = position - quartet_start
-              for character in alphabet:
-                  if character == original_character:
-                      continue
-                  candidate_quartet = quartet[:local_index] + character + quartet[local_index + 1:]
-                  candidate_bytes = base64.b64decode(candidate_quartet, validate=True)
-                  compressed[byte_start:byte_start + len(candidate_bytes)] = candidate_bytes
-                  consumed, eof, output = progress()
-                  candidates.append((consumed, eof, output, position, original_character, character))
-                  compressed[byte_start:byte_start + 3] = original_bytes
-          candidates.sort(reverse=True)
-          print('TOP_CANDIDATES')
-          for item in candidates[:40]:
-              print(item)
+          def exact_failure() -> tuple[int, int, bool]:
+              decoder = lzma.LZMADecompressor()
+              output = 0
+              for offset, value in enumerate(compressed):
+                  try:
+                      data = decoder.decompress(bytes((value,)))
+                  except lzma.LZMAError:
+                      return offset, output, False
+                  output += len(data)
+                  if decoder.eof:
+                      return len(compressed), output, True
+              return len(compressed), output, decoder.eof
 
-          for consumed, eof, output, position, original_character, character in candidates:
-              if not eof:
+          def patch(position: int, character: str) -> tuple[str, int, bytes]:
+              quartet_start = position - position % 4
+              quartet = "".join(encoded[quartet_start : quartet_start + 4])
+              byte_start = quartet_start // 4 * 3
+              original_bytes = bytes(compressed[byte_start : byte_start + 3])
+              old = encoded[position]
+              local = position - quartet_start
+              candidate = quartet[:local] + character + quartet[local + 1 :]
+              candidate_bytes = base64.b64decode(candidate, validate=True)
+              encoded[position] = character
+              compressed[byte_start : byte_start + len(candidate_bytes)] = candidate_bytes
+              return old, byte_start, original_bytes
+
+          def restore(position: int, old: str, byte_start: int, original_bytes: bytes) -> None:
+              encoded[position] = old
+              compressed[byte_start : byte_start + len(original_bytes)] = original_bytes
+
+          def search_window(start: int, stop: int) -> tuple[tuple[int, int, int], int, str, str] | None:
+              coarse: list[tuple[tuple[int, int, int], int, str, str]] = []
+              for position in range(max(0, start), min(len(encoded), stop)):
+                  old_character = encoded[position]
+                  for character in ALPHABET:
+                      if character == old_character:
+                          continue
+                      old, byte_start, old_bytes = patch(position, character)
+                      candidate_score = score(128)
+                      coarse.append((candidate_score, position, old_character, character))
+                      restore(position, old, byte_start, old_bytes)
+              coarse.sort(reverse=True)
+
+              refined: list[tuple[tuple[int, int, int], int, str, str]] = []
+              for _, position, old_character, character in coarse[:48]:
+                  old, byte_start, old_bytes = patch(position, character)
+                  candidate_score = score(8)
+                  refined.append((candidate_score, position, old_character, character))
+                  restore(position, old, byte_start, old_bytes)
+              refined.sort(reverse=True)
+              return refined[0] if refined else None
+
+          for round_number in range(1, 13):
+              failure_byte, output_bytes, eof = exact_failure()
+              current_score = score(8)
+              print("round", round_number, {"failure_byte": failure_byte, "output": output_bytes, "score": current_score, "eof": eof})
+              if eof:
+                  break
+
+              center = failure_byte // 3 * 4
+              best = search_window(center - 20, center + 24)
+              if best is None or best[0] <= current_score:
+                  best = search_window(center - 96, center + 100)
+              if best is None or best[0] <= current_score:
+                  raise SystemExit(f"no improving mutation near compressed byte {failure_byte} / base64 char {center}")
+
+              best_score, position, old_character, character = best
+              patch(position, character)
+              mutations.append((position, old_character, character))
+              print("apply", {"position": position, "from": old_character, "to": character, "score": best_score})
+
+          failure_byte, output_bytes, eof = exact_failure()
+          if not eof:
+              raise SystemExit(f"recovery incomplete after {len(mutations) - 1} substitutions; failure byte {failure_byte}")
+
+          outer = lzma.decompress(bytes(compressed))
+          print("outer_recovered", {"bytes": len(outer), "sha256": hashlib.sha256(outer).hexdigest(), "prefix": repr(outer[:80])})
+
+          def canonical(values: list[object]) -> str:
+              return "".join(
+                  json.dumps(value, ensure_ascii=False, sort_keys=True, separators=(",", ":")) + "\n"
+                  for value in values
+              )
+
+          queue: list[bytes] = [outer]
+          seen: set[str] = set()
+          found = False
+          while queue and len(seen) < 32:
+              payload = queue.pop(0)
+              digest = hashlib.sha256(payload).hexdigest()
+              if digest in seen:
                   continue
-              repaired = encoded[:position] + character + encoded[position + 1:]
-              payload = lzma.decompress(base64.b64decode(repaired, validate=True))
-              print('SUCCESS', position, original_character, character, len(payload), payload[:120])
-              break
+              seen.add(digest)
+              print("layer", {"bytes": len(payload), "sha256": digest, "prefix": repr(payload[:60])})
+
+              try:
+                  text = payload.decode("utf-8")
+              except UnicodeDecodeError:
+                  text = ""
+
+              if text:
+                  lines = [line for line in text.splitlines() if line.strip()]
+                  try:
+                      values = [json.loads(line) for line in lines]
+                  except (json.JSONDecodeError, ValueError):
+                      values = []
+                  if values and all(isinstance(value, dict) for value in values):
+                      normalized = canonical(values)
+                      result = hashlib.sha256(normalized.encode()).hexdigest()
+                      print("canonical_candidate", {"records": len(values), "sha256": result})
+                      if len(values) == EXPECTED_RECORDS and result == EXPECTED_SHA256:
+                          found = True
+                          break
+                  if values and all(isinstance(value, list) for value in values):
+                      with tempfile.TemporaryDirectory() as temp:
+                          root = Path(temp)
+                          source = root / "legacy.jsonl"
+                          output = root / "canonical.jsonl"
+                          report = root / "report.json"
+                          source.write_text(canonical(values), encoding="utf-8")
+                          subprocess.run(
+                              [sys.executable, "scripts/import_legacy_shapers_alumni.py", str(source), "--output", str(output), "--report", str(report)],
+                              check=True,
+                              stdout=subprocess.DEVNULL,
+                          )
+                          rendered = output.read_text(encoding="utf-8")
+                          result = hashlib.sha256(rendered.encode()).hexdigest()
+                          records = sum(1 for line in rendered.splitlines() if line.strip())
+                          print("legacy_candidate", {"rows": len(values), "records": records, "sha256": result})
+                          if records == EXPECTED_RECORDS and result == EXPECTED_SHA256:
+                              found = True
+                              break
+                  compact = "".join(text.lstrip("\ufeff").split())
+                  if compact:
+                      try:
+                          queue.append(base64.b64decode(compact + "=" * (-len(compact) % 4), validate=False))
+                      except Exception:
+                          pass
+              try:
+                  queue.append(lzma.decompress(payload))
+              except lzma.LZMAError:
+                  pass
+
+          print("RECOVERY_MUTATIONS", mutations)
+          if not found:
+              raise SystemExit("transport reached XZ EOF but no exact canonical packet matched")
+          print("RECOVERY_SUCCESS", {"records": EXPECTED_RECORDS, "sha256": EXPECTED_SHA256, "mutations": mutations})
           PY
