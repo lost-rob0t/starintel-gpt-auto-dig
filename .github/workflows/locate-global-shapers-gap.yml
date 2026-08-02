@@ -1,0 +1,50 @@
+name: Locate Global Shapers transport gap
+
+on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - "imports/.wef-shapers-compact/**"
+      - "scripts/locate_legacy_shapers_gap.py"
+      - ".github/workflows/locate-global-shapers-gap.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  locate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.13"
+
+      - name: Locate missing Base64 character
+        shell: bash
+        run: |
+          set +e
+          python scripts/locate_legacy_shapers_gap.py \
+            --parts imports/.wef-shapers-compact \
+            --output /tmp/located.compact.jsonl \
+            --report reports/global-shapers-gap-location.json \
+            --radius 2048 \
+            --workers 32
+          status=$?
+          cat reports/global-shapers-gap-location.json
+          exit "$status"
+
+      - name: Upload location report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: global-shapers-gap-location
+          path: reports/global-shapers-gap-location.json
+          if-no-files-found: error
+          retention-days: 14
