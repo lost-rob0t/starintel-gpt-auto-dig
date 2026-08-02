@@ -30,19 +30,59 @@ jobs:
         with:
           python-version: "3.13"
 
-      - name: Locate missing Base64 character
+      - name: Search high-signal Base64 window
         shell: bash
         run: |
-          set +e
-          python scripts/locate_legacy_shapers_gap.py \
-            --parts imports/.wef-shapers-compact \
-            --output /tmp/located.compact.jsonl \
-            --report reports/global-shapers-gap-location.json \
-            --radius 32 \
-            --workers 32
-          status=$?
-          cat reports/global-shapers-gap-location.json
-          exit "$status"
+          python - <<'PY'
+          import hashlib
+          import json
+          from pathlib import Path
+          import sys
+
+          sys.path.insert(0, str(Path("scripts").resolve()))
+          import locate_legacy_shapers_gap as locate
+
+          encoded, lengths = locate.read_encoded(Path("imports/.wef-shapers-compact"))
+          center = 151937
+          lower = center - 96
+          upper = center + 96
+          positions = list(range(lower, upper + 1))
+          result = locate.search_positions(encoded, positions, 32)
+          report = {
+              "center": center,
+              "search_lower": lower,
+              "search_upper": upper,
+              "positions": len(positions),
+              "attempts_max": len(positions) * len(locate.ALPHABET),
+              "part_lengths": lengths,
+          }
+          if result is None:
+              report["status"] = "not-found"
+              Path("reports").mkdir(exist_ok=True)
+              Path("reports/global-shapers-gap-location.json").write_text(
+                  json.dumps(report, indent=2, sort_keys=True) + "\n",
+                  encoding="utf-8",
+              )
+              print(json.dumps(report, indent=2, sort_keys=True))
+              raise SystemExit(2)
+
+          position, character, payload = result
+          output = Path("/tmp/located.compact.jsonl")
+          output.write_bytes(payload if payload.endswith(b"\n") else payload + b"\n")
+          report.update({
+              "status": "recovered",
+              "insert_position": position,
+              "insert_character": character,
+              "payload_bytes": len(payload),
+              "payload_sha256": hashlib.sha256(output.read_bytes()).hexdigest(),
+          })
+          Path("reports").mkdir(exist_ok=True)
+          Path("reports/global-shapers-gap-location.json").write_text(
+              json.dumps(report, indent=2, sort_keys=True) + "\n",
+              encoding="utf-8",
+          )
+          print(json.dumps(report, indent=2, sort_keys=True))
+          PY
 
       - name: Upload location report
         if: always()
