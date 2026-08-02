@@ -106,7 +106,8 @@ jobs:
             --input digs \
             --db db \
             --output _site \
-            --org-output .generated/org
+            --org-output .generated/org \
+            --skip-people
 
       - name: Install Quasar graph editor
         run: |
