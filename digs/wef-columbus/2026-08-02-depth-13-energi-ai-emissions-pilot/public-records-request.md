@@ -70,7 +70,18 @@ Please provide:
 
 Personal contact information, credentials, account numbers, security secrets, taxpayer-identification numbers, signatures, and unrelated personal information may be redacted.
 
-## 6. Funding and external relationships
+## 6. Participant selection and pre-existing relationships
+
+Please provide:
+
+- participant outreach, applications, nominations, selection criteria, scoring, approvals, waitlists, and rejection records;
+- records identifying which participants were existing Energi.AI customers, investors, advisors, partners, or affiliates before selection;
+- disclosures, conflict reviews, recusals, procurement review, ethics review, and duplicate-benefit analysis concerning Installed Building Products;
+- records showing whether Installed Building Products' pre-existing investor or customer relationship was disclosed to Smart Columbus or the City;
+- records showing whether the pilot replaced, extended, credited, discounted, or supplemented any existing Energi.AI contract or subscription held by Installed Building Products;
+- the benefits, free-access period, support, credits, or subsidies actually provided to Installed Building Products under the pilot.
+
+## 7. Funding and external relationships
 
 Please provide records concerning:
 
