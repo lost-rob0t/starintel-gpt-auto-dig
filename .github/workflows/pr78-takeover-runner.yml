@@ -39,13 +39,15 @@ jobs:
           encoded = encoded[:151_980] + '1' + encoded[151_980:]
           print('inserted_chars', len(encoded))
           alphabet = string.ascii_uppercase + string.ascii_lowercase + string.digits + '+/'
+          compressed = bytearray(base64.b64decode(encoded, validate=True))
+          print('compressed_bytes', len(compressed))
 
-          def progress(compressed: bytes, chunk_size: int = 1024) -> tuple[int, bool, int]:
+          def progress(chunk_size: int = 4096) -> tuple[int, bool, int]:
               decoder = lzma.LZMADecompressor()
               offset = 0
               output = 0
               while offset < len(compressed):
-                  chunk = compressed[offset:offset + chunk_size]
+                  chunk = bytes(compressed[offset:offset + chunk_size])
                   try:
                       data = decoder.decompress(chunk)
                   except lzma.LZMAError:
@@ -58,28 +60,31 @@ jobs:
 
           candidates = []
           for position in range(160_430, 160_511):
-              original = encoded[position]
+              quartet_start = position - (position % 4)
+              quartet = encoded[quartet_start:quartet_start + 4]
+              byte_start = (quartet_start // 4) * 3
+              original_bytes = bytes(compressed[byte_start:byte_start + 3])
+              original_character = encoded[position]
+              local_index = position - quartet_start
               for character in alphabet:
-                  if character == original:
+                  if character == original_character:
                       continue
-                  candidate = encoded[:position] + character + encoded[position + 1:]
-                  try:
-                      compressed = base64.b64decode(candidate, validate=True)
-                  except Exception:
-                      continue
-                  consumed, eof, output = progress(compressed)
-                  candidates.append((consumed, eof, output, position, original, character))
+                  candidate_quartet = quartet[:local_index] + character + quartet[local_index + 1:]
+                  candidate_bytes = base64.b64decode(candidate_quartet, validate=True)
+                  compressed[byte_start:byte_start + len(candidate_bytes)] = candidate_bytes
+                  consumed, eof, output = progress()
+                  candidates.append((consumed, eof, output, position, original_character, character))
+                  compressed[byte_start:byte_start + 3] = original_bytes
           candidates.sort(reverse=True)
           print('TOP_CANDIDATES')
           for item in candidates[:40]:
               print(item)
 
-          for consumed, eof, output, position, original, character in candidates:
+          for consumed, eof, output, position, original_character, character in candidates:
               if not eof:
                   continue
               repaired = encoded[:position] + character + encoded[position + 1:]
-              compressed = base64.b64decode(repaired, validate=True)
-              payload = lzma.decompress(compressed)
-              print('SUCCESS', position, original, character, len(payload), payload[:120])
+              payload = lzma.decompress(base64.b64decode(repaired, validate=True))
+              print('SUCCESS', position, original_character, character, len(payload), payload[:120])
               break
           PY
