@@ -1,7 +1,8 @@
 {
   "site_title": "StarIntel GPT Auto Dig",
   "excluded_document_ids": [
-    "starintel:analysis:fink-corporatism-fascism-comparison"
+    "starintel:analysis:fink-corporatism-fascism-comparison",
+    "starintel:employment:fec-reported-794488744741855100e8238fe2eaa2922b418f3b586bb82f537023dbd57cc839"
   ],
   "database_targets": {
     "palantir-deep-dive-2026-07-25": "palantir"
