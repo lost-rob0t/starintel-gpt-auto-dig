@@ -1,0 +1,32 @@
+{
+  "counts_by_dtype": {
+    "analysis": 6,
+    "financial-observation": 1,
+    "investigation-target": 1,
+    "research-pass": 1
+  },
+  "dataset": "wef",
+  "decoded_bytes": 42689,
+  "document_count": 9,
+  "generated_at": "2026-08-02T03:00:00Z",
+  "gzip_bytes": 6266,
+  "gzip_sha256": "b27121f4676ba8c1e2f124b4ef627d6a71c3b18513671f4587930293dda32153",
+  "normalized_jsonl_sha256": "4246da3419077f6a386752b2010d025e977e486942e66f8bafdb2c5ef51f12b3",
+  "records": [
+    "starintel:analysis:smart-columbus-0165-2021-exact-aggregate-candidate-depth-12",
+    "starintel:analysis:smart-columbus-1581-2021-payment-discrepancy-depth-12",
+    "starintel:analysis:smart-columbus-check-672135-component-split-depth-12",
+    "starintel:analysis:smart-columbus-confirmed-ordinance-payment-ledger-depth-12",
+    "starintel:analysis:smart-columbus-ordinance-ledger-wef-bounded-negative-depth-12",
+    "starintel:analysis:smart-columbus-unattributed-program-expenses-depth-12",
+    "starintel:financial-observation:smart-columbus-ordinance-payment-components-2021-2026-depth-12",
+    "starintel:investigation-target:wef-depth-13-smart-columbus-authority-gaps-and-vendor-master",
+    "starintel:research-pass:wef-columbus-depth-12-ordinance-payment-reconciliation-2026-08-02"
+  ],
+  "recursion_depth": 12,
+  "run_id": "wef-columbus-depth-12-ordinance-payment-reconciliation-2026-08-02",
+  "schema_version": "0.9.0",
+  "transport_bytes": 8357,
+  "transport_file": "starintel-documents.jsonl.gz.b64",
+  "transport_sha256": "536941e6627e851dfc865d5518ded7c0c07cbaf2f1db90e766a4fe869e18a01c"
+}
