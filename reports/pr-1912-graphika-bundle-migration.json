@@ -37,6 +37,7 @@
   },
   "identical_paths": [],
   "identical_records_already_on_main": 0,
+  "migration_validation": "full repository merge gate passed before branch update",
   "newer_or_different_main_records_preserved": 0,
   "preserved_main_paths": [],
   "records_read": 28,
