@@ -6,6 +6,7 @@ import json
 import re
 import shutil
 import sys
+import unicodedata
 from collections import defaultdict
 from pathlib import Path
 from typing import Any
@@ -47,13 +48,115 @@ def infer_target(dataset: str, mappings: dict[str, str]) -> str:
     return candidate or slug(dataset)
 
 
+def normalize_legacy_fec_text(value: Any) -> str:
+    text = unicodedata.normalize("NFKD", str(value or ""))
+    text = "".join(character for character in text if not unicodedata.combining(character))
+    return re.sub(r"[^a-z0-9]+", " ", text.lower()).strip()
+
+
+def coalesce_legacy_fec_employment_collisions(
+    documents: list[dict[str, Any]], path: Path
+) -> list[dict[str, Any]]:
+    """Merge only known legacy DNC/FEC employment-ID collisions.
+
+    The legacy generator aggregated by normalized occupation but generated IDs from
+    a display title that could fall back to the employer. Blank occupations and an
+    occupation equal to the employer could therefore emit records with the same ID.
+    Display titles may also differ cosmetically while normalizing to the same ID
+    input. Preserve aggregate evidence and raw title variants while keeping all
+    unrelated or semantically different duplicate IDs fatal.
+    """
+
+    merged: list[dict[str, Any]] = []
+    by_id: dict[str, dict[str, Any]] = {}
+    exact_fields = ("person_id", "organization_id", "employment_type")
+
+    for document in documents:
+        doc_id = str(document.get("_id", ""))
+        existing = by_id.get(doc_id)
+        if existing is None:
+            by_id[doc_id] = document
+            merged.append(document)
+            continue
+
+        legacy_collision = (
+            document.get("dataset") == "dnc"
+            and document.get("dtype") == "employment"
+            and doc_id.startswith("starintel:employment:fec-reported-")
+            and existing.get("dataset") == "dnc"
+            and existing.get("dtype") == "employment"
+        )
+        if not legacy_collision:
+            raise ValueError(f"{path}: duplicate _id {doc_id}")
+
+        existing_data = existing.get("data", {})
+        incoming_data = document.get("data", {})
+        exact_match = all(existing_data.get(field) == incoming_data.get(field) for field in exact_fields)
+        title_match = normalize_legacy_fec_text(existing_data.get("title")) == normalize_legacy_fec_text(
+            incoming_data.get("title")
+        )
+        if not exact_match or not title_match:
+            raise ValueError(f"{path}: non-equivalent legacy FEC collision for {doc_id}")
+
+        existing_reporting = existing.setdefault("extensions", {}).setdefault("fec_reporting", {})
+        incoming_reporting = document.get("extensions", {}).get("fec_reporting", {})
+        existing_reporting["row_count"] = int(existing_reporting.get("row_count", 0)) + int(
+            incoming_reporting.get("row_count", 0)
+        )
+
+        first_dates = [
+            value
+            for value in (
+                existing_reporting.get("first_transaction_date"),
+                incoming_reporting.get("first_transaction_date"),
+            )
+            if isinstance(value, str) and value
+        ]
+        last_dates = [
+            value
+            for value in (
+                existing_reporting.get("last_transaction_date"),
+                incoming_reporting.get("last_transaction_date"),
+            )
+            if isinstance(value, str) and value
+        ]
+        if first_dates:
+            existing_reporting["first_transaction_date"] = min(first_dates)
+        if last_dates:
+            existing_reporting["last_transaction_date"] = max(last_dates)
+        existing_reporting["legacy_collision_merged_documents"] = int(
+            existing_reporting.get("legacy_collision_merged_documents", 1)
+        ) + 1
+
+        raw_titles = {
+            str(title)
+            for title in existing_reporting.get("legacy_collision_raw_titles", [])
+            if str(title).strip()
+        }
+        for title in (existing_data.get("title"), incoming_data.get("title")):
+            if title is not None and str(title).strip():
+                raw_titles.add(str(title))
+        if raw_titles:
+            existing_reporting["legacy_collision_raw_titles"] = sorted(raw_titles)
+
+        source_keys = {
+            json.dumps(source, ensure_ascii=False, sort_keys=True)
+            for source in existing.get("sources", [])
+        }
+        for source in document.get("sources", []):
+            key = json.dumps(source, ensure_ascii=False, sort_keys=True)
+            if key not in source_keys:
+                existing.setdefault("sources", []).append(source)
+                source_keys.add(key)
+
+    return merged
+
+
 def filter_excluded(workspace: Path, config: dict[str, Any]) -> None:
     raw_ids = config.get("excluded_document_ids", [])
     if not isinstance(raw_ids, list):
         raise ValueError("site-config.json: excluded_document_ids must be a list")
     excluded = {str(value) for value in raw_ids}
-    if not excluded:
-        return
     paths = list(workspace.glob("*/*/starintel-documents.jsonl"))
     paths += list(workspace.glob("*/*/starintel-documents.jsonl.gz.b64"))
     paths += list(workspace.glob("*/*/starintel-documents.jsonl.gz.b64.parts"))
@@ -65,10 +168,14 @@ def filter_excluded(workspace: Path, config: dict[str, Any]) -> None:
         preferred = path.parent / "starintel-documents.jsonl"
         selected = preferred if preferred.exists() else path
         documents = [json.loads(line) for line in read_transport(selected).splitlines() if line.strip()]
+        documents = coalesce_legacy_fec_employment_collisions(documents, selected)
         kept = [document for document in documents if str(document.get("_id")) not in excluded]
         if kept:
             preferred.write_text(
-                "".join(json.dumps(document, ensure_ascii=False, separators=(",", ":"), sort_keys=True) + "\n" for document in kept),
+                "".join(
+                    json.dumps(document, ensure_ascii=False, separators=(",", ":"), sort_keys=True) + "\n"
+                    for document in kept
+                ),
                 encoding="utf-8",
             )
         elif preferred.exists():
