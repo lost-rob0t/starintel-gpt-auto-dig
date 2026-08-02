@@ -65,7 +65,7 @@
     },
     {
       "candidate": "https://www.globalshapers.org/hubs/a-journalling-group-to-navigate-the-mind-venice",
-      "city": "A Journalling Group to Navigate the Mind Venice",
+      "city": "A Journalling Group To Navigate The Mind Venice",
       "final_url": "https://www.globalshapers.org/hubs/a-journalling-group-to-navigate-the-mind-venice",
       "hub_urls": [],
       "legacy_slugs": [],
@@ -75,7 +75,7 @@
     },
     {
       "candidate": "https://www.globalshapers.org/hubs/a-journalling-group-to-navigate-the-mind-venice-hub",
-      "city": "A Journalling Group to Navigate the Mind Venice",
+      "city": "A Journalling Group To Navigate The Mind Venice",
       "final_url": "https://www.globalshapers.org/hubs/a-journalling-group-to-navigate-the-mind-venice-hub",
       "hub_urls": [],
       "legacy_slugs": [],
@@ -1625,7 +1625,7 @@
     },
     {
       "candidate": "https://www.globalshapers.org/hubs/agroecology-and-climate-change-in-favelas-rio-de-janeiro",
-      "city": "Agroecology and climate change in Favelas Rio de Janeiro",
+      "city": "Agroecology And Climate Change In Favelas Rio De Janeiro",
       "final_url": "https://www.globalshapers.org/hubs/agroecology-and-climate-change-in-favelas-rio-de-janeiro",
       "hub_urls": [],
       "legacy_slugs": [],
@@ -1635,7 +1635,7 @@
     },
     {
       "candidate": "https://www.globalshapers.org/hubs/agroecology-and-climate-change-in-favelas-rio-de-janeiro-hub",
-      "city": "Agroecology and climate change in Favelas Rio de Janeiro",
+      "city": "Agroecology And Climate Change In Favelas Rio De Janeiro",
       "final_url": "https://www.globalshapers.org/hubs/agroecology-and-climate-change-in-favelas-rio-de-janeiro-hub",
       "hub_urls": [],
       "legacy_slugs": [],
@@ -1645,8 +1645,28 @@
     },
     {
       "candidate": "https://www.globalshapers.org/hubs/agroecology-climate-change-in-favelas-rio-de-janeiro",
-      "city": "Agroecology and climate change in Favelas Rio de Janeiro",
+      "city": "Agroecology And Climate Change In Favelas Rio De Janeiro",
       "final_url": "https://www.globalshapers.org/hubs/agroecology-climate-change-in-favelas-rio-de-janeiro",
+      "hub_urls": [],
+      "legacy_slugs": [],
+      "profile_urls": [],
+      "status": 200,
+      "valid": false
+    },
+    {
+      "candidate": "https://www.globalshapers.org/hubs/agroecology-climate-change-in-favelas-rio-de-janeiro",
+      "city": "Agroecology Climate Change In Favelas Rio De Janeiro",
+      "final_url": "https://www.globalshapers.org/hubs/agroecology-climate-change-in-favelas-rio-de-janeiro",
+      "hub_urls": [],
+      "legacy_slugs": [],
+      "profile_urls": [],
+      "status": 200,
+      "valid": false
+    },
+    {
+      "candidate": "https://www.globalshapers.org/hubs/agroecology-climate-change-in-favelas-rio-de-janeiro-hub",
+      "city": "Agroecology Climate Change In Favelas Rio De Janeiro",
+      "final_url": "https://www.globalshapers.org/hubs/agroecology-climate-change-in-favelas-rio-de-janeiro-hub",
       "hub_urls": [],
       "legacy_slugs": [],
       "profile_urls": [],
@@ -15815,7 +15835,7 @@
     },
     {
       "candidate": "https://www.globalshapers.org/hubs/climasynth-peshawar",
-      "city": "ClimaSynth Peshawar",
+      "city": "Climasynth Peshawar",
       "final_url": "https://www.globalshapers.org/hubs/climasynth-peshawar",
       "hub_urls": [],
       "legacy_slugs": [],
@@ -15825,7 +15845,7 @@
     },
     {
       "candidate": "https://www.globalshapers.org/hubs/climasynth-peshawar-hub",
-      "city": "ClimaSynth Peshawar",
+      "city": "Climasynth Peshawar",
       "final_url": "https://www.globalshapers.org/hubs/climasynth-peshawar-hub",
       "hub_urls": [],
       "legacy_slugs": [],
@@ -22865,7 +22885,7 @@
     },
     {
       "candidate": "https://www.globalshapers.org/hubs/florianopolis",
-      "city": "Florianópolis",
+      "city": "Florianopolis",
       "final_url": "https://www.globalshapers.org/hubs/florianopolis",
       "hub_urls": [],
       "legacy_slugs": [],
@@ -22875,7 +22895,7 @@
     },
     {
       "candidate": "https://www.globalshapers.org/hubs/florianopolis-hub",
-      "city": "Florianópolis",
+      "city": "Florianopolis",
       "final_url": "https://www.globalshapers.org/hubs/florianopolis-hub",
       "hub_urls": [],
       "legacy_slugs": [],
@@ -24365,7 +24385,7 @@
     },
     {
       "candidate": "https://www.globalshapers.org/hubs/gramin-jaipur",
-      "city": "GramIN Jaipur",
+      "city": "Gramin Jaipur",
       "final_url": "https://www.globalshapers.org/hubs/gramin-jaipur",
       "hub_urls": [],
       "legacy_slugs": [],
@@ -24375,7 +24395,7 @@
     },
     {
       "candidate": "https://www.globalshapers.org/hubs/gramin-jaipur-hub",
-      "city": "GramIN Jaipur",
+      "city": "Gramin Jaipur",
       "final_url": "https://www.globalshapers.org/hubs/gramin-jaipur-hub",
       "hub_urls": [],
       "legacy_slugs": [],
@@ -58645,7 +58665,7 @@
     },
     {
       "candidate": "https://www.globalshapers.org/hubs/read-to-rise-yola",
-      "city": "Read to Rise Yola",
+      "city": "Read To Rise Yola",
       "final_url": "https://www.globalshapers.org/hubs/read-to-rise-yola",
       "hub_urls": [],
       "legacy_slugs": [],
@@ -58655,7 +58675,7 @@
     },
     {
       "candidate": "https://www.globalshapers.org/hubs/read-to-rise-yola-hub",
-      "city": "Read to Rise Yola",
+      "city": "Read To Rise Yola",
       "final_url": "https://www.globalshapers.org/hubs/read-to-rise-yola-hub",
       "hub_urls": [],
       "legacy_slugs": [],
@@ -93224,26 +93244,6 @@
       "valid": false
     },
     {
-      "candidate": "https://www.globalshapers.org/hubs/riyo-di-janairo",
-      "city": "riyo di janairo",
-      "final_url": "https://www.globalshapers.org/hubs/riyo-di-janairo",
-      "hub_urls": [],
-      "legacy_slugs": [],
-      "profile_urls": [],
-      "status": 200,
-      "valid": false
-    },
-    {
-      "candidate": "https://www.globalshapers.org/hubs/riyo-di-janairo-hub",
-      "city": "riyo di janairo",
-      "final_url": "https://www.globalshapers.org/hubs/riyo-di-janairo-hub",
-      "hub_urls": [],
-      "legacy_slugs": [],
-      "profile_urls": [],
-      "status": 200,
-      "valid": false
-    },
-    {
       "candidate": "https://www.globalshapers.org/hubs/a-muong",
       "city": "Â-muòng",
       "final_url": "https://www.globalshapers.org/hubs/a-muong",
@@ -117544,7 +117544,7 @@
       "valid": false
     }
   ],
-  "elapsed_seconds": 80.454,
+  "elapsed_seconds": 80.706,
   "hub_observations": [],
   "hub_url_count": 0,
   "hub_urls": [],
@@ -117555,9 +117555,9 @@
   "resolved_by_city": {},
   "resolved_city_count": 0,
   "source_counts": {
-    "browser": 23,
+    "browser": 0,
     "city_files": 0,
-    "corpus": 3086,
+    "corpus": 3096,
     "geonames": 6041
   },
   "status": "incomplete",
@@ -117565,7 +117565,7 @@
     "A Bi Rang",
     "A Bi Ren",
     "A Di Si A Bei Ba",
-    "A Journalling Group to Navigate the Mind Venice",
+    "A Journalling Group To Navigate The Mind Venice",
     "A Mei Da Ba De",
     "A Muong",
     "A Wa",
@@ -117643,7 +117643,8 @@
     "Agekʻsandria",
     "Agekʻsantria",
     "Agia Petroupole",
-    "Agroecology and climate change in Favelas Rio de Janeiro",
+    "Agroecology And Climate Change In Favelas Rio De Janeiro",
+    "Agroecology Climate Change In Favelas Rio De Janeiro",
     "Aguascalientes",
     "Aham Madabad",
     "Ahamadabad",
@@ -118351,7 +118352,7 @@
     "Cjencjou",
     "Cjindao",
     "Ckg",
-    "ClimaSynth Peshawar",
+    "Climasynth Peshawar",
     "Cohannes Beirk",
     "Commercial Software And Cloud Services Enabling Compliance",
     "Commercial Software Cloud Services Enabling Compliance",
@@ -118701,7 +118702,7 @@
     "Feysəlabad",
     "Fih",
     "Finfinne",
-    "Florianópolis",
+    "Florianopolis",
     "Fo San",
     "Fo Shan",
     "Fo Shan Chen",
@@ -118775,7 +118776,7 @@
     "Gonkong",
     "Gouchan",
     "Grad Mexico",
-    "GramIN Jaipur",
+    "Gramin Jaipur",
     "Greater Melbourne",
     "Gretara Mumba",
     "Gu Angazu",
@@ -120482,7 +120483,7 @@
     "Rangún",
     "Rangūnas",
     "Rath Ri Xode Ca Ne Ro",
-    "Read to Rise Yola",
+    "Read To Rise Yola",
     "Results Abidjan",
     "Rgn",
     "Ri Ada",
@@ -122206,7 +122207,6 @@
     "riyado",
     "riyat",
     "riyea di janirea",
-    "riyo di janairo",
     "Â-muòng",
     "Çangçun",
     "Çançun",
