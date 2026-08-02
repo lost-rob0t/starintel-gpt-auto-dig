@@ -19,7 +19,7 @@ concurrency:
 jobs:
   discover:
     runs-on: ubuntu-latest
-    timeout-minutes: 45
+    timeout-minutes: 20
     steps:
       - uses: actions/checkout@v6
         with:
@@ -34,15 +34,16 @@ jobs:
           python -m pip install --disable-pip-version-check playwright
           python -m playwright install --with-deps chromium
 
-      - name: Capture frontend state and network data
+      - name: Capture initial directory API traffic
         run: |
           python scripts/discover_global_shapers_frontend_data.py \
+            --route /shapers \
             --output reports/global-shapers-frontend-data.json \
             --hub-url-file imports/global-shapers/frontend-hub-urls.txt \
             --profile-url-file imports/global-shapers/frontend-profile-urls.txt \
-            --max-clicks 700 \
-            --scroll-rounds 900 \
-            --timeout-ms 120000
+            --max-clicks 8 \
+            --scroll-rounds 12 \
+            --timeout-ms 60000
 
       - name: Print high-signal response summary
         run: |
@@ -64,6 +65,7 @@ jobs:
                       "hub_urls": item.get("hub_urls"),
                       "salesforce_ids": item.get("salesforce_ids"),
                       "top_keys": (item.get("json_summary") or {}).get("top_keys", [])[:20],
+                      "text_prefix": item.get("text_prefix", "")[:400],
                   })
           print(json.dumps({
               "hub_url_count": report["hub_url_count"],
