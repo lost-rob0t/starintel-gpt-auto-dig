@@ -1,0 +1,52 @@
+name: Diagnose Global Shapers transport
+
+on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - "imports/.wef-shapers-compact/**"
+      - "scripts/recover_legacy_shapers_transport.py"
+      - ".github/workflows/diagnose-global-shapers-transport.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  diagnose:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.13"
+
+      - name: Test exact transport boundaries
+        shell: bash
+        run: |
+          set +e
+          python scripts/recover_legacy_shapers_transport.py \
+            --parts imports/.wef-shapers-compact \
+            --output /tmp/recovered.compact.jsonl \
+            --report /tmp/recovery-report.json \
+            --radius 0
+          status=$?
+          echo "recovery_exit=${status}"
+          cat /tmp/recovery-report.json
+          python - <<'PY'
+          from pathlib import Path
+          paths = sorted(Path("imports/.wef-shapers-compact").glob("part-*"))
+          lengths = [len("".join(path.read_text().split())) for path in paths]
+          print({
+              "paths": [str(path) for path in paths],
+              "lengths": lengths,
+              "total": sum(lengths),
+              "mod4": sum(lengths) % 4,
+          })
+          PY
+          exit 0
