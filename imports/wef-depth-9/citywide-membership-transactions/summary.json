@@ -1,0 +1,76 @@
+{
+  "datasets": {
+    "accounting-distribution-2026": {
+      "bytes": 194905,
+      "content_type": "text/css; charset=utf-8",
+      "parse_error": "not-json",
+      "url": "https://www.columbusauditor.org/bootstrap.min.css"
+    },
+    "bank-checks-2026": {
+      "bytes": 194905,
+      "content_type": "text/css; charset=utf-8",
+      "parse_error": "not-json",
+      "url": "https://www.columbusauditor.org/bootstrap.min.css"
+    },
+    "payments-2026": {
+      "bytes": 194905,
+      "content_type": "text/css; charset=utf-8",
+      "parse_error": "not-json",
+      "url": "https://www.columbusauditor.org/bootstrap.min.css"
+    },
+    "purchase-order-lines-2026": {
+      "bytes": 194905,
+      "content_type": "text/css; charset=utf-8",
+      "parse_error": "not-json",
+      "url": "https://www.columbusauditor.org/bootstrap.min.css"
+    },
+    "purchase-order-lines-expanded-2026": {
+      "bytes": 194905,
+      "content_type": "text/css; charset=utf-8",
+      "parse_error": "not-json",
+      "url": "https://www.columbusauditor.org/bootstrap.min.css"
+    },
+    "purchase-orders-2026": {
+      "bytes": 194905,
+      "content_type": "text/css; charset=utf-8",
+      "parse_error": "not-json",
+      "url": "https://www.columbusauditor.org/bootstrap.min.css"
+    },
+    "vendor-invoices-2026": {
+      "bytes": 194905,
+      "content_type": "text/css; charset=utf-8",
+      "parse_error": "not-json",
+      "url": "https://www.columbusauditor.org/bootstrap.min.css"
+    },
+    "vendors": {
+      "bytes": 194905,
+      "content_type": "text/css; charset=utf-8",
+      "parse_error": "not-json",
+      "url": "https://www.columbusauditor.org/bootstrap.min.css"
+    }
+  },
+  "direct_hit_counts": {},
+  "direct_terms": [
+    "ACPO012949",
+    "0223-2026",
+    "63975",
+    "045611",
+    "040255",
+    "SMART COLUMBUS",
+    "COLUMBUS PARTNERSHIP",
+    "WORLD ECONOMIC FORUM",
+    "GLOBAL SHAPERS",
+    "YOUNG GLOBAL LEADERS",
+    "DAVOS",
+    "CENTRE FOR URBAN TRANSFORMATION",
+    "CENTER FOR URBAN TRANSFORMATION"
+  ],
+  "discovered_identifiers": [],
+  "expanded_hit_counts": {},
+  "parsed_dataset_count": 0,
+  "portal": "https://www.columbusauditor.org/Data-Hub/data-sets-explorer/",
+  "selected_dataset_count": 8,
+  "target_id": "starintel:investigation-target:wef-depth-9-citywide-membership-purchase-orders-and-vendors",
+  "total_direct_hits": 0,
+  "total_expanded_hits": 0
+}
