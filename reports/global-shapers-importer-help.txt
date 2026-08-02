@@ -1,0 +1,17 @@
+usage: import_global_shapers_people.py [-h] [--root ROOT]
+                                       [--minimum-people MINIMUM_PEOPLE]
+                                       [--workers WORKERS] [--skip-browser]
+                                       [--skip-profile-hydration]
+                                       [--max-hubs MAX_HUBS]
+
+Import the complete publicly exposed Global Shapers member and alumni
+directory.
+
+options:
+  -h, --help            show this help message and exit
+  --root ROOT
+  --minimum-people MINIMUM_PEOPLE
+  --workers WORKERS
+  --skip-browser
+  --skip-profile-hydration
+  --max-hubs MAX_HUBS
