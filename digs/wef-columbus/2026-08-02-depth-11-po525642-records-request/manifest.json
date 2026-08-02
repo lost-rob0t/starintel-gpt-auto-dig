@@ -1,0 +1,27 @@
+{
+  "counts_by_dtype": {
+    "analysis": 3,
+    "investigation-target": 1,
+    "research-pass": 1
+  },
+  "dataset": "wef",
+  "decoded_bytes": 17771,
+  "document_count": 5,
+  "generated_at": "2026-08-02T01:26:00Z",
+  "gzip_bytes": 3487,
+  "gzip_sha256": "69d6d732b21721f3639ec38c4d294aa0ea04337459e35bbd6a0c83b0dfae91b1",
+  "normalized_jsonl_sha256": "ac44bc50c28810cbf72e88d3b44b9eb40f64862c3fb61d233aebd0ce8145c7ab",
+  "records": [
+    "starintel:analysis:po525642-contract-performance-records-gap-depth-11",
+    "starintel:analysis:po525642-records-request-scope-depth-11",
+    "starintel:analysis:smart-columbus-wef-correspondence-expense-request-scope-depth-11",
+    "starintel:investigation-target:wef-depth-12-po525642-records-production",
+    "starintel:research-pass:wef-columbus-depth-11-po525642-records-request-2026-08-02"
+  ],
+  "recursion_depth": 11,
+  "run_id": "wef-columbus-depth-11-po525642-records-request-2026-08-02",
+  "schema_version": "0.9.0",
+  "transport_bytes": 4714,
+  "transport_file": "starintel-documents.jsonl.gz.b64",
+  "transport_sha256": "d81077a96df4d7b49733b1a3cf20bad087b69ee0b2570ee024c912351f7b166e"
+}
