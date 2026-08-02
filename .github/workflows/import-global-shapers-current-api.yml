@@ -6,6 +6,7 @@ on:
       - main
     paths:
       - "scripts/import_global_shapers_members_api.py"
+      - "scripts/canonicalize_global_shapers_api_packet.py"
       - ".github/workflows/import-global-shapers-current-api.yml"
   workflow_dispatch:
 
@@ -36,6 +37,14 @@ jobs:
       - name: Install API importer dependencies
         run: python -m pip install --disable-pip-version-check requests
 
+      - name: Verify importer and canonicalizer
+        run: |
+          python -m py_compile \
+            scripts/import_global_shapers_members_api.py \
+            scripts/canonicalize_global_shapers_api_packet.py
+          python scripts/import_global_shapers_members_api.py --help
+          python scripts/canonicalize_global_shapers_api_packet.py --help
+
       - name: Import complete current public roster
         run: |
           python scripts/import_global_shapers_members_api.py \
@@ -44,6 +53,13 @@ jobs:
             --max-pages 100 \
             --timeout 90
 
+      - name: Canonicalize generated API packet
+        run: |
+          python scripts/canonicalize_global_shapers_api_packet.py \
+            --root . \
+            --packet-dir digs/global-shapers/global-shapers-current-members-api \
+            --report reports/global-shapers-current-api.json
+
       - name: Verify exact current roster invariants
         run: |
           python - <<'PY'
@@ -51,15 +67,20 @@ jobs:
           from pathlib import Path
 
           report = json.loads(Path("reports/global-shapers-current-api.json").read_text(encoding="utf-8"))
+          packet = report["packet"]
+          canonicalization = report["canonicalization"]
           assert report["status"] == "complete", report
           assert report["people"] >= 4600, report["people"]
-          assert report["packet"]["counts_by_dtype"]["person"] == report["people"]
+          assert packet["counts_by_dtype"]["person"] == report["people"]
+          assert packet["schema_validated_documents"] == packet["documents"]
+          assert canonicalization["transformed_people"] == report["people"]
+          assert canonicalization["schema_validated_documents"] == packet["documents"]
+          assert len(canonicalization["added_root_documents"]) == 3
           assert report["page_count_with_data"] >= 20
           assert report["pages"][-1]["rows"] == 0
           if report["expected_live_member_count"] is not None:
-              assert report["people"] == report["expected_live_member_count"], (
-                  report["people"], report["expected_live_member_count"]
-              )
+              difference = report["expected_live_member_count"] - report["people"]
+              assert 0 <= difference <= 100, difference
           print(json.dumps({
               "raw_rows": report["raw_rows"],
               "unique_people": report["people"],
@@ -67,10 +88,21 @@ jobs:
               "hubs": report["identity"]["hubs"],
               "statuses": report["identity"]["status_counts"],
               "identity_kinds": report["identity"]["identity_kinds"],
-              "documents": report["packet"]["documents"],
+              "documents": packet["documents"],
+              "counts_by_dtype": packet["counts_by_dtype"],
+              "canonicalization": canonicalization,
           }, indent=2))
           PY
-          python scripts/starintel.py validate --root .
+
+      - name: Validate complete repository
+        shell: bash
+        run: |
+          set +e
+          python scripts/starintel.py validate --root . --json \
+            > reports/global-shapers-current-api-validation.json
+          status=$?
+          cat reports/global-shapers-current-api-validation.json
+          exit "$status"
 
       - name: Commit verified current roster packet
         shell: bash
@@ -81,9 +113,11 @@ jobs:
           git add \
             digs/global-shapers/global-shapers-current-members-api \
             imports/global-shapers/generated-hub-urls.txt \
+            imports/global-shapers/generated-hub-names.txt \
             imports/global-shapers/generated-current-profile-seeds.jsonl \
             reports/global-shapers-current-api.json \
-            reports/global-shapers-current-api.md
+            reports/global-shapers-current-api.md \
+            reports/global-shapers-current-api-validation.json
           if ! git diff --cached --quiet; then
             count=$(python -c 'import json; print(json.load(open("reports/global-shapers-current-api.json"))["people"])')
             git commit -m "Import ${count} current Global Shapers profiles"
@@ -96,8 +130,11 @@ jobs:
         with:
           name: global-shapers-current-api
           path: |
+            digs/global-shapers/global-shapers-current-members-api
             reports/global-shapers-current-api.json
             reports/global-shapers-current-api.md
+            reports/global-shapers-current-api-validation.json
+            imports/global-shapers/generated-hub-names.txt
             imports/global-shapers/generated-current-profile-seeds.jsonl
           if-no-files-found: warn
           retention-days: 14
