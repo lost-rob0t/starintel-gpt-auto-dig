@@ -1,0 +1,53 @@
+{
+  "collision_groups": 2,
+  "collisions": [
+    {
+      "_id": "starintel:org:global-shapers-hub:boulder-hub",
+      "dtype": "org",
+      "input_documents": 2,
+      "names": [
+        "Boulder Hub",
+        "Boulder hub"
+      ],
+      "titles": [
+        "Boulder Hub",
+        "Boulder hub"
+      ]
+    },
+    {
+      "_id": "starintel:org:global-shapers-hub:uberlandia-hub",
+      "dtype": "org",
+      "input_documents": 2,
+      "names": [
+        "Uberlandia Hub",
+        "Uberlândia Hub"
+      ],
+      "titles": [
+        "Uberlandia Hub",
+        "Uberlândia Hub"
+      ]
+    }
+  ],
+  "counts_by_dtype_after": {
+    "org": 424,
+    "person": 4652,
+    "relation": 9231
+  },
+  "counts_by_dtype_before": {
+    "org": 426,
+    "person": 4652,
+    "relation": 9231
+  },
+  "duplicate_documents_removed": 2,
+  "input_documents": 14309,
+  "output_documents": 14307,
+  "packet": {
+    "base64_parts": [
+      "starintel-documents.jsonl.gz.b64.part-000",
+      "starintel-documents.jsonl.gz.b64.part-001"
+    ],
+    "documents": 14307,
+    "gzip_sha256": "9c747333166ab55c33b4dfb5005832a3e4ea75f7f83c4382593b4f8153689ad9",
+    "jsonl_sha256": "bc2d0a598ba34d11f3da9ad42899e69aed2909b081de751fb53e8df0bf7d67c2"
+  }
+}
