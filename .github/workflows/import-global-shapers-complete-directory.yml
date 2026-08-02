@@ -22,7 +22,7 @@ permissions:
 
 concurrency:
   group: global-shapers-complete-directory
-  cancel-in-progress: false
+  cancel-in-progress: true
 
 jobs:
   import:
@@ -38,49 +38,78 @@ jobs:
         with:
           python-version: "3.13"
 
-      - name: Install public-web and browser dependencies
+      - name: Install public-web, gazetteer, and browser dependencies
         run: |
-          python -m pip install --disable-pip-version-check requests beautifulsoup4 lxml playwright
+          python -m pip install --disable-pip-version-check \
+            requests beautifulsoup4 lxml playwright geonamescache
           python -m playwright install --with-deps chromium
 
       - name: Verify importers and city enumerator
         run: |
-          python scripts/run_global_shapers_complete_import.py --help
+          python scripts/run_global_shapers_complete_import.py --help \
+            | tee reports/global-shapers-importer-help.txt
           python scripts/restore_legacy_global_shapers_packet.py --help
           python scripts/enumerate_global_shapers_city_hubs.py --help
           python -m compileall -q scripts starintel_doc
 
-      - name: Enumerate city names and resolve official hub URLs
+      - name: Restore retained 4,062-person alumni corpus first
+        run: python scripts/restore_legacy_global_shapers_packet.py --root .
+
+      - name: Enumerate world cities and resolve official hub URLs
         run: |
           python scripts/enumerate_global_shapers_city_hubs.py \
             --root . \
+            --city-file imports/global-shapers/retained-city-seeds.txt \
             --output reports/global-shapers-city-hubs.json \
             --hub-url-file imports/global-shapers/generated-hub-urls.txt \
             --profile-url-file imports/global-shapers/generated-member-profile-urls.txt \
-            --max-cities 2000 \
+            --max-cities 7000 \
+            --geonames-limit 6000 \
+            --min-population 50000 \
+            --minimum-hubs 400 \
+            --workers 64 \
+            --timeout 8 \
             --max-clicks 500
           python - <<'PY'
           import json
           from pathlib import Path
 
           report = json.loads(Path("reports/global-shapers-city-hubs.json").read_text(encoding="utf-8"))
-          assert report["city_count"] >= 400, report
+          assert report["status"] == "complete", report
           assert report["hub_url_count"] >= 400, report
           print(json.dumps({
               "cities": report["city_count"],
               "resolved_cities": report["resolved_city_count"],
               "hub_urls": report["hub_url_count"],
               "profile_seed_urls": report["profile_seed_url_count"],
+              "probes": report["probe_count"],
+              "elapsed_seconds": report["elapsed_seconds"],
           }, indent=2))
           PY
 
-      - name: Restore retained 4,062-person alumni corpus
-        run: python scripts/restore_legacy_global_shapers_packet.py --root .
+      - name: Checkpoint retained corpus and city diagnostics
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add \
+            digs/wef/global-shapers-legacy-alumni-4062 \
+            imports/global-shapers/retained-city-seeds.txt \
+            imports/global-shapers/generated-hub-urls.txt \
+            imports/global-shapers/generated-member-profile-urls.txt \
+            reports/global-shapers-importer-help.txt \
+            reports/global-shapers-city-hubs.json \
+            reports/wef-global-shapers-alumni-import.json \
+            reports/wef-global-shapers-alumni-import.md
+          if ! git diff --cached --quiet; then
+            hubs=$(python -c 'import json; print(json.load(open("reports/global-shapers-city-hubs.json"))["hub_url_count"])')
+            git commit -m "Enumerate ${hubs} Global Shapers hubs"
+            git push origin "HEAD:${GITHUB_REF_NAME}"
+          fi
 
       - name: Remove superseded live Global Shapers packet
         run: rm -rf digs/global-shapers/global-shapers-complete-public-directory-*
 
-      - name: Enumerate current members and entire exposed alumni corpus
+      - name: Enumerate current members and exposed alumni corpus
         env:
           GLOBAL_SHAPERS_HUB_URL_FILE: imports/global-shapers/generated-hub-urls.txt
           GLOBAL_SHAPERS_PROFILE_URL_FILE: imports/global-shapers/generated-member-profile-urls.txt
@@ -89,7 +118,7 @@ jobs:
             --root . \
             --minimum-people 13000 \
             --workers 32 \
-            --max-hubs 650
+            --max-hubs 700
 
       - name: Enforce permanent 13k site threshold
         run: |
@@ -140,14 +169,8 @@ jobs:
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add \
             digs/global-shapers \
-            digs/wef/global-shapers-legacy-alumni-4062 \
-            imports/global-shapers/generated-hub-urls.txt \
-            imports/global-shapers/generated-member-profile-urls.txt \
-            reports/global-shapers-city-hubs.json \
             reports/global-shapers-complete-directory.json \
             reports/global-shapers-complete-directory.md \
-            reports/wef-global-shapers-alumni-import.json \
-            reports/wef-global-shapers-alumni-import.md \
             site-config.json
           if git diff --cached --quiet; then
             echo "No directory changes to commit"
@@ -157,22 +180,24 @@ jobs:
             git push origin "HEAD:${GITHUB_REF_NAME}"
           fi
 
-      - name: Commit retained corpus or crawl diagnostics after failure
+      - name: Commit crawl diagnostics after failure
         if: failure()
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add \
             digs/wef/global-shapers-legacy-alumni-4062 \
+            imports/global-shapers/retained-city-seeds.txt \
             imports/global-shapers/generated-hub-urls.txt \
             imports/global-shapers/generated-member-profile-urls.txt \
+            reports/global-shapers-importer-help.txt \
             reports/global-shapers-city-hubs.json \
             reports/wef-global-shapers-alumni-import.json \
             reports/wef-global-shapers-alumni-import.md \
             reports/global-shapers-complete-directory.json \
             reports/global-shapers-complete-directory.md || true
           if ! git diff --cached --quiet; then
-            git commit -m "Record city hub enumeration and crawl diagnostics"
+            git commit -m "Record Global Shapers crawl diagnostics"
             git push origin "HEAD:${GITHUB_REF_NAME}"
           fi
 
@@ -182,11 +207,13 @@ jobs:
         with:
           name: global-shapers-complete-directory-report
           path: |
+            reports/global-shapers-importer-help.txt
             reports/global-shapers-city-hubs.json
             reports/global-shapers-complete-directory.json
             reports/global-shapers-complete-directory.md
             reports/wef-global-shapers-alumni-import.json
             reports/wef-global-shapers-alumni-import.md
+            imports/global-shapers/retained-city-seeds.txt
             imports/global-shapers/generated-hub-urls.txt
             imports/global-shapers/generated-member-profile-urls.txt
           if-no-files-found: warn
