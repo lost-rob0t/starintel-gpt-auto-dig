@@ -1,0 +1,72 @@
+{
+  "config_targets_updated": [
+    "bilderberg",
+    "rand"
+  ],
+  "datasets": [
+    "bilderberg",
+    "rand"
+  ],
+  "documents_added": 24,
+  "documents_enriched": 2,
+  "documents_unchanged": 2,
+  "main_documents_before": 4,
+  "old_documents_considered": 28,
+  "sample_conflict_paths": [
+    "starintel:dataset-manifest:bilderberg-public-roster.data.content_hash",
+    "starintel:dataset-manifest:bilderberg-public-roster.data.generated_at",
+    "starintel:dataset-manifest:bilderberg-public-roster.data.record_count",
+    "starintel:dataset-manifest:bilderberg-public-roster.date_added",
+    "starintel:dataset-manifest:bilderberg-public-roster.date_updated",
+    "starintel:dataset-manifest:bilderberg-public-roster.temporal.collected_at",
+    "starintel:dataset-manifest:bilderberg-public-roster.temporal.observed_at",
+    "starintel:dataset-manifest:bilderberg-public-roster.verification.verified_at",
+    "starintel:dataset-manifest:rand-public-roster.data.content_hash",
+    "starintel:dataset-manifest:rand-public-roster.data.generated_at",
+    "starintel:dataset-manifest:rand-public-roster.data.record_count",
+    "starintel:dataset-manifest:rand-public-roster.date_added",
+    "starintel:dataset-manifest:rand-public-roster.date_updated",
+    "starintel:dataset-manifest:rand-public-roster.temporal.collected_at",
+    "starintel:dataset-manifest:rand-public-roster.temporal.observed_at",
+    "starintel:dataset-manifest:rand-public-roster.verification.verified_at"
+  ],
+  "scalar_conflicts_kept_from_main": 16,
+  "source_archive": "archive/pr-105-pre-takeover-f8035f2",
+  "source_pr": 105,
+  "strategy": "current-main wins scalar conflicts; missing fields and unique list evidence are retained from the archived branch",
+  "written_dtype_counts": {
+    "dataset-manifest": 2,
+    "email": 3,
+    "person": 7,
+    "relation": 7,
+    "target": 7
+  },
+  "written_files": [
+    "db/dataset-manifest/starintel:dataset-manifest:bilderberg-public-roster.ndjson",
+    "db/dataset-manifest/starintel:dataset-manifest:rand-public-roster.ndjson",
+    "db/email/starintel:email:bilderberg:org-media-bilderbergmeetings-org.ndjson",
+    "db/email/starintel:email:rand:org-europeanmedia-randeurope-org.ndjson",
+    "db/email/starintel:email:rand:org-media-rand-org.ndjson",
+    "db/person/starintel:person:bilderberg:alex-karp.ndjson",
+    "db/person/starintel:person:bilderberg:jen-easterly.ndjson",
+    "db/person/starintel:person:bilderberg:jessica-uhl.ndjson",
+    "db/person/starintel:person:bilderberg:jose-luis-arnaut.ndjson",
+    "db/person/starintel:person:bilderberg:marcus-wallenberg.ndjson",
+    "db/person/starintel:person:bilderberg:nadia-calvino.ndjson",
+    "db/person/starintel:person:bilderberg:nick-bostrom.ndjson",
+    "db/relation/starintel:relation:bilderberg:alex-karp-executive_of-bilderberg-meetings-2019.ndjson",
+    "db/relation/starintel:relation:bilderberg:jen-easterly-director_of-bilderberg-meetings-2023.ndjson",
+    "db/relation/starintel:relation:bilderberg:jessica-uhl-director_of-bilderberg-meetings-2019.ndjson",
+    "db/relation/starintel:relation:bilderberg:jose-luis-arnaut-participant_in-bilderberg-meetings-2023.ndjson",
+    "db/relation/starintel:relation:bilderberg:marcus-wallenberg-chair_of-bilderberg-meetings-2023.ndjson",
+    "db/relation/starintel:relation:bilderberg:nadia-calvino-executive_of-bilderberg-meetings-2024.ndjson",
+    "db/relation/starintel:relation:bilderberg:nick-bostrom-director_of-bilderberg-meetings-2019.ndjson",
+    "db/target/starintel:target:bilderberg:alex-karp-cross-ties.ndjson",
+    "db/target/starintel:target:bilderberg:jen-easterly-cross-ties.ndjson",
+    "db/target/starintel:target:bilderberg:jessica-uhl-cross-ties.ndjson",
+    "db/target/starintel:target:bilderberg:jose-luis-arnaut-cross-ties.ndjson",
+    "db/target/starintel:target:bilderberg:marcus-wallenberg-cross-ties.ndjson",
+    "db/target/starintel:target:bilderberg:nadia-calvino-cross-ties.ndjson",
+    "db/target/starintel:target:bilderberg:nick-bostrom-cross-ties.ndjson"
+  ]
+}

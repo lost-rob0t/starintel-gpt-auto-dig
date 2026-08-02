@@ -3,26 +3,59 @@
   "schema_version": "0.9.0",
   "targets": [
     {
+      "bypass_robots_for_profiles": true,
+      "bypass_robots_for_sitemaps": true,
       "dataset": "rand",
+      "default_role": "researcher",
+      "explicit_public_seeds": true,
+      "homepage": "https://www.rand.org/",
+      "max_profiles": 3500,
       "name": "RAND Corporation",
       "org_id": "starintel:org:rand-corporation",
-      "homepage": "https://www.rand.org/",
-      "seed_pages": [
-        "https://www.rand.org/about/people.html",
-        "https://www.rand.org/about/leadership.html",
-        "https://www.rand.org/about/board.html"
+      "organization_contacts": [
+        {
+          "kind": "email",
+          "label": "RAND Media Relations",
+          "source_url": "https://www.rand.org/news.html",
+          "type": "media_relations",
+          "value": "media@rand.org"
+        },
+        {
+          "kind": "email",
+          "label": "European Media Inquiries",
+          "source_url": "https://www.rand.org/news.html",
+          "type": "media_relations",
+          "value": "europeanmedia@randeurope.org"
+        }
+      ],
+      "pagination": [
+        {
+          "max_pages": 84,
+          "parameter": "start",
+          "start": 0,
+          "step": 12,
+          "url": "https://www.rand.org/about/people.html"
+        }
       ],
       "profile_patterns": [
         "/about/people/[a-z]/[^/]+\\.html$"
       ],
-      "default_role": "researcher",
-      "max_profiles": 3500
+      "seed_pages": [
+        "https://www.rand.org/about/people.html",
+        "https://www.rand.org/about/leadership.html",
+        "https://www.rand.org/about/board.html"
+      ]
     },
     {
       "dataset": "atlantic-council",
+      "default_role": "expert",
+      "homepage": "https://www.atlanticcouncil.org/",
+      "max_profiles": 5000,
       "name": "Atlantic Council",
       "org_id": "starintel:org:atlantic-council",
-      "homepage": "https://www.atlanticcouncil.org/",
+      "profile_patterns": [
+        "/expert/[^/]+/?$"
+      ],
       "seed_pages": [
         "https://www.atlanticcouncil.org/people/",
         "https://www.atlanticcouncil.org/about/staff/",
@@ -30,21 +63,32 @@
         "https://www.atlanticcouncil.org/about/international-advisory-board/"
       ],
       "seed_roles": {
-        "https://www.atlanticcouncil.org/about/staff/": "staff",
         "https://www.atlanticcouncil.org/about/board-of-directors/": "board",
-        "https://www.atlanticcouncil.org/about/international-advisory-board/": "advisory-board"
-      },
-      "profile_patterns": [
-        "/expert/[^/]+/?$"
-      ],
-      "default_role": "expert",
-      "max_profiles": 5000
+        "https://www.atlanticcouncil.org/about/international-advisory-board/": "advisory-board",
+        "https://www.atlanticcouncil.org/about/staff/": "staff"
+      }
     },
     {
+      "bypass_robots_for_profiles": true,
+      "bypass_robots_for_sitemaps": true,
       "dataset": "bilderberg",
+      "default_role": "participant",
+      "explicit_public_seeds": true,
+      "homepage": "https://www.bilderbergmeetings.org/",
+      "max_profiles": 0,
       "name": "Bilderberg Meetings",
       "org_id": "starintel:org:bilderberg-meetings",
-      "homepage": "https://www.bilderbergmeetings.org/",
+      "organization_contacts": [
+        {
+          "kind": "email",
+          "label": "Bilderberg media contact",
+          "source_url": "https://bilderbergmeetings.org/press/press-release/press-release",
+          "type": "media_relations",
+          "value": "media@bilderbergmeetings.org"
+        }
+      ],
+      "parser": "bilderberg",
+      "profile_patterns": [],
       "seed_pages": [
         "https://www.bilderbergmeetings.org/meetings/meeting-1954/participants-1954",
         "https://www.bilderbergmeetings.org/meetings/meeting-1955/participants-1955",
@@ -119,17 +163,18 @@
         "https://www.bilderbergmeetings.org/meetings/meeting-2024/participants-2024",
         "https://www.bilderbergmeetings.org/meetings/meeting-2025/participants-2025",
         "https://www.bilderbergmeetings.org/meetings/meeting-2026/participants-2026"
-      ],
-      "profile_patterns": [],
-      "default_role": "participant",
-      "parser": "bilderberg",
-      "max_profiles": 0
+      ]
     },
     {
       "dataset": "trilateral-commission",
+      "default_role": "member",
+      "homepage": "https://www.trilateral.org/",
+      "max_profiles": 2000,
       "name": "The Trilateral Commission",
       "org_id": "starintel:org:trilateral-commission",
-      "homepage": "https://www.trilateral.org/",
+      "profile_patterns": [
+        "/(?:people|member|members)/[^/]+/?$"
+      ],
       "seed_pages": [
         "https://www.trilateral.org/about/members-fellows/",
         "https://www.trilateral.org/event-type/members/",
@@ -137,351 +182,346 @@
         "https://www.trilateral.org/regions/european-group/",
         "https://www.trilateral.org/regions/asia-pacific-group/",
         "https://www.trilateral.org/north-american-region/"
-      ],
-      "profile_patterns": [
-        "/(?:people|member|members)/[^/]+/?$"
-      ],
-      "default_role": "member",
-      "max_profiles": 2000
+      ]
     },
     {
       "dataset": "council-on-foreign-relations",
+      "default_role": "member",
+      "homepage": "https://www.cfr.org/",
+      "max_profiles": 3000,
       "name": "Council on Foreign Relations",
       "org_id": "starintel:org:council-on-foreign-relations",
-      "homepage": "https://www.cfr.org/",
+      "profile_patterns": [
+        "/expert/[^/]+/?$"
+      ],
       "seed_pages": [
         "https://www.cfr.org/experts",
         "https://www.cfr.org/membership/roster",
         "https://www.cfr.org/board-directors"
-      ],
-      "profile_patterns": [
-        "/expert/[^/]+/?$"
-      ],
-      "default_role": "member",
-      "max_profiles": 3000
+      ]
     },
     {
       "dataset": "brookings",
+      "default_role": "expert",
+      "homepage": "https://www.brookings.edu/",
+      "max_profiles": 2500,
       "name": "Brookings Institution",
       "org_id": "starintel:org:brookings-institution",
-      "homepage": "https://www.brookings.edu/",
-      "seed_pages": [
-        "https://www.brookings.edu/experts/",
-        "https://www.brookings.edu/about-us/leadership/"
-      ],
       "profile_patterns": [
         "/people/[^/]+/?$"
       ],
-      "default_role": "expert",
-      "max_profiles": 2500
+      "seed_pages": [
+        "https://www.brookings.edu/experts/",
+        "https://www.brookings.edu/about-us/leadership/"
+      ]
     },
     {
       "dataset": "chatham-house",
+      "default_role": "expert",
+      "homepage": "https://www.chathamhouse.org/",
+      "max_profiles": 2000,
       "name": "Chatham House",
       "org_id": "starintel:org:chatham-house",
-      "homepage": "https://www.chathamhouse.org/",
-      "seed_pages": [
-        "https://www.chathamhouse.org/about-us/our-people",
-        "https://www.chathamhouse.org/about-us/our-governance"
-      ],
       "profile_patterns": [
         "/about-us/our-people/[^/]+/?$"
       ],
-      "default_role": "expert",
-      "max_profiles": 2000
+      "seed_pages": [
+        "https://www.chathamhouse.org/about-us/our-people",
+        "https://www.chathamhouse.org/about-us/our-governance"
+      ]
     },
     {
       "dataset": "csis",
+      "default_role": "expert",
+      "homepage": "https://www.csis.org/",
+      "max_profiles": 2500,
       "name": "Center for Strategic and International Studies",
       "org_id": "starintel:org:center-for-strategic-and-international-studies",
-      "homepage": "https://www.csis.org/",
+      "profile_patterns": [
+        "/people/[^/]+/?$"
+      ],
       "seed_pages": [
         "https://www.csis.org/people",
         "https://www.csis.org/about/leadership-and-staff",
         "https://www.csis.org/about/board-trustees"
-      ],
-      "profile_patterns": [
-        "/people/[^/]+/?$"
-      ],
-      "default_role": "expert",
-      "max_profiles": 2500
+      ]
     },
     {
       "dataset": "carnegie-endowment",
+      "default_role": "expert",
+      "homepage": "https://carnegieendowment.org/",
+      "max_profiles": 2500,
       "name": "Carnegie Endowment for International Peace",
       "org_id": "starintel:org:carnegie-endowment-for-international-peace",
-      "homepage": "https://carnegieendowment.org/",
-      "seed_pages": [
-        "https://carnegieendowment.org/experts",
-        "https://carnegieendowment.org/about/leadership"
-      ],
       "profile_patterns": [
         "/people/[^/]+/?$",
         "/experts/[^/]+/?$"
       ],
-      "default_role": "expert",
-      "max_profiles": 2500
+      "seed_pages": [
+        "https://carnegieendowment.org/experts",
+        "https://carnegieendowment.org/about/leadership"
+      ]
     },
     {
       "dataset": "aspen-institute",
+      "default_role": "member",
+      "homepage": "https://www.aspeninstitute.org/",
+      "max_profiles": 2500,
       "name": "The Aspen Institute",
       "org_id": "starintel:org:aspen-institute",
-      "homepage": "https://www.aspeninstitute.org/",
+      "profile_patterns": [
+        "/people/[^/]+/?$"
+      ],
       "seed_pages": [
         "https://www.aspeninstitute.org/people/",
         "https://www.aspeninstitute.org/about/leadership/",
         "https://www.aspeninstitute.org/about/board-of-trustees/"
-      ],
-      "profile_patterns": [
-        "/people/[^/]+/?$"
-      ],
-      "default_role": "member",
-      "max_profiles": 2500
+      ]
     },
     {
       "dataset": "munich-security-conference",
+      "default_role": "member",
+      "homepage": "https://securityconference.org/",
+      "max_profiles": 1000,
       "name": "Munich Security Conference",
       "org_id": "starintel:org:munich-security-conference",
-      "homepage": "https://securityconference.org/",
+      "profile_patterns": [
+        "/en/about-us/[^/]+/[^/]+/?$"
+      ],
       "seed_pages": [
         "https://securityconference.org/en/about-us/msc-team/",
         "https://securityconference.org/en/about-us/advisory-council/",
         "https://securityconference.org/en/about-us/foundation-council/"
-      ],
-      "profile_patterns": [
-        "/en/about-us/[^/]+/[^/]+/?$"
-      ],
-      "default_role": "member",
-      "max_profiles": 1000
+      ]
     },
     {
       "dataset": "rockefeller-foundation",
+      "default_role": "leadership",
+      "homepage": "https://www.rockefellerfoundation.org/",
+      "max_profiles": 1000,
       "name": "The Rockefeller Foundation",
       "org_id": "starintel:org:rockefeller-foundation",
-      "homepage": "https://www.rockefellerfoundation.org/",
-      "seed_pages": [
-        "https://www.rockefellerfoundation.org/about-us/leadership/",
-        "https://www.rockefellerfoundation.org/about-us/board-of-trustees/"
-      ],
       "profile_patterns": [
         "/profile/[^/]+/?$",
         "/people/[^/]+/?$"
       ],
-      "default_role": "leadership",
-      "max_profiles": 1000
+      "seed_pages": [
+        "https://www.rockefellerfoundation.org/about-us/leadership/",
+        "https://www.rockefellerfoundation.org/about-us/board-of-trustees/"
+      ]
     },
     {
       "dataset": "group-of-thirty",
+      "default_role": "member",
+      "homepage": "https://group30.org/",
+      "max_profiles": 1000,
       "name": "Group of Thirty",
       "org_id": "starintel:org:group-of-thirty",
-      "homepage": "https://group30.org/",
-      "seed_pages": [
-        "https://group30.org/members",
-        "https://group30.org/about"
-      ],
       "profile_patterns": [
         "/members/[^/]+/?$"
       ],
-      "default_role": "member",
-      "max_profiles": 1000
+      "seed_pages": [
+        "https://group30.org/members",
+        "https://group30.org/about"
+      ]
     },
     {
       "dataset": "club-of-rome",
+      "default_role": "member",
+      "homepage": "https://www.clubofrome.org/",
+      "max_profiles": 1800,
       "name": "Club of Rome",
       "org_id": "starintel:org:club-of-rome",
-      "homepage": "https://www.clubofrome.org/",
-      "seed_pages": [
-        "https://www.clubofrome.org/members/",
-        "https://www.clubofrome.org/about-us/leadership/"
-      ],
       "profile_patterns": [
         "/member/[^/]+/?$",
         "/people/[^/]+/?$"
       ],
-      "default_role": "member",
-      "max_profiles": 1800
+      "seed_pages": [
+        "https://www.clubofrome.org/members/",
+        "https://www.clubofrome.org/about-us/leadership/"
+      ]
     },
     {
       "dataset": "ecfr",
+      "default_role": "member",
+      "homepage": "https://ecfr.eu/",
+      "max_profiles": 2500,
       "name": "European Council on Foreign Relations",
       "org_id": "starintel:org:european-council-on-foreign-relations",
-      "homepage": "https://ecfr.eu/",
+      "profile_patterns": [
+        "/profile/[^/]+/?$"
+      ],
       "seed_pages": [
         "https://ecfr.eu/people/",
         "https://ecfr.eu/council/"
-      ],
-      "profile_patterns": [
-        "/profile/[^/]+/?$"
-      ],
-      "default_role": "member",
-      "max_profiles": 2500
+      ]
     },
     {
       "dataset": "iiss",
+      "default_role": "expert",
+      "homepage": "https://www.iiss.org/",
+      "max_profiles": 1800,
       "name": "International Institute for Strategic Studies",
       "org_id": "starintel:org:international-institute-for-strategic-studies",
-      "homepage": "https://www.iiss.org/",
+      "profile_patterns": [
+        "/people/[^/]+/?$"
+      ],
       "seed_pages": [
         "https://www.iiss.org/people/",
         "https://www.iiss.org/about-us/governance/"
-      ],
-      "profile_patterns": [
-        "/people/[^/]+/?$"
-      ],
-      "default_role": "expert",
-      "max_profiles": 1800
+      ]
     },
     {
       "dataset": "wilson-center",
+      "default_role": "expert",
+      "homepage": "https://www.wilsoncenter.org/",
+      "max_profiles": 2500,
       "name": "Wilson Center",
       "org_id": "starintel:org:wilson-center",
-      "homepage": "https://www.wilsoncenter.org/",
-      "seed_pages": [
-        "https://www.wilsoncenter.org/people",
-        "https://www.wilsoncenter.org/about/board-trustees"
-      ],
       "profile_patterns": [
         "/person/[^/]+/?$"
       ],
-      "default_role": "expert",
-      "max_profiles": 2500
+      "seed_pages": [
+        "https://www.wilsoncenter.org/people",
+        "https://www.wilsoncenter.org/about/board-trustees"
+      ]
     },
     {
       "dataset": "cnas",
+      "default_role": "expert",
+      "homepage": "https://www.cnas.org/",
+      "max_profiles": 1500,
       "name": "Center for a New American Security",
       "org_id": "starintel:org:center-for-a-new-american-security",
-      "homepage": "https://www.cnas.org/",
+      "profile_patterns": [
+        "/people/[^/]+/?$"
+      ],
       "seed_pages": [
         "https://www.cnas.org/people",
         "https://www.cnas.org/about/board-of-directors"
-      ],
-      "profile_patterns": [
-        "/people/[^/]+/?$"
-      ],
-      "default_role": "expert",
-      "max_profiles": 1500
+      ]
     },
     {
       "dataset": "aei",
+      "default_role": "expert",
+      "homepage": "https://www.aei.org/",
+      "max_profiles": 2500,
       "name": "American Enterprise Institute",
       "org_id": "starintel:org:american-enterprise-institute",
-      "homepage": "https://www.aei.org/",
-      "seed_pages": [
-        "https://www.aei.org/people/",
-        "https://www.aei.org/about/leadership/"
-      ],
       "profile_patterns": [
         "/profile/[^/]+/?$"
       ],
-      "default_role": "expert",
-      "max_profiles": 2500
+      "seed_pages": [
+        "https://www.aei.org/people/",
+        "https://www.aei.org/about/leadership/"
+      ]
     },
     {
       "dataset": "piie",
+      "default_role": "expert",
+      "homepage": "https://www.piie.com/",
+      "max_profiles": 1500,
       "name": "Peterson Institute for International Economics",
       "org_id": "starintel:org:peterson-institute-for-international-economics",
-      "homepage": "https://www.piie.com/",
-      "seed_pages": [
-        "https://www.piie.com/experts",
-        "https://www.piie.com/about-piie/board-directors"
-      ],
       "profile_patterns": [
         "/experts/[^/]+/?$"
       ],
-      "default_role": "expert",
-      "max_profiles": 1500
+      "seed_pages": [
+        "https://www.piie.com/experts",
+        "https://www.piie.com/about-piie/board-directors"
+      ]
     },
     {
       "dataset": "bruegel",
+      "default_role": "member",
+      "homepage": "https://www.bruegel.org/",
+      "max_profiles": 1500,
       "name": "Bruegel",
       "org_id": "starintel:org:bruegel",
-      "homepage": "https://www.bruegel.org/",
-      "seed_pages": [
-        "https://www.bruegel.org/people",
-        "https://www.bruegel.org/governance"
-      ],
       "profile_patterns": [
         "/people/[^/]+/?$"
       ],
-      "default_role": "member",
-      "max_profiles": 1500
+      "seed_pages": [
+        "https://www.bruegel.org/people",
+        "https://www.bruegel.org/governance"
+      ]
     },
     {
       "dataset": "german-marshall-fund",
+      "default_role": "expert",
+      "homepage": "https://www.gmfus.org/",
+      "max_profiles": 1800,
       "name": "German Marshall Fund of the United States",
       "org_id": "starintel:org:german-marshall-fund",
-      "homepage": "https://www.gmfus.org/",
-      "seed_pages": [
-        "https://www.gmfus.org/experts",
-        "https://www.gmfus.org/about/leadership"
-      ],
       "profile_patterns": [
         "/find-experts/[^/]+/?$",
         "/experts/[^/]+/?$"
       ],
-      "default_role": "expert",
-      "max_profiles": 1800
+      "seed_pages": [
+        "https://www.gmfus.org/experts",
+        "https://www.gmfus.org/about/leadership"
+      ]
     },
     {
       "dataset": "bretton-woods-committee",
+      "default_role": "member",
+      "homepage": "https://www.brettonwoods.org/",
+      "max_profiles": 2200,
       "name": "Bretton Woods Committee",
       "org_id": "starintel:org:bretton-woods-committee",
-      "homepage": "https://www.brettonwoods.org/",
-      "seed_pages": [
-        "https://www.brettonwoods.org/members",
-        "https://www.brettonwoods.org/leadership"
-      ],
       "profile_patterns": [
         "/member/[^/]+/?$"
       ],
-      "default_role": "member",
-      "max_profiles": 2200
+      "seed_pages": [
+        "https://www.brettonwoods.org/members",
+        "https://www.brettonwoods.org/leadership"
+      ]
     },
     {
       "dataset": "milken-institute",
+      "default_role": "expert",
+      "homepage": "https://milkeninstitute.org/",
+      "max_profiles": 1800,
       "name": "Milken Institute",
       "org_id": "starintel:org:milken-institute",
-      "homepage": "https://milkeninstitute.org/",
-      "seed_pages": [
-        "https://milkeninstitute.org/experts",
-        "https://milkeninstitute.org/about/leadership"
-      ],
       "profile_patterns": [
         "/experts/[^/]+/?$",
         "/people/[^/]+/?$"
       ],
-      "default_role": "expert",
-      "max_profiles": 1800
+      "seed_pages": [
+        "https://milkeninstitute.org/experts",
+        "https://milkeninstitute.org/about/leadership"
+      ]
     },
     {
       "dataset": "concordia",
+      "default_role": "member",
+      "homepage": "https://www.concordia.net/",
+      "max_profiles": 1800,
       "name": "Concordia",
       "org_id": "starintel:org:concordia",
-      "homepage": "https://www.concordia.net/",
-      "seed_pages": [
-        "https://www.concordia.net/community/",
-        "https://www.concordia.net/about/leadership/"
-      ],
       "profile_patterns": [
         "/community/[^/]+/?$"
       ],
-      "default_role": "member",
-      "max_profiles": 1800
+      "seed_pages": [
+        "https://www.concordia.net/community/",
+        "https://www.concordia.net/about/leadership/"
+      ]
     },
     {
       "dataset": "boao-forum",
+      "default_role": "member",
+      "homepage": "https://english.boaoforum.org/",
+      "max_profiles": 1000,
       "name": "Boao Forum for Asia",
       "org_id": "starintel:org:boao-forum-for-asia",
-      "homepage": "https://english.boaoforum.org/",
-      "seed_pages": [
-        "https://english.boaoforum.org/about/leadership",
-        "https://english.boaoforum.org/about/members"
-      ],
       "profile_patterns": [
         "/person/[^/]+/?$"
       ],
-      "default_role": "member",
-      "max_profiles": 1000
+      "seed_pages": [
+        "https://english.boaoforum.org/about/leadership",
+        "https://english.boaoforum.org/about/members"
+      ]
     }
   ]
 }
