@@ -47,13 +47,93 @@ def infer_target(dataset: str, mappings: dict[str, str]) -> str:
     return candidate or slug(dataset)
 
 
+def coalesce_legacy_fec_employment_collisions(
+    documents: list[dict[str, Any]], path: Path
+) -> list[dict[str, Any]]:
+    """Merge only the known legacy DNC/FEC employment-ID collisions.
+
+    The legacy generator aggregated by normalized occupation but generated IDs from
+    a display title that could fall back to the employer. Blank occupations and an
+    occupation equal to the employer could therefore emit equivalent records with
+    the same ID. Preserve their aggregate evidence while keeping all other duplicate
+    IDs fatal.
+    """
+
+    merged: list[dict[str, Any]] = []
+    by_id: dict[str, dict[str, Any]] = {}
+    semantic_fields = ("person_id", "organization_id", "title", "employment_type")
+
+    for document in documents:
+        doc_id = str(document.get("_id", ""))
+        existing = by_id.get(doc_id)
+        if existing is None:
+            by_id[doc_id] = document
+            merged.append(document)
+            continue
+
+        legacy_collision = (
+            document.get("dataset") == "dnc"
+            and document.get("dtype") == "employment"
+            and doc_id.startswith("starintel:employment:fec-reported-")
+            and existing.get("dataset") == "dnc"
+            and existing.get("dtype") == "employment"
+        )
+        if not legacy_collision:
+            raise ValueError(f"{path}: duplicate _id {doc_id}")
+
+        existing_data = existing.get("data", {})
+        incoming_data = document.get("data", {})
+        if any(existing_data.get(field) != incoming_data.get(field) for field in semantic_fields):
+            raise ValueError(f"{path}: non-equivalent legacy FEC collision for {doc_id}")
+
+        existing_reporting = existing.setdefault("extensions", {}).setdefault("fec_reporting", {})
+        incoming_reporting = document.get("extensions", {}).get("fec_reporting", {})
+        existing_reporting["row_count"] = int(existing_reporting.get("row_count", 0)) + int(
+            incoming_reporting.get("row_count", 0)
+        )
+
+        first_dates = [
+            value
+            for value in (
+                existing_reporting.get("first_transaction_date"),
+                incoming_reporting.get("first_transaction_date"),
+            )
+            if isinstance(value, str) and value
+        ]
+        last_dates = [
+            value
+            for value in (
+                existing_reporting.get("last_transaction_date"),
+                incoming_reporting.get("last_transaction_date"),
+            )
+            if isinstance(value, str) and value
+        ]
+        if first_dates:
+            existing_reporting["first_transaction_date"] = min(first_dates)
+        if last_dates:
+            existing_reporting["last_transaction_date"] = max(last_dates)
+        existing_reporting["legacy_collision_merged_documents"] = int(
+            existing_reporting.get("legacy_collision_merged_documents", 1)
+        ) + 1
+
+        source_keys = {
+            json.dumps(source, ensure_ascii=False, sort_keys=True)
+            for source in existing.get("sources", [])
+        }
+        for source in document.get("sources", []):
+            key = json.dumps(source, ensure_ascii=False, sort_keys=True)
+            if key not in source_keys:
+                existing.setdefault("sources", []).append(source)
+                source_keys.add(key)
+
+    return merged
+
+
 def filter_excluded(workspace: Path, config: dict[str, Any]) -> None:
     raw_ids = config.get("excluded_document_ids", [])
     if not isinstance(raw_ids, list):
         raise ValueError("site-config.json: excluded_document_ids must be a list")
     excluded = {str(value) for value in raw_ids}
-    if not excluded:
-        return
     paths = list(workspace.glob("*/*/starintel-documents.jsonl"))
     paths += list(workspace.glob("*/*/starintel-documents.jsonl.gz.b64"))
     paths += list(workspace.glob("*/*/starintel-documents.jsonl.gz.b64.parts"))
@@ -65,10 +145,14 @@ def filter_excluded(workspace: Path, config: dict[str, Any]) -> None:
         preferred = path.parent / "starintel-documents.jsonl"
         selected = preferred if preferred.exists() else path
         documents = [json.loads(line) for line in read_transport(selected).splitlines() if line.strip()]
+        documents = coalesce_legacy_fec_employment_collisions(documents, selected)
         kept = [document for document in documents if str(document.get("_id")) not in excluded]
         if kept:
             preferred.write_text(
-                "".join(json.dumps(document, ensure_ascii=False, separators=(",", ":"), sort_keys=True) + "\n" for document in kept),
+                "".join(
+                    json.dumps(document, ensure_ascii=False, separators=(",", ":"), sort_keys=True) + "\n"
+                    for document in kept
+                ),
                 encoding="utf-8",
             )
         elif preferred.exists():
