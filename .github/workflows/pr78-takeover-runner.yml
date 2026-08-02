@@ -37,6 +37,72 @@ jobs:
           path.write_text(source, encoding='utf-8')
           PY
           python3 /tmp/pr78-takeover.py
+          cat > tests/test_wef_shapers_transport.py <<'PYTEST'
+          from __future__ import annotations
+
+          import base64
+          import hashlib
+          import lzma
+          import sys
+          import tempfile
+          import unittest
+          from pathlib import Path
+
+          ROOT = Path(__file__).resolve().parents[1]
+          SCRIPTS = ROOT / "scripts"
+          if str(ROOT) not in sys.path:
+              sys.path.insert(0, str(ROOT))
+          if str(SCRIPTS) not in sys.path:
+              sys.path.insert(0, str(SCRIPTS))
+
+          from build_research_site import (
+              WEF_SHAPERS_EXPECTED_RECORDS,
+              WEF_SHAPERS_EXPECTED_SHA256,
+              decode_part_bundle,
+              materialize_wef_shapers_import,
+              parse_jsonl_payload,
+          )
+
+
+          class WefShapersTransportTests(unittest.TestCase):
+              def test_recursively_unwraps_nested_base64_xz_layers(self) -> None:
+                  row = '["person-id",1,2,"First","","Last","","",null,"person",null,[]]\n'
+                  inner = base64.b64encode(lzma.compress(row.encode())).decode()
+                  outer = base64.b64encode(lzma.compress(inner.encode())).decode()
+                  with tempfile.TemporaryDirectory() as directory:
+                      parts = Path(directory)
+                      (parts / "part-00").write_text(outer, encoding="utf-8")
+                      parsed = []
+                      for payload in decode_part_bundle(parts):
+                          try:
+                              values, _ = parse_jsonl_payload(payload, parts)
+                          except ValueError:
+                              continue
+                          if values and isinstance(values[0], list):
+                              parsed = values
+                              break
+                  self.assertEqual(len(parsed), 1)
+                  self.assertEqual(parsed[0][0], "person-id")
+
+              def test_materializes_verified_real_bundle(self) -> None:
+                  with tempfile.TemporaryDirectory() as directory:
+                      workspace = Path(directory)
+                      materialize_wef_shapers_import(workspace)
+                      packet = workspace / "wef" / "db-wef-global-shapers-alumni" / "starintel-documents.jsonl"
+                      payload = packet.read_text(encoding="utf-8")
+                      self.assertEqual(
+                          sum(1 for line in payload.splitlines() if line.strip()),
+                          WEF_SHAPERS_EXPECTED_RECORDS,
+                      )
+                      self.assertEqual(
+                          hashlib.sha256(payload.encode()).hexdigest(),
+                          WEF_SHAPERS_EXPECTED_SHA256,
+                      )
+
+
+          if __name__ == "__main__":
+              unittest.main()
+          PYTEST
           rm -f .github/workflows/pr78-takeover.yml .pr78-takeover-trigger
           python3 -m compileall -q scripts tests
           python3 -m unittest \
