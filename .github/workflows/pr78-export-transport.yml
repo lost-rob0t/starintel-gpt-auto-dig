@@ -23,5 +23,6 @@ jobs:
             imports/.wef-shapers-compact
             imports/.wef-shapers-source
             scripts/import_legacy_shapers_alumni.py
+          include-hidden-files: true
           if-no-files-found: error
           retention-days: 1
