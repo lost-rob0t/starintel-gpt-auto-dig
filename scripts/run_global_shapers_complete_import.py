@@ -15,7 +15,7 @@ GENERATED = ROOT / ".generated" / "import_global_shapers_people.py"
 HUB_URL_FILE = ROOT / "imports" / "global-shapers" / "generated-hub-urls.txt"
 PROFILE_URL_FILE = ROOT / "imports" / "global-shapers" / "generated-member-profile-urls.txt"
 SOURCE_SHA256 = "1b75a51d5b55fe830744bae144d26cb8bd14d0fe0a026f3797a03be453c4068f"
-GZIP_SHA256 = "d1bdbf26070763cc45807bd2b2bcc21693a7de7c36b7198604f08c7ceb8041f9"
+GZIP_SHA256 = "2bed654326ccea87c53908ba40998808cf0ce04007f76fca2a56b1c5919ae249"
 
 
 def restore() -> Path:
