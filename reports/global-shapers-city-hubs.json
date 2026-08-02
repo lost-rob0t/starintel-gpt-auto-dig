@@ -22904,6 +22904,26 @@
       "valid": false
     },
     {
+      "candidate": "https://www.globalshapers.org/hubs/florianopolis",
+      "city": "Florianópolis",
+      "final_url": "https://www.globalshapers.org/hubs/florianopolis",
+      "hub_urls": [],
+      "legacy_slugs": [],
+      "profile_urls": [],
+      "status": 200,
+      "valid": false
+    },
+    {
+      "candidate": "https://www.globalshapers.org/hubs/florianopolis-hub",
+      "city": "Florianópolis",
+      "final_url": "https://www.globalshapers.org/hubs/florianopolis-hub",
+      "hub_urls": [],
+      "legacy_slugs": [],
+      "profile_urls": [],
+      "status": 200,
+      "valid": false
+    },
+    {
       "candidate": "https://www.globalshapers.org/hubs/fo-san",
       "city": "Fo San",
       "final_url": "https://www.globalshapers.org/hubs/fo-san",
@@ -93224,26 +93244,6 @@
       "valid": false
     },
     {
-      "candidate": "https://www.globalshapers.org/hubs/riyea-di-janirea",
-      "city": "riyea di janirea",
-      "final_url": "https://www.globalshapers.org/hubs/riyea-di-janirea",
-      "hub_urls": [],
-      "legacy_slugs": [],
-      "profile_urls": [],
-      "status": 200,
-      "valid": false
-    },
-    {
-      "candidate": "https://www.globalshapers.org/hubs/riyea-di-janirea-hub",
-      "city": "riyea di janirea",
-      "final_url": "https://www.globalshapers.org/hubs/riyea-di-janirea-hub",
-      "hub_urls": [],
-      "legacy_slugs": [],
-      "profile_urls": [],
-      "status": 200,
-      "valid": false
-    },
-    {
       "candidate": "https://www.globalshapers.org/hubs/a-muong",
       "city": "Â-muòng",
       "final_url": "https://www.globalshapers.org/hubs/a-muong",
@@ -117544,10 +117544,392 @@
       "valid": false
     }
   ],
-  "elapsed_seconds": 80.706,
-  "hub_observations": [],
-  "hub_url_count": 0,
-  "hub_urls": [],
+  "elapsed_seconds": 106.729,
+  "hub_observations": [
+    {
+      "attempts": [
+        {
+          "candidate": "https://www.globalshapers.org/community-details/a0eTG000003IcOVYA0",
+          "final_url": "https://www.globalshapers.org/community-details/a0eTG000003IcOVYA0",
+          "profiles": 0,
+          "status": 200
+        },
+        {
+          "candidate": "https://www.globalshapers.org/community-details/a0eTG000003IcOVYA0/alumni",
+          "final_url": "https://www.globalshapers.org/community-details/a0eTG000003IcOVYA0/alumni",
+          "profiles": 0,
+          "status": 200
+        },
+        {
+          "candidate": "https://www.globalshapers.org/community-details/a0eTG000003IcOVYA0/members",
+          "final_url": "https://www.globalshapers.org/community-details/a0eTG000003IcOVYA0/members",
+          "profiles": 0,
+          "status": 200
+        },
+        {
+          "candidate": "https://www.globalshapers.org/community-details/a0eTG000003IcOVYA0?tab=alumni",
+          "final_url": "https://www.globalshapers.org/community-details/a0eTG000003IcOVYA0?tab=alumni",
+          "profiles": 0,
+          "status": 200
+        },
+        {
+          "candidate": "https://www.globalshapers.org/community-details/a0eTG000003IcOVYA0?tab=members",
+          "final_url": "https://www.globalshapers.org/community-details/a0eTG000003IcOVYA0?tab=members",
+          "profiles": 0,
+          "status": 200
+        }
+      ],
+      "linked_hubs": [],
+      "profile_urls": [],
+      "url": "https://www.globalshapers.org/community-details/a0eTG000003IcOVYA0"
+    },
+    {
+      "attempts": [
+        {
+          "candidate": "https://www.globalshapers.org/community-details/a0eb0000000ChLwAAK",
+          "final_url": "https://www.globalshapers.org/community-details/a0eb0000000ChLwAAK",
+          "profiles": 0,
+          "status": 200
+        },
+        {
+          "candidate": "https://www.globalshapers.org/community-details/a0eb0000000ChLwAAK/alumni",
+          "final_url": "https://www.globalshapers.org/community-details/a0eb0000000ChLwAAK/alumni",
+          "profiles": 0,
+          "status": 200
+        },
+        {
+          "candidate": "https://www.globalshapers.org/community-details/a0eb0000000ChLwAAK/members",
+          "final_url": "https://www.globalshapers.org/community-details/a0eb0000000ChLwAAK/members",
+          "profiles": 0,
+          "status": 200
+        },
+        {
+          "candidate": "https://www.globalshapers.org/community-details/a0eb0000000ChLwAAK?tab=alumni",
+          "final_url": "https://www.globalshapers.org/community-details/a0eb0000000ChLwAAK?tab=alumni",
+          "profiles": 0,
+          "status": 200
+        },
+        {
+          "candidate": "https://www.globalshapers.org/community-details/a0eb0000000ChLwAAK?tab=members",
+          "final_url": "https://www.globalshapers.org/community-details/a0eb0000000ChLwAAK?tab=members",
+          "profiles": 0,
+          "status": 200
+        }
+      ],
+      "linked_hubs": [],
+      "profile_urls": [],
+      "url": "https://www.globalshapers.org/community-details/a0eb0000000ChLwAAK"
+    },
+    {
+      "attempts": [
+        {
+          "candidate": "https://www.globalshapers.org/community-details/a0eb0000000ChNDAA0",
+          "final_url": "https://www.globalshapers.org/community-details/a0eb0000000ChNDAA0",
+          "profiles": 0,
+          "status": 200
+        },
+        {
+          "candidate": "https://www.globalshapers.org/community-details/a0eb0000000ChNDAA0/alumni",
+          "final_url": "https://www.globalshapers.org/community-details/a0eb0000000ChNDAA0/alumni",
+          "profiles": 0,
+          "status": 200
+        },
+        {
+          "candidate": "https://www.globalshapers.org/community-details/a0eb0000000ChNDAA0/members",
+          "final_url": "https://www.globalshapers.org/community-details/a0eb0000000ChNDAA0/members",
+          "profiles": 0,
+          "status": 200
+        },
+        {
+          "candidate": "https://www.globalshapers.org/community-details/a0eb0000000ChNDAA0?tab=alumni",
+          "final_url": "https://www.globalshapers.org/community-details/a0eb0000000ChNDAA0?tab=alumni",
+          "profiles": 0,
+          "status": 200
+        },
+        {
+          "candidate": "https://www.globalshapers.org/community-details/a0eb0000000ChNDAA0?tab=members",
+          "final_url": "https://www.globalshapers.org/community-details/a0eb0000000ChNDAA0?tab=members",
+          "profiles": 0,
+          "status": 200
+        }
+      ],
+      "linked_hubs": [],
+      "profile_urls": [],
+      "url": "https://www.globalshapers.org/community-details/a0eb0000000ChNDAA0"
+    },
+    {
+      "attempts": [
+        {
+          "candidate": "https://www.globalshapers.org/community-details/a0eb0000000ChNJAA0",
+          "final_url": "https://www.globalshapers.org/community-details/a0eb0000000ChNJAA0",
+          "profiles": 0,
+          "status": 200
+        },
+        {
+          "candidate": "https://www.globalshapers.org/community-details/a0eb0000000ChNJAA0/alumni",
+          "final_url": "https://www.globalshapers.org/community-details/a0eb0000000ChNJAA0/alumni",
+          "profiles": 0,
+          "status": 200
+        },
+        {
+          "candidate": "https://www.globalshapers.org/community-details/a0eb0000000ChNJAA0/members",
+          "final_url": "https://www.globalshapers.org/community-details/a0eb0000000ChNJAA0/members",
+          "profiles": 0,
+          "status": 200
+        },
+        {
+          "candidate": "https://www.globalshapers.org/community-details/a0eb0000000ChNJAA0?tab=alumni",
+          "final_url": "https://www.globalshapers.org/community-details/a0eb0000000ChNJAA0?tab=alumni",
+          "profiles": 0,
+          "status": 200
+        },
+        {
+          "candidate": "https://www.globalshapers.org/community-details/a0eb0000000ChNJAA0?tab=members",
+          "final_url": "https://www.globalshapers.org/community-details/a0eb0000000ChNJAA0?tab=members",
+          "profiles": 0,
+          "status": 200
+        }
+      ],
+      "linked_hubs": [],
+      "profile_urls": [],
+      "url": "https://www.globalshapers.org/community-details/a0eb0000000ChNJAA0"
+    },
+    {
+      "attempts": [
+        {
+          "candidate": "https://www.globalshapers.org/community-details/a0eb0000000ChOCAA0",
+          "final_url": "https://www.globalshapers.org/community-details/a0eb0000000ChOCAA0",
+          "profiles": 0,
+          "status": 200
+        },
+        {
+          "candidate": "https://www.globalshapers.org/community-details/a0eb0000000ChOCAA0/alumni",
+          "final_url": "https://www.globalshapers.org/community-details/a0eb0000000ChOCAA0/alumni",
+          "profiles": 0,
+          "status": 200
+        },
+        {
+          "candidate": "https://www.globalshapers.org/community-details/a0eb0000000ChOCAA0/members",
+          "final_url": "https://www.globalshapers.org/community-details/a0eb0000000ChOCAA0/members",
+          "profiles": 0,
+          "status": 200
+        },
+        {
+          "candidate": "https://www.globalshapers.org/community-details/a0eb0000000ChOCAA0?tab=alumni",
+          "final_url": "https://www.globalshapers.org/community-details/a0eb0000000ChOCAA0?tab=alumni",
+          "profiles": 0,
+          "status": 200
+        },
+        {
+          "candidate": "https://www.globalshapers.org/community-details/a0eb0000000ChOCAA0?tab=members",
+          "final_url": "https://www.globalshapers.org/community-details/a0eb0000000ChOCAA0?tab=members",
+          "profiles": 0,
+          "status": 200
+        }
+      ],
+      "linked_hubs": [],
+      "profile_urls": [],
+      "url": "https://www.globalshapers.org/community-details/a0eb0000000ChOCAA0"
+    },
+    {
+      "attempts": [
+        {
+          "candidate": "https://www.globalshapers.org/community-details/a0eb0000000ChOZAA0",
+          "final_url": "https://www.globalshapers.org/community-details/a0eb0000000ChOZAA0",
+          "profiles": 0,
+          "status": 200
+        },
+        {
+          "candidate": "https://www.globalshapers.org/community-details/a0eb0000000ChOZAA0/alumni",
+          "final_url": "https://www.globalshapers.org/community-details/a0eb0000000ChOZAA0/alumni",
+          "profiles": 0,
+          "status": 200
+        },
+        {
+          "candidate": "https://www.globalshapers.org/community-details/a0eb0000000ChOZAA0/members",
+          "final_url": "https://www.globalshapers.org/community-details/a0eb0000000ChOZAA0/members",
+          "profiles": 0,
+          "status": 200
+        },
+        {
+          "candidate": "https://www.globalshapers.org/community-details/a0eb0000000ChOZAA0?tab=alumni",
+          "final_url": "https://www.globalshapers.org/community-details/a0eb0000000ChOZAA0?tab=alumni",
+          "profiles": 0,
+          "status": 200
+        },
+        {
+          "candidate": "https://www.globalshapers.org/community-details/a0eb0000000ChOZAA0?tab=members",
+          "final_url": "https://www.globalshapers.org/community-details/a0eb0000000ChOZAA0?tab=members",
+          "profiles": 0,
+          "status": 200
+        }
+      ],
+      "linked_hubs": [],
+      "profile_urls": [],
+      "url": "https://www.globalshapers.org/community-details/a0eb0000000ChOZAA0"
+    },
+    {
+      "attempts": [
+        {
+          "candidate": "https://www.globalshapers.org/community-details/a0eb0000000ChOoAAK",
+          "final_url": "https://www.globalshapers.org/community-details/a0eb0000000ChOoAAK",
+          "profiles": 0,
+          "status": 200
+        },
+        {
+          "candidate": "https://www.globalshapers.org/community-details/a0eb0000000ChOoAAK/alumni",
+          "final_url": "https://www.globalshapers.org/community-details/a0eb0000000ChOoAAK/alumni",
+          "profiles": 0,
+          "status": 200
+        },
+        {
+          "candidate": "https://www.globalshapers.org/community-details/a0eb0000000ChOoAAK/members",
+          "final_url": "https://www.globalshapers.org/community-details/a0eb0000000ChOoAAK/members",
+          "profiles": 0,
+          "status": 200
+        },
+        {
+          "candidate": "https://www.globalshapers.org/community-details/a0eb0000000ChOoAAK?tab=alumni",
+          "final_url": "https://www.globalshapers.org/community-details/a0eb0000000ChOoAAK?tab=alumni",
+          "profiles": 0,
+          "status": 200
+        },
+        {
+          "candidate": "https://www.globalshapers.org/community-details/a0eb0000000ChOoAAK?tab=members",
+          "final_url": "https://www.globalshapers.org/community-details/a0eb0000000ChOoAAK?tab=members",
+          "profiles": 0,
+          "status": 200
+        }
+      ],
+      "linked_hubs": [],
+      "profile_urls": [],
+      "url": "https://www.globalshapers.org/community-details/a0eb0000000ChOoAAK"
+    },
+    {
+      "attempts": [
+        {
+          "candidate": "https://www.globalshapers.org/community-details/a0eb00000053TA5AAM",
+          "final_url": "https://www.globalshapers.org/community-details/a0eb00000053TA5AAM",
+          "profiles": 0,
+          "status": 200
+        },
+        {
+          "candidate": "https://www.globalshapers.org/community-details/a0eb00000053TA5AAM/alumni",
+          "final_url": "https://www.globalshapers.org/community-details/a0eb00000053TA5AAM/alumni",
+          "profiles": 0,
+          "status": 200
+        },
+        {
+          "candidate": "https://www.globalshapers.org/community-details/a0eb00000053TA5AAM/members",
+          "final_url": "https://www.globalshapers.org/community-details/a0eb00000053TA5AAM/members",
+          "profiles": 0,
+          "status": 200
+        },
+        {
+          "candidate": "https://www.globalshapers.org/community-details/a0eb00000053TA5AAM?tab=alumni",
+          "final_url": "https://www.globalshapers.org/community-details/a0eb00000053TA5AAM?tab=alumni",
+          "profiles": 0,
+          "status": 200
+        },
+        {
+          "candidate": "https://www.globalshapers.org/community-details/a0eb00000053TA5AAM?tab=members",
+          "final_url": "https://www.globalshapers.org/community-details/a0eb00000053TA5AAM?tab=members",
+          "profiles": 0,
+          "status": 200
+        }
+      ],
+      "linked_hubs": [],
+      "profile_urls": [],
+      "url": "https://www.globalshapers.org/community-details/a0eb00000053TA5AAM"
+    },
+    {
+      "attempts": [
+        {
+          "candidate": "https://www.globalshapers.org/community-details/a0eb00000053rWcAAI",
+          "final_url": "https://www.globalshapers.org/community-details/a0eb00000053rWcAAI",
+          "profiles": 0,
+          "status": 200
+        },
+        {
+          "candidate": "https://www.globalshapers.org/community-details/a0eb00000053rWcAAI/alumni",
+          "final_url": "https://www.globalshapers.org/community-details/a0eb00000053rWcAAI/alumni",
+          "profiles": 0,
+          "status": 200
+        },
+        {
+          "candidate": "https://www.globalshapers.org/community-details/a0eb00000053rWcAAI/members",
+          "final_url": "https://www.globalshapers.org/community-details/a0eb00000053rWcAAI/members",
+          "profiles": 0,
+          "status": 200
+        },
+        {
+          "candidate": "https://www.globalshapers.org/community-details/a0eb00000053rWcAAI?tab=alumni",
+          "final_url": "https://www.globalshapers.org/community-details/a0eb00000053rWcAAI?tab=alumni",
+          "profiles": 0,
+          "status": 200
+        },
+        {
+          "candidate": "https://www.globalshapers.org/community-details/a0eb00000053rWcAAI?tab=members",
+          "final_url": "https://www.globalshapers.org/community-details/a0eb00000053rWcAAI?tab=members",
+          "profiles": 0,
+          "status": 200
+        }
+      ],
+      "linked_hubs": [],
+      "profile_urls": [],
+      "url": "https://www.globalshapers.org/community-details/a0eb00000053rWcAAI"
+    },
+    {
+      "attempts": [
+        {
+          "candidate": "https://www.globalshapers.org/community-details/a0eb00000060OIdAAM",
+          "final_url": "https://www.globalshapers.org/community-details/a0eb00000060OIdAAM",
+          "profiles": 0,
+          "status": 200
+        },
+        {
+          "candidate": "https://www.globalshapers.org/community-details/a0eb00000060OIdAAM/alumni",
+          "final_url": "https://www.globalshapers.org/community-details/a0eb00000060OIdAAM/alumni",
+          "profiles": 0,
+          "status": 200
+        },
+        {
+          "candidate": "https://www.globalshapers.org/community-details/a0eb00000060OIdAAM/members",
+          "final_url": "https://www.globalshapers.org/community-details/a0eb00000060OIdAAM/members",
+          "profiles": 0,
+          "status": 200
+        },
+        {
+          "candidate": "https://www.globalshapers.org/community-details/a0eb00000060OIdAAM?tab=alumni",
+          "final_url": "https://www.globalshapers.org/community-details/a0eb00000060OIdAAM?tab=alumni",
+          "profiles": 0,
+          "status": 200
+        },
+        {
+          "candidate": "https://www.globalshapers.org/community-details/a0eb00000060OIdAAM?tab=members",
+          "final_url": "https://www.globalshapers.org/community-details/a0eb00000060OIdAAM?tab=members",
+          "profiles": 0,
+          "status": 200
+        }
+      ],
+      "linked_hubs": [],
+      "profile_urls": [],
+      "url": "https://www.globalshapers.org/community-details/a0eb00000060OIdAAM"
+    }
+  ],
+  "hub_url_count": 10,
+  "hub_urls": [
+    "https://www.globalshapers.org/community-details/a0eTG000003IcOVYA0",
+    "https://www.globalshapers.org/community-details/a0eb0000000ChLwAAK",
+    "https://www.globalshapers.org/community-details/a0eb0000000ChNDAA0",
+    "https://www.globalshapers.org/community-details/a0eb0000000ChNJAA0",
+    "https://www.globalshapers.org/community-details/a0eb0000000ChOCAA0",
+    "https://www.globalshapers.org/community-details/a0eb0000000ChOZAA0",
+    "https://www.globalshapers.org/community-details/a0eb0000000ChOoAAK",
+    "https://www.globalshapers.org/community-details/a0eb00000053TA5AAM",
+    "https://www.globalshapers.org/community-details/a0eb00000053rWcAAI",
+    "https://www.globalshapers.org/community-details/a0eb00000060OIdAAM"
+  ],
   "minimum_hubs": 400,
   "probe_count": 11754,
   "profile_seed_url_count": 0,
@@ -117555,7 +117937,7 @@
   "resolved_by_city": {},
   "resolved_city_count": 0,
   "source_counts": {
-    "browser": 0,
+    "browser": 11,
     "city_files": 0,
     "corpus": 3096,
     "geonames": 6041
@@ -118703,6 +119085,7 @@
     "Fih",
     "Finfinne",
     "Florianopolis",
+    "Florianópolis",
     "Fo San",
     "Fo Shan",
     "Fo Shan Chen",
@@ -122206,7 +122589,6 @@
     "riyadha",
     "riyado",
     "riyat",
-    "riyea di janirea",
     "Â-muòng",
     "Çangçun",
     "Çançun",
