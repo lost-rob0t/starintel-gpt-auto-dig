@@ -26,7 +26,7 @@ Official Palantir management, board and SEC filings identify:
 | Alexandra Schiff | Director |
 | Eric Woersching | Director |
 
-Existing canonical person IDs are reused. Jeffrey Buckley is added as a missing person node.
+Existing canonical person IDs are reused. Jeffrey Buckley is preserved in the official roster snapshot and remains queued for canonical node materialization.
 
 ## New employee-level WEF links
 
