@@ -85,6 +85,6 @@ This is bounded non-discovery, not proof of absence.
 
 - 14 JSONL records generated
 - record IDs are unique
-- normalized JSONL SHA-256: `0b378f489657864a64df49d5fec4f104820dbbff5ad81c435b37913f5c520fce`
-- deterministic gzip SHA-256: `5677e3e30e6447d6e82800201b755227ad9e7fcc862e3f1ddd0c6adba5464e87`
-- base64 transport SHA-256: `53639b6050adacd90a1562facf45fc11c84beaaf3bf8344ebabdbac7e7941579`
+- normalized JSONL SHA-256: `49aebac42fb6325169980f3adb913ab6e5ced1190036f2848d4bc308274d828f`
+- deterministic gzip SHA-256: `e03df337094332acd215fabd20e50ef1af978900a7f05f31f9b239fa4fda70e6`
+- base64 transport SHA-256: `ded2d0a1c51dd574e775ab71f8ca9c08e4521354f8f4c002f0752f57926718bd`
