@@ -23,7 +23,7 @@ class LegacySourceValidationTests(unittest.TestCase):
         self.assertEqual(document["data"]["medium"], "application/pdf")
         self.assertIn(
             "normalized legacy source data.file_format to data.medium",
-            document["provenance"]["migration_notes"],
+            document["lineage"]["migration_notes"],
         )
 
     def test_rejects_conflicting_file_format_and_medium(self) -> None:
