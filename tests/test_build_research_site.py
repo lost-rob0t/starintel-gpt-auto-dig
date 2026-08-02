@@ -37,11 +37,21 @@ class LegacyFecCollisionTests(unittest.TestCase):
             },
         }
 
-    def test_coalesces_equivalent_legacy_employment_records(self) -> None:
+    def test_coalesces_normalized_legacy_employment_title_variants(self) -> None:
         merged = coalesce_legacy_fec_employment_collisions(
             [
-                self._document(row_count=2, first="2026-01-10T00:00:00Z", last="2026-02-10T00:00:00Z"),
-                self._document(row_count=3, first="2026-01-01T00:00:00Z", last="2026-03-10T00:00:00Z"),
+                self._document(
+                    row_count=2,
+                    first="2026-01-10T00:00:00Z",
+                    last="2026-02-10T00:00:00Z",
+                    title="Example Corp.",
+                ),
+                self._document(
+                    row_count=3,
+                    first="2026-01-01T00:00:00Z",
+                    last="2026-03-10T00:00:00Z",
+                    title="EXAMPLE CORP",
+                ),
             ],
             Path("legacy.jsonl"),
         )
@@ -52,6 +62,7 @@ class LegacyFecCollisionTests(unittest.TestCase):
         self.assertEqual(reporting["first_transaction_date"], "2026-01-01T00:00:00Z")
         self.assertEqual(reporting["last_transaction_date"], "2026-03-10T00:00:00Z")
         self.assertEqual(reporting["legacy_collision_merged_documents"], 2)
+        self.assertEqual(reporting["legacy_collision_raw_titles"], ["EXAMPLE CORP", "Example Corp."])
 
     def test_rejects_non_equivalent_legacy_collision(self) -> None:
         with self.assertRaisesRegex(ValueError, "non-equivalent legacy FEC collision"):
