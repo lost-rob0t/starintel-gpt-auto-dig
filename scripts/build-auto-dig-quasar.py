@@ -28,7 +28,7 @@ iframe{{display:block;width:100%;height:100%;border:0;background:#090b10}}
 <script>window.AUTO_DIG_QUASAR_VERSIONS={version_json}</script>
 </head>
 <body>
-<iframe id="quasar-frame" title="Quasar graph editor" src="app/index.html?host=auto-dig" sandbox="allow-scripts allow-same-origin allow-forms allow-downloads allow-popups"></iframe>
+<iframe id="quasar-frame" title="Quasar graph editor" data-src="app/index.html?host=auto-dig" sandbox="allow-scripts allow-same-origin allow-forms allow-downloads allow-popups"></iframe>
 <script src="host.js"></script>
 </body>
 </html>"""
