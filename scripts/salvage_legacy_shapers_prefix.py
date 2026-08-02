@@ -38,15 +38,10 @@ def ascii_slug(value: str) -> str:
 
 def clean_city(value: str) -> str | None:
     value = " ".join(value.replace("\u00a0", " ").split()).strip(" ,;:–—-|/")
-    if not value or len(value) < 2 or len(value) > 82:
-        return None
-    if sum(character.isalpha() for character in value) < 2:
+    if not 2 <= len(value) <= 82 or sum(ch.isalpha() for ch in value) < 2:
         return None
     folded = value.casefold()
-    if any(
-        token in folded
-        for token in ("global shapers community", "world economic forum", "annual report")
-    ):
+    if any(token in folded for token in ("global shapers community", "world economic forum", "annual report")):
         return None
     return value
 
@@ -63,31 +58,30 @@ def iter_strings(value: Any) -> Iterable[str]:
 
 
 def extract_cities(rows: Iterable[list[Any]]) -> list[str]:
-    values: dict[str, str] = {}
+    cities: dict[str, str] = {}
     for row in rows:
         for text in iter_strings(row):
             for match in HUB_RE.finditer(" ".join(text.split())):
                 city = clean_city(match.group("city"))
                 if city:
-                    values.setdefault(ascii_slug(city), city)
+                    cities.setdefault(ascii_slug(city), city)
             for match in LEGACY_HUB_RE.finditer(text):
-                city = clean_city(
-                    " ".join(
-                        word.capitalize()
-                        for word in match.group("slug").removesuffix("-hub").split("-")
-                    )
+                title = " ".join(
+                    word.capitalize()
+                    for word in match.group("slug").removesuffix("-hub").split("-")
                 )
+                city = clean_city(title)
                 if city:
-                    values.setdefault(ascii_slug(city), city)
-    return [values[key] for key in sorted(values)]
+                    cities.setdefault(ascii_slug(city), city)
+    return [cities[key] for key in sorted(cities)]
 
 
 def read_encoded(parts: Path) -> tuple[str, list[dict[str, Any]]]:
     paths = sorted(parts.glob("part-*"))
     if not paths:
         raise RuntimeError(f"no retained transport parts found under {parts}")
-    records: list[dict[str, Any]] = []
     chunks: list[str] = []
+    records: list[dict[str, Any]] = []
     for path in paths:
         chunk = "".join(path.read_text(encoding="utf-8").split())
         chunks.append(chunk)
@@ -103,8 +97,8 @@ def read_encoded(parts: Path) -> tuple[str, list[dict[str, Any]]]:
 
 def decode_until_xz_error(encoded: str) -> tuple[bytes, dict[str, Any]]:
     data_end = len(encoded.rstrip("="))
-    repaired_length_only = encoded[:data_end] + "A" + encoded[data_end:]
-    compressed = base64.b64decode(repaired_length_only, validate=True)
+    length_repaired = encoded[:data_end] + "A" + encoded[data_end:]
+    compressed = base64.b64decode(length_repaired, validate=True)
     decompressor = lzma.LZMADecompressor(format=lzma.FORMAT_XZ)
     output: list[bytes] = []
     consumed = 0
@@ -119,7 +113,7 @@ def decode_until_xz_error(encoded: str) -> tuple[bytes, dict[str, Any]]:
             break
     payload = b"".join(output)
     if not payload:
-        raise RuntimeError("truncated XZ stream did not yield decompressed bytes")
+        raise RuntimeError("truncated XZ stream yielded no decompressed bytes")
     return payload, {
         "encoded_characters": len(encoded),
         "encoded_data_characters": data_end,
@@ -137,19 +131,14 @@ def parse_valid_jsonl_prefix(payload: bytes) -> tuple[list[list[Any]], bytes, di
     rows: list[list[Any]] = []
     accepted: list[bytes] = []
     ids: set[str] = set()
-    byte_offset = 0
+    offset = 0
     failure: dict[str, Any] = {"kind": "end-of-payload", "byte_offset": len(payload)}
 
     for physical_line, raw_line in enumerate(payload.splitlines(keepends=True), 1):
-        line_start = byte_offset
-        byte_offset += len(raw_line)
+        line_start = offset
+        offset += len(raw_line)
         if not raw_line.endswith(b"\n"):
-            failure = {
-                "kind": "partial-line",
-                "physical_line": physical_line,
-                "byte_offset": line_start,
-                "bytes": len(raw_line),
-            }
+            failure = {"kind": "partial-line", "physical_line": physical_line, "byte_offset": line_start}
             break
         try:
             text = raw_line.decode("utf-8")
@@ -179,8 +168,6 @@ def parse_valid_jsonl_prefix(payload: bytes) -> tuple[list[list[Any]], bytes, di
                 "kind": "invalid-row-shape",
                 "physical_line": physical_line,
                 "byte_offset": line_start,
-                "value_type": type(value).__name__,
-                "field_count": len(value) if isinstance(value, list) else None,
             }
             break
         identifier = str(value[0])
@@ -198,10 +185,8 @@ def parse_valid_jsonl_prefix(payload: bytes) -> tuple[list[list[Any]], bytes, di
 
     if len(rows) < MINIMUM_PEOPLE:
         raise RuntimeError(
-            f"intact prefix yielded only {len(rows)} people; expected at least {MINIMUM_PEOPLE}; "
-            f"first rejected record: {failure}"
+            f"intact prefix yielded {len(rows)} people; expected at least {MINIMUM_PEOPLE}; rejected={failure}"
         )
-
     prefix = b"".join(accepted)
     return rows, prefix, {
         "people": len(rows),
@@ -226,14 +211,14 @@ def write_compact(path: Path, rows: Iterable[list[Any]]) -> str:
 
 def chunk_packet(jsonl: Path, packet_dir: Path, chunk_size: int = 850_000) -> dict[str, Any]:
     payload = jsonl.read_bytes()
-    lines = [line for line in payload.decode("utf-8").splitlines() if line.strip()]
+    documents = [json.loads(line) for line in payload.decode("utf-8").splitlines() if line.strip()]
     counts: dict[str, int] = {}
-    for number, line in enumerate(lines, 1):
-        document = json.loads(line)
-        dtype = str(document.get("dtype") or "")
-        counts[dtype] = counts.get(dtype, 0) + 1
+    for number, document in enumerate(documents, 1):
         if not document.get("_id"):
             raise RuntimeError(f"canonical output line {number}: missing _id")
+        dtype = str(document.get("dtype") or "")
+        counts[dtype] = counts.get(dtype, 0) + 1
+
     compressed = gzip.compress(payload, compresslevel=9, mtime=0)
     encoded = base64.b64encode(compressed).decode("ascii")
     packet_dir.mkdir(parents=True, exist_ok=True)
@@ -242,16 +227,13 @@ def chunk_packet(jsonl: Path, packet_dir: Path, chunk_size: int = 850_000) -> di
     names: list[str] = []
     for index in range(0, len(encoded), chunk_size):
         name = f"starintel-documents.jsonl.gz.b64.part-{index // chunk_size:03d}"
-        (packet_dir / name).write_text(
-            encoded[index:index + chunk_size] + "\n", encoding="utf-8"
-        )
+        (packet_dir / name).write_text(encoded[index:index + chunk_size] + "\n", encoding="utf-8")
         names.append(name)
     (packet_dir / "starintel-documents.jsonl.gz.b64.parts").write_text(
         "\n".join(names) + "\n", encoding="utf-8"
     )
-    jsonl.unlink()
     return {
-        "documents": len(lines),
+        "documents": len(documents),
         "counts_by_dtype": dict(sorted(counts.items())),
         "output_sha256": hashlib.sha256(payload).hexdigest(),
         "gzip_sha256": hashlib.sha256(compressed).hexdigest(),
@@ -282,8 +264,7 @@ def main() -> int:
     parser.add_argument("--root", type=Path, default=ROOT)
     parser.add_argument("--parts", type=Path, default=PARTS)
     args = parser.parse_args()
-    root = args.root.resolve()
-    if root != ROOT:
+    if args.root.resolve() != ROOT:
         raise RuntimeError(f"runner must execute from repository root {ROOT}")
 
     work = ROOT / ".generated" / "legacy-global-shapers-prefix"
@@ -335,9 +316,7 @@ def main() -> int:
         "missing_suffix_status": "requires-live-and-archive-reconstruction",
     }
     REPORT_JSON.parent.mkdir(parents=True, exist_ok=True)
-    REPORT_JSON.write_text(
-        json.dumps(report, indent=2, sort_keys=True) + "\n", encoding="utf-8"
-    )
+    REPORT_JSON.write_text(json.dumps(report, indent=2, sort_keys=True) + "\n", encoding="utf-8")
     write_markdown(report)
     print(json.dumps(report, indent=2, sort_keys=True))
     return 0
