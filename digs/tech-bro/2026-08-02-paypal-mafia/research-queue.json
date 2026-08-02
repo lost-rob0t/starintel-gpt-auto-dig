@@ -1,0 +1,72 @@
+{
+  "dataset": "tech-bro",
+  "run_id": "tech-bro-paypal-mafia-2026-08-02",
+  "generated_at": "2026-08-02T23:12:00Z",
+  "schema_version": "0.9.0",
+  "targets": [
+    {
+      "target_id": "starintel:target:paypal-mafia:extended-infographic-nodes",
+      "priority": 0.94,
+      "status": "queued",
+      "question": "Resolve the uploaded infographic's extended nodes—Scott Banister, Dave McClure, Yishan Wong, and Jason Portnoy—against primary employment, investment, and board records before adding graph edges.",
+      "required_evidence": [
+        "PayPal employment records or first-party biographies",
+        "company filings",
+        "contemporaneous investment announcements"
+      ],
+      "avoid": "Do not infer core PayPal Mafia membership from proximity in the graphic."
+    },
+    {
+      "target_id": "starintel:target:paypal-mafia:complete-paypal-employee-diaspora",
+      "priority": 0.92,
+      "status": "queued",
+      "question": "Build a complete early-PayPal employee roster and map later founder, investor, board, and government roles.",
+      "required_evidence": [
+        "SEC filings",
+        "archived PayPal pages",
+        "first-party biographies",
+        "contemporaneous major media"
+      ],
+      "avoid": "Do not collapse employees, founders, board members, and investors into one role."
+    },
+    {
+      "target_id": "starintel:target:paypal-mafia:capital-syndication",
+      "priority": 0.97,
+      "status": "queued",
+      "question": "Quantify co-investment, referral, board, and fund-to-portfolio ties among PayPal alumni from 2002 onward.",
+      "required_evidence": [
+        "SEC Form D and Schedule 13D/G",
+        "fund portfolio pages",
+        "board filings",
+        "financing announcements"
+      ],
+      "avoid": "Do not treat portfolio inclusion as control."
+    },
+    {
+      "target_id": "starintel:target:paypal-mafia:political-policy-network",
+      "priority": 0.99,
+      "status": "queued",
+      "question": "Map campaign finance, federal appointments, advisory bodies, lobbying, and policy organizations linked to PayPal alumni.",
+      "required_evidence": [
+        "FEC records",
+        "White House records",
+        "Senate LDA filings",
+        "ethics disclosures",
+        "official appointment documents"
+      ],
+      "avoid": "Keep donations, appointments, lobbying, and policy influence as separate predicates."
+    },
+    {
+      "target_id": "starintel:target:paypal-mafia:acquisition-wealth-redeployment",
+      "priority": 0.88,
+      "status": "queued",
+      "question": "Trace disclosed PayPal acquisition proceeds and subsequent founder capital into new ventures where public records permit.",
+      "required_evidence": [
+        "SEC ownership tables",
+        "transaction filings",
+        "fundraising announcements"
+      ],
+      "avoid": "Do not estimate personal wealth flows without documentary support."
+    }
+  ]
+}
