@@ -42,13 +42,14 @@ jobs:
           node --check site-assets/people.js
           python -m compileall -q scripts/starintel_site scripts/build_research_site.py
 
-      - name: Build research site and people directory
+      - name: Build people directory
         run: |
           python scripts/build_research_site.py \
             --input digs \
             --db db \
             --output _site \
-            --org-output .generated/org
+            --org-output .generated/org \
+            --people-only
 
       - name: Validate people artifacts
         run: |
