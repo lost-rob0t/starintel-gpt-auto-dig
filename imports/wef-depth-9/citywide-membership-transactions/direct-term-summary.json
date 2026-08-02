@@ -1,0 +1,106 @@
+{
+  "dataset_row_counts": {
+    "accounting-distribution-2026": 421111,
+    "bank-checks-2026": 33060,
+    "payments-2026": 293026,
+    "purchase-order-lines-2026": 82578,
+    "purchase-order-lines-expanded-2026": 111490,
+    "purchase-orders-2026": 43761,
+    "vendor-invoices-2026": 85224,
+    "vendors": 245650
+  },
+  "hit_counts": {
+    "membership": {
+      "bank-checks-2026": 8,
+      "payments-2026": 225,
+      "purchase-order-lines-2026": 345,
+      "purchase-order-lines-expanded-2026": 487,
+      "vendor-invoices-2026": 219
+    },
+    "smart-columbus": {
+      "bank-checks-2026": 3,
+      "payments-2026": 22,
+      "purchase-order-lines-2026": 2,
+      "purchase-order-lines-expanded-2026": 5,
+      "purchase-orders-2026": 3,
+      "vendor-invoices-2026": 6,
+      "vendors": 4
+    }
+  },
+  "matched_label_counts": {
+    "membership": {
+      "bank-checks-2026": {
+        "phrase:dues": 2,
+        "phrase:membership": 6
+      },
+      "payments-2026": {
+        "exact:63975": 3,
+        "phrase:annual dues": 2,
+        "phrase:citywide membership": 1,
+        "phrase:dues": 111,
+        "phrase:membership": 76,
+        "phrase:subscription": 44
+      },
+      "purchase-order-lines-2026": {
+        "phrase:annual dues": 5,
+        "phrase:dues": 60,
+        "phrase:membership": 149,
+        "phrase:subscription": 166
+      },
+      "purchase-order-lines-expanded-2026": {
+        "phrase:annual dues": 11,
+        "phrase:dues": 68,
+        "phrase:membership": 209,
+        "phrase:subscription": 242
+      },
+      "vendor-invoices-2026": {
+        "exact:63975": 1,
+        "phrase:annual dues": 2,
+        "phrase:citywide membership": 1,
+        "phrase:dues": 107,
+        "phrase:membership": 76,
+        "phrase:subscription": 44
+      }
+    },
+    "smart-columbus": {
+      "bank-checks-2026": {
+        "entity:columbus partnership": 3,
+        "entity:smart columbus": 3
+      },
+      "payments-2026": {
+        "entity:columbus partnership": 18,
+        "entity:smart columbus": 5,
+        "vendor:045611": 18
+      },
+      "purchase-order-lines-2026": {
+        "entity:smart columbus": 2,
+        "vendor:045611": 1
+      },
+      "purchase-order-lines-expanded-2026": {
+        "entity:columbus partnership": 3,
+        "entity:smart columbus": 4,
+        "vendor:045611": 3
+      },
+      "purchase-orders-2026": {
+        "entity:columbus partnership": 3,
+        "vendor:045611": 3
+      },
+      "vendor-invoices-2026": {
+        "entity:smart columbus": 5,
+        "vendor:045611": 2
+      },
+      "vendors": {
+        "entity:columbus partnership": 2,
+        "entity:smart columbus": 2,
+        "vendor:020639": 1,
+        "vendor:033348": 1,
+        "vendor:040255": 1,
+        "vendor:045611": 1
+      }
+    }
+  },
+  "membership_account_field_limitation": "The public Accounting Distribution dataset does not expose a main-account code field; literal 63975 was therefore searched across every published field in every dataset.",
+  "search_tracks_are_independent": true,
+  "target_id": "starintel:investigation-target:wef-depth-9-citywide-membership-purchase-orders-and-vendors",
+  "total_rows_scanned": 1315900
+}
