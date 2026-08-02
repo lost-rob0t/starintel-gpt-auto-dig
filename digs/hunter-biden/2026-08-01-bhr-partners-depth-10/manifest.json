@@ -1,0 +1,89 @@
+{
+  "dataset": "hunter-biden",
+  "schema_version": "0.9.0",
+  "generated_at": "2026-08-02T02:30:00Z",
+  "hash_algorithm": "sha256",
+  "counts": {
+    "source": 7,
+    "person": 14,
+    "org": 5,
+    "relation": 47,
+    "investigation-target": 13
+  },
+  "total": 86,
+  "document_files": [
+    {
+      "path": "sources.jsonl",
+      "count": 7,
+      "sha256": "0c696ce9ff37560c1a46bdb8c5d2939f37b0a5b822ee3976213d748b32eca0bf"
+    },
+    {
+      "path": "entities.jsonl",
+      "count": 19,
+      "sha256": "497994cae673cbbb2c51b807def05145c911fd831a675082c21ee7d64a7af3fb"
+    },
+    {
+      "path": "relations-1.jsonl",
+      "count": 8,
+      "sha256": "4d9861379cbbce79bbb37d6999bdb68ece41c6e37b223c5f6206a453bc26e0c8"
+    },
+    {
+      "path": "relations-2.jsonl",
+      "count": 8,
+      "sha256": "973a2c5a32576c614890ac150efb9aa3f82214e68da624cd2d829155f109bb9b"
+    },
+    {
+      "path": "relations-3.jsonl",
+      "count": 8,
+      "sha256": "9f024a3e85fe3f74ce91c262de8ca67bddf5feb48ce5ad548b4ebad7cf80eb57"
+    },
+    {
+      "path": "relations-4.jsonl",
+      "count": 8,
+      "sha256": "73b7e517700698e59f02f94797d6a7786a1e25478051ff29b2d8db6272832392"
+    },
+    {
+      "path": "relations-5.jsonl",
+      "count": 8,
+      "sha256": "955b57dbbab0935ccec330f08fc8d5e9c411154ed96d5fcdb4fe46d12aa92a3a"
+    },
+    {
+      "path": "relations-6.jsonl",
+      "count": 7,
+      "sha256": "375b6878e3ccb7b1f774f4551af173fd638ccd66f7f720ca5a0c7b62b2afb5f9"
+    },
+    {
+      "path": "investigation-targets-1.jsonl",
+      "count": 7,
+      "sha256": "23689e5ddb6a28f7cd8fb88d6da5346aad0436ad5c5124559abe592c5fe0a6b2"
+    },
+    {
+      "path": "investigation-targets-2.jsonl",
+      "count": 6,
+      "sha256": "bbcccab267c936449e70c8030556bc0f55510017baf421067d54fd7bb328fcb8"
+    }
+  ],
+  "combined_documents_sha256": "e63e6288ad9f201ffec168dc3a99b2ea8a7e1ca1b72d3ad22892ffbe02470603",
+  "files": [
+    "README.md",
+    "sources.md",
+    "attack-results.md",
+    "sources.jsonl",
+    "entities.jsonl",
+    "relations-1.jsonl",
+    "relations-2.jsonl",
+    "relations-3.jsonl",
+    "relations-4.jsonl",
+    "relations-5.jsonl",
+    "relations-6.jsonl",
+    "investigation-targets-1.jsonl",
+    "investigation-targets-2.jsonl"
+  ],
+  "validation": {
+    "jsonl": "syntax checked",
+    "ids": "unique within packet",
+    "references": "checked against packet and prior BHR packets",
+    "schema": "pending repository CI",
+    "sources": "official, company, and secondary records separated"
+  }
+}
