@@ -1,0 +1,52 @@
+{
+  "dataset": "hunter-biden",
+  "schema_version": "0.9.0",
+  "generated_at": "2026-08-02T01:35:00Z",
+  "hash_algorithm": "sha256",
+  "counts": {
+    "source": 10,
+    "org": 4,
+    "person": 2,
+    "relation": 10,
+    "investigation-target": 8
+  },
+  "total": 34,
+  "document_files": [
+    {
+      "path": "sources.jsonl",
+      "count": 10,
+      "sha256": "7d7d6e8be421e765e4c8234d7a0ac6ef37259676a3ed0974f810779a33417698"
+    },
+    {
+      "path": "entities.jsonl",
+      "count": 6,
+      "sha256": "a6ae90fd13a17583cca9af097ef934e83a982fb37d2f1668cada4f42156e60f8"
+    },
+    {
+      "path": "relations.jsonl",
+      "count": 10,
+      "sha256": "ccb3552ae69b91ead69982086e7845ce7c31d9b01b85575afdaafbf4cd5fdeb2"
+    },
+    {
+      "path": "investigation-targets.jsonl",
+      "count": 8,
+      "sha256": "52057335dd8d477ac782e74075e94fe2a07467269ade89c41fdce12b24553541"
+    }
+  ],
+  "files": [
+    "README.md",
+    "sources.md",
+    "sources.jsonl",
+    "entities.jsonl",
+    "relations.jsonl",
+    "investigation-targets.jsonl"
+  ],
+  "validation": {
+    "jsonl": "syntax checked",
+    "ids": "unique within packet",
+    "references": "checked against depth-1 through depth-7 entities",
+    "schema": "pending repository CI",
+    "sources": "official, high-quality reporting, and source-qualified director claims separated"
+  },
+  "combined_documents_sha256": "6df703a2914400a793daad90bcd8af476e713e7c80f1a7f6dcaf12a1415adb7e"
+}
