@@ -39,8 +39,8 @@ jobs:
         run: |
           python scripts/reconcile_global_shapers_identities.py \
             --root . \
-            --current-packet digs/global-shapers/global-shapers-current-members-api \
-            --legacy-packet digs/wef/global-shapers-legacy-intact-prefix \
+            --current-packet "$PWD/digs/global-shapers/global-shapers-current-members-api" \
+            --legacy-packet "$PWD/digs/wef/global-shapers-legacy-intact-prefix" \
             --report reports/global-shapers-identity-reconciliation.json \
             --minimum-current 4600 \
             --minimum-legacy 2700
