@@ -25,6 +25,17 @@ jobs:
           set -euo pipefail
           sed -n "/python3 <<'PY'/,/^          PY$/p" .github/workflows/pr78-takeover.yml \
             | sed '1d;$d;s/^          //' > /tmp/pr78-takeover.py
+          python3 - <<'PY'
+          from pathlib import Path
+
+          path = Path('/tmp/pr78-takeover.py')
+          source = path.read_text(encoding='utf-8')
+          source = source.replace(
+              'functions = "\\n".join(line[10:] if line.startswith("          ") else line for line in functions.splitlines()).strip()',
+              'functions = functions.strip()',
+          )
+          path.write_text(source, encoding='utf-8')
+          PY
           python3 /tmp/pr78-takeover.py
           rm -f .github/workflows/pr78-takeover.yml .pr78-takeover-trigger
           python3 -m compileall -q scripts tests
