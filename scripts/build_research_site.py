@@ -8,8 +8,10 @@ import re
 import shutil
 import sys
 from collections import defaultdict
+from contextlib import contextmanager
 from pathlib import Path
-from typing import Any
+from typing import Any, Iterator
+from urllib.parse import quote
 
 ROOT = Path(__file__).resolve().parents[1]
 if str(ROOT) not in sys.path:
@@ -19,7 +21,7 @@ from starintel_doc.store import read_transport
 from starintel_doc.validation import validate_document
 from starintel_site.builder import build_site
 from starintel_site.model import slug
-from starintel_site.people import build_people_directory
+from starintel_site.people_fast import build_people_directory
 
 
 def load_config(path: Path) -> dict[str, Any]:
@@ -168,6 +170,90 @@ def materialize_input(digs_root: Path, db_root: Path, workspace: Path, config: d
         )
 
 
+def _bulk_targets(config: dict[str, Any], explicit: list[str]) -> set[str]:
+    if explicit:
+        return {slug(value) for value in explicit if value.strip()}
+    configured = config.get("bulk_index_targets", ["dnc", "dataset-dnc"])
+    if not isinstance(configured, list):
+        raise ValueError("site-config.json: bulk_index_targets must be a list")
+    return {slug(str(value)) for value in configured if str(value).strip()}
+
+
+@contextmanager
+def suppress_bulk_detail_writes(output: Path, org_output: Path, targets: set[str]) -> Iterator[dict[str, int]]:
+    """Keep complete indexes/downloads while avoiding millions of duplicate detail files.
+
+    Bulk targets retain dashboards, graph/documents indexes, search entries and
+    canonical JSONL downloads. Per-record HTML and duplicate Org files are
+    represented through the indexed document browser instead.
+    """
+    original = Path.write_text
+    stats = {"node_html": 0, "org_files": 0}
+
+    def filtered(path: Path, data: str, *args: Any, **kwargs: Any) -> int:
+        candidate = Path(path)
+        try:
+            relative = candidate.relative_to(output)
+            parts = relative.parts
+            if len(parts) >= 3 and parts[0] in targets and parts[1] == "nodes" and candidate.suffix == ".html":
+                stats["node_html"] += 1
+                return len(data)
+            if (
+                len(parts) >= 3
+                and parts[0] == "org"
+                and parts[1] in targets
+                and candidate.suffix == ".org"
+                and candidate.name != "index.org"
+            ):
+                stats["org_files"] += 1
+                return len(data)
+        except ValueError:
+            pass
+        try:
+            relative = candidate.relative_to(org_output)
+            parts = relative.parts
+            if len(parts) >= 2 and parts[0] in targets and candidate.suffix == ".org" and candidate.name != "index.org":
+                stats["org_files"] += 1
+                return len(data)
+        except ValueError:
+            pass
+        return original(candidate, data, *args, **kwargs)
+
+    Path.write_text = filtered  # type: ignore[method-assign]
+    try:
+        yield stats
+    finally:
+        Path.write_text = original  # type: ignore[method-assign]
+
+
+def rewrite_bulk_search_urls(output: Path, targets: set[str]) -> None:
+    path = output / "search-index.json"
+    if not path.is_file():
+        return
+    records = json.loads(path.read_text(encoding="utf-8"))
+    changed = 0
+    for record in records:
+        target = slug(str(record.get("target") or ""))
+        if target not in targets:
+            continue
+        record["url"] = f"{target}/documents.html?document={quote(str(record.get('id') or ''), safe='')}"
+        changed += 1
+    path.write_text(json.dumps(records, ensure_ascii=False, separators=(",", ":")), encoding="utf-8")
+    print(f"Repointed {changed} bulk search entries to indexed document browsers.")
+
+
+def write_people_only_shell(output: Path) -> None:
+    if output.exists():
+        shutil.rmtree(output)
+    output.mkdir(parents=True)
+    (output / "index.html").write_text(
+        "<!doctype html><html lang=\"en\"><head><meta charset=\"utf-8\"><title>StarIntel People</title></head>"
+        "<body><header><nav><a href=\"people/index.html\">People</a></nav></header>"
+        "<main><h1>People directory</h1><a href=\"people/index.html\">Open people directory</a></main></body></html>",
+        encoding="utf-8",
+    )
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description="Generate a static StarIntel v0.9.0 research explorer.")
     parser.add_argument("--input", type=Path, default=Path("digs"))
@@ -177,12 +263,27 @@ def main() -> int:
     parser.add_argument("--workspace", type=Path, default=Path(".generated/site-input"))
     parser.add_argument("--config", type=Path, default=Path("site-config.json"))
     parser.add_argument("--assets", type=Path, default=Path("site-assets"))
+    parser.add_argument("--people-only", action="store_true")
+    parser.add_argument("--skip-people", action="store_true")
+    parser.add_argument("--bulk-index-target", action="append", default=[])
     args = parser.parse_args()
+    if args.people_only and args.skip_people:
+        parser.error("--people-only and --skip-people are mutually exclusive")
     try:
         config = load_config(args.config)
         materialize_input(args.input, args.db, args.workspace, config)
-        build_site(args.workspace, args.output, args.org_output, args.config, args.assets)
-        people = build_people_directory(args.workspace, args.output, args.assets)
+        people: dict[str, Any] = {"people": 0, "alumni": 0}
+        if args.people_only:
+            write_people_only_shell(args.output)
+            people = build_people_directory(args.workspace, args.output, args.assets)
+        else:
+            targets = _bulk_targets(config, args.bulk_index_target)
+            with suppress_bulk_detail_writes(args.output, args.org_output, targets) as suppressed:
+                build_site(args.workspace, args.output, args.org_output, args.config, args.assets)
+            rewrite_bulk_search_urls(args.output, targets)
+            print(f"Bulk indexed output: targets={sorted(targets)} suppressed={suppressed}")
+            if not args.skip_people:
+                people = build_people_directory(args.workspace, args.output, args.assets)
     except Exception as exc:
         print(f"error: {exc}", file=sys.stderr)
         return 1
