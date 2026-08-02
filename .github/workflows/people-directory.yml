@@ -9,6 +9,7 @@ on:
       - "scripts/build_research_site.py"
       - "scripts/starintel_site/**"
       - "site-assets/people.*"
+      - "tests/test_build_research_site.py"
       - "tests/test_people_directory.py"
       - "tests/test_alumni_roster_pipeline.py"
       - ".github/workflows/people-directory.yml"
@@ -20,6 +21,7 @@ on:
       - "scripts/build_research_site.py"
       - "scripts/starintel_site/**"
       - "site-assets/people.*"
+      - "tests/test_build_research_site.py"
       - ".github/workflows/people-directory.yml"
   workflow_dispatch:
 
@@ -38,7 +40,7 @@ jobs:
 
       - name: Run directory and alumni tests
         run: |
-          python -m unittest tests.test_people_directory tests.test_alumni_roster_pipeline -v
+          python -m unittest tests.test_build_research_site tests.test_people_directory tests.test_alumni_roster_pipeline -v
           node --check site-assets/people.js
           python -m compileall -q scripts/starintel_site scripts/build_research_site.py
 
