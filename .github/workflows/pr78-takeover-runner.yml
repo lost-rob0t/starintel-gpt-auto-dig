@@ -12,49 +12,181 @@ jobs:
   inspect-history:
     if: github.event.pull_request.number == 1956
     runs-on: ubuntu-latest
+    timeout-minutes: 20
     steps:
       - uses: actions/checkout@v6
         with:
           ref: agent/pr-78-takeover-fix
           fetch-depth: 0
 
-      - name: Inspect original Global Shapers commit history
+      - name: Validate all historical Shapers transport snapshots
         shell: bash
         run: |
           set -euo pipefail
-          git fetch origin agent/import-wef-global-shapers-alumni
-          echo '=== PR 76 commits and paths ==='
-          git log --reverse --format='COMMIT %H %s' --name-status d6726c15969f34fc0aa72b7da9d6be538081e569..42e2b3426f8d87ba136a11ec133b8dd74dc3ac5f
-          echo '=== Shapers-related objects across all refs ==='
-          git rev-list --objects --all \
-            | grep -Ei 'shapers|global-shapers|wef.*alumni' \
-            | sort -k2,2 -u
-          echo '=== Large blobs introduced in PR 76 ==='
           python3 - <<'PY'
           from __future__ import annotations
 
+          import base64
+          import binascii
+          import hashlib
+          import json
+          import lzma
           import subprocess
+          import tempfile
+          from pathlib import Path
 
-          commits = subprocess.check_output(
-              ["git", "rev-list", "--reverse", "d6726c15969f34fc0aa72b7da9d6be538081e569..42e2b3426f8d87ba136a11ec133b8dd74dc3ac5f"],
-              text=True,
-          ).splitlines()
-          seen: set[str] = set()
-          for commit in commits:
-              lines = subprocess.check_output(
-                  ["git", "diff-tree", "--no-commit-id", "--name-only", "-r", commit],
-                  text=True,
-              ).splitlines()
-              for path in lines:
-                  key = f"{commit}:{path}"
-                  try:
-                      blob = subprocess.check_output(["git", "rev-parse", key], text=True).strip()
-                      if blob in seen:
-                          continue
-                      seen.add(blob)
-                      size = int(subprocess.check_output(["git", "cat-file", "-s", blob], text=True))
-                  except subprocess.CalledProcessError:
-                      continue
-                  if size >= 5000:
-                      print(commit, blob, size, path)
+          SOURCE = "imports/.wef-shapers-source/part-00"
+          COMPACT_DIR = "imports/.wef-shapers-compact"
+          IMPORTER = Path("scripts/import_legacy_shapers_alumni.py")
+          EXPECTED_PEOPLE = 4062
+          EXPECTED_DOCS = 12187
+          EXPECTED_SHA = "82408fb3baa6d2fcbba1948801a26827ccdbf6e5b2a18685502a7ca70b2f070f"
+
+          def git(*args: str, check: bool = True) -> str:
+              result = subprocess.run(["git", *args], text=True, capture_output=True)
+              if check and result.returncode:
+                  raise RuntimeError(result.stderr.strip() or result.stdout.strip())
+              return result.stdout
+
+          def exists(commit: str, path: str) -> bool:
+              return subprocess.run(
+                  ["git", "cat-file", "-e", f"{commit}:{path}"],
+                  stdout=subprocess.DEVNULL,
+                  stderr=subprocess.DEVNULL,
+              ).returncode == 0
+
+          def read(commit: str, path: str) -> bytes:
+              return subprocess.check_output(["git", "show", f"{commit}:{path}"])
+
+          def decode_transport(encoded: bytes, label: str) -> tuple[list[object], dict[str, object]]:
+              compact = b"".join(encoded.lstrip(b"\xef\xbb\xbf").split())
+              report: dict[str, object] = {
+                  "label": label,
+                  "encoded_bytes": len(compact),
+                  "encoded_sha256": hashlib.sha256(compact).hexdigest(),
+              }
+              try:
+                  compressed = base64.b64decode(compact, validate=True)
+              except (binascii.Error, ValueError) as exc:
+                  report["error"] = f"base64: {exc}"
+                  return [], report
+              report["compressed_bytes"] = len(compressed)
+              report["compressed_sha256"] = hashlib.sha256(compressed).hexdigest()
+              try:
+                  payload = lzma.decompress(compressed)
+              except lzma.LZMAError as exc:
+                  report["error"] = f"xz: {exc}"
+                  return [], report
+              report["decoded_bytes"] = len(payload)
+              report["decoded_sha256"] = hashlib.sha256(payload).hexdigest()
+              values: list[object] = []
+              try:
+                  for line in payload.decode("utf-8").splitlines():
+                      if line.strip():
+                          values.append(json.loads(line))
+              except (UnicodeDecodeError, json.JSONDecodeError) as exc:
+                  report["error"] = f"jsonl: {exc}"
+                  return [], report
+              report["rows"] = len(values)
+              report["row_types"] = sorted({type(value).__name__ for value in values})
+              return values, report
+
+          def person_id(value: object) -> str:
+              if isinstance(value, list) and value:
+                  return str(value[0])
+              if isinstance(value, dict):
+                  data = value.get("data") if isinstance(value.get("data"), dict) else {}
+                  for candidate in (
+                      value.get("_id"), value.get("id"), value.get("document_id"),
+                      data.get("_id"), data.get("id"), data.get("document_id"),
+                  ):
+                      if candidate not in (None, ""):
+                          return str(candidate)
+              return ""
+
+          def verify_candidate(values: list[object], report: dict[str, object]) -> dict[str, object]:
+              ids = [person_id(value) for value in values]
+              unique_ids = {value for value in ids if value}
+              report["unique_ids"] = len(unique_ids)
+              if len(unique_ids) != EXPECTED_PEOPLE:
+                  return report
+              with tempfile.TemporaryDirectory() as directory:
+                  root = Path(directory)
+                  source = root / "source.jsonl"
+                  output = root / "output.jsonl"
+                  importer_report = root / "report.json"
+                  source.write_text(
+                      "".join(json.dumps(value, ensure_ascii=False, separators=(",", ":")) + "\n" for value in values),
+                      encoding="utf-8",
+                  )
+                  result = subprocess.run(
+                      ["python3", str(IMPORTER), str(source), "--output", str(output), "--report", str(importer_report)],
+                      text=True,
+                      capture_output=True,
+                  )
+                  report["import_returncode"] = result.returncode
+                  if result.returncode:
+                      report["import_error"] = (result.stderr or result.stdout)[-1000:]
+                      return report
+                  payload = output.read_bytes()
+                  report["documents"] = sum(1 for line in payload.splitlines() if line.strip())
+                  report["canonical_sha256"] = hashlib.sha256(payload).hexdigest()
+                  report["exact_match"] = report["documents"] == EXPECTED_DOCS and report["canonical_sha256"] == EXPECTED_SHA
+              return report
+
+          refs = git("for-each-ref", "--format=%(refname)", "refs/remotes/origin").splitlines()
+          commits: set[str] = set()
+          for ref in refs:
+              commits.update(git("rev-list", ref, "--", SOURCE, check=False).splitlines())
+              commits.update(git("rev-list", ref, "--", COMPACT_DIR, check=False).splitlines())
+              if exists(ref, SOURCE) or exists(ref, f"{COMPACT_DIR}/part-00"):
+                  commits.add(git("rev-parse", ref).strip())
+
+          for anchor in (
+              "598be2c96681f63381e3579a126526c0cb5674d1",
+              "8eb72a7abde92db0de91f66b78a6d4291c16b051",
+              "0b52e57d6533fbf56df0d8dfab5654358150b872",
+              "42e2b3426f8d87ba136a11ec133b8dd74dc3ac5f",
+          ):
+              commits.add(anchor)
+              commits.update(git("rev-list", "--all", "--ancestry-path", f"{anchor}..", check=False).splitlines())
+
+          snapshots: dict[tuple[str, tuple[str, ...]], str] = {}
+          exact: list[dict[str, object]] = []
+          ordered = sorted(commits, key=lambda commit: git("show", "-s", "--format=%ct", commit).strip() or "0")
+          print("COMMITS_TO_TEST", len(ordered))
+          for commit in ordered:
+              descriptor = git("show", "-s", "--format=%H|%ct|%D|%s", commit).strip()
+              branches = git("branch", "-r", "--contains", commit, check=False).strip().splitlines()
+
+              if exists(commit, SOURCE):
+                  blob = git("rev-parse", f"{commit}:{SOURCE}").strip()
+                  key = ("source", (blob,))
+                  if key not in snapshots:
+                      values, report = decode_transport(read(commit, SOURCE), f"{commit}:{SOURCE}")
+                      report.update({"commit": descriptor, "branches": [value.strip() for value in branches], "blob": blob, "kind": "source"})
+                      report = verify_candidate(values, report)
+                      snapshots[key] = commit
+                      print("SNAPSHOT", json.dumps(report, sort_keys=True))
+                      if report.get("exact_match"):
+                          exact.append(report)
+
+              part_paths = [f"{COMPACT_DIR}/part-{index:02d}" for index in range(8)]
+              if all(exists(commit, path) for path in part_paths):
+                  blobs = tuple(git("rev-parse", f"{commit}:{path}").strip() for path in part_paths)
+                  key = ("compact", blobs)
+                  if key not in snapshots:
+                      encoded = b"".join(read(commit, path) for path in part_paths)
+                      values, report = decode_transport(encoded, f"{commit}:{COMPACT_DIR}")
+                      report.update({"commit": descriptor, "branches": [value.strip() for value in branches], "blobs": blobs, "kind": "compact"})
+                      report = verify_candidate(values, report)
+                      snapshots[key] = commit
+                      print("SNAPSHOT", json.dumps(report, sort_keys=True))
+                      if report.get("exact_match"):
+                          exact.append(report)
+
+          print("UNIQUE_SNAPSHOTS", len(snapshots))
+          print("EXACT_MATCHES", json.dumps(exact, indent=2, sort_keys=True))
+          print("CONTAINS_0B52", git("branch", "-r", "--contains", "0b52e57d6533fbf56df0d8dfab5654358150b872", check=False))
+          print("CONTAINS_598BE", git("branch", "-r", "--contains", "598be2c96681f63381e3579a126526c0cb5674d1", check=False))
           PY
