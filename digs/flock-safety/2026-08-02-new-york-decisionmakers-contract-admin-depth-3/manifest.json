@@ -13,9 +13,10 @@
   "files": [
     "README.md",
     "sources.md",
-    "starintel-documents.jsonl.gz.b64"
+    "starintel-documents.jsonl.gz.b64.parts"
   ],
-  "transport": "gzip+base64",
+  "transport": "gzip+base64-multipart",
+  "transport_part_count": 15,
   "starintel_documents_sha256": "a64aad2623139ac6954cec30b22c85fe2db48e9be2490e6e51a4d081556c5b50",
   "hash_algorithm": "sha256",
   "validation": {
@@ -24,6 +25,7 @@
     "relation_endpoint_references": "passed",
     "target_seed_references": "passed",
     "source_urls": "reviewed",
+    "transport_integrity": "passed",
     "schema_validation": "pending-github-actions"
   }
 }
