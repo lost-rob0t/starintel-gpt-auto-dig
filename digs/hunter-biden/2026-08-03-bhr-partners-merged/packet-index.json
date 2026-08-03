@@ -1,0 +1,44 @@
+{
+  "dataset": "hunter-biden",
+  "schema_version": "0.9.0",
+  "merge_mode": "virtual-exact-record-aggregate-with-explicit-revisions",
+  "packet_count": 11,
+  "expected_raw_counts": {
+    "source": 63,
+    "org": 59,
+    "person": 34,
+    "relation": 202,
+    "investigation-target": 118
+  },
+  "expected_raw_total": 476,
+  "expected_unique_counts": {
+    "source": 63,
+    "org": 59,
+    "person": 34,
+    "relation": 202,
+    "investigation-target": 117
+  },
+  "expected_unique_total": 475,
+  "duplicate_resolutions": {
+    "starintel:investigation-target:bhr-obtain-beijing-arbitration-award": {
+      "preferred_source": "digs/hunter-biden/2026-08-01-bhr-partners-depth-10/investigation-targets-1.jsonl",
+      "superseded_sources": [
+        "digs/hunter-biden/2026-08-01-bhr-partners-depth-7/investigation-targets-1.jsonl"
+      ],
+      "reason": "Depth 10 is the documented later correction: it narrows the target to the December 25, 2025 award, adds the Beijing Arbitration Commission seed, and uses the newer official arbitration notice while retaining the stable ID and version."
+    }
+  },
+  "packets": [
+    {"depth":1,"path":"digs/hunter-biden/2026-07-31-bhr-partners-depth-1","expected_total":44,"combined_documents_sha256":"93a2e7361c16f4c0c5b18823cd752c1872e8b25a83889118e3a64eef07157e6b"},
+    {"depth":2,"path":"digs/hunter-biden/2026-07-31-bhr-partners-depth-2","expected_total":21,"combined_documents_sha256":"6c731a5ad5672f4a746fe2fd3087bbbed53fce6badb97ed65680bd0a562712c7"},
+    {"depth":3,"path":"digs/hunter-biden/2026-07-31-bhr-partners-depth-3","expected_total":17,"combined_documents_sha256":"698e41cbf445b89d45dd4d2d98054696d1b19d5cd0ba28d45e0f6cae5854c272"},
+    {"depth":4,"path":"digs/hunter-biden/2026-07-31-bhr-partners-depth-4","expected_total":25,"combined_documents_sha256":null,"note":"The original depth-4 manifest hashes only newly generated files; the merge builder verifies all declared counts and every available per-file hash."},
+    {"depth":5,"path":"digs/hunter-biden/2026-07-31-bhr-partners-depth-5","expected_total":67,"combined_documents_sha256":"54d7f1febe54f0c7b616d4dd8c7485a2afd1c4c0732130a5c56150975b6a9f85"},
+    {"depth":6,"path":"digs/hunter-biden/2026-08-01-bhr-partners-depth-6","expected_total":37,"combined_documents_sha256":"1d1ca9ed454d408de1e4c7bbad3f5716f8e6f4685dbf3a9a4ef169ae545d4ba8"},
+    {"depth":7,"path":"digs/hunter-biden/2026-08-01-bhr-partners-depth-7","expected_total":47,"combined_documents_sha256":"ab52d239134b2577a41343f0a550b9513346e54bd78845b7d64574349ff4178a"},
+    {"depth":8,"path":"digs/hunter-biden/2026-08-01-bhr-partners-depth-8","expected_total":34,"combined_documents_sha256":"6df703a2914400a793daad90bcd8af476e713e7c80f1a7f6dcaf12a1415adb7e"},
+    {"depth":9,"path":"digs/hunter-biden/2026-08-01-bhr-partners-depth-9","expected_total":66,"combined_documents_sha256":"18d14fe7c9c39ecf185cad29b5b4aecceb9838a5bc3d2bda38a61d8fe017ada4"},
+    {"depth":10,"path":"digs/hunter-biden/2026-08-01-bhr-partners-depth-10","expected_total":86,"combined_documents_sha256":"e63e6288ad9f201ffec168dc3a99b2ea8a7e1ca1b72d3ad22892ffbe02470603"},
+    {"depth":11,"path":"digs/hunter-biden/2026-08-01-bhr-partners-depth-11","expected_total":32,"combined_documents_sha256":"3b1beb80f17bedc3db0d939d6a31ee80e067b8f092fac4569dcccc83a9d596b3"}
+  ]
+}
