@@ -43,6 +43,21 @@ The company post credits:
 
 This supports the bounded predicate `credited_on_award_team_for`. It does not establish each person's exact capture, proposal, program or delivery function.
 
+### Katherine Cole role lead
+
+- https://orangeslices.ai/agile-defense-recruits-former-fbi-operations-leader-katherine-cole/
+- Published: February 12, 2026
+
+OrangeSlices reports that Katherine Cole joined Agile Defense as **Senior Capture Manager** after more than 15 years at the FBI, including service as deputy chief of operations for the FBI Counterterrorism Division.
+
+This is a current secondary professional source based on a public profile. It supports a reduced-confidence capture-role hypothesis, but the Agile Defense TSC award post does not state that Cole served as capture manager for this specific contract. A primary company biography, proposal record or acquisition file is still required.
+
+### Sean Bukowski role boundary
+
+- https://www.linkedin.com/in/sean-bukowski-pmp-b7796ab5
+
+The public profile confirms Agile Defense employment and PMP certification but does not expose a current job title in the reviewed public view. His exact award and contract function remains unresolved.
+
 ### OrangeSlices AI award reporting
 
 - https://orangeslices.ai/agile-defense-beats-out-6-to-win-28m-fbi-tsc-intelligence-analysis-services-contract/
@@ -97,6 +112,7 @@ The two long-term award records use different award IDs and parent IDVs but carr
 - A later award does not by itself prove a sustained protest or termination.
 - A low current obligated balance does not by itself identify why funds were deobligated.
 - A company award-team credit does not assign a formal contract role.
+- A person's general capture title does not prove that person's function on a particular procurement.
 - The TSC intelligence-analysis award is distinct from `FBI-TSC-AIE` market research.
 - Current awardee status does not prove response to the AI RFI.
 - Do not publish private contact information or unrelated employee rosters.
