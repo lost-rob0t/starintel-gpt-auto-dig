@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Materialize BHR depths 1-11 as one exact validated JSONL corpus."""
+"""Materialize BHR depths 1-11 as one validated, revision-aware JSONL corpus."""
 
 from __future__ import annotations
 
@@ -9,7 +9,8 @@ import json
 import os
 import sys
 import tempfile
-from collections import Counter
+from collections import Counter, defaultdict
+from dataclasses import dataclass
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
@@ -17,6 +18,21 @@ from typing import Any
 
 class MergeError(RuntimeError):
     pass
+
+
+@dataclass(frozen=True)
+class Candidate:
+    document_id: str
+    dtype: str
+    line: bytes
+    source_path: str
+    line_number: int
+    version: int
+    date_updated: str
+
+    @property
+    def location(self) -> str:
+        return f"{self.source_path}:{self.line_number}"
 
 
 def sha256_bytes(data: bytes) -> str:
@@ -53,10 +69,10 @@ def atomic_write(path: Path, data: bytes) -> None:
 def parse_jsonl(
     path: Path,
     *,
+    repo_root: Path,
     dataset: str,
     schema_version: str,
-    seen_ids: dict[str, str],
-) -> tuple[list[bytes], Counter[str]]:
+) -> tuple[list[Candidate], Counter[str]]:
     try:
         raw = path.read_bytes()
     except FileNotFoundError as exc:
@@ -66,7 +82,8 @@ def parse_jsonl(
     except UnicodeDecodeError as exc:
         raise MergeError(f"non-UTF-8 JSONL file: {path}") from exc
 
-    records: list[bytes] = []
+    relative_path = str(path.relative_to(repo_root))
+    records: list[Candidate] = []
     counts: Counter[str] = Counter()
     for line_number, line in enumerate(text.splitlines(), start=1):
         if not line.strip():
@@ -80,23 +97,159 @@ def parse_jsonl(
 
         document_id = document.get("_id")
         dtype = document.get("dtype")
+        version = document.get("version")
+        date_updated = document.get("date_updated")
         if not isinstance(document_id, str) or not document_id:
             raise MergeError(f"missing _id in {path}:{line_number}")
         if not isinstance(dtype, str) or not dtype:
             raise MergeError(f"missing dtype for {document_id} in {path}:{line_number}")
+        if not isinstance(version, int) or version < 1:
+            raise MergeError(f"invalid version for {document_id} in {path}:{line_number}")
+        if not isinstance(date_updated, str) or not date_updated:
+            raise MergeError(f"missing date_updated for {document_id} in {path}:{line_number}")
         if document.get("dataset") != dataset:
             raise MergeError(f"dataset mismatch for {document_id}")
         if document.get("schema_version") != schema_version:
             raise MergeError(f"schema mismatch for {document_id}")
-        if document_id in seen_ids:
-            raise MergeError(
-                f"duplicate _id {document_id!r} in {path}; first seen in {seen_ids[document_id]}"
-            )
 
-        seen_ids[document_id] = f"{path}:{line_number}"
+        records.append(
+            Candidate(
+                document_id=document_id,
+                dtype=dtype,
+                line=line.encode("utf-8"),
+                source_path=relative_path,
+                line_number=line_number,
+                version=version,
+                date_updated=date_updated,
+            )
+        )
         counts[dtype] += 1
-        records.append(line.encode("utf-8"))
     return records, counts
+
+
+def normalize_counts(value: Any, *, label: str) -> dict[str, int]:
+    if not isinstance(value, dict):
+        raise MergeError(f"{label} is missing or not an object")
+    try:
+        return {str(key): int(count) for key, count in value.items()}
+    except (TypeError, ValueError) as exc:
+        raise MergeError(f"{label} contains an invalid count") from exc
+
+
+def resolve_candidates(
+    candidates: list[Candidate],
+    duplicate_resolutions: Any,
+) -> tuple[list[Candidate], list[dict[str, Any]]]:
+    if duplicate_resolutions is None:
+        duplicate_resolutions = {}
+    if not isinstance(duplicate_resolutions, dict):
+        raise MergeError("duplicate_resolutions must be an object")
+
+    grouped: dict[str, list[Candidate]] = defaultdict(list)
+    for candidate in candidates:
+        grouped[candidate.document_id].append(candidate)
+
+    chosen: dict[str, Candidate] = {}
+    resolution_report: list[dict[str, Any]] = []
+    unresolved: list[str] = []
+
+    for document_id, group in grouped.items():
+        if len(group) == 1:
+            chosen[document_id] = group[0]
+            continue
+
+        dtypes = {candidate.dtype for candidate in group}
+        if len(dtypes) != 1:
+            unresolved.append(
+                f"{document_id}: conflicting dtypes {sorted(dtypes)} at "
+                + ", ".join(candidate.location for candidate in group)
+            )
+            continue
+
+        unique_lines = {candidate.line for candidate in group}
+        if len(unique_lines) == 1:
+            chosen[document_id] = group[0]
+            resolution_report.append(
+                {
+                    "_id": document_id,
+                    "method": "identical-byte-coalesce",
+                    "preferred_source": group[0].source_path,
+                    "superseded_sources": [candidate.source_path for candidate in group[1:]],
+                    "reason": "The repeated records are byte-identical.",
+                }
+            )
+            continue
+
+        resolution = duplicate_resolutions.get(document_id)
+        if not isinstance(resolution, dict):
+            unresolved.append(
+                f"{document_id}: non-identical duplicate at "
+                + ", ".join(candidate.location for candidate in group)
+            )
+            continue
+
+        preferred_source = resolution.get("preferred_source")
+        superseded_sources = resolution.get("superseded_sources")
+        reason = resolution.get("reason")
+        if not isinstance(preferred_source, str) or not preferred_source:
+            unresolved.append(f"{document_id}: resolution missing preferred_source")
+            continue
+        if not isinstance(superseded_sources, list) or not all(
+            isinstance(item, str) and item for item in superseded_sources
+        ):
+            unresolved.append(f"{document_id}: resolution has invalid superseded_sources")
+            continue
+        if not isinstance(reason, str) or not reason:
+            unresolved.append(f"{document_id}: resolution missing reason")
+            continue
+
+        preferred = [candidate for candidate in group if candidate.source_path == preferred_source]
+        if len(preferred) != 1:
+            unresolved.append(
+                f"{document_id}: preferred_source {preferred_source!r} matched {len(preferred)} records"
+            )
+            continue
+        actual_superseded = sorted(
+            candidate.source_path for candidate in group if candidate is not preferred[0]
+        )
+        if sorted(superseded_sources) != actual_superseded:
+            unresolved.append(
+                f"{document_id}: superseded source mismatch; "
+                f"actual={actual_superseded} declared={sorted(superseded_sources)}"
+            )
+            continue
+
+        chosen[document_id] = preferred[0]
+        resolution_report.append(
+            {
+                "_id": document_id,
+                "method": "explicit-documented-correction",
+                "preferred_source": preferred[0].source_path,
+                "preferred_version": preferred[0].version,
+                "preferred_date_updated": preferred[0].date_updated,
+                "superseded_sources": actual_superseded,
+                "superseded_versions": [
+                    candidate.version for candidate in group if candidate is not preferred[0]
+                ],
+                "superseded_dates_updated": [
+                    candidate.date_updated for candidate in group if candidate is not preferred[0]
+                ],
+                "reason": reason,
+            }
+        )
+
+    undeclared_resolutions = sorted(set(duplicate_resolutions) - set(grouped))
+    if undeclared_resolutions:
+        unresolved.append(
+            "duplicate resolutions reference IDs not present in the corpus: "
+            + ", ".join(undeclared_resolutions)
+        )
+
+    if unresolved:
+        raise MergeError("unresolved duplicate records:\n- " + "\n- ".join(sorted(unresolved)))
+
+    resolved_records = [candidate for candidate in candidates if chosen[candidate.document_id] is candidate]
+    return resolved_records, sorted(resolution_report, key=lambda item: item["_id"])
 
 
 def build(repo_root: Path, index_path: Path) -> tuple[bytes, dict[str, Any]]:
@@ -111,9 +264,8 @@ def build(repo_root: Path, index_path: Path) -> tuple[bytes, dict[str, Any]]:
     if not isinstance(packets, list) or not packets:
         raise MergeError("packet index contains no packets")
 
-    all_records: list[bytes] = []
-    global_counts: Counter[str] = Counter()
-    seen_ids: dict[str, str] = {}
+    all_candidates: list[Candidate] = []
+    raw_counts: Counter[str] = Counter()
     packet_results: list[dict[str, Any]] = []
 
     for packet in packets:
@@ -141,7 +293,7 @@ def build(repo_root: Path, index_path: Path) -> tuple[bytes, dict[str, Any]]:
             raise MergeError(f"manifest has no document_files: {manifest_path}")
 
         packet_counts: Counter[str] = Counter()
-        packet_records: list[bytes] = []
+        packet_candidates: list[Candidate] = []
         file_results: list[dict[str, Any]] = []
         for file_entry in declared_files:
             if not isinstance(file_entry, dict):
@@ -165,13 +317,13 @@ def build(repo_root: Path, index_path: Path) -> tuple[bytes, dict[str, Any]]:
 
             records, counts = parse_jsonl(
                 source_path,
+                repo_root=repo_root,
                 dataset=dataset,
                 schema_version=schema_version,
-                seen_ids=seen_ids,
             )
             if len(records) != expected_count:
                 raise MergeError(f"record-count mismatch for {source_path}")
-            packet_records.extend(records)
+            packet_candidates.extend(records)
             packet_counts.update(counts)
             file_results.append(
                 {
@@ -182,56 +334,79 @@ def build(repo_root: Path, index_path: Path) -> tuple[bytes, dict[str, Any]]:
                 }
             )
 
-        manifest_counts = manifest.get("counts")
-        if not isinstance(manifest_counts, dict):
-            raise MergeError(f"manifest counts missing in {manifest_path}")
-        normalized_manifest_counts = {key: int(value) for key, value in manifest_counts.items()}
-        if dict(packet_counts) != normalized_manifest_counts:
+        manifest_counts = normalize_counts(manifest.get("counts"), label=f"counts in {manifest_path}")
+        if dict(packet_counts) != manifest_counts:
             raise MergeError(
                 f"dtype counts mismatch in {manifest_path}: parsed={dict(packet_counts)} "
-                f"declared={normalized_manifest_counts}"
+                f"declared={manifest_counts}"
             )
-        if len(packet_records) != expected_total:
+        if len(packet_candidates) != expected_total:
             raise MergeError(f"packet total mismatch for {packet_path}")
 
-        all_records.extend(packet_records)
-        global_counts.update(packet_counts)
+        all_candidates.extend(packet_candidates)
+        raw_counts.update(packet_counts)
         packet_results.append(
             {
                 "depth": packet.get("depth"),
                 "path": packet_path_value,
-                "record_count": len(packet_records),
+                "record_count": len(packet_candidates),
                 "counts": dict(sorted(packet_counts.items())),
                 "declared_combined_documents_sha256": packet.get("combined_documents_sha256"),
                 "files": file_results,
             }
         )
 
-    expected_counts = index.get("expected_counts")
-    expected_total = index.get("expected_total")
-    if not isinstance(expected_counts, dict) or not isinstance(expected_total, int):
-        raise MergeError("packet index is missing aggregate counts")
-    normalized_expected_counts = {key: int(value) for key, value in expected_counts.items()}
-    if dict(global_counts) != normalized_expected_counts:
+    expected_raw_counts = normalize_counts(
+        index.get("expected_raw_counts"), label="expected_raw_counts"
+    )
+    expected_raw_total = index.get("expected_raw_total")
+    if not isinstance(expected_raw_total, int):
+        raise MergeError("expected_raw_total is missing or invalid")
+    if dict(raw_counts) != expected_raw_counts:
         raise MergeError(
-            f"aggregate dtype counts mismatch: parsed={dict(global_counts)} "
-            f"expected={normalized_expected_counts}"
+            f"raw aggregate dtype counts mismatch: parsed={dict(raw_counts)} "
+            f"expected={expected_raw_counts}"
         )
-    if len(all_records) != expected_total:
-        raise MergeError(f"aggregate total mismatch: {len(all_records)} != {expected_total}")
+    if len(all_candidates) != expected_raw_total:
+        raise MergeError(
+            f"raw aggregate total mismatch: {len(all_candidates)} != {expected_raw_total}"
+        )
 
-    merged_bytes = b"\n".join(all_records) + b"\n"
+    resolved_records, resolution_report = resolve_candidates(
+        all_candidates, index.get("duplicate_resolutions")
+    )
+    unique_counts = Counter(candidate.dtype for candidate in resolved_records)
+    expected_unique_counts = normalize_counts(
+        index.get("expected_unique_counts"), label="expected_unique_counts"
+    )
+    expected_unique_total = index.get("expected_unique_total")
+    if not isinstance(expected_unique_total, int):
+        raise MergeError("expected_unique_total is missing or invalid")
+    if dict(unique_counts) != expected_unique_counts:
+        raise MergeError(
+            f"unique aggregate dtype counts mismatch: parsed={dict(unique_counts)} "
+            f"expected={expected_unique_counts}"
+        )
+    if len(resolved_records) != expected_unique_total:
+        raise MergeError(
+            f"unique aggregate total mismatch: {len(resolved_records)} != {expected_unique_total}"
+        )
+
+    merged_bytes = b"\n".join(candidate.line for candidate in resolved_records) + b"\n"
     manifest = {
         "dataset": dataset,
         "schema_version": schema_version,
         "merge_mode": index.get("merge_mode"),
         "generated_at": datetime.now(timezone.utc).isoformat().replace("+00:00", "Z"),
         "packet_count": len(packet_results),
-        "record_count": len(all_records),
-        "counts": dict(sorted(global_counts.items())),
+        "raw_record_count": len(all_candidates),
+        "record_count": len(resolved_records),
+        "raw_counts": dict(sorted(raw_counts.items())),
+        "counts": dict(sorted(unique_counts.items())),
         "sha256": sha256_bytes(merged_bytes),
-        "duplicate_ids": 0,
-        "ordering": "packet depth, manifest document_files order, original line order",
+        "resolved_duplicate_ids": len(resolution_report),
+        "duplicate_resolutions": resolution_report,
+        "ordering": "packet depth, manifest document_files order, original line order; superseded revisions omitted",
         "source_packets": packet_results,
     }
     return merged_bytes, manifest
@@ -258,7 +433,10 @@ def main() -> int:
         else:
             atomic_write(args.output.resolve(), merged_bytes)
             atomic_write(args.manifest_output.resolve(), manifest_bytes)
-            print(f"merged {manifest['record_count']} records from {manifest['packet_count']} packets")
+            print(
+                f"merged {manifest['record_count']} unique records from "
+                f"{manifest['raw_record_count']} packet records"
+            )
             print(f"sha256: {manifest['sha256']}")
     except (MergeError, OSError, ValueError) as exc:
         print(f"merge failed: {exc}", file=sys.stderr)
