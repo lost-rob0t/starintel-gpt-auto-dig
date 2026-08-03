@@ -12,7 +12,7 @@ from html.parser import HTMLParser
 from pathlib import Path
 from typing import Any, Iterable, Iterator
 from urllib.error import HTTPError, URLError
-from urllib.parse import urlencode, urljoin, urlparse
+from urllib.parse import parse_qsl, urlencode, urljoin, urlparse
 from urllib.request import Request, urlopen
 
 BIZ_FILE_REPOSITORY = "https://biz.fbi.gov/file-repository"
@@ -20,7 +20,25 @@ SAM_API = "https://api.sam.gov/opportunities/v2/search"
 USASPENDING_API = "https://api.usaspending.gov/api/v2/search/spending_by_award/"
 DEFAULT_AWARD_IDS = ("15F06725F0001209", "15F06725F0001838")
 DEFAULT_KEYWORDS = ("terrorist screening center", "threat screening center")
-DEFAULT_USER_AGENT = "StarIntel-FBI-Procurement-Collector/1.0 (+https://github.com/lost-rob0t/starintel-gpt-auto-dig)"
+DEFAULT_USER_AGENT = (
+    "StarIntel-FBI-Procurement-Collector/1.1 "
+    "(+https://github.com/lost-rob0t/starintel-gpt-auto-dig)"
+)
+DOWNLOAD_SUFFIXES = {
+    ".csv",
+    ".doc",
+    ".docx",
+    ".json",
+    ".ods",
+    ".pdf",
+    ".ppt",
+    ".pptx",
+    ".txt",
+    ".xls",
+    ".xlsx",
+    ".xml",
+    ".zip",
+}
 
 
 @dataclass(frozen=True)
@@ -40,8 +58,7 @@ class AnchorParser(HTMLParser):
     def handle_starttag(self, tag: str, attrs: list[tuple[str, str | None]]) -> None:
         if tag.lower() != "a":
             return
-        attributes = dict(attrs)
-        href = attributes.get("href")
+        href = dict(attrs).get("href")
         if href:
             self._href = urljoin(self.base_url, href)
             self._text = []
@@ -60,7 +77,12 @@ class AnchorParser(HTMLParser):
 
 
 def utc_now() -> str:
-    return datetime.now(timezone.utc).replace(microsecond=0).isoformat().replace("+00:00", "Z")
+    return (
+        datetime.now(timezone.utc)
+        .replace(microsecond=0)
+        .isoformat()
+        .replace("+00:00", "Z")
+    )
 
 
 def sha256_bytes(payload: bytes) -> str:
@@ -90,13 +112,43 @@ def parse_links(payload: bytes, base_url: str) -> list[Link]:
     return sorted(dedup.values(), key=lambda item: (item.url, item.title))
 
 
+def repository_view_links(payload: bytes, base_url: str) -> list[Link]:
+    links: list[Link] = []
+    for link in parse_links(payload, base_url):
+        path = urlparse(link.url).path.rstrip("/")
+        if not path.startswith("/file-repository/"):
+            continue
+        if path.endswith("/view"):
+            links.append(link)
+    return links
+
+
+def download_links(payload: bytes, base_url: str) -> list[Link]:
+    links: list[Link] = []
+    for link in parse_links(payload, base_url):
+        path = urlparse(link.url).path.lower().rstrip("/")
+        if path.endswith("/view") or "/@@images/" in path:
+            continue
+        if any(path.endswith(suffix) for suffix in DOWNLOAD_SUFFIXES):
+            links.append(link)
+    return links
+
+
+def next_year(value: date) -> date:
+    try:
+        return value.replace(year=value.year + 1)
+    except ValueError:
+        # February 29 has no direct representation in a non-leap year.
+        return value.replace(year=value.year + 1, day=28)
+
+
 def split_date_ranges(start: date, end: date) -> list[tuple[date, date]]:
     if end < start:
         raise ValueError("end date precedes start date")
     ranges: list[tuple[date, date]] = []
     cursor = start
     while cursor <= end:
-        boundary = min(end, cursor.replace(year=cursor.year + 1) - timedelta(days=1))
+        boundary = min(end, next_year(cursor) - timedelta(days=1))
         ranges.append((cursor, boundary))
         cursor = boundary + timedelta(days=1)
     return ranges
@@ -113,7 +165,10 @@ def request_bytes(
     user_agent: str = DEFAULT_USER_AGENT,
 ) -> bytes:
     merged_headers = {
-        "Accept": "application/json,text/html,application/xhtml+xml,application/pdf,*/*;q=0.8",
+        "Accept": (
+            "application/json,text/html,application/xhtml+xml,application/pdf,"
+            "application/octet-stream,*/*;q=0.8"
+        ),
         "User-Agent": user_agent,
     }
     if headers:
@@ -155,36 +210,91 @@ def raw_record(
     }
 
 
+def suffix_for_url(url: str) -> str:
+    path = urlparse(url).path.lower().rstrip("/")
+    for suffix in sorted(DOWNLOAD_SUFFIXES, key=len, reverse=True):
+        if path.endswith(suffix):
+            return suffix
+    return ".bin"
+
+
+def save_blob(payload: bytes, *, url: str, download_dir: Path) -> Path:
+    digest = sha256_bytes(payload)
+    destination = download_dir / f"{digest}{suffix_for_url(url)}"
+    destination.parent.mkdir(parents=True, exist_ok=True)
+    if destination.exists():
+        if sha256_bytes(destination.read_bytes()) != digest:
+            raise RuntimeError(f"existing blob does not match digest: {destination}")
+    else:
+        destination.write_bytes(payload)
+    return destination
+
+
 def collect_biz_repository(
     *,
     seed_url: str,
+    download_dir: Path,
+    max_items: int,
+    delay: float,
     timeout: float,
     user_agent: str,
     retrieved_at: str,
 ) -> list[dict[str, Any]]:
-    page = request_bytes(seed_url, timeout=timeout, user_agent=user_agent)
+    root = request_bytes(seed_url, timeout=timeout, user_agent=user_agent)
     records = [
         raw_record(
             source="fbi-biz",
             record_type="repository-page",
             source_url=seed_url,
-            payload={"content_type": "text/html", "bytes": len(page)},
+            payload={"content_type": "text/html", "bytes": len(root)},
             retrieved_at=retrieved_at,
-            content=page,
+            content=root,
         )
     ]
-    for link in parse_links(page, seed_url):
-        if link.url == seed_url:
-            continue
+    seen_downloads: set[str] = set()
+    views = repository_view_links(root, seed_url)[:max_items]
+    for index, view in enumerate(views):
+        if index and delay:
+            time.sleep(delay)
+        page = request_bytes(view.url, timeout=timeout, user_agent=user_agent)
         records.append(
             raw_record(
                 source="fbi-biz",
-                record_type="repository-link",
-                source_url=link.url,
-                payload={"title": link.title, "url": link.url},
+                record_type="repository-item-page",
+                source_url=view.url,
+                payload={
+                    "title": view.title,
+                    "content_type": "text/html",
+                    "bytes": len(page),
+                },
                 retrieved_at=retrieved_at,
+                content=page,
             )
         )
+        for download in download_links(page, view.url):
+            if download.url in seen_downloads:
+                continue
+            seen_downloads.add(download.url)
+            if delay:
+                time.sleep(delay)
+            blob = request_bytes(download.url, timeout=timeout, user_agent=user_agent)
+            destination = save_blob(blob, url=download.url, download_dir=download_dir)
+            records.append(
+                raw_record(
+                    source="fbi-biz",
+                    record_type="repository-file",
+                    source_url=download.url,
+                    payload={
+                        "title": download.title or view.title,
+                        "parent_url": view.url,
+                        "bytes": len(blob),
+                        "local_path": destination.as_posix(),
+                        "suffix": destination.suffix,
+                    },
+                    retrieved_at=retrieved_at,
+                    content=blob,
+                )
+            )
     return records
 
 
@@ -213,12 +323,11 @@ def sam_query_url(
 
 def public_sam_query(url: str) -> str:
     parsed = urlparse(url)
-    pairs = []
-    for key, value in [part.split("=", 1) for part in parsed.query.split("&") if "=" in part]:
-        if key == "api_key":
-            value = "REDACTED"
-        pairs.append((key, value))
-    return parsed._replace(query="&".join(f"{key}={value}" for key, value in pairs)).geturl()
+    pairs = [
+        (key, "REDACTED" if key == "api_key" else value)
+        for key, value in parse_qsl(parsed.query, keep_blank_values=True)
+    ]
+    return parsed._replace(query=urlencode(pairs)).geturl()
 
 
 def collect_sam(
@@ -249,17 +358,25 @@ def collect_sam(
                     limit=limit,
                     offset=offset,
                 )
-                payload = json.loads(request_bytes(url, timeout=timeout, user_agent=user_agent))
+                payload = json.loads(
+                    request_bytes(url, timeout=timeout, user_agent=user_agent)
+                )
                 opportunities = payload.get("opportunitiesData") or []
                 for item in opportunities:
                     notice_id = str(item.get("noticeId") or "")
                     identity = notice_id or sha256_bytes(
-                        json.dumps(item, sort_keys=True, separators=(",", ":")).encode("utf-8")
+                        json.dumps(
+                            item, sort_keys=True, separators=(",", ":")
+                        ).encode("utf-8")
                     )
                     if identity in seen_notice_ids:
                         continue
                     seen_notice_ids.add(identity)
-                    source_url = str(item.get("uiLink") or item.get("additionalInfoLink") or public_sam_query(url))
+                    source_url = str(
+                        item.get("uiLink")
+                        or item.get("additionalInfoLink")
+                        or public_sam_query(url)
+                    )
                     records.append(
                         raw_record(
                             source="sam-opportunities",
@@ -273,18 +390,28 @@ def collect_sam(
                 if not opportunities or (offset + 1) * limit >= total:
                     break
                 offset += 1
-    return sorted(records, key=lambda item: (str(item["payload"].get("postedDate") or ""), str(item["payload"].get("noticeId") or "")))
+    return sorted(
+        records,
+        key=lambda item: (
+            str(item["payload"].get("postedDate") or ""),
+            str(item["payload"].get("noticeId") or ""),
+        ),
+    )
 
 
 def usaspending_payload(
     *,
-    award_ids: Iterable[str],
-    keywords: Iterable[str],
+    award_ids: Iterable[str] = (),
+    keywords: Iterable[str] = (),
     start: date,
     end: date,
     page: int,
     limit: int,
 ) -> dict[str, Any]:
+    exact_ids = [f'"{value.strip()}"' for value in award_ids if value.strip()]
+    terms = [value.strip() for value in keywords if value.strip()]
+    if bool(exact_ids) == bool(terms):
+        raise ValueError("provide exactly one of award_ids or keywords")
     filters: dict[str, Any] = {
         "time_period": [{"start_date": start.isoformat(), "end_date": end.isoformat()}],
         "agencies": [
@@ -297,11 +424,9 @@ def usaspending_payload(
         ],
         "award_type_codes": ["A", "B", "C", "D"],
     }
-    exact_ids = [f'"{value.strip()}"' for value in award_ids if value.strip()]
-    terms = [value.strip() for value in keywords if value.strip()]
     if exact_ids:
         filters["award_ids"] = exact_ids
-    if terms:
+    else:
         filters["keywords"] = terms
     return {
         "filters": filters,
@@ -313,9 +438,8 @@ def usaspending_payload(
             "Award Amount",
             "Awarding Agency",
             "Awarding Sub Agency",
-            "Award Type",
+            "Contract Award Type",
             "Description",
-            "generated_unique_award_id",
         ],
         "page": page,
         "limit": limit,
@@ -323,6 +447,35 @@ def usaspending_payload(
         "order": "asc",
         "subawards": False,
     }
+
+
+def usaspending_queries(
+    *,
+    award_ids: Iterable[str],
+    keywords: Iterable[str],
+    start: date,
+    end: date,
+    page: int,
+    limit: int,
+) -> Iterator[dict[str, Any]]:
+    ids = [value.strip() for value in award_ids if value.strip()]
+    if ids:
+        yield usaspending_payload(
+            award_ids=ids,
+            start=start,
+            end=end,
+            page=page,
+            limit=limit,
+        )
+    for keyword in keywords:
+        if keyword.strip():
+            yield usaspending_payload(
+                keywords=[keyword],
+                start=start,
+                end=end,
+                page=page,
+                limit=limit,
+            )
 
 
 def collect_usaspending(
@@ -339,70 +492,82 @@ def collect_usaspending(
 ) -> list[dict[str, Any]]:
     records: list[dict[str, Any]] = []
     seen: set[str] = set()
-    for page in range(1, max_pages + 1):
-        query = usaspending_payload(
+    query_roots = list(
+        usaspending_queries(
             award_ids=award_ids,
             keywords=keywords,
             start=start,
             end=end,
-            page=page,
+            page=1,
             limit=limit,
         )
-        body = json.dumps(query, separators=(",", ":")).encode("utf-8")
-        payload = json.loads(
-            request_bytes(
-                USASPENDING_API,
-                method="POST",
-                body=body,
-                headers={"Content-Type": "application/json"},
-                timeout=timeout,
-                user_agent=user_agent,
-            )
-        )
-        results = payload.get("results") or []
-        for item in results:
-            award_id = str(item.get("Award ID") or item.get("generated_unique_award_id") or "")
-            identity = award_id or sha256_bytes(
-                json.dumps(item, sort_keys=True, separators=(",", ":")).encode("utf-8")
-            )
-            if identity in seen:
-                continue
-            seen.add(identity)
-            generated = str(item.get("generated_unique_award_id") or "")
-            source_url = (
-                f"https://www.usaspending.gov/award/{generated}"
-                if generated
-                else "https://www.usaspending.gov/search"
-            )
-            records.append(
-                raw_record(
-                    source="usaspending",
-                    record_type="prime-award",
-                    source_url=source_url,
-                    payload=item,
-                    retrieved_at=retrieved_at,
+    )
+    for root in query_roots:
+        for page in range(1, max_pages + 1):
+            query = dict(root)
+            query["page"] = page
+            body = json.dumps(query, separators=(",", ":")).encode("utf-8")
+            payload = json.loads(
+                request_bytes(
+                    USASPENDING_API,
+                    method="POST",
+                    body=body,
+                    headers={"Content-Type": "application/json"},
+                    timeout=timeout,
+                    user_agent=user_agent,
                 )
             )
-        page_meta = payload.get("page_metadata") or {}
-        if not results or not page_meta.get("hasNext", False):
-            break
-    return sorted(records, key=lambda item: str(item["payload"].get("Award ID") or ""))
+            results = payload.get("results") or []
+            for item in results:
+                award_id = str(item.get("Award ID") or "")
+                identity = award_id or sha256_bytes(
+                    json.dumps(
+                        item, sort_keys=True, separators=(",", ":")
+                    ).encode("utf-8")
+                )
+                if identity in seen:
+                    continue
+                seen.add(identity)
+                records.append(
+                    raw_record(
+                        source="usaspending",
+                        record_type="prime-award",
+                        source_url="https://www.usaspending.gov/search",
+                        payload=item,
+                        retrieved_at=retrieved_at,
+                    )
+                )
+            page_meta = payload.get("page_metadata") or {}
+            if not results or not page_meta.get("hasNext", False):
+                break
+    return sorted(
+        records,
+        key=lambda item: str(item["payload"].get("Award ID") or ""),
+    )
 
 
 def write_jsonl(records: Iterable[dict[str, Any]], output: Path) -> int:
-    ordered = sorted(
-        records,
-        key=lambda record: (
+    unique: dict[tuple[str, str, str, str], dict[str, Any]] = {}
+    for record in records:
+        key = (
             str(record.get("source") or ""),
             str(record.get("record_type") or ""),
             str(record.get("source_url") or ""),
             str(record.get("sha256") or ""),
-        ),
-    )
+        )
+        unique[key] = record
+    ordered = [unique[key] for key in sorted(unique)]
     output.parent.mkdir(parents=True, exist_ok=True)
     with output.open("w", encoding="utf-8") as handle:
         for record in ordered:
-            handle.write(json.dumps(record, ensure_ascii=False, sort_keys=True, separators=(",", ":")))
+            handle.write(
+                json.dumps(
+                    record,
+                    ensure_ascii=False,
+                    sort_keys=True,
+                    separators=(",", ":"),
+                )
+            )
             handle.write("\n")
     return len(ordered)
 
@@ -413,17 +578,33 @@ def parse_date(value: str) -> date:
 
 def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     parser = argparse.ArgumentParser(
-        description="Collect deterministic raw FBI procurement evidence from official public sources."
+        description=(
+            "Collect deterministic raw FBI procurement evidence from official "
+            "public sources without writing the canonical StarIntel database."
+        )
     )
-    parser.add_argument("--source", choices=("all", "biz", "sam", "usaspending"), default="all")
-    parser.add_argument("--output", type=Path, default=Path("imports/fbi-procurement/raw.jsonl"))
+    parser.add_argument(
+        "--source",
+        choices=("all", "biz", "sam", "usaspending"),
+        default="all",
+    )
+    parser.add_argument(
+        "--output",
+        type=Path,
+        default=Path("imports/fbi-procurement/raw.jsonl"),
+    )
     parser.add_argument("--posted-from", type=parse_date, default=date(2020, 1, 1))
     parser.add_argument("--posted-to", type=parse_date, default=date.today())
-    parser.add_argument("--organization-name", default="FEDERAL BUREAU OF INVESTIGATION")
+    parser.add_argument(
+        "--organization-name", default="FEDERAL BUREAU OF INVESTIGATION"
+    )
     parser.add_argument("--sam-api-key-env", default="SAM_GOV_API_KEY")
     parser.add_argument("--sam-ptype", action="append", default=[])
     parser.add_argument("--award-id", action="append", default=[])
     parser.add_argument("--keyword", action="append", default=[])
+    parser.add_argument("--biz-download-dir", type=Path)
+    parser.add_argument("--biz-max-items", type=int, default=250)
+    parser.add_argument("--biz-delay", type=float, default=1.0)
     parser.add_argument("--limit", type=int, default=100)
     parser.add_argument("--max-pages", type=int, default=100)
     parser.add_argument("--timeout", type=float, default=60.0)
@@ -437,14 +618,24 @@ def main(argv: list[str] | None = None) -> int:
         raise SystemExit("--limit must be between 1 and 1000")
     if args.max_pages < 1:
         raise SystemExit("--max-pages must be positive")
+    if args.biz_max_items < 1:
+        raise SystemExit("--biz-max-items must be positive")
+    if args.biz_delay < 0:
+        raise SystemExit("--biz-delay cannot be negative")
+    if args.posted_to < args.posted_from:
+        raise SystemExit("--posted-to precedes --posted-from")
 
     retrieved_at = utc_now()
     records: list[dict[str, Any]] = []
+    download_dir = args.biz_download_dir or args.output.parent / "files"
 
     if args.source in {"all", "biz"}:
         records.extend(
             collect_biz_repository(
                 seed_url=BIZ_FILE_REPOSITORY,
+                download_dir=download_dir,
+                max_items=args.biz_max_items,
+                delay=args.biz_delay,
                 timeout=args.timeout,
                 user_agent=args.user_agent,
                 retrieved_at=retrieved_at,
@@ -456,7 +647,10 @@ def main(argv: list[str] | None = None) -> int:
         if not api_key:
             if args.source == "sam":
                 raise SystemExit(f"missing {args.sam_api_key_env}")
-            print(f"warning: skipping SAM.gov; missing {args.sam_api_key_env}", file=sys.stderr)
+            print(
+                f"warning: skipping SAM.gov; missing {args.sam_api_key_env}",
+                file=sys.stderr,
+            )
         else:
             records.extend(
                 collect_sam(
@@ -464,7 +658,8 @@ def main(argv: list[str] | None = None) -> int:
                     start=args.posted_from,
                     end=args.posted_to,
                     organization_name=args.organization_name,
-                    procurement_types=args.sam_ptype or ("r", "p", "o", "k", "a", "u", "s"),
+                    procurement_types=args.sam_ptype
+                    or ("r", "p", "o", "k", "a", "u", "s"),
                     limit=args.limit,
                     max_pages=args.max_pages,
                     timeout=args.timeout,
@@ -489,7 +684,16 @@ def main(argv: list[str] | None = None) -> int:
         )
 
     count = write_jsonl(records, args.output)
-    print(json.dumps({"output": str(args.output), "records": count}, sort_keys=True))
+    print(
+        json.dumps(
+            {
+                "output": str(args.output),
+                "records": count,
+                "download_dir": str(download_dir),
+            },
+            sort_keys=True,
+        )
+    )
     return 0
 
 
