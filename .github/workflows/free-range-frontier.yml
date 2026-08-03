@@ -29,6 +29,20 @@ on:
         required: true
         type: boolean
         default: false
+  pull_request:
+    paths:
+      - ".github/workflows/free-range-frontier.yml"
+      - "scripts/free-range.py"
+      - "starintel_doc/free_range.py"
+      - "tests/test_free_range.py"
+  push:
+    branches:
+      - main
+    paths:
+      - ".github/workflows/free-range-frontier.yml"
+      - "scripts/free-range.py"
+      - "starintel_doc/free_range.py"
+      - "tests/test_free_range.py"
 
 permissions:
   contents: read
@@ -50,10 +64,10 @@ jobs:
         env:
           FREE_RANGE_QUERY: ${{ inputs.query }}
           FREE_RANGE_DATASET: ${{ inputs.dataset }}
-          FREE_RANGE_LIMIT: ${{ inputs.limit }}
-          FREE_RANGE_BATCH_SIZE: ${{ inputs.batch_size }}
-          FREE_RANGE_INCLUDE_BLOCKED: ${{ inputs.include_blocked }}
-          FREE_RANGE_QUEUE_ONLY: ${{ inputs.queue_only }}
+          FREE_RANGE_LIMIT: ${{ inputs.limit || '20' }}
+          FREE_RANGE_BATCH_SIZE: ${{ inputs.batch_size || '5' }}
+          FREE_RANGE_INCLUDE_BLOCKED: ${{ inputs.include_blocked || 'false' }}
+          FREE_RANGE_QUEUE_ONLY: ${{ inputs.queue_only || 'false' }}
         shell: bash
         run: |
           set -euo pipefail
