@@ -1,16 +1,33 @@
 {
   "dataset": "hunter-biden",
   "schema_version": "0.9.0",
-  "merge_mode": "virtual-exact-record-aggregate",
+  "merge_mode": "virtual-exact-record-aggregate-with-explicit-revisions",
   "packet_count": 11,
-  "expected_counts": {
+  "expected_raw_counts": {
     "source": 63,
     "org": 59,
     "person": 34,
     "relation": 202,
     "investigation-target": 118
   },
-  "expected_total": 476,
+  "expected_raw_total": 476,
+  "expected_unique_counts": {
+    "source": 63,
+    "org": 59,
+    "person": 34,
+    "relation": 202,
+    "investigation-target": 117
+  },
+  "expected_unique_total": 475,
+  "duplicate_resolutions": {
+    "starintel:investigation-target:bhr-obtain-beijing-arbitration-award": {
+      "preferred_source": "digs/hunter-biden/2026-08-01-bhr-partners-depth-10/investigation-targets-1.jsonl",
+      "superseded_sources": [
+        "digs/hunter-biden/2026-08-01-bhr-partners-depth-7/investigation-targets-1.jsonl"
+      ],
+      "reason": "Depth 10 is the documented later correction: it narrows the target to the December 25, 2025 award, adds the Beijing Arbitration Commission seed, and uses the newer official arbitration notice while retaining the stable ID and version."
+    }
+  },
   "packets": [
     {"depth":1,"path":"digs/hunter-biden/2026-07-31-bhr-partners-depth-1","expected_total":44,"combined_documents_sha256":"93a2e7361c16f4c0c5b18823cd752c1872e8b25a83889118e3a64eef07157e6b"},
     {"depth":2,"path":"digs/hunter-biden/2026-07-31-bhr-partners-depth-2","expected_total":21,"combined_documents_sha256":"6c731a5ad5672f4a746fe2fd3087bbbed53fce6badb97ed65680bd0a562712c7"},
