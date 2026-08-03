@@ -240,8 +240,8 @@ jobs:
         with:
           name: starintel-research-site
           path: starintel-research-site.tar.gz
-          compression-level: 0
           retention-days: 7
+          compression-level: 0
 
   deploy:
     if: github.event_name != 'pull_request'
