@@ -4,7 +4,9 @@
 **Parent:** #1962 depth 3  
 **Primary dataset:** `fed`  
 **Linked datasets:** `wef`, `palantir`, `rusi`, `csis`, `cnas`, `atlantic-council`, `us-israel-military-integration`  
-**Date:** 2026-08-02
+**Date:** 2026-08-02  
+**Records:** 30  
+**JSONL SHA-256:** `574bedea951d4470d189b3b4d5e41ef3b02ef550a60c77cb6e7670654ad12517`
 
 ## Result
 
