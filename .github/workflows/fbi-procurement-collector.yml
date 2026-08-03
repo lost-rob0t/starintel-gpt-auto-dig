@@ -1,0 +1,132 @@
+name: FBI procurement collector
+
+on:
+  workflow_dispatch:
+    inputs:
+      source:
+        description: Official source set
+        required: true
+        default: all
+        type: choice
+        options:
+          - all
+          - biz
+          - sam
+          - usaspending
+      posted_from:
+        description: Earliest award or notice date (YYYY-MM-DD)
+        required: true
+        default: "2020-01-01"
+        type: string
+      posted_to:
+        description: Latest award or notice date; blank uses current UTC date
+        required: false
+        type: string
+      biz_max_items:
+        description: Maximum FBI Business repository item pages
+        required: true
+        default: "250"
+        type: string
+  schedule:
+    - cron: "17 6 * * 1"
+
+permissions:
+  contents: read
+
+jobs:
+  collect:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    env:
+      SAM_GOV_API_KEY: ${{ secrets.SAM_GOV_API_KEY }}
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.13"
+
+      - name: Resolve collection scope
+        id: scope
+        shell: bash
+        env:
+          INPUT_SOURCE: ${{ inputs.source }}
+          INPUT_POSTED_FROM: ${{ inputs.posted_from }}
+          INPUT_POSTED_TO: ${{ inputs.posted_to }}
+          INPUT_BIZ_MAX_ITEMS: ${{ inputs.biz_max_items }}
+        run: |
+          set -euo pipefail
+          source_name="${INPUT_SOURCE:-all}"
+          posted_from="${INPUT_POSTED_FROM:-2020-01-01}"
+          posted_to="${INPUT_POSTED_TO:-$(date -u +%F)}"
+          biz_max_items="${INPUT_BIZ_MAX_ITEMS:-250}"
+          case "$source_name" in
+            all|biz|sam|usaspending) ;;
+            *) echo "invalid source: $source_name" >&2; exit 2 ;;
+          esac
+          date -u -d "$posted_from" +%F >/dev/null
+          date -u -d "$posted_to" +%F >/dev/null
+          [[ "$biz_max_items" =~ ^[1-9][0-9]*$ ]]
+          {
+            echo "source=$source_name"
+            echo "posted_from=$posted_from"
+            echo "posted_to=$posted_to"
+            echo "biz_max_items=$biz_max_items"
+          } >> "$GITHUB_OUTPUT"
+
+      - name: Test collector
+        run: |
+          python -m unittest tests.test_scrape_fbi_procurement -v
+          python -m compileall -q scripts/scrape_fbi_procurement.py
+
+      - name: Collect official procurement evidence
+        run: |
+          python scripts/scrape_fbi_procurement.py \
+            --source "${{ steps.scope.outputs.source }}" \
+            --posted-from "${{ steps.scope.outputs.posted_from }}" \
+            --posted-to "${{ steps.scope.outputs.posted_to }}" \
+            --biz-max-items "${{ steps.scope.outputs.biz_max_items }}" \
+            --output artifacts/fbi-procurement/raw.jsonl
+
+      - name: Write collection manifest
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import hashlib
+          import json
+          from pathlib import Path
+
+          root = Path("artifacts/fbi-procurement")
+          raw = root / "raw.jsonl"
+          rows = [json.loads(line) for line in raw.read_text(encoding="utf-8").splitlines() if line.strip()]
+          files = sorted(path for path in (root / "files").glob("*") if path.is_file())
+          manifest = {
+              "records": len(rows),
+              "records_by_source": {},
+              "raw_jsonl_sha256": hashlib.sha256(raw.read_bytes()).hexdigest(),
+              "downloaded_files": [
+                  {
+                      "path": path.as_posix(),
+                      "bytes": path.stat().st_size,
+                      "sha256": hashlib.sha256(path.read_bytes()).hexdigest(),
+                  }
+                  for path in files
+              ],
+          }
+          for row in rows:
+              source = str(row.get("source") or "unknown")
+              manifest["records_by_source"][source] = manifest["records_by_source"].get(source, 0) + 1
+          (root / "manifest.json").write_text(
+              json.dumps(manifest, indent=2, sort_keys=True) + "\n",
+              encoding="utf-8",
+          )
+          print(json.dumps(manifest, indent=2, sort_keys=True))
+          PY
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: fbi-procurement-${{ github.run_id }}
+          path: artifacts/fbi-procurement
+          if-no-files-found: error
+          retention-days: 30
