@@ -74,10 +74,15 @@ jobs:
             echo "biz_max_items=$biz_max_items"
           } >> "$GITHUB_OUTPUT"
 
-      - name: Test collector
+      - name: Test collectors
         run: |
-          python -m unittest tests.test_scrape_fbi_procurement -v
-          python -m compileall -q scripts/scrape_fbi_procurement.py
+          python -m unittest \
+            tests.test_scrape_fbi_procurement \
+            tests.test_scrape_usaspending_award_transactions \
+            -v
+          python -m compileall -q \
+            scripts/scrape_fbi_procurement.py \
+            scripts/scrape_usaspending_award_transactions.py
 
       - name: Collect official procurement evidence
         run: |
@@ -87,6 +92,12 @@ jobs:
             --posted-to "${{ steps.scope.outputs.posted_to }}" \
             --biz-max-items "${{ steps.scope.outputs.biz_max_items }}" \
             --output artifacts/fbi-procurement/raw.jsonl
+
+      - name: Collect TSC award transaction histories
+        if: steps.scope.outputs.source == 'all' || steps.scope.outputs.source == 'usaspending'
+        run: |
+          python scripts/scrape_usaspending_award_transactions.py \
+            --output artifacts/fbi-procurement/transactions.jsonl
 
       - name: Write collection manifest
         shell: bash
@@ -98,13 +109,32 @@ jobs:
           from pathlib import Path
 
           root = Path("artifacts/fbi-procurement")
-          raw = root / "raw.jsonl"
-          rows = [json.loads(line) for line in raw.read_text(encoding="utf-8").splitlines() if line.strip()]
+          raw_files = [
+              path
+              for path in (root / "raw.jsonl", root / "transactions.jsonl")
+              if path.is_file()
+          ]
+          rows = []
+          jsonl_files = []
+          for path in raw_files:
+              file_rows = [
+                  json.loads(line)
+                  for line in path.read_text(encoding="utf-8").splitlines()
+                  if line.strip()
+              ]
+              rows.extend(file_rows)
+              jsonl_files.append(
+                  {
+                      "path": path.as_posix(),
+                      "records": len(file_rows),
+                      "sha256": hashlib.sha256(path.read_bytes()).hexdigest(),
+                  }
+              )
           files = sorted(path for path in (root / "files").glob("*") if path.is_file())
           manifest = {
               "records": len(rows),
-              "records_by_source": {},
-              "raw_jsonl_sha256": hashlib.sha256(raw.read_bytes()).hexdigest(),
+              "records_by_source_and_type": {},
+              "jsonl_files": jsonl_files,
               "downloaded_files": [
                   {
                       "path": path.as_posix(),
@@ -115,8 +145,10 @@ jobs:
               ],
           }
           for row in rows:
-              source = str(row.get("source") or "unknown")
-              manifest["records_by_source"][source] = manifest["records_by_source"].get(source, 0) + 1
+              key = f"{row.get('source', 'unknown')}:{row.get('record_type', 'unknown')}"
+              manifest["records_by_source_and_type"][key] = (
+                  manifest["records_by_source_and_type"].get(key, 0) + 1
+              )
           (root / "manifest.json").write_text(
               json.dumps(manifest, indent=2, sort_keys=True) + "\n",
               encoding="utf-8",
