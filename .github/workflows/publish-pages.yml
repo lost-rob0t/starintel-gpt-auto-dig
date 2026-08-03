@@ -217,15 +217,18 @@ jobs:
         with:
           path: _site
 
+      - name: Package PR build artifact
+        if: github.event_name == 'pull_request'
+        run: tar -czf starintel-research-site.tar.gz _site .generated/org
+
       - name: Upload PR build artifact
         if: github.event_name == 'pull_request'
         uses: actions/upload-artifact@v4
         with:
           name: starintel-research-site
-          path: |
-            _site
-            .generated/org
+          path: starintel-research-site.tar.gz
           retention-days: 7
+          compression-level: 0
 
   deploy:
     if: github.event_name != 'pull_request'
