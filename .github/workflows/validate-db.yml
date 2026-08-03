@@ -7,6 +7,8 @@ on:
       - "db/**"
       - "digs/**"
       - ".github/workflows/validate-db.yml"
+      - ".github/workflows/conformance.yml"
+      - ".github/workflows/publish-pages.yml"
   workflow_dispatch:
 
 permissions:
