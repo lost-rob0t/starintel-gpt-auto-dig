@@ -54,13 +54,13 @@ Agile Defense's official company post credits these people behind the award:
 |---|---|
 | Rick Wagner | Agile Defense CEO; quoted in the official award announcement; credited on the award team |
 | Jesse Levine | Agile Defense Executive Vice President, National Security and Law Enforcement; quoted in the official award announcement; credited on the award team |
-| Katherine Cole | Credited by Agile Defense on the award team; exact contract function not stated |
+| Katherine Cole | Credited on the award team; a current secondary professional source identifies her as Agile Defense Senior Capture Manager and a former FBI Counterterrorism Division deputy chief of operations; exact TSC function still requires primary corroboration |
 | James Nowotny | Credited on the award team; separately announced by Agile Defense as Vice President, Justice and National Security |
-| Sean Bukowski | Credited by Agile Defense on the award team; exact contract function not stated |
+| Sean Bukowski | Credited by Agile Defense on the award team; public profile confirms Agile Defense employment and PMP certification, but exact title and TSC function remain unresolved |
 | Michael Pansky | Agile Defense Chief Transformation Officer; credited on the award team |
 | Khalid Hassouneh | Agile Defense President; credited on the award team |
 
-The phrase **award team** supports participation in the corporate pursuit or award effort. It does not establish that any named person is the contract program manager, capture manager, proposal manager, transition manager, security officer, technical lead or government evaluator.
+The phrase **award team** supports participation in the corporate pursuit or award effort. It does not establish that any named person is the contract program manager, capture manager, proposal manager, transition manager, security officer, technical lead or government evaluator. Katherine Cole's publicly reported capture title strengthens the capture-function hypothesis, but the company award post does not itself assign that function to this procurement.
 
 ## Relationship to `FBI-TSC-AIE`
 
@@ -92,7 +92,7 @@ The six unsuccessful offerors remain unresolved.
 3. Obtain protest, corrective-action, cancellation, termination, deobligation and transition records.
 4. Obtain offer-receipt logs, unsuccessful-offeror notices and source-selection metadata sufficient to identify all seven companies.
 5. Obtain IntelliWare/Agile proposal, key-personnel, transition and subcontract records.
-6. Resolve exact award functions for Katherine Cole and Sean Bukowski.
+6. Obtain a primary Agile Defense or procurement record confirming Katherine Cole's exact role and resolve Sean Bukowski's title and award function.
 7. Cross-match every confirmed company and person against `FBI-TSC-AIE` response and briefing records.
 
 ## Classification
@@ -103,5 +103,6 @@ The six unsuccessful offerors remain unresolved.
 - `bae_bridge_recipient`: **confirmed**
 - `bae_current_final_prime`: **superseded / requires qualification**
 - `replacement_or_corrective_sequence`: **strong inference; mechanism not established**
+- `katherine_cole_capture_role_for_this_award`: **probable but not directly established**
 - `fbi_tsc_aie_response_by_either_company`: **not established**
 - `six_unsuccessful_offerors`: **unresolved**
