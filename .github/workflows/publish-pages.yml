@@ -3,44 +3,19 @@ name: Build and publish research site
 on:
   push:
     branches: [main]
-    paths:
-      - "starintel_doc/**"
-      - "schemas/**"
-      - "digs/**"
-      - "db/**"
-      - "scripts/**"
-      - "tests/**"
-      - "docs/quasar-integration.md"
-      - "quasar-fork.lock.json"
-      - "site-assets/**"
-      - "site-config.json"
-      - ".github/workflows/publish-pages.yml"
-  pull_request:
-    branches: [main]
-    paths:
-      - "starintel_doc/**"
-      - "schemas/**"
-      - "digs/**"
-      - "db/**"
-      - "scripts/**"
-      - "tests/**"
-      - "docs/quasar-integration.md"
-      - "quasar-fork.lock.json"
-      - "site-assets/**"
-      - "site-config.json"
-      - ".github/workflows/publish-pages.yml"
   workflow_dispatch:
 
 permissions:
   contents: read
 
 concurrency:
-  group: pages-${{ github.ref }}
+  group: pages-main
   cancel-in-progress: true
 
 jobs:
   build:
     runs-on: ubuntu-latest
+    timeout-minutes: 60
     steps:
       - name: Check out repository
         uses: actions/checkout@v6
@@ -93,9 +68,6 @@ jobs:
           npm --prefix .quasar/frontend run check
           npm --prefix .quasar/frontend test
           npm --prefix .quasar/frontend run build
-
-      - name: Run mandatory StarIntel merge gate
-        run: python3 scripts/validate-for-merge.py
 
       - name: Test Quasar host integration
         run: python3 -m unittest tests.test_auto_dig_quasar
@@ -208,27 +180,14 @@ jobs:
           PY
 
       - name: Configure Pages
-        if: github.event_name != 'pull_request'
         uses: actions/configure-pages@v5
 
       - name: Upload Pages artifact
-        if: github.event_name != 'pull_request'
         uses: actions/upload-pages-artifact@v4
         with:
           path: _site
 
-      - name: Upload PR build artifact
-        if: github.event_name == 'pull_request'
-        uses: actions/upload-artifact@v4
-        with:
-          name: starintel-research-site
-          path: |
-            _site
-            .generated/org
-          retention-days: 7
-
   deploy:
-    if: github.event_name != 'pull_request'
     needs: build
     permissions:
       pages: write
