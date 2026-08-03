@@ -79,10 +79,12 @@ jobs:
           python -m unittest \
             tests.test_scrape_fbi_procurement \
             tests.test_scrape_usaspending_award_transactions \
+            tests.test_scrape_tsc_job_postings \
             -v
           python -m compileall -q \
             scripts/scrape_fbi_procurement.py \
-            scripts/scrape_usaspending_award_transactions.py
+            scripts/scrape_usaspending_award_transactions.py \
+            scripts/scrape_tsc_job_postings.py
 
       - name: Collect official procurement evidence
         run: |
@@ -104,6 +106,12 @@ jobs:
           python scripts/scrape_usaspending_award_transactions.py \
             --output artifacts/fbi-procurement/transactions.jsonl
 
+      - name: Collect public TSC staffing postings
+        run: |
+          python scripts/scrape_tsc_job_postings.py \
+            --site agile-defense \
+            --output artifacts/fbi-procurement/tsc-job-postings.jsonl
+
       - name: Write collection manifest
         shell: bash
         run: |
@@ -116,7 +124,11 @@ jobs:
           root = Path("artifacts/fbi-procurement")
           raw_files = [
               path
-              for path in (root / "raw.jsonl", root / "transactions.jsonl")
+              for path in (
+                  root / "raw.jsonl",
+                  root / "transactions.jsonl",
+                  root / "tsc-job-postings.jsonl",
+              )
               if path.is_file()
           ]
           rows = []
