@@ -125,6 +125,8 @@ jobs:
           test -s _site/search-index.json
           test -s _site/downloads/starintel-complete-corpus.jsonl
           test -s _site/downloads/starintel-complete-corpus.manifest.json
+          test -s _site/downloads/starintel-evidence-seal.json
+          test -s _site/evidence-seal.html
           test -s _site/assets/graph-core.mjs
           test -s _site/assets/graph-explorer.mjs
           test -s _site/assets/graph-render-scaled.mjs
@@ -145,6 +147,8 @@ jobs:
           grep -q 'Download complete corpus' _site/index.html
           grep -q 'downloads/starintel-complete-corpus.jsonl' _site/index.html
           grep -q 'downloads/starintel-complete-corpus.manifest.json' _site/index.html
+          grep -q 'data-evidence-seal' _site/index.html
+          grep -q 'evidence-seal.html' _site/index.html
           grep -q 'graph-launch-card' _site/palantir/index.html
           grep -q '../quasar/index.html?dataset=palantir' _site/palantir/graph.html
           grep -q 'documents.json' _site/palantir/documents.html
@@ -157,6 +161,7 @@ jobs:
           import json
           from pathlib import Path
 
+          from starintel_doc.integrity import verify_corpus_seal
           from starintel_doc.validation import validate_document
 
           graph = json.loads(Path("_site/palantir/graph.json").read_text())
@@ -201,6 +206,14 @@ jobs:
           }]
           assert manifest["data"]["hash_algorithm"] == "sha256"
           assert manifest["data"]["content_hash"] == hashlib.sha256(corpus_bytes).hexdigest()
+
+          receipt_path = Path("_site/downloads/starintel-evidence-seal.json")
+          receipt = json.loads(receipt_path.read_text())
+          seal_result = verify_corpus_seal(corpus_path, receipt)
+          assert seal_result["ok"], seal_result["errors"]
+          assert receipt["leaf_count"] == len(corpus)
+          assert receipt["corpus_file_sha256"] == hashlib.sha256(corpus_bytes).hexdigest()
+          assert receipt["merkle_root_sha256"] in Path("_site/evidence-seal.html").read_text()
 
           version = json.loads(Path("_site/quasar/version.json").read_text())
           lock = json.loads(Path("quasar-fork.lock.json").read_text())

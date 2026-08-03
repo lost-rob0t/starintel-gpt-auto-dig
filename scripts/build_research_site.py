@@ -15,6 +15,7 @@ ROOT = Path(__file__).resolve().parents[1]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
+from starintel_doc.integrity_site import publish_site_seal
 from starintel_doc.store import read_transport
 from starintel_doc.validation import validate_document
 from starintel_site.builder import build_site
@@ -230,12 +231,17 @@ def main() -> int:
         materialize_input(args.input, args.db, args.workspace, config)
         build_site(args.workspace, args.output, args.org_output, args.config, args.assets)
         people = build_people_directory(args.workspace, args.output, args.assets)
+        seal = publish_site_seal(
+            args.output / "downloads" / "starintel-complete-corpus.jsonl",
+            args.output,
+        )
     except Exception as exc:
         print(f"error: {exc}", file=sys.stderr)
         return 1
     print(
         f"Built explorer at {args.output}, Org corpus at {args.org_output}, "
-        f"and {people['people']} people profiles ({people['alumni']} alumni-linked)"
+        f"and {people['people']} people profiles ({people['alumni']} alumni-linked); "
+        f"evidence seal {seal['merkle_root_sha256']}"
     )
     return 0
 
