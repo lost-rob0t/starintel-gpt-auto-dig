@@ -91,6 +91,11 @@ jobs:
             --posted-from "${{ steps.scope.outputs.posted_from }}" \
             --posted-to "${{ steps.scope.outputs.posted_to }}" \
             --biz-max-items "${{ steps.scope.outputs.biz_max_items }}" \
+            --award-id 15F06725F0001209 \
+            --award-id 15F06725F0001838 \
+            --award-id 15F06726F0000362 \
+            --keyword 'terrorist screening center' \
+            --keyword 'threat screening center' \
             --output artifacts/fbi-procurement/raw.jsonl
 
       - name: Collect TSC award transaction histories
