@@ -4,23 +4,37 @@
 **Parent targets:** #1960, #1961  
 **Date:** 2026-08-02
 
-## Major correction
+## Initial 2025 award
 
-BAE Systems Technology Solutions & Services is not merely an adjacent FBI contractor. Public award reporting identifies it as the winner of the FBI Terrorist Screening Center Analysis Services task order:
+Public award reporting identifies BAE Systems Technology Solutions & Services as the initial winner of the FBI Terrorist Screening Center Analysis Services task order:
 
 - award ID: `15F06725F0001209`
 - parent vehicle: `GS00F240CA` (GSA MAS)
 - awardee: BAE Systems Technology Solutions & Services Inc.
 - UEI: `LX3BSV6NNW58`
-- potential value: **$128,670,903.55**
-- initial obligation: **$7,142,402.50**
+- announced potential value: **$128,670,903.55**
+- initial obligation reported at award: **$7,142,402.50**
 - offers received: **7**
-- start: **2025-09-11**
-- potential completion: **2030-09-10**
+- announced start: **2025-09-11**
+- announced potential completion: **2030-09-10**
 
-BAE therefore becomes a **current TSC analysis-services prime contractor** and a high-priority candidate for the 2026 TSC AI market-research response search.
+This establishes BAE as the **initial 2025 TSC analysis-services awardee**, not merely an adjacent contractor.
 
-It is still **not a confirmed respondent** to `FBI-TSC-AIE`. The analysis-services award predates the AI RFI and has a different notice/award identifier and stated scope.
+## Later award correction
+
+A later public award record identifies **IntelliWare Systems, Inc.**, an Agile Defense company, as the active recipient of TSC Intelligence Analysis Services order `15F06726F0000362` beginning in 2026. That later action supersedes the earlier unqualified classification of BAE as the current final prime.
+
+The reviewed sources do not state the exact mechanism connecting the two awards. A replacement or corrective sequence is a strong inference because the scopes are closely aligned and both records report seven offers, but the evidence does not establish:
+
+- a sustained protest;
+- corrective action;
+- cancellation or rescission;
+- termination;
+- novation;
+- reevaluation;
+- administrative deobligation.
+
+BAE remains classified as the initial awardee and bridge recipient until the acquisition chronology is recovered. The later IntelliWare award is handled in the depth-5 packet.
 
 ## Bridge award
 
@@ -28,24 +42,25 @@ USAspending separately exposes BAE delivery order `15F06725F0001838`, described 
 
 > BRIDGE CONTRACT FOR INTELLIGENCE ANALYSIS SERVICES - TSC
 
-The public award page reports a September 2025 start, a 2026 completion window, one offer, and a potential value approaching $18 million. The bridge award and the five-year order overlap in the public dates.
+The public award page reports a September 2025 start, a 2026 completion window, one offer, and a potential value approaching $18 million. The bridge award and the initial five-year order overlap in the public dates.
 
-No reviewed source establishes why both awards exist. Do not infer a protest, transition delay, corrective action, onboarding gap, or award suspension without procurement records.
+No reviewed source establishes why both BAE awards exist or how either relates legally to the later IntelliWare award.
 
 ## Active staffing evidence
 
-BAE maintains a dedicated Terrorist Screening Center careers page recruiting intelligence analysts to support consolidated counterterrorism watchlisting for the Department of State, Department of Homeland Security, law enforcement, and the intelligence community.
+BAE maintains a dedicated Terrorist Screening Center careers page recruiting intelligence analysts to support consolidated counterterrorism watchlisting.
 
-This confirms an active BAE TSC workforce surface, but the careers page does not identify the program manager, capture lead, proposal team, subcontractors, or named key personnel.
+This confirms a BAE TSC workforce surface during the award period, but the careers page does not identify the program manager, capture lead, proposal team, subcontractors, named key personnel, transition date, or current status of each role.
 
 ## Historical teammate
 
 Illuminate stated that its Cyberspace Solutions subsidiary teamed with BAE Systems on a five-year FBI TSC program awarded in 2020 and provided analytic support in Northern Virginia.
 
-This establishes historical subcontractor/teammate status on the predecessor program. It does not establish Illuminate participation in:
+This establishes historical teammate status on the predecessor program. It does not establish Illuminate participation in:
 
-- award `15F06725F0001209`;
-- bridge award `15F06725F0001838`; or
+- BAE award `15F06725F0001209`;
+- BAE bridge award `15F06725F0001838`;
+- IntelliWare award `15F06726F0000362`; or
 - the 2026 `FBI-TSC-AIE` RFI.
 
 ## People enumerated from award/company records
@@ -60,32 +75,29 @@ USAspending's recipient profile for the bridge order lists these BAE corporate o
 
 These are **corporate leadership records**, not proof that any person worked on, approved, captured, managed, evaluated, or delivered the TSC contract.
 
-Public BAE materials independently identify:
+The BAE proposal, program, transition, security and subcontract teams remain unresolved.
 
-- Alphonse Whitmore as a former president of the Intelligence & Security sector;
-- Michelle Murphy as BAE Systems, Inc. Chief Human Resources Officer, with earlier Intelligence & Security HR/administration roles;
-- Peder Jungck in Intelligence & Security technology, intelligence-solutions, innovation, strategy, and AI leadership roles.
+## Seven-offer problem
 
-The current TSC contract program manager, deputy program manager, capture manager, proposal manager, transition manager, subcontract manager, site leads, key analysts, and technical leads remain unresolved.
+The initial BAE award and later IntelliWare award each publicly report seven offers. The sources reviewed do not reveal whether they reflect the same competition, a reevaluation, a reopened action, or separate competitions with identical offer counts.
 
-## Six unnamed bidders
+The six unsuccessful offerors must not be guessed from capability, incumbent history, schedules, job postings or prior TSC work.
 
-The award record reports seven offers. BAE is the only bidder currently named in the reviewed public award reporting. The six unsuccessful offerors must not be guessed from capability, incumbent history, GSA schedules, job postings, or prior TSC work.
+## Required next layer
 
-## Required depth 4
-
-1. Obtain the solicitation or task-order request linked to `15F06725F0001209`.
-2. Obtain the award decision, unsuccessful-offeror notices, source-selection record, evaluation summary, and debriefing metadata.
-3. Identify all seven offerors and classify prime, teammate, and subcontractor relationships.
-4. Obtain the complete bridge-award justification and determine its relationship to the five-year award.
-5. Enumerate BAE proposal, capture, transition, program, subcontract, recruiting, technical, and site personnel with direct role evidence.
-6. Identify predecessor and current subcontractors through subcontract reports, press releases, resumes, job postings, and records requests.
-7. Test whether BAE or any named teammate responded to `FBI-TSC-AIE`; keep the AI RFI and analysis-services awards separate until direct evidence links them.
+1. Collect every USAspending transaction for both BAE orders and the later IntelliWare order.
+2. Obtain the solicitation, amendments, award chronology and source-selection records.
+3. Obtain protest, corrective-action, termination, cancellation and deobligation records.
+4. Identify all seven offerors and classify prime, teammate and subcontractor relationships.
+5. Enumerate BAE and IntelliWare proposal, capture, transition, program, subcontract and site personnel with direct role evidence.
+6. Test every confirmed company and person against `FBI-TSC-AIE`; keep the AI RFI separate until direct evidence links them.
 
 ## Classification
 
-- `current_tsc_analysis_prime`: **confirmed**
-- `incumbent_adjacent_system`: **confirmed**
+- `initial_2025_tsc_analysis_awardee`: **confirmed**
+- `bae_bridge_recipient`: **confirmed**
+- `historical_incumbent_adjacent_system`: **confirmed**
+- `current_final_tsc_prime`: **superseded / requires qualification**
+- `replacement_or_corrective_sequence`: **strong inference; mechanism not established**
 - `fbi_tsc_aie_respondent`: **not established**
-- `fbi_tsc_aie_awardee`: **not established**
 - `six_unsuccessful_offerors`: **unresolved**
