@@ -1,0 +1,15 @@
+{
+  "name": "BHR Partners merged Hunter corpus",
+  "dataset": "hunter-biden",
+  "schema_version": "0.9.0",
+  "source_depths": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11],
+  "packet_count": 11,
+  "record_count": 476,
+  "materialization": "build-merged-corpus.py",
+  "output": "starintel-documents.jsonl",
+  "manifest_output": "merged-manifest.json",
+  "duplicate_policy": "fail",
+  "record_transform": "none",
+  "ordering": "depth, manifest document_files order, original line order",
+  "source_packets_immutable": true
+}
