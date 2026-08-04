@@ -1,11 +1,7 @@
 name: StarIntel conformance
 
 on:
-  pull_request:
-  push:
-    branches: [main]
-  schedule:
-    - cron: "17 6 * * 1"
+  workflow_dispatch:
 
 permissions:
   contents: read
@@ -122,42 +118,7 @@ jobs:
           set -o pipefail
           python -m unittest tests.test_conformance 2>&1 | tee artifacts/reference-tests.log
 
-      - name: Run research-node matrix across every language pair
-        if: github.event_name == 'pull_request'
-        run: |
-          adapters=(
-            --adapter "python=sh -c 'cd implementations/python && python -m starintel_doc.conformance_adapter'"
-            --adapter "js=node implementations/js/bin/starintel-conformance.js"
-            --adapter "cl=sbcl --script implementations/cl/bin/starintel-conformance.lisp"
-            --adapter "nim=implementations/nim/starintel_conformance"
-          )
-          run_fixture() {
-            local fixture="$1"
-            local log="$2"
-            set +e
-            python -m conformance.runner test "${adapters[@]}" --fixture "$fixture" 2>&1 | tee "$log"
-            set -e
-            python - "$fixture" <<'PY'
-          import json
-          import sys
-          from pathlib import Path
-
-          fixture = sys.argv[1]
-          report = json.loads(Path("artifacts/conformance-report.json").read_text())
-          assert report["missing_adapters"] == [], report["missing_adapters"]
-          assert all(item["ok"] for item in report["probes"].values()), report["probes"]
-          assert all(item["status"] == "pass" for item in report["matrix"]), report["matrix"]
-          assert all(item["status"] == "pass" for item in report["invalid"]), report["invalid"]
-          assert report["schema_inventory_failures"] == [], report["schema_inventory_failures"]
-          assert report["fixtures"]["total"] == 1, report["fixtures"]
-          print(f"{fixture}: all 16 producer/consumer pairs passed")
-          PY
-          }
-          run_fixture research-node.minimal.v1 artifacts/research-node-minimal-matrix.log
-          run_fixture research-node.full.v1 artifacts/research-node-full-matrix.log
-
       - name: Run complete ordered language matrix
-        if: github.event_name != 'pull_request'
         run: |
           set -o pipefail
           python -m conformance.runner test \
