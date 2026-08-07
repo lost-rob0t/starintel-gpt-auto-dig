@@ -1,0 +1,29 @@
+{
+  "counts_by_dtype": {
+    "analysis": 3,
+    "financial-observation": 1,
+    "investigation-target": 1,
+    "research-pass": 1
+  },
+  "dataset": "wef",
+  "decoded_bytes": 15259,
+  "document_count": 6,
+  "generated_at": "2026-08-02T01:50:00Z",
+  "gzip_bytes": 2894,
+  "gzip_sha256": "9b959d2e861b344020889a39586c2bda6001360e83eb492bda8287977db8e225",
+  "normalized_jsonl_sha256": "f9b94dd7c702befa0ba228627df44f26a48b6aa5cadf18ff3d1f89bc72497e14",
+  "records": [
+    "starintel:financial-observation:po578849-open-smart-columbus-2026-depth-10",
+    "starintel:analysis:po578849-authorization-versus-payment-depth-10",
+    "starintel:analysis:smart-columbus-2025-2026-funding-continuity-depth-10",
+    "starintel:analysis:po578849-wef-bounded-negative-depth-10",
+    "starintel:investigation-target:wef-depth-11-po578849-invoice-payment-and-deliverables",
+    "starintel:research-pass:wef-columbus-depth-10-po578849-current-status-2026-08-02"
+  ],
+  "recursion_depth": 10,
+  "run_id": "wef-columbus-depth-10-po578849-current-status-2026-08-02",
+  "schema_version": "0.9.0",
+  "transport_bytes": 3911,
+  "transport_file": "starintel-documents.jsonl.gz.b64",
+  "transport_sha256": "133847178a3d34fbc3d68e0d56b23476c60a0b40bc6b620f2f76b1a9ea80857a"
+}
