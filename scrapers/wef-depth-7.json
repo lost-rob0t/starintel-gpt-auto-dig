@@ -1,0 +1,76 @@
+{
+  "schema_version": 1,
+  "dataset": "wef",
+  "description": "Public-source collection plan for the eight WEF-Columbus Depth 7 investigation targets.",
+  "legistar_root": "https://webapi.legistar.com/v1/columbus",
+  "auditor_explorer": "https://www.columbusauditor.org/Data-Hub/data-sets-explorer/",
+  "wayback_cdx": "https://web.archive.org/cdx/search/cdx",
+  "targets": [
+    {
+      "target_id": "starintel:investigation-target:wef-depth-7-hntb-executed-files-and-workshare",
+      "title": "HNTB executed files and workshare",
+      "collectors": ["legistar", "auditor", "site"],
+      "keywords": ["HNTB", "smart lighting", "street lighting", "streetlight", "EMH&T", "EMH and T", "National Engineering Services", "utilization plan", "subconsultant", "purchase order", "product scorecard", "Phase 3", "Phase 4"],
+      "seed_urls": ["https://columbus.legistar.com/", "https://www.columbus.gov/Government/Departments/Public-Service", "https://www.columbus.gov/Government/Departments/Finance-and-Management/Purchasing"]
+    },
+    {
+      "target_id": "starintel:investigation-target:wef-depth-7-andhealth-compliance-ledger",
+      "title": "AndHealth compliance ledger",
+      "collectors": ["legistar", "auditor", "site"],
+      "keywords": ["AndHealth", "downtown office incentive", "jobs growth incentive", "income tax credit", "compliance report", "payment worksheet", "tax year 2023", "tax year 2024", "annual report", "incentive agreement"],
+      "seed_urls": ["https://columbus.legistar.com/", "https://www.columbus.gov/Government/Departments/Development", "https://www.columbus.gov/Government/Departments/Finance-and-Management"]
+    },
+    {
+      "target_id": "starintel:investigation-target:wef-depth-7-green-it-adoption-roster",
+      "title": "Green IT adoption roster",
+      "collectors": ["legistar", "site", "wayback"],
+      "keywords": ["Green IT Playbook", "Green IT", "Bread Financial", "Energi.AI", "ConnectUS", "sustainable IT", "emissions mapping", "working group", "100 leaders", "device reuse"],
+      "seed_urls": ["https://smartcolumbus.com/", "https://www.columbus.gov/Government/Departments/Public-Utilities/Sustainability", "https://columbusregion.com/"],
+      "wayback_patterns": ["smartcolumbus.com/*green-it*", "smartcolumbus.com/*energi*", "columbusregion.com/*green-it*"]
+    },
+    {
+      "target_id": "starintel:investigation-target:wef-depth-7-living-lab-project-identifiers",
+      "title": "Living Lab project identifiers",
+      "collectors": ["legistar", "site", "wayback"],
+      "keywords": ["Central Ohio Living Lab", "Living Lab", "living laboratory", "testbed", "pilot project", "project charter", "data-sharing agreement", "evaluation report", "demonstration project", "test site"],
+      "seed_urls": ["https://smartcolumbus.com/", "https://www.morpc.org/", "https://drive.ohio.gov/"],
+      "wayback_patterns": ["smartcolumbus.com/*living-lab*", "smartcolumbus.com/*living*lab*", "morpc.org/*living-lab*"]
+    },
+    {
+      "target_id": "starintel:investigation-target:wef-depth-7-urbanos-deployment-proof",
+      "title": "UrbanOS deployment proof",
+      "collectors": ["github", "site", "wayback"],
+      "keywords": ["UrbanOS", "urban-os", "smartcitiesdata", "Smart Columbus Operating System", "production deployment", "deployment manifest", "operator guide", "kubernetes", "terraform", "public endpoint"],
+      "seed_urls": ["https://github.com/SmartColumbusOS", "https://www.its.dot.gov/research_areas/smart_columbus.htm", "https://codehub.transportation.gov/"],
+      "wayback_patterns": ["smartcolumbus.com/*urbanos*", "smartcolumbus.com/*urban-os*", "its.dot.gov/*smart*columbus*"],
+      "github_repositories": ["SmartColumbusOS/urban-os", "SmartColumbusOS/smartcitiesdata"],
+      "github_queries": ["smartcitiesdata in:name,description,readme", "UrbanOS smart city in:name,description,readme", "Smart Columbus Operating System in:readme"]
+    },
+    {
+      "target_id": "starintel:investigation-target:wef-depth-7-columbus-shapers-archive",
+      "title": "Columbus Shapers archive",
+      "collectors": ["site", "wayback"],
+      "keywords": ["Columbus Hub", "Columbus Global Shapers", "Global Shapers Columbus", "founding curator", "hub curator", "Cleveland Hub", "hub launch", "inactive hub", "dissolved hub", "hub roster"],
+      "seed_urls": ["https://www.globalshapers.org/", "https://www.globalshapers.org/shapers", "https://www.weforum.org/"],
+      "wayback_patterns": ["globalshapers.org/*columbus*", "weforum.org/*columbus*global-shapers*", "globalshapers.org/hubs/*columbus*"]
+    },
+    {
+      "target_id": "starintel:investigation-target:wef-depth-7-wef-columbus-public-records",
+      "title": "WEF-Columbus public records",
+      "collectors": ["legistar", "auditor", "site", "wayback"],
+      "keywords": ["World Economic Forum", "WEF", "Davos", "Global Shapers", "Young Global Leaders", "Strategic Intelligence", "membership dues", "travel reimbursement", "profile authorization", "memorandum of understanding"],
+      "seed_urls": ["https://columbus.legistar.com/", "https://www.columbus.gov/Government/Departments/Finance-and-Management", "https://smartcolumbus.com/", "https://www.weforum.org/"],
+      "wayback_patterns": ["columbus.gov/*world-economic-forum*", "smartcolumbus.com/*world-economic-forum*", "weforum.org/*columbus-ohio*"]
+    },
+    {
+      "target_id": "starintel:investigation-target:wef-depth-7-smart-columbus-project-assignments",
+      "title": "Smart Columbus project assignments",
+      "collectors": ["legistar", "site", "wayback", "github"],
+      "keywords": ["Smart Columbus", "Central Ohio Living Lab", "Green IT", "Columbus Innovation Ecosystem", "digital equity", "mobility", "data team", "RACI", "project manager", "program director", "board member"],
+      "seed_urls": ["https://smartcolumbus.com/", "https://www.columbuspartnership.com/", "https://www.columbus.gov/"],
+      "wayback_patterns": ["smartcolumbus.com/*team*", "smartcolumbus.com/*staff*", "smartcolumbus.com/*board*", "smartcolumbus.com/*project*"],
+      "github_repositories": ["SmartColumbusOS/urban-os", "SmartColumbusOS/smartcitiesdata"],
+      "github_queries": ["org:SmartColumbusOS Smart Columbus", "org:SmartColumbusOS digital equity", "org:SmartColumbusOS mobility"]
+    }
+  ]
+}

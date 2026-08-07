@@ -1,0 +1,175 @@
+name: Migrate pass 3 packet
+
+on:
+  pull_request:
+    types: [synchronize, reopened]
+
+permissions:
+  contents: write
+
+concurrency:
+  group: migrate-us-israel-pass-3-packet
+  cancel-in-progress: false
+
+jobs:
+  migrate:
+    if: github.event.pull_request.head.repo.full_name == github.repository && github.head_ref == 'agent/wef-columbus-depth-6-primary-records'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          ref: agent/wef-columbus-depth-6-primary-records
+          fetch-depth: 0
+
+      - name: Migrate and validate packet
+        shell: python
+        run: |
+          from __future__ import annotations
+
+          import base64
+          import gzip
+          import hashlib
+          import json
+          from pathlib import Path
+          from typing import Any
+
+          from starintel_doc.migration import migrate_document
+          from starintel_doc.validation import validate_document
+
+          packet_path = Path('digs/us-israel-military-integration/2026-07-31-pass-3/starintel-documents.jsonl.gz.b64')
+          manifest_path = packet_path.with_name('quasar-import-manifest.json')
+
+          archive = base64.b64decode(''.join(packet_path.read_text(encoding='utf-8').split()), validate=True)
+          records = [json.loads(line) for line in gzip.decompress(archive).decode('utf-8').splitlines() if line.strip()]
+
+          def strings(value: Any) -> list[str]:
+              if value in (None, ''):
+                  return []
+              if isinstance(value, list):
+                  return [str(item) for item in value if item not in (None, '')]
+              return [str(value)]
+
+          migrated_records: list[dict[str, Any]] = []
+          for number, original in enumerate(records, 1):
+              raw = json.loads(json.dumps(original))
+              data = dict(raw.get('data') or {})
+              dtype = str(raw.get('dtype') or '')
+              aliases: dict[str, Any] = {}
+
+              if dtype == 'target':
+                  aliases = {key: data[key] for key in ('name', 'parent_target', 'scope') if key in data}
+                  data['target'] = data.get('target') or data.get('name') or raw.get('title') or raw['_id']
+                  if data.get('parent_target'):
+                      data['seed_ids'] = strings(data['parent_target'])
+                  if data.get('scope'):
+                      data['scope_type'] = str(data['scope'])
+
+              elif dtype == 'research-pass':
+                  aliases = {key: data[key] for key in ('pass_number', 'parent_pass', 'record_scope', 'source_policy') if key in data}
+                  data['iteration'] = int(data.get('pass_number') or 1)
+                  data['research_question'] = raw.get('title') or raw.get('summary') or raw['_id']
+                  if data.get('source_policy'):
+                      data['method'] = '; '.join(strings(data['source_policy']))
+                  if data.get('parent_pass'):
+                      data['supporting_record_ids'] = strings(data['parent_pass'])
+
+              elif dtype == 'analysis':
+                  aliases = {key: data[key] for key in ('judgment', 'key_points', 'limits') if key in data}
+                  if data.get('judgment'):
+                      data['conclusions'] = strings(data['judgment'])
+                  if data.get('key_points'):
+                      data['findings'] = strings(data['key_points'])
+                  if data.get('limits'):
+                      data['limitations'] = strings(data['limits'])
+                  data.setdefault('question', raw.get('title') or raw['_id'])
+
+              elif dtype == 'org':
+                  aliases = {key: data[key] for key in ('organization_type', 'aliases', 'location', 'locations') if key in data}
+                  if data.get('organization_type'):
+                      data['org_type'] = str(data['organization_type'])
+                  if data.get('aliases'):
+                      raw['aliases'] = sorted(set(strings(raw.get('aliases')) + strings(data['aliases'])))
+
+              elif dtype == 'person':
+                  aliases = {key: data[key] for key in ('role', 'timeframe') if key in data}
+                  if data.get('role'):
+                      data['positions'] = strings(data['role'])
+                      data['public_roles'] = strings(data['role'])
+
+              elif dtype == 'event':
+                  aliases = {key: data[key] for key in ('event_type', 'date', 'date_start', 'date_end', 'location', 'maximum_estimated_value_usd', 'open_recommendations', 'recommendations') if key in data}
+                  if data.get('event_type'):
+                      data['event_kind'] = str(data['event_type'])
+                  if data.get('date'):
+                      data['start_at'] = data['date']
+                  if data.get('date_start'):
+                      data['start_at'] = data['date_start']
+                  if data.get('date_end'):
+                      data['end_at'] = data['date_end']
+                  if data.get('maximum_estimated_value_usd') is not None:
+                      data['amount'] = data['maximum_estimated_value_usd']
+                      data['currency'] = 'USD'
+                  actions = strings(data.get('recommendations'))
+                  if data.get('open_recommendations') not in (None, ''):
+                      actions.append(f"Open recommendations: {data['open_recommendations']}")
+                  if actions:
+                      data['actions'] = actions
+
+              elif dtype == 'claim':
+                  aliases = {key: data[key] for key in ('classification',) if key in data}
+                  if data.get('classification'):
+                      data['claim_type'] = str(data['classification'])
+
+              raw['data'] = data
+              raw['schema_version'] = 'legacy-pass-3'
+              migrated = migrate_document(raw, original_path=f'{packet_path}:{number}')
+              if aliases:
+                  migrated.setdefault('extensions', {}).setdefault('legacy_pass3', {})['data_aliases'] = aliases
+              migrated.setdefault('provenance', {})['transform'] = 'targeted-pass-3-v0.9-alias-migration'
+              validate_document(migrated)
+              migrated_records.append(migrated)
+
+          ids = [record['_id'] for record in migrated_records]
+          if len(ids) != 72 or len(ids) != len(set(ids)):
+              raise SystemExit(f'invalid migrated record set: total={len(ids)} unique={len(set(ids))}')
+
+          payload = ''.join(json.dumps(record, ensure_ascii=False, sort_keys=True, separators=(',', ':')) + '\n' for record in migrated_records).encode('utf-8')
+          repaired_archive = gzip.compress(payload, compresslevel=9, mtime=0)
+          transport = base64.b64encode(repaired_archive) + b'\n'
+          packet_path.write_bytes(transport)
+
+          manifest = json.loads(manifest_path.read_text(encoding='utf-8'))
+          data = manifest['data']
+          data['record_count'] = len(migrated_records)
+          data['content_hash'] = hashlib.sha256(payload).hexdigest()
+          data['counts_by_dtype'] = {
+              dtype: sum(1 for record in migrated_records if record['dtype'] == dtype)
+              for dtype in sorted({record['dtype'] for record in migrated_records})
+          }
+          file_entry = data['files'][0]
+          file_entry['record_count'] = len(migrated_records)
+          file_entry['decoded_content_hash'] = hashlib.sha256(payload).hexdigest()
+          file_entry['gzip_content_hash'] = hashlib.sha256(repaired_archive).hexdigest()
+          file_entry['transport_content_hash'] = hashlib.sha256(transport).hexdigest()
+          manifest_path.write_text(json.dumps(manifest, ensure_ascii=False, indent=2, sort_keys=True) + '\n', encoding='utf-8')
+
+          print(f'migrated_records={len(migrated_records)}')
+          print(f'payload_sha256={hashlib.sha256(payload).hexdigest()}')
+          print(f'gzip_sha256={hashlib.sha256(repaired_archive).hexdigest()}')
+          print(f'transport_sha256={hashlib.sha256(transport).hexdigest()}')
+
+      - name: Validate full corpus
+        run: python3 scripts/starintel.py validate
+
+      - name: Commit migrated packet
+        shell: bash
+        run: |
+          set -euo pipefail
+          git rm .github/workflows/inspect-pass3-schema.yml
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add \
+            digs/us-israel-military-integration/2026-07-31-pass-3/starintel-documents.jsonl.gz.b64 \
+            digs/us-israel-military-integration/2026-07-31-pass-3/quasar-import-manifest.json
+          git commit -m 'Migrate US-Israel pass-3 packet to canonical v0.9'
+          git push origin HEAD:agent/wef-columbus-depth-6-primary-records
