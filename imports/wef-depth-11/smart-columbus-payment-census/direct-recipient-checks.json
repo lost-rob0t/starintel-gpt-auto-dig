@@ -1,0 +1,508 @@
+{
+  "paid_checks": [
+    {
+      "amount": "201250.0000000000000000",
+      "attribution_basis": [
+        "direct_vendor_account",
+        "exact_direct_payee"
+      ],
+      "cancel": "NO",
+      "cheque_number": "385079",
+      "cheque_recid": "5637716985",
+      "cheque_status": "Paid",
+      "cleared_date": "2021-09-08",
+      "direct_accounts": [
+        "033348"
+      ],
+      "escheated": "NO",
+      "payee_name": "Smart Columbus LLC",
+      "payment_mode": "WARRANT",
+      "physical_address": "170 S Civic Center Drive\nColumbus, OH 43215 \nUSA",
+      "transaction_date": "2021-08-18",
+      "voucher": "APPY141051360",
+      "year": 2021
+    },
+    {
+      "amount": "34500.0000000000000000",
+      "attribution_basis": [
+        "direct_vendor_account",
+        "exact_direct_payee"
+      ],
+      "cancel": "NO",
+      "cheque_number": "390967",
+      "cheque_recid": "5637728031",
+      "cheque_status": "Paid",
+      "cleared_date": "2021-10-29",
+      "direct_accounts": [
+        "033348"
+      ],
+      "escheated": "NO",
+      "payee_name": "Smart Columbus LLC",
+      "payment_mode": "WARRANT",
+      "physical_address": "170 S Civic Center Drive\nColumbus, OH 43215 \nUSA",
+      "transaction_date": "2021-09-22",
+      "voucher": "APPY141057564",
+      "year": 2021
+    },
+    {
+      "amount": "331132.5000000000000000",
+      "attribution_basis": [
+        "direct_vendor_account",
+        "exact_direct_payee"
+      ],
+      "cancel": "NO",
+      "cheque_number": "401423",
+      "cheque_recid": "5637753954",
+      "cheque_status": "Paid",
+      "cleared_date": "2021-12-03",
+      "direct_accounts": [
+        "033348"
+      ],
+      "escheated": "NO",
+      "payee_name": "Smart Columbus LLC",
+      "payment_mode": "WARRANT",
+      "physical_address": "150 S Front Street  Suite 200\nColumbus, OH 43215 \nUSA",
+      "transaction_date": "2021-11-23",
+      "voucher": "APPY141068552",
+      "year": 2021
+    },
+    {
+      "amount": "500560.5300000000000000",
+      "attribution_basis": [
+        "direct_vendor_account",
+        "exact_direct_payee"
+      ],
+      "cancel": "NO",
+      "cheque_number": "425949",
+      "cheque_recid": "5637803930",
+      "cheque_status": "Paid",
+      "cleared_date": "2022-06-02",
+      "direct_accounts": [
+        "040255"
+      ],
+      "escheated": "NO",
+      "payee_name": "Columbus Partnership",
+      "payment_mode": "WARRANT",
+      "physical_address": "DBA Smart Columbus LLC\n170 South Civic Center Dr.\nColumbus, OH 43215 \nUSA",
+      "transaction_date": "2022-05-11",
+      "voucher": "APPY141095409",
+      "year": 2022
+    },
+    {
+      "amount": "299439.4700000000000000",
+      "attribution_basis": [
+        "direct_vendor_account",
+        "exact_direct_payee"
+      ],
+      "cancel": "NO",
+      "cheque_number": "450011",
+      "cheque_recid": "5637839135",
+      "cheque_status": "Paid",
+      "cleared_date": "2022-09-06",
+      "direct_accounts": [
+        "040255"
+      ],
+      "escheated": "NO",
+      "payee_name": "Columbus Partnership",
+      "payment_mode": "WARRANT",
+      "physical_address": "DBA Smart Columbus LLC\n170 South Civic Center Dr.\nColumbus, OH 43215 \nUSA",
+      "transaction_date": "2022-08-22",
+      "voucher": "APPY141127605",
+      "year": 2022
+    },
+    {
+      "amount": "263574.9800000000000000",
+      "attribution_basis": [
+        "direct_vendor_account",
+        "exact_direct_payee"
+      ],
+      "cancel": "NO",
+      "cheque_number": "455778",
+      "cheque_recid": "5637852670",
+      "cheque_status": "Paid",
+      "cleared_date": "2022-10-07",
+      "direct_accounts": [
+        "040255"
+      ],
+      "escheated": "NO",
+      "payee_name": "Columbus Partnership",
+      "payment_mode": "WARRANT",
+      "physical_address": "DBA Smart Columbus LLC\n170 South Civic Center Dr.\nColumbus, OH 43215 \nUSA",
+      "transaction_date": "2022-09-23",
+      "voucher": "APPY141146965",
+      "year": 2022
+    },
+    {
+      "amount": "236425.0200000000000000",
+      "attribution_basis": [
+        "direct_vendor_account",
+        "exact_direct_payee"
+      ],
+      "cancel": "NO",
+      "cheque_number": "483730",
+      "cheque_recid": "5637897147",
+      "cheque_status": "Paid",
+      "cleared_date": "2023-04-13",
+      "direct_accounts": [
+        "040255"
+      ],
+      "escheated": "NO",
+      "payee_name": "Columbus Partnership",
+      "payment_mode": "WARRANT",
+      "physical_address": "DBA Smart Columbus LLC\n170 South Civic Center Dr.\nColumbus, OH 43215 \nUSA",
+      "transaction_date": "2023-03-24",
+      "voucher": "APPY141249933",
+      "year": 2023
+    },
+    {
+      "amount": "250000.0000000000000000",
+      "attribution_basis": [
+        "direct_vendor_account",
+        "exact_direct_payee"
+      ],
+      "cancel": "NO",
+      "cheque_number": "500969",
+      "cheque_recid": "5637924699",
+      "cheque_status": "Paid",
+      "cleared_date": "2023-06-30",
+      "direct_accounts": [
+        "045611"
+      ],
+      "escheated": "NO",
+      "payee_name": "Columbus Partnership",
+      "payment_mode": "WARRANT",
+      "physical_address": "DBA Smart Columbus LLC\n150 S Front St Ste 200\nColumbus, OH 43215 \nUSA",
+      "transaction_date": "2023-06-26",
+      "voucher": "APPY141307819",
+      "year": 2023
+    },
+    {
+      "amount": "349185.3600000000000000",
+      "attribution_basis": [
+        "direct_vendor_account",
+        "exact_direct_payee"
+      ],
+      "cancel": "NO",
+      "cheque_number": "503439",
+      "cheque_recid": "5637928102",
+      "cheque_status": "Paid",
+      "cleared_date": "2023-07-11",
+      "direct_accounts": [
+        "040255"
+      ],
+      "escheated": "NO",
+      "payee_name": "Smart Columbus",
+      "payment_mode": "WARRANT",
+      "physical_address": "150 S Front Street, Suite 200\nColumbus, OH 43215 \nUSA",
+      "transaction_date": "2023-07-06",
+      "voucher": "APPY141314472",
+      "year": 2023
+    },
+    {
+      "amount": "500000.0000000000000000",
+      "attribution_basis": [
+        "direct_vendor_account",
+        "exact_direct_payee"
+      ],
+      "cancel": "NO",
+      "cheque_number": "520716",
+      "cheque_recid": "5637952357",
+      "cheque_status": "Paid",
+      "cleared_date": "2023-09-19",
+      "direct_accounts": [
+        "045611"
+      ],
+      "escheated": "NO",
+      "payee_name": "Columbus Partnership",
+      "payment_mode": "WARRANT",
+      "physical_address": "DBA Smart Columbus LLC\n150 S Front St Ste 200\nColumbus, OH 43215 \nUSA",
+      "transaction_date": "2023-09-14",
+      "voucher": "APPY141365627",
+      "year": 2023
+    },
+    {
+      "amount": "610000.0000000000000000",
+      "attribution_basis": [
+        "direct_vendor_account",
+        "exact_direct_payee"
+      ],
+      "cancel": "NO",
+      "cheque_number": "535350",
+      "cheque_recid": "5637974663",
+      "cheque_status": "Paid",
+      "cleared_date": "2023-12-12",
+      "direct_accounts": [
+        "033348"
+      ],
+      "escheated": "NO",
+      "payee_name": "Smart Columbus LLC",
+      "payment_mode": "WARRANT",
+      "physical_address": "150 S Front Street  Suite 200\nColumbus, OH 43215 \nUSA",
+      "transaction_date": "2023-12-04",
+      "voucher": "APPY141415201",
+      "year": 2023
+    },
+    {
+      "amount": "250000.0000000000000000",
+      "attribution_basis": [
+        "direct_vendor_account",
+        "exact_direct_payee"
+      ],
+      "cancel": "NO",
+      "cheque_number": "536151",
+      "cheque_recid": "5637976452",
+      "cheque_status": "Paid",
+      "cleared_date": "2023-12-18",
+      "direct_accounts": [
+        "045611"
+      ],
+      "escheated": "NO",
+      "payee_name": "Columbus Partnership",
+      "payment_mode": "WARRANT",
+      "physical_address": "DBA Smart Columbus LLC\n150 S Front St Ste 200\nColumbus, OH 43215 \nUSA",
+      "transaction_date": "2023-12-11",
+      "voucher": "APPY141418640",
+      "year": 2023
+    },
+    {
+      "amount": "500000.0000000000000000",
+      "attribution_basis": [
+        "direct_vendor_account",
+        "exact_direct_payee"
+      ],
+      "cancel": "NO",
+      "cheque_number": "575961",
+      "cheque_recid": "5638033455",
+      "cheque_status": "Paid",
+      "cleared_date": "2024-07-09",
+      "direct_accounts": [
+        "045611"
+      ],
+      "escheated": "NO",
+      "payee_name": "Columbus Partnership",
+      "payment_mode": "WARRANT",
+      "physical_address": "DBA Smart Columbus LLC\n150 S Front St Ste 200\nColumbus, OH 43215 \nUSA",
+      "transaction_date": "2024-07-01",
+      "voucher": "APPY141550254",
+      "year": 2024
+    },
+    {
+      "amount": "1327.0400000000000000",
+      "attribution_basis": [
+        "direct_vendor_account",
+        "exact_direct_payee"
+      ],
+      "cancel": "NO",
+      "cheque_number": "602588",
+      "cheque_recid": "5638082913",
+      "cheque_status": "Paid",
+      "cleared_date": "2024-12-20",
+      "direct_accounts": [
+        "045611"
+      ],
+      "escheated": "NO",
+      "payee_name": "Columbus Partnership",
+      "payment_mode": "WARRANT",
+      "physical_address": "DBA Smart Columbus LLC\n150 S Front St Ste 200\nColumbus, OH 43215 \nUSA",
+      "transaction_date": "2024-12-06",
+      "voucher": "APPY141646088",
+      "year": 2024
+    },
+    {
+      "amount": "210814.6400000000000000",
+      "attribution_basis": [
+        "direct_vendor_account",
+        "exact_direct_payee"
+      ],
+      "cancel": "NO",
+      "cheque_number": "606016",
+      "cheque_recid": "5638090507",
+      "cheque_status": "Paid",
+      "cleared_date": "2025-01-02",
+      "direct_accounts": [
+        "040255"
+      ],
+      "escheated": "NO",
+      "payee_name": "Smart Columbus LLC",
+      "payment_mode": "WARRANT",
+      "physical_address": "150 S. Front St., Ste 200\nColumbus, OH 43215 \nUSA",
+      "transaction_date": "2024-12-23",
+      "voucher": "APPY141658088",
+      "year": 2024
+    },
+    {
+      "amount": "55000.0000000000000000",
+      "attribution_basis": [
+        "direct_vendor_account",
+        "exact_direct_payee"
+      ],
+      "cancel": "NO",
+      "cheque_number": "653847",
+      "cheque_recid": "5638166202",
+      "cheque_status": "Paid",
+      "cleared_date": "2025-10-21",
+      "direct_accounts": [
+        "045611"
+      ],
+      "escheated": "NO",
+      "payee_name": "Columbus Partnership",
+      "payment_mode": "WARRANT",
+      "physical_address": "DBA Smart Columbus LLC\n170 S Civic Center Drive\nColumbus, OH 43215 \nUSA",
+      "transaction_date": "2025-09-05",
+      "voucher": "APPY141821777",
+      "year": 2025
+    },
+    {
+      "amount": "121000.0000000000000000",
+      "attribution_basis": [
+        "direct_vendor_account",
+        "exact_direct_payee"
+      ],
+      "cancel": "NO",
+      "cheque_number": "672135",
+      "cheque_recid": "5638196925",
+      "cheque_status": "Paid",
+      "cleared_date": "2026-01-20",
+      "direct_accounts": [
+        "045611"
+      ],
+      "escheated": "NO",
+      "payee_name": "Columbus Partnership",
+      "payment_mode": "WARRANT",
+      "physical_address": "DBA Smart Columbus LLC\n150 S Front St Ste 200\nColumbus, OH 43215 \nUSA",
+      "transaction_date": "2026-01-12",
+      "voucher": "APPY141896444",
+      "year": 2026
+    },
+    {
+      "amount": "110000.0000000000000000",
+      "attribution_basis": [
+        "direct_vendor_account",
+        "exact_direct_payee"
+      ],
+      "cancel": "NO",
+      "cheque_number": "673476",
+      "cheque_recid": "5638200331",
+      "cheque_status": "Paid",
+      "cleared_date": "2026-01-30",
+      "direct_accounts": [
+        "045611"
+      ],
+      "escheated": "NO",
+      "payee_name": "Columbus Partnership",
+      "payment_mode": "WARRANT",
+      "physical_address": "DBA Smart Columbus LLC\n150 S Front St Ste 200\nColumbus, OH 43215 \nUSA",
+      "transaction_date": "2026-01-23",
+      "voucher": "APPY141902977",
+      "year": 2026
+    },
+    {
+      "amount": "500000.0000000000000000",
+      "attribution_basis": [
+        "direct_vendor_account",
+        "exact_direct_payee"
+      ],
+      "cancel": "NO",
+      "cheque_number": "676982",
+      "cheque_recid": "5638208203",
+      "cheque_status": "Paid",
+      "cleared_date": "2026-02-27",
+      "direct_accounts": [
+        "045611"
+      ],
+      "escheated": "NO",
+      "payee_name": "Columbus Partnership",
+      "payment_mode": "WARRANT",
+      "physical_address": "DBA Smart Columbus LLC\n150 S Front St Ste 200\nColumbus, OH 43215 \nUSA",
+      "transaction_date": "2026-02-20",
+      "voucher": "APPY141916695",
+      "year": 2026
+    }
+  ],
+  "void_or_canceled_checks": [
+    {
+      "amount": "34500.0000000000000000",
+      "cancel": "YES",
+      "cheque_number": "382919",
+      "cheque_recid": "5637713958",
+      "cheque_status": "Canceled",
+      "direct_accounts": [
+        "033348"
+      ],
+      "payee_name": "Smart Columbus LLC",
+      "transaction_date": "2021-08-16",
+      "voucher": "APPY141050008",
+      "year": 2021
+    },
+    {
+      "amount": "263574.9800000000000000",
+      "cancel": "YES",
+      "cheque_number": "425644",
+      "cheque_recid": "5637802814",
+      "cheque_status": "Canceled",
+      "direct_accounts": [
+        "040255"
+      ],
+      "payee_name": "Columbus Partnership",
+      "transaction_date": "2022-05-09",
+      "voucher": "APPY141095055",
+      "year": 2022
+    },
+    {
+      "amount": "210814.6400000000000000",
+      "cancel": "YES",
+      "cheque_number": "597152",
+      "cheque_recid": "5638073722",
+      "cheque_status": "Canceled",
+      "direct_accounts": [
+        "040255"
+      ],
+      "payee_name": "Smart Columbus LLC",
+      "transaction_date": "2024-11-01",
+      "voucher": "APPY141624129",
+      "year": 2024
+    },
+    {
+      "amount": "121000.0000000000000000",
+      "cancel": "YES",
+      "cheque_number": "662259",
+      "cheque_recid": "5638179158",
+      "cheque_status": "Canceled",
+      "direct_accounts": [
+        "045611"
+      ],
+      "payee_name": "Columbus Partnership",
+      "transaction_date": "2025-10-27",
+      "voucher": "APPY141855648",
+      "year": 2025
+    },
+    {
+      "amount": "36000.0000000000000000",
+      "cancel": "YES",
+      "cheque_number": "641199",
+      "cheque_recid": "5638144419",
+      "cheque_status": "Canceled",
+      "direct_accounts": [
+        "045611"
+      ],
+      "payee_name": "Columbus Partnership",
+      "transaction_date": "2025-06-18",
+      "voucher": "APPY141775566",
+      "year": 2025
+    },
+    {
+      "amount": "85000.0000000000000000",
+      "cancel": "YES",
+      "cheque_number": "639742",
+      "cheque_recid": "5638142601",
+      "cheque_status": "Canceled",
+      "direct_accounts": [
+        "045611"
+      ],
+      "payee_name": "Columbus Partnership",
+      "transaction_date": "2025-06-11",
+      "voucher": "APPY141770590",
+      "year": 2025
+    }
+  ]
+}

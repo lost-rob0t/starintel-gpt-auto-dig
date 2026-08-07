@@ -1,0 +1,30 @@
+{
+  "counts_by_dtype": {
+    "analysis": 4,
+    "financial-observation": 1,
+    "investigation-target": 1,
+    "research-pass": 1
+  },
+  "dataset": "wef",
+  "decoded_bytes": 27445,
+  "document_count": 7,
+  "generated_at": "2026-08-02T02:45:00Z",
+  "gzip_bytes": 4192,
+  "gzip_sha256": "fdb53449807c9b4603c250fecd6c7468ccee8498e433a346c1c74886e69818e3",
+  "normalized_jsonl_sha256": "4861b7ac32e569e01006d29a24e6fb3f3c6cee886a47680b35a372c6fde944ec",
+  "records": [
+    "starintel:analysis:smart-columbus-authorizations-versus-paid-check-floor-depth-11",
+    "starintel:analysis:smart-columbus-payment-census-direct-recipient-filter-depth-11",
+    "starintel:analysis:smart-columbus-payment-census-wef-bounded-negative-depth-11",
+    "starintel:analysis:smart-columbus-vendor-account-payment-allocation-depth-11",
+    "starintel:financial-observation:smart-columbus-direct-paid-checks-2021-2026-depth-11",
+    "starintel:investigation-target:wef-depth-12-smart-columbus-ordinance-payment-reconciliation-and-vendor-master",
+    "starintel:research-pass:wef-columbus-depth-11-smart-columbus-payment-census-2026-08-02"
+  ],
+  "recursion_depth": 11,
+  "run_id": "wef-columbus-depth-11-smart-columbus-payment-census-2026-08-02",
+  "schema_version": "0.9.0",
+  "transport_bytes": 5593,
+  "transport_file": "starintel-documents.jsonl.gz.b64",
+  "transport_sha256": "351309233aa3d0a18762770768011ecb71bf96ad621d6489a90043079995945f"
+}
