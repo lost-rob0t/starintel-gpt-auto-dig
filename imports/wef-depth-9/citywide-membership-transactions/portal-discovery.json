@@ -1,0 +1,45 @@
+{
+  "controls": {
+    "accounting-distribution-2026": {
+      "json_url": "https://dlstpprodeastus001.blob.core.windows.net/exceldatasets-synapse/TransactionData/AccountingDistribution/CityOfColumbus_DataSet_AccountingDistribution__2026-01-01-2026-12-31.json",
+      "onclick": "window.open('https://dlstpprodeastus001.blob.core.windows.net/exceldatasets-synapse/TransactionData/AccountingDistribution/CityOfColumbus_DataSet_AccountingDistribution__2026-01-01-2026-12-31.json', '_self').focus()",
+      "title": "City of Columbus Accounting Distribution Dataset - Fiscal Year 2026"
+    },
+    "bank-checks-2026": {
+      "json_url": "https://dlstpprodeastus001.blob.core.windows.net/exceldatasets-synapse/TransactionData/BankCheques/CityOfColumbus_DataSet_BankCheques__2026-01-01-2026-12-31.json",
+      "onclick": "window.open('https://dlstpprodeastus001.blob.core.windows.net/exceldatasets-synapse/TransactionData/BankCheques/CityOfColumbus_DataSet_BankCheques__2026-01-01-2026-12-31.json', '_self').focus()",
+      "title": "City of Columbus Bank Checks Dataset - Fiscal Year 2026"
+    },
+    "payments-2026": {
+      "json_url": "https://dlstpprodeastus001.blob.core.windows.net/exceldatasets-synapse/TransactionData/VendorTransactions/CityOfColumbus_DataSet_VendorTransactions__2026-01-01-2026-12-31.json",
+      "onclick": "window.open('https://dlstpprodeastus001.blob.core.windows.net/exceldatasets-synapse/TransactionData/VendorTransactions/CityOfColumbus_DataSet_VendorTransactions__2026-01-01-2026-12-31.json', '_self').focus()",
+      "title": "City of Columbus Payments Dataset - Fiscal Year 2026"
+    },
+    "purchase-order-lines-2026": {
+      "json_url": "https://dlstpprodeastus001.blob.core.windows.net/exceldatasets-synapse/TransactionData/PurchaseOrderLines/CityOfColumbus_DataSet_PurchaseOrderLines__2026-01-01-2026-12-31.json",
+      "onclick": "window.open('https://dlstpprodeastus001.blob.core.windows.net/exceldatasets-synapse/TransactionData/PurchaseOrderLines/CityOfColumbus_DataSet_PurchaseOrderLines__2026-01-01-2026-12-31.json', '_self').focus()",
+      "title": "City of Columbus Purchase Order Lines Dataset - Fiscal Year 2026"
+    },
+    "purchase-order-lines-expanded-2026": {
+      "json_url": "https://dlstpprodeastus001.blob.core.windows.net/exceldatasets-synapse/TransactionData/PurchaseOrderLinesExpanded/CityOfColumbus_DataSet_PurchaseOrderLinesExpanded__2026-01-01-2026-12-31.json",
+      "onclick": "window.open('https://dlstpprodeastus001.blob.core.windows.net/exceldatasets-synapse/TransactionData/PurchaseOrderLinesExpanded/CityOfColumbus_DataSet_PurchaseOrderLinesExpanded__2026-01-01-2026-12-31.json', '_self').focus()",
+      "title": "City of Columbus Purchase Order Lines (Expanded) Dataset - Fiscal Year 2026"
+    },
+    "purchase-orders-2026": {
+      "json_url": "https://dlstpprodeastus001.blob.core.windows.net/exceldatasets-synapse/TransactionData/PurchaseOrders/CityOfColumbus_DataSet_PurchaseOrders__2026-01-01-2026-12-31.json",
+      "onclick": "window.open('https://dlstpprodeastus001.blob.core.windows.net/exceldatasets-synapse/TransactionData/PurchaseOrders/CityOfColumbus_DataSet_PurchaseOrders__2026-01-01-2026-12-31.json', '_self').focus()",
+      "title": "City of Columbus Purchase Orders Dataset - Fiscal Year 2026"
+    },
+    "vendor-invoices-2026": {
+      "json_url": "https://dlstpprodeastus001.blob.core.windows.net/exceldatasets-synapse/TransactionData/VendorInvoiceJournals/CityOfColumbus_DataSet_VendorInvoiceJournals__2026-01-01-2026-12-31.json",
+      "onclick": "window.open('https://dlstpprodeastus001.blob.core.windows.net/exceldatasets-synapse/TransactionData/VendorInvoiceJournals/CityOfColumbus_DataSet_VendorInvoiceJournals__2026-01-01-2026-12-31.json', '_self').focus()",
+      "title": "City of Columbus Vendor Invoice Journals Dataset - Fiscal Year 2026"
+    },
+    "vendors": {
+      "json_url": "https://dlstpprodeastus001.blob.core.windows.net/exceldatasets-synapse/MasterData/Vendors/CityOfColumbus_DataSet_Vendors.json",
+      "onclick": "window.open('https://dlstpprodeastus001.blob.core.windows.net/exceldatasets-synapse/MasterData/Vendors/CityOfColumbus_DataSet_Vendors.json', '_self').focus()",
+      "title": "City of Columbus Vendors Dataset"
+    }
+  },
+  "portal": "https://www.columbusauditor.org/Data-Hub/data-sets-explorer/"
+}

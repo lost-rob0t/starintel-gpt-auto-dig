@@ -1,0 +1,38 @@
+{
+  "counts_by_dtype": {
+    "analysis": 3,
+    "contract": 3,
+    "financial-observation": 3,
+    "investigation-target": 2,
+    "relation": 1,
+    "research-pass": 1
+  },
+  "dataset": "wef",
+  "decoded_bytes": 54654,
+  "document_count": 13,
+  "generated_at": "2026-08-02T00:53:00Z",
+  "gzip_bytes": 6662,
+  "gzip_sha256": "673ba11297c156975bd3edeba4b58faac974bd1265a104990baa1986d328900b",
+  "normalized_jsonl_sha256": "7042d5ac8d3cf98f6ad251722d20df8094a2256488e1484b1db5671ef74cb6c1",
+  "records": [
+    "starintel:contract:columbus-po525642-smart-columbus-operational-support",
+    "starintel:financial-observation:columbus-smart-columbus-500000-paid-warrant-2026",
+    "starintel:contract:columbus-po578849-smart-columbus-2026",
+    "starintel:financial-observation:columbus-smart-ride-110000-paid-warrant-2026",
+    "starintel:contract:columbus-po561654-nigp-citywide-membership",
+    "starintel:financial-observation:columbus-nigp-citywide-membership-6425-paid-2026",
+    "starintel:analysis:smart-columbus-vendor-identity-reconciliation-depth-9",
+    "starintel:relation:columbus-partnership-dba-smart-columbus-llc-depth-9",
+    "starintel:analysis:wef-columbus-public-fiscal-ledger-negative-depth-9",
+    "starintel:analysis:citywide-membership-ledger-partial-resolution-depth-9",
+    "starintel:investigation-target:wef-depth-10-po525642-agreement-deliverables-and-wef-nexus",
+    "starintel:investigation-target:wef-depth-10-citywide-membership-authorization-reconciliation",
+    "starintel:research-pass:wef-columbus-depth-9-fiscal-transactions-2026-08-02"
+  ],
+  "recursion_depth": 9,
+  "run_id": "wef-columbus-depth-9-fiscal-transactions-2026-08-02",
+  "schema_version": "0.9.0",
+  "transport_bytes": 8885,
+  "transport_file": "starintel-documents.jsonl.gz.b64",
+  "transport_sha256": "e90da5eea5b9dfb146c48348c651f86f70ed9d28a3426a56a66aa3b1e38a42c1"
+}
