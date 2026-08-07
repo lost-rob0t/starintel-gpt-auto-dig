@@ -1,0 +1,14 @@
+{
+  "authorization_ceiling": "150000",
+  "compatible_candidate_count": 16,
+  "invoice_resolution_count": 16,
+  "method_boundary": "Positive payment rows were matched by vendor account, exact absolute amount, 0-120 day date window, and paid bank-check voucher. Unique or uniquely closest paid candidates are classified confirmed; unresolved collisions remain ambiguous.",
+  "remaining_ceiling_after_confirmed_checks": "22369.0000000000000000",
+  "status_counts": {
+    "confirmed_paid": 15,
+    "confirmed_paid_closest_unique": 1
+  },
+  "target_id": "starintel:investigation-target:wef-depth-10-citywide-membership-authorization-reconciliation",
+  "unique_confirmed_paid_check_count": 15,
+  "unique_confirmed_paid_check_total": "127631.0000000000000000"
+}
