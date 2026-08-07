@@ -1,0 +1,617 @@
+{
+  "component_count": 20,
+  "components": [
+    {
+      "account": "033348",
+      "attribution_basis": "Exact two-check aggregate equals ordinance ceiling; this component lacks invoice and PO records.",
+      "check_amount": "201250.0000000000000000",
+      "check_date": "2021-08-18",
+      "check_number": "385079",
+      "check_recid": "5637716985",
+      "classification": "candidate_ordinance_aggregate",
+      "component_amount": "201250.00",
+      "component_id": "385079:unresolved:201250.00",
+      "invoice": null,
+      "label": "Opportunity Port candidate component",
+      "ordinance": "0165-2021",
+      "payment_voucher": "APPY141051360",
+      "purchase_order": null
+    },
+    {
+      "account": "033348",
+      "attribution_basis": "Combined with check 385079, the paid amount equals the ordinance ceiling; direct ordinance text is absent from this chain.",
+      "check_amount": "34500.0000000000000000",
+      "check_date": "2021-09-22",
+      "check_number": "390967",
+      "check_recid": "5637728031",
+      "classification": "candidate_ordinance_aggregate",
+      "component_amount": "34500.00",
+      "component_id": "390967:SC-2020-1122:34500.00",
+      "invoice": {
+        "amount": "34500.0000000000000000",
+        "date": "2021-08-12",
+        "description": "Council Inv SC-2020-1122 OP",
+        "fiscal_year": 2021,
+        "invoice_id": "SC-2020-1122",
+        "ledger_voucher": "APIN110767282",
+        "purchase_id": "PO285324"
+      },
+      "label": "Opportunity Port candidate component",
+      "ordinance": "0165-2021",
+      "payment_voucher": "APPY141057564",
+      "purchase_order": {
+        "accounting_date": "2021-08-10",
+        "fiscal_year": 2021,
+        "po_recid": "5637944872",
+        "purchase_id": "PO285324",
+        "purchase_name": "Smart Columbus LLC",
+        "status": "Invoiced"
+      }
+    },
+    {
+      "account": "033348",
+      "attribution_basis": "Purchase-order line explicitly names ordinance 1581-2021; paid amount exceeds the stated ordinance amount by $10,050.",
+      "check_amount": "331132.5000000000000000",
+      "check_date": "2021-11-23",
+      "check_number": "401423",
+      "check_recid": "5637753954",
+      "classification": "confirmed_with_ceiling_discrepancy",
+      "component_amount": "331132.50",
+      "component_id": "401423:SC2021119:331132.50",
+      "invoice": {
+        "amount": "331132.5000000000000000",
+        "date": "2021-11-10",
+        "description": "SC2021119",
+        "fiscal_year": 2021,
+        "invoice_id": "SC2021119",
+        "ledger_voucher": "APIN110804909",
+        "purchase_id": "PO299090"
+      },
+      "label": "Opportunity Port administration",
+      "ordinance": "1581-2021",
+      "payment_voucher": "APPY141068552",
+      "purchase_order": {
+        "accounting_date": "2021-11-08",
+        "fiscal_year": 2021,
+        "po_recid": "5638032601",
+        "purchase_id": "PO299090",
+        "purchase_name": "Smart Columbus LLC",
+        "status": "Invoiced"
+      }
+    },
+    {
+      "account": "040255",
+      "attribution_basis": "Same purchase order as the final invoice explicitly naming ordinance 3301-2021; the two checks reconcile exactly to the $800,000 ceiling.",
+      "check_amount": "500560.5300000000000000",
+      "check_date": "2022-05-11",
+      "check_number": "425949",
+      "check_recid": "5637803930",
+      "classification": "confirmed_same_purchase_order",
+      "component_amount": "500560.53",
+      "component_id": "425949:SC-2021-1231:500560.53",
+      "invoice": {
+        "amount": "500560.5300000000000000",
+        "date": "2022-05-06",
+        "description": "2021CCPARKING",
+        "fiscal_year": 2022,
+        "invoice_id": "SC-2021-1231",
+        "ledger_voucher": "APIN110863930",
+        "purchase_id": "PO313669"
+      },
+      "label": "Smart City strategic planning and support",
+      "ordinance": "3301-2021",
+      "payment_voucher": "APPY141095409",
+      "purchase_order": {
+        "accounting_date": "2022-03-01",
+        "fiscal_year": 2022,
+        "po_recid": "5638135402",
+        "purchase_id": "PO313669",
+        "purchase_name": "Smart Columbus LLC",
+        "status": "Invoiced"
+      }
+    },
+    {
+      "account": "040255",
+      "attribution_basis": "Invoice description explicitly names ordinance 3301-2021.",
+      "check_amount": "299439.4700000000000000",
+      "check_date": "2022-08-22",
+      "check_number": "450011",
+      "check_recid": "5637839135",
+      "classification": "confirmed_explicit_invoice",
+      "component_amount": "299439.47",
+      "component_id": "450011:SC-2022-066:299439.47",
+      "invoice": {
+        "amount": "299439.4700000000000000",
+        "date": "2022-08-17",
+        "description": "final invoice ORD 3301-2021",
+        "fiscal_year": null,
+        "invoice_id": "SC-2022-066",
+        "ledger_voucher": "APIN110910611",
+        "purchase_id": "PO313669"
+      },
+      "label": "Smart City strategic planning and support",
+      "ordinance": "3301-2021",
+      "payment_voucher": "APPY141127605",
+      "purchase_order": {
+        "accounting_date": "2022-03-01",
+        "fiscal_year": null,
+        "po_recid": "5638135402",
+        "purchase_id": "PO313669",
+        "purchase_name": "Smart Columbus LLC",
+        "status": "Invoiced"
+      }
+    },
+    {
+      "account": "040255",
+      "attribution_basis": "Invoice and PO-line evidence explicitly identify ordinance 0670-2022.",
+      "check_amount": "263574.9800000000000000",
+      "check_date": "2022-09-23",
+      "check_number": "455778",
+      "check_recid": "5637852670",
+      "classification": "confirmed_explicit_invoice",
+      "component_amount": "263574.98",
+      "component_id": "455778:SC-2022-0427:263574.98",
+      "invoice": {
+        "amount": "263574.9800000000000000",
+        "date": "2022-05-05",
+        "description": "ORDANCE # 0670-2022",
+        "fiscal_year": null,
+        "invoice_id": "SC-2022-0427",
+        "ledger_voucher": "APIN110863034",
+        "purchase_id": "PO323757"
+      },
+      "label": "Smart City Grant Fund services",
+      "ordinance": "0670-2022",
+      "payment_voucher": "APPY141146965",
+      "purchase_order": {
+        "accounting_date": "2022-04-26",
+        "fiscal_year": null,
+        "po_recid": "5638194618",
+        "purchase_id": "PO323757",
+        "purchase_name": "Smart Columbus LLC",
+        "status": "Invoiced"
+      }
+    },
+    {
+      "account": "040255",
+      "attribution_basis": "Invoice description explicitly names ordinance 1817-2022.",
+      "check_amount": "236425.0200000000000000",
+      "check_date": "2023-03-24",
+      "check_number": "483730",
+      "check_recid": "5637897147",
+      "classification": "confirmed_explicit_invoice",
+      "component_amount": "236425.02",
+      "component_id": "483730:SC-2023-126:236425.02",
+      "invoice": {
+        "amount": "236425.0200000000000000",
+        "date": "2023-03-15",
+        "description": "23-Ord# 1817-2022",
+        "fiscal_year": null,
+        "invoice_id": "SC-2023-126",
+        "ledger_voucher": "APIN110997211",
+        "purchase_id": "PO365449"
+      },
+      "label": "Smart City strategic plan and support",
+      "ordinance": "1817-2022",
+      "payment_voucher": "APPY141249933",
+      "purchase_order": {
+        "accounting_date": "2023-01-19",
+        "fiscal_year": null,
+        "po_recid": "5638425593",
+        "purchase_id": "PO365449",
+        "purchase_name": "Columbus Partnership",
+        "status": "Invoiced"
+      }
+    },
+    {
+      "account": "045611",
+      "attribution_basis": "Invoice description explicitly names ordinance 3548-2022.",
+      "check_amount": "250000.0000000000000000",
+      "check_date": "2023-06-26",
+      "check_number": "500969",
+      "check_recid": "5637924699",
+      "classification": "confirmed_explicit_invoice",
+      "component_amount": "250000.00",
+      "component_id": "500969:SC-2023-612:250000.00",
+      "invoice": {
+        "amount": "250000.0000000000000000",
+        "date": "2023-06-26",
+        "description": "E-bike Program 3548-2022",
+        "fiscal_year": null,
+        "invoice_id": "SC-2023-612",
+        "ledger_voucher": "APIN111037643",
+        "purchase_id": "PO389423"
+      },
+      "label": "Resident E-Bike Subsidy Phase 1",
+      "ordinance": "3548-2022",
+      "payment_voucher": "APPY141307819",
+      "purchase_order": {
+        "accounting_date": "2023-06-06",
+        "fiscal_year": null,
+        "po_recid": "5638535922",
+        "purchase_id": "PO389423",
+        "purchase_name": "Columbus Partnership",
+        "status": "Invoiced"
+      }
+    },
+    {
+      "account": "040255",
+      "attribution_basis": "PO line explicitly names ordinance 2657-2022.",
+      "check_amount": "349185.3600000000000000",
+      "check_date": "2023-07-06",
+      "check_number": "503439",
+      "check_recid": "5637928102",
+      "classification": "confirmed_explicit_po_line",
+      "component_amount": "349185.36",
+      "component_id": "503439:2023626:349185.36",
+      "invoice": {
+        "amount": "349185.3600000000000000",
+        "date": "2023-07-01",
+        "description": "2023626",
+        "fiscal_year": null,
+        "invoice_id": "2023626",
+        "ledger_voucher": "APIN111041734",
+        "purchase_id": "PO361330"
+      },
+      "label": "Smart Columbus operational support",
+      "ordinance": "2657-2022",
+      "payment_voucher": "APPY141314472",
+      "purchase_order": {
+        "accounting_date": "2024-01-01",
+        "fiscal_year": 2024,
+        "po_recid": "5638410600",
+        "purchase_id": "PO361330",
+        "purchase_name": "Columbus Partnership",
+        "status": "Invoiced"
+      }
+    },
+    {
+      "account": "045611",
+      "attribution_basis": "Invoice description explicitly names ordinance 1462-2023.",
+      "check_amount": "500000.0000000000000000",
+      "check_date": "2023-09-14",
+      "check_number": "520716",
+      "check_recid": "5637952357",
+      "classification": "confirmed_explicit_invoice",
+      "component_amount": "500000.00",
+      "component_id": "520716:SC-2023-824:500000.00",
+      "invoice": {
+        "amount": "500000.0000000000000000",
+        "date": "2023-09-06",
+        "description": "1462-2023",
+        "fiscal_year": null,
+        "invoice_id": "SC-2023-824",
+        "ledger_voucher": "APIN111075080",
+        "purchase_id": "PO401582"
+      },
+      "label": "Smart City strategic plan and support",
+      "ordinance": "1462-2023",
+      "payment_voucher": "APPY141365627",
+      "purchase_order": {
+        "accounting_date": "2023-08-17",
+        "fiscal_year": null,
+        "po_recid": "5638592137",
+        "purchase_id": "PO401582",
+        "purchase_name": "Columbus Partnership",
+        "status": "Invoiced"
+      }
+    },
+    {
+      "account": "033348",
+      "attribution_basis": "PO line explicitly names ordinance 2266-2023.",
+      "check_amount": "610000.0000000000000000",
+      "check_date": "2023-12-04",
+      "check_number": "535350",
+      "check_recid": "5637974663",
+      "classification": "confirmed_explicit_po_line",
+      "component_amount": "610000.00",
+      "component_id": "535350:SC2023911:610000.00",
+      "invoice": {
+        "amount": "610000.0000000000000000",
+        "date": "2023-12-01",
+        "description": "SC2023911",
+        "fiscal_year": null,
+        "invoice_id": "SC2023911",
+        "ledger_voucher": "APIN111109141",
+        "purchase_id": "PO401351"
+      },
+      "label": "Digital equity and Smart Columbus support",
+      "ordinance": "2266-2023",
+      "payment_voucher": "APPY141415201",
+      "purchase_order": {
+        "accounting_date": "2023-08-16",
+        "fiscal_year": null,
+        "po_recid": "5638592876",
+        "purchase_id": "PO401351",
+        "purchase_name": "Smart Columbus LLC",
+        "status": "Invoiced"
+      }
+    },
+    {
+      "account": "045611",
+      "attribution_basis": "PO line identifies E-Bike Phase 2; the official phase-two ordinance is 2872-2023.",
+      "check_amount": "250000.0000000000000000",
+      "check_date": "2023-12-11",
+      "check_number": "536151",
+      "check_recid": "5637976452",
+      "classification": "confirmed_program_phase",
+      "component_amount": "250000.00",
+      "component_id": "536151:SC-2023-1128:250000.00",
+      "invoice": {
+        "amount": "250000.0000000000000000",
+        "date": "2023-12-04",
+        "description": "SC-2023-1128 - E-bike Program - Phase 2 Grant",
+        "fiscal_year": null,
+        "invoice_id": "SC-2023-1128",
+        "ledger_voucher": "APIN111111663",
+        "purchase_id": "PO419617"
+      },
+      "label": "Resident E-Bike Subsidy Phase 2",
+      "ordinance": "2872-2023",
+      "payment_voucher": "APPY141418640",
+      "purchase_order": {
+        "accounting_date": "2023-12-01",
+        "fiscal_year": null,
+        "po_recid": "5638676178",
+        "purchase_id": "PO419617",
+        "purchase_name": "Columbus Partnership",
+        "status": "Invoiced"
+      }
+    },
+    {
+      "account": "045611",
+      "attribution_basis": "PO line identifies E-Bike Phase 3; the official phase-three ordinance is 1111-2024.",
+      "check_amount": "500000.0000000000000000",
+      "check_date": "2024-07-01",
+      "check_number": "575961",
+      "check_recid": "5638033455",
+      "classification": "confirmed_program_phase",
+      "component_amount": "500000.00",
+      "component_id": "575961:SC-2024-617:500000.00",
+      "invoice": {
+        "amount": "500000.0000000000000000",
+        "date": "2024-06-28",
+        "description": "SC-2024-617",
+        "fiscal_year": null,
+        "invoice_id": "SC-2024-617",
+        "ledger_voucher": "APIN111201680",
+        "purchase_id": "PO452155"
+      },
+      "label": "Resident E-Bike Subsidy Phase 3",
+      "ordinance": "1111-2024",
+      "payment_voucher": "APPY141550254",
+      "purchase_order": {
+        "accounting_date": "2024-06-11",
+        "fiscal_year": null,
+        "po_recid": "5638800605",
+        "purchase_id": "PO452155",
+        "purchase_name": "Columbus Partnership",
+        "status": "Invoiced"
+      }
+    },
+    {
+      "account": "045611",
+      "attribution_basis": "The transaction chain is complete, but no ordinance or funding authority is identified in the reviewed records.",
+      "check_amount": "1327.0400000000000000",
+      "check_date": "2024-12-06",
+      "check_number": "602588",
+      "check_recid": "5638082913",
+      "classification": "unattributed_program_expense",
+      "component_amount": "1327.04",
+      "component_id": "602588:2024-1120:1327.04",
+      "invoice": {
+        "amount": "1327.0400000000000000",
+        "date": "2024-12-05",
+        "description": "Retreat Program Cost",
+        "fiscal_year": null,
+        "invoice_id": "2024-1120",
+        "ledger_voucher": "APIN111269117",
+        "purchase_id": "PO479218"
+      },
+      "label": "Leadership Retreat Program",
+      "ordinance": null,
+      "payment_voucher": "APPY141646088",
+      "purchase_order": {
+        "accounting_date": "2024-11-20",
+        "fiscal_year": null,
+        "po_recid": "5638949884",
+        "purchase_id": "PO479218",
+        "purchase_name": "Columbus Partnership",
+        "status": "Invoiced"
+      }
+    },
+    {
+      "account": "040255",
+      "attribution_basis": "PO line explicitly names ordinance 2657-2022; combined PO payments reconcile to $560,000.",
+      "check_amount": "210814.6400000000000000",
+      "check_date": "2024-12-23",
+      "check_number": "606016",
+      "check_recid": "5638090507",
+      "classification": "confirmed_explicit_po_line",
+      "component_amount": "210814.64",
+      "component_id": "606016:2024-815:210814.64",
+      "invoice": {
+        "amount": "210814.6400000000000000",
+        "date": "2024-11-01",
+        "description": "2024-815",
+        "fiscal_year": null,
+        "invoice_id": "2024-815",
+        "ledger_voucher": "APIN111253939",
+        "purchase_id": "PO361330"
+      },
+      "label": "Smart Columbus operational support",
+      "ordinance": "2657-2022",
+      "payment_voucher": "APPY141658088",
+      "purchase_order": {
+        "accounting_date": "2024-01-01",
+        "fiscal_year": null,
+        "po_recid": "5638410600",
+        "purchase_id": "PO361330",
+        "purchase_name": "Columbus Partnership",
+        "status": "Invoiced"
+      }
+    },
+    {
+      "account": "045611",
+      "attribution_basis": "PO line explicitly names ordinance 2840-2024.",
+      "check_amount": "55000.0000000000000000",
+      "check_date": "2025-09-05",
+      "check_number": "653847",
+      "check_recid": "5638166202",
+      "classification": "confirmed_explicit_po_line",
+      "component_amount": "55000.00",
+      "component_id": "653847:SC-2025-701:55000.00",
+      "invoice": {
+        "amount": "55000.0000000000000000",
+        "date": "2025-09-04",
+        "description": "Ride & Drive Program Task 2",
+        "fiscal_year": null,
+        "invoice_id": "SC-2025-701",
+        "ledger_voucher": "APIN111390490",
+        "purchase_id": "PO507489"
+      },
+      "label": "Ride & Drive Task 2",
+      "ordinance": "2840-2024",
+      "payment_voucher": "APPY141821777",
+      "purchase_order": {
+        "accounting_date": "2026-01-01",
+        "fiscal_year": 2026,
+        "po_recid": "5639058589",
+        "purchase_id": "PO507489",
+        "purchase_name": "Columbus Partnership",
+        "status": "Invoiced"
+      }
+    },
+    {
+      "account": "045611",
+      "attribution_basis": "The aggregate warrant contained two invoices; this $85,000 component maps to the PO explicitly naming ordinance 2840-2024.",
+      "check_amount": "121000.0000000000000000",
+      "check_date": "2026-01-12",
+      "check_number": "672135",
+      "check_recid": "5638196925",
+      "classification": "confirmed_explicit_po_line",
+      "component_amount": "85000.00",
+      "component_id": "672135:SC-2025-603:85000.00",
+      "invoice": {
+        "amount": "85000.0000000000000000",
+        "date": "2025-06-11",
+        "description": "Cols Sustainable - Smart Ride",
+        "fiscal_year": 2025,
+        "invoice_id": "SC-2025-603",
+        "ledger_voucher": "APIN111355156",
+        "purchase_id": "PO507489"
+      },
+      "label": "Smart Ride / Ride & Drive component",
+      "ordinance": "2840-2024",
+      "payment_voucher": "APPY141896444",
+      "purchase_order": {
+        "accounting_date": "2026-01-01",
+        "fiscal_year": 2026,
+        "po_recid": "5639058589",
+        "purchase_id": "PO507489",
+        "purchase_name": "Columbus Partnership",
+        "status": "Invoiced"
+      }
+    },
+    {
+      "account": "045611",
+      "attribution_basis": "The aggregate warrant contained two invoices; this component belongs to a separate PO with no ordinance identified in the reviewed records.",
+      "check_amount": "121000.0000000000000000",
+      "check_date": "2026-01-12",
+      "check_number": "672135",
+      "check_recid": "5638196925",
+      "classification": "unattributed_program_expense",
+      "component_amount": "36000.00",
+      "component_id": "672135:SC-2025-602:36000.00",
+      "invoice": {
+        "amount": "36000.0000000000000000",
+        "date": "2025-06-16",
+        "description": "emissions mapping pilot",
+        "fiscal_year": 2025,
+        "invoice_id": "SC-2025-602",
+        "ledger_voucher": "APIN111357848",
+        "purchase_id": "PO507105"
+      },
+      "label": "Emissions Mapping Pilot with Energi.AI",
+      "ordinance": null,
+      "payment_voucher": "APPY141896444",
+      "purchase_order": {
+        "accounting_date": "2025-05-08",
+        "fiscal_year": 2025,
+        "po_recid": "5639050518",
+        "purchase_id": "PO507105",
+        "purchase_name": "Columbus Partnership",
+        "status": "Invoiced"
+      }
+    },
+    {
+      "account": "045611",
+      "attribution_basis": "PO line explicitly names ordinance 2840-2024.",
+      "check_amount": "110000.0000000000000000",
+      "check_date": "2026-01-23",
+      "check_number": "673476",
+      "check_recid": "5638200331",
+      "classification": "confirmed_explicit_po_line",
+      "component_amount": "110000.00",
+      "component_id": "673476:2026-115:110000.00",
+      "invoice": {
+        "amount": "110000.0000000000000000",
+        "date": "2026-01-22",
+        "description": "(25) Ride & Drive Program Task 3",
+        "fiscal_year": null,
+        "invoice_id": "2026-115",
+        "ledger_voucher": "APIN111447010",
+        "purchase_id": "PO507489"
+      },
+      "label": "Ride & Drive Task 3",
+      "ordinance": "2840-2024",
+      "payment_voucher": "APPY141902977",
+      "purchase_order": {
+        "accounting_date": "2026-01-01",
+        "fiscal_year": null,
+        "po_recid": "5639058589",
+        "purchase_id": "PO507489",
+        "purchase_name": "Columbus Partnership",
+        "status": "Invoiced"
+      }
+    },
+    {
+      "account": "045611",
+      "attribution_basis": "Invoice and PO-line evidence explicitly name ordinance 1663-2025.",
+      "check_amount": "500000.0000000000000000",
+      "check_date": "2026-02-20",
+      "check_number": "676982",
+      "check_recid": "5638208203",
+      "classification": "confirmed_explicit_invoice_and_po_line",
+      "component_amount": "500000.00",
+      "component_id": "676982:SC-2025-918:500000.00",
+      "invoice": {
+        "amount": "500000.0000000000000000",
+        "date": "2026-02-19",
+        "description": "25 SMART COLUMBUS ORDINANCE # 1663-2025",
+        "fiscal_year": null,
+        "invoice_id": "SC-2025-918",
+        "ledger_voucher": "APIN111456941",
+        "purchase_id": "PO525642"
+      },
+      "label": "Smart Columbus operational support",
+      "ordinance": "1663-2025",
+      "payment_voucher": "APPY141916695",
+      "purchase_order": {
+        "accounting_date": "2026-01-01",
+        "fiscal_year": null,
+        "po_recid": "5639120108",
+        "purchase_id": "PO525642",
+        "purchase_name": "Columbus Partnership",
+        "status": "Invoiced"
+      }
+    }
+  ],
+  "direct_paid_check_count": 19,
+  "totals": {
+    "candidate_ordinance_aggregate": "235750.00",
+    "confirmed_ordinance_attributed": "5051132.50",
+    "direct_paid_check_total": "5324209.54",
+    "unattributed_program_expense": "37327.04"
+  }
+}

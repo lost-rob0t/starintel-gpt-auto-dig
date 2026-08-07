@@ -1,0 +1,216 @@
+{
+  "candidate_ordinance_aggregate_total": "235750.00",
+  "candidate_ordinance_count": 1,
+  "confirmed_ordinance_attributed_total": "5051132.50",
+  "confirmed_ordinance_count": 12,
+  "critical_boundaries": [
+    "The 0165-2021 pair equals the ordinance amount exactly but lacks a complete direct identifier chain.",
+    "The 1581-2021 chain is explicit, but the paid check exceeds the stated ordinance amount by $10,050; augmentation, carryover, or other authority remains unresolved.",
+    "Check 672135 is split into an $85,000 Ride & Drive component and a separate $36,000 Emissions Mapping Pilot component.",
+    "No ordinance is assigned from amount similarity alone."
+  ],
+  "direct_paid_check_total": "5324209.54",
+  "ordinances": [
+    {
+      "attributed_paid_components": "263574.98",
+      "component_ids": [
+        "455778:SC-2022-0427:263574.98"
+      ],
+      "difference": "0.00",
+      "ordinance": "0670-2022",
+      "stated_ceiling_or_amount": "263574.98",
+      "status": "confirmed_payment_chain"
+    },
+    {
+      "attributed_paid_components": "500000.00",
+      "component_ids": [
+        "575961:SC-2024-617:500000.00"
+      ],
+      "difference": "0.00",
+      "ordinance": "1111-2024",
+      "stated_ceiling_or_amount": "500000.00",
+      "status": "confirmed_payment_chain"
+    },
+    {
+      "attributed_paid_components": "500000.00",
+      "component_ids": [
+        "520716:SC-2023-824:500000.00"
+      ],
+      "difference": "0.00",
+      "ordinance": "1462-2023",
+      "stated_ceiling_or_amount": "500000.00",
+      "status": "confirmed_payment_chain"
+    },
+    {
+      "attributed_paid_components": "331132.50",
+      "component_ids": [
+        "401423:SC2021119:331132.50"
+      ],
+      "difference": "10050.00",
+      "ordinance": "1581-2021",
+      "stated_ceiling_or_amount": "321082.50",
+      "status": "confirmed_payment_chain"
+    },
+    {
+      "attributed_paid_components": "500000.00",
+      "component_ids": [
+        "676982:SC-2025-918:500000.00"
+      ],
+      "difference": "0.00",
+      "ordinance": "1663-2025",
+      "stated_ceiling_or_amount": "500000.00",
+      "status": "confirmed_payment_chain"
+    },
+    {
+      "attributed_paid_components": "236425.02",
+      "component_ids": [
+        "483730:SC-2023-126:236425.02"
+      ],
+      "difference": "0.00",
+      "ordinance": "1817-2022",
+      "stated_ceiling_or_amount": "236425.02",
+      "status": "confirmed_payment_chain"
+    },
+    {
+      "attributed_paid_components": "610000.00",
+      "component_ids": [
+        "535350:SC2023911:610000.00"
+      ],
+      "difference": "0.00",
+      "ordinance": "2266-2023",
+      "stated_ceiling_or_amount": "610000.00",
+      "status": "confirmed_payment_chain"
+    },
+    {
+      "attributed_paid_components": "560000.00",
+      "component_ids": [
+        "503439:2023626:349185.36",
+        "606016:2024-815:210814.64"
+      ],
+      "difference": "0.00",
+      "ordinance": "2657-2022",
+      "stated_ceiling_or_amount": "560000.00",
+      "status": "confirmed_payment_chain"
+    },
+    {
+      "attributed_paid_components": "250000.00",
+      "component_ids": [
+        "653847:SC-2025-701:55000.00",
+        "672135:SC-2025-603:85000.00",
+        "673476:2026-115:110000.00"
+      ],
+      "difference": "0.00",
+      "ordinance": "2840-2024",
+      "stated_ceiling_or_amount": "250000.00",
+      "status": "confirmed_payment_chain"
+    },
+    {
+      "attributed_paid_components": "250000.00",
+      "component_ids": [
+        "536151:SC-2023-1128:250000.00"
+      ],
+      "difference": "0.00",
+      "ordinance": "2872-2023",
+      "stated_ceiling_or_amount": "250000.00",
+      "status": "confirmed_payment_chain"
+    },
+    {
+      "attributed_paid_components": "800000.00",
+      "component_ids": [
+        "425949:SC-2021-1231:500560.53",
+        "450011:SC-2022-066:299439.47"
+      ],
+      "difference": "0.00",
+      "ordinance": "3301-2021",
+      "stated_ceiling_or_amount": "800000.00",
+      "status": "confirmed_payment_chain"
+    },
+    {
+      "attributed_paid_components": "250000.00",
+      "component_ids": [
+        "500969:SC-2023-612:250000.00"
+      ],
+      "difference": "0.00",
+      "ordinance": "3548-2022",
+      "stated_ceiling_or_amount": "250000.00",
+      "status": "confirmed_payment_chain"
+    },
+    {
+      "candidate_paid_components": "235750.00",
+      "component_ids": [
+        "385079:unresolved:201250.00",
+        "390967:SC-2020-1122:34500.00"
+      ],
+      "difference": "0.00",
+      "ordinance": "0165-2021",
+      "stated_ceiling_or_amount": "235750.00",
+      "status": "exact_aggregate_candidate_not_confirmed"
+    }
+  ],
+  "target_id": "starintel:investigation-target:wef-depth-12-smart-columbus-ordinance-payment-reconciliation-and-vendor-master",
+  "unattributed_components": [
+    {
+      "account": "045611",
+      "attribution_basis": "The transaction chain is complete, but no ordinance or funding authority is identified in the reviewed records.",
+      "check_amount": "1327.0400000000000000",
+      "check_date": "2024-12-06",
+      "check_number": "602588",
+      "check_recid": "5638082913",
+      "classification": "unattributed_program_expense",
+      "component_amount": "1327.04",
+      "component_id": "602588:2024-1120:1327.04",
+      "invoice": {
+        "amount": "1327.0400000000000000",
+        "date": "2024-12-05",
+        "description": "Retreat Program Cost",
+        "fiscal_year": null,
+        "invoice_id": "2024-1120",
+        "ledger_voucher": "APIN111269117",
+        "purchase_id": "PO479218"
+      },
+      "label": "Leadership Retreat Program",
+      "ordinance": null,
+      "payment_voucher": "APPY141646088",
+      "purchase_order": {
+        "accounting_date": "2024-11-20",
+        "fiscal_year": null,
+        "po_recid": "5638949884",
+        "purchase_id": "PO479218",
+        "purchase_name": "Columbus Partnership",
+        "status": "Invoiced"
+      }
+    },
+    {
+      "account": "045611",
+      "attribution_basis": "The aggregate warrant contained two invoices; this component belongs to a separate PO with no ordinance identified in the reviewed records.",
+      "check_amount": "121000.0000000000000000",
+      "check_date": "2026-01-12",
+      "check_number": "672135",
+      "check_recid": "5638196925",
+      "classification": "unattributed_program_expense",
+      "component_amount": "36000.00",
+      "component_id": "672135:SC-2025-602:36000.00",
+      "invoice": {
+        "amount": "36000.0000000000000000",
+        "date": "2025-06-16",
+        "description": "emissions mapping pilot",
+        "fiscal_year": 2025,
+        "invoice_id": "SC-2025-602",
+        "ledger_voucher": "APIN111357848",
+        "purchase_id": "PO507105"
+      },
+      "label": "Emissions Mapping Pilot with Energi.AI",
+      "ordinance": null,
+      "payment_voucher": "APPY141896444",
+      "purchase_order": {
+        "accounting_date": "2025-05-08",
+        "fiscal_year": 2025,
+        "po_recid": "5639050518",
+        "purchase_id": "PO507105",
+        "purchase_name": "Columbus Partnership",
+        "status": "Invoiced"
+      }
+    }
+  ],
+  "unattributed_program_expense_total": "37327.04"
+}
