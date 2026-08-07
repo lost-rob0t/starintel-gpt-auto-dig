@@ -22,7 +22,7 @@ Current reporting supports **no immediate prison** and reports a reserve/suspend
 - 10TV via Yahoo Sports — nine robbery guilty pleas; April 24, 2024 First Merchants incident; note demanded money and said he was armed with a gun; detective described the repeated pattern.  
   https://sports.yahoo.com/articles/former-ohio-state-football-player-001829850.html
 - Dayton Daily News — 2024 reporting on Williamson as suspect in nine bank robberies and the earlier Tennessee case.  
-  https://www.daytondailynews.com/local/formmer-osu-football-player-arrested-now-suspect-in-nine-bank-robberies/HP5ZPGQWGRHTVJURH423IDBMNI/
+  https://www.daytondailynews.com/local/former-osu-football-player-arrested-now-suspect-in-nine-bank-robberies/HP5ZPGQWGRHTVJURH423IDBMNI/
 - Buckeye Sports Bulletin — detective Brad Thomas described the repeated robbery pattern.  
   https://www.buckeyesports.com/former-ohio-state-defensive-back-marcus-wiliamson-charged-with-armed-bank-robbery/?print=print
 - WHIO — 2024 indictment reporting and bank-robbery pattern.  
