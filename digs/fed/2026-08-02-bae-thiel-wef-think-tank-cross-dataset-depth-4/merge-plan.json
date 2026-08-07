@@ -1,0 +1,74 @@
+{
+  "run": "bae-thiel-wef-think-tank-cross-dataset-2026-08-02-depth-4",
+  "root_dataset": "fed",
+  "source_packet": "digs/fed/2026-08-02-bae-thiel-wef-think-tank-cross-dataset-depth-4/starintel-documents.jsonl",
+  "reuse_existing_ids": [
+    "starintel:person:peter-thiel",
+    "starintel:org:founders-fund",
+    "starintel:relation:peter-thiel-serves-founders-fund",
+    "starintel:org:palantir-technologies",
+    "starintel:org:world-economic-forum",
+    "starintel:org:bae-systems-inc",
+    "starintel:person:tom-arseneault",
+    "starintel:org:aerospace-industries-association",
+    "starintel:org:center-for-strategic-and-international-studies",
+    "starintel:org:center-for-a-new-american-security",
+    "starintel:org:atlantic-council"
+  ],
+  "targets": {
+    "fed": [
+      "starintel:org:bae-systems-plc",
+      "starintel:org:bae-systems-intelligence-and-security",
+      "starintel:person:peder-jungck",
+      "starintel:relation:bae-systems-inc-subsidiary-of-bae-systems-plc",
+      "starintel:relation:peder-jungck-serves-bae-intelligence-security",
+      "starintel:analysis:bae-thiel-wef-think-tank-cross-dataset-depth-4-2026-08-02",
+      "starintel:investigation-target:bae-cross-dataset-personnel-and-tsc-attribution-depth-5",
+      "starintel:research-pass:bae-thiel-wef-think-tank-cross-dataset-depth-4-2026-08-02"
+    ],
+    "wef": [
+      "starintel:org:wef-centre-advanced-manufacturing-and-supply-chains",
+      "starintel:relation:bae-systems-plc-has-wef-organization-profile",
+      "starintel:relation:bae-systems-plc-related-to-wef-advanced-manufacturing-centre"
+    ],
+    "palantir": [
+      "starintel:org:scale-ai",
+      "starintel:person:zane-teeters",
+      "starintel:relation:founders-fund-led-scale-ai-series-c",
+      "starintel:relation:founders-fund-participated-scale-ai-series-e",
+      "starintel:relation:founders-fund-participated-scale-ai-series-f",
+      "starintel:relation:scale-ai-strategic-relationship-bae-intelligence-security",
+      "starintel:relation:zane-teeters-serves-scale-ai"
+    ],
+    "rusi": [
+      "starintel:org:royal-united-services-institute",
+      "starintel:person:oliver-waghorn",
+      "starintel:person:mary-haigh",
+      "starintel:relation:bae-systems-plc-organisational-member-rusi",
+      "starintel:relation:palantir-technologies-organisational-member-rusi",
+      "starintel:relation:oliver-waghorn-serves-bae-systems-plc",
+      "starintel:relation:oliver-waghorn-rusi-advisory-board",
+      "starintel:relation:mary-haigh-serves-bae-systems-plc",
+      "starintel:relation:mary-haigh-rusi-senior-associate-fellow"
+    ],
+    "csis": [
+      "starintel:relation:bae-systems-supported-csis-report-2024"
+    ],
+    "cnas": [
+      "starintel:relation:bae-systems-inc-supported-cnas-2024-2025"
+    ],
+    "atlantic-council": [
+      "starintel:relation:bae-systems-atlantic-council-contributor-2019"
+    ],
+    "us-israel-military-integration": {
+      "action": "reuse_only",
+      "ids": [
+        "starintel:relation:tom-arseneault-member-aia-executive-committee",
+        "starintel:relation:tom-arseneault-leads-bae-systems-inc",
+        "starintel:relation:bae-systems-inc-represented-on-aia-board"
+      ]
+    }
+  },
+  "duplicate_policy": "reuse canonical IDs; do not re-emit existing AIA, Peter Thiel, Founders Fund, Palantir, WEF or think-tank organization records",
+  "evidence_policy": "separate direct institutional relationships, indirect investment paths, co-membership, disclosed support, and historical support; do not infer TSC participation"
+}
