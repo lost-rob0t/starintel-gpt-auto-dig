@@ -1,0 +1,39 @@
+{
+  "counts": {
+    "analysis": 3,
+    "claim": 4,
+    "dataset-manifest": 1,
+    "event": 5,
+    "investigation-target": 11,
+    "org": 4,
+    "person": 5,
+    "policy": 4,
+    "relation": 10,
+    "research-pass": 1,
+    "source": 11
+  },
+  "dataset": "flock-safety-columbus-transparency-portal-observability-2026-07-31",
+  "files": [
+    "README.md",
+    "sources.md",
+    "starintel-documents.jsonl.gz.b64",
+    "manifest.json"
+  ],
+  "generated_at": "2026-07-31T01:50:00-04:00",
+  "hash_algorithm": "sha256",
+  "schema_version": "0.9.0",
+  "starintel_documents_sha256": "75a501a1ace33e1892bd44126ffec9a5401fb69e8c413161ce17df6fc097ab0a",
+  "total": 59,
+  "transport": "gzip+base64",
+  "validation": {
+    "jsonl_parse": "passed",
+    "related_id_references": "passed",
+    "relation_endpoint_references": "passed",
+    "repository_merge_gate": "pending-github-actions",
+    "research_site_build": "pending-github-actions",
+    "schema_validation": "pending-github-actions",
+    "source_urls": "reviewed",
+    "target_seed_references": "passed",
+    "unique_ids": "passed"
+  }
+}
