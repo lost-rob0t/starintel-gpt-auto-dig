@@ -1,0 +1,27 @@
+{
+  "counts_by_dtype": {
+    "analysis": 3,
+    "investigation-target": 1,
+    "research-pass": 1
+  },
+  "dataset": "wef",
+  "decoded_bytes": 17219,
+  "document_count": 5,
+  "generated_at": "2026-08-02T01:22:00Z",
+  "gzip_bytes": 3333,
+  "gzip_sha256": "155fa95bf406b63098b3bff67caea60e0c464a8d8cd8557f8f36519df66e36b8",
+  "normalized_jsonl_sha256": "e5042e82633a11cf9d754078dcd22c13d8d2310820e69e261d76a4fbc4cf468b",
+  "records": [
+    "starintel:analysis:columbus-membership-public-ledger-limit-depth-11",
+    "starintel:analysis:columbus-membership-pelra-215-ambiguity-depth-11",
+    "starintel:analysis:wef-columbus-membership-records-request-scope-depth-11",
+    "starintel:investigation-target:wef-depth-12-citywide-membership-records-production",
+    "starintel:research-pass:wef-columbus-depth-11-membership-records-request-2026-08-02"
+  ],
+  "recursion_depth": 11,
+  "run_id": "wef-columbus-depth-11-membership-records-request-2026-08-02",
+  "schema_version": "0.9.0",
+  "transport_bytes": 4503,
+  "transport_file": "starintel-documents.jsonl.gz.b64",
+  "transport_sha256": "bb6a44e5ab1de69c8f5025073b99b12df6200f409e84db37aaf6573e7ddbc71e"
+}
