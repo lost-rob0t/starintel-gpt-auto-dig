@@ -1,0 +1,342 @@
+{
+  "attachment_id": 157814,
+  "attachment_name": "2026 Citywide membership funding.xlsx",
+  "direct_wef_hits": [],
+  "headers": {
+    "Cache-Control": "no-cache",
+    "Connection": "close",
+    "Content-Disposition": "attachment; filename=\"2026 Citywide membership funding.xlsx\"",
+    "Content-Length": "11400",
+    "Content-Type": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+    "Date": "Sat, 01 Aug 2026 23:53:27 GMT",
+    "Expires": "-1",
+    "GranicusServer": "gasmp-legapi2",
+    "Pragma": "no-cache",
+    "Server": "Microsoft-IIS/10.0",
+    "X-AspNet-Version": "4.0.30319",
+    "X-Powered-By": "ASP.NET"
+  },
+  "matter_file": "0223-2026",
+  "matter_id": 136135,
+  "row_count": 13,
+  "sheet_count": 1,
+  "sheets": [
+    {
+      "name": "AC Template",
+      "path": "xl/worksheets/sheet1.xml",
+      "rows": [
+        {
+          "cells": [
+            {
+              "column": "A",
+              "value": "ORDINANCE ATTACHMENT"
+            }
+          ],
+          "row": 1
+        },
+        {
+          "cells": [
+            {
+              "column": "A",
+              "value": "AC Template (for authorizing expenditures)"
+            }
+          ],
+          "row": 2
+        },
+        {
+          "cells": [
+            {
+              "column": "A",
+              "value": "*AC lines increment by 10 (i.e. line 1 = 10, line 2 = 20, etc.)"
+            }
+          ],
+          "row": 3
+        },
+        {
+          "cells": [
+            {
+              "column": "A",
+              "value": "*If AC has fewer than three lines please delete unnecessary rows; if more than 3 lines please insert rows."
+            }
+          ],
+          "row": 4
+        },
+        {
+          "cells": [
+            {
+              "column": "A",
+              "value": ""
+            }
+          ],
+          "row": 5
+        },
+        {
+          "cells": [
+            {
+              "column": "A",
+              "value": "Ord Number"
+            }
+          ],
+          "row": 6
+        },
+        {
+          "cells": [
+            {
+              "column": "A",
+              "value": "0223-2026"
+            }
+          ],
+          "row": 7
+        },
+        {
+          "cells": [
+            {
+              "column": "A",
+              "value": "Type of AC Requested"
+            },
+            {
+              "column": "B",
+              "value": "Purchase Requisition (PR)#"
+            }
+          ],
+          "row": 9
+        },
+        {
+          "cells": [
+            {
+              "column": "A",
+              "value": "ACPO"
+            },
+            {
+              "column": "B",
+              "value": "n/a"
+            }
+          ],
+          "row": 10
+        },
+        {
+          "cells": [
+            {
+              "column": "A",
+              "value": ""
+            },
+            {
+              "column": "B",
+              "value": ""
+            },
+            {
+              "column": "C",
+              "value": ""
+            },
+            {
+              "column": "D",
+              "value": ""
+            },
+            {
+              "column": "E",
+              "value": ""
+            },
+            {
+              "column": "F",
+              "value": ""
+            },
+            {
+              "column": "G",
+              "value": ""
+            },
+            {
+              "column": "H",
+              "value": ""
+            },
+            {
+              "column": "I",
+              "value": ""
+            },
+            {
+              "column": "J",
+              "value": ""
+            },
+            {
+              "column": "K",
+              "value": ""
+            },
+            {
+              "column": "L",
+              "value": ""
+            },
+            {
+              "column": "M",
+              "value": ""
+            },
+            {
+              "column": "N",
+              "value": ""
+            },
+            {
+              "column": "O",
+              "value": ""
+            },
+            {
+              "column": "P",
+              "value": ""
+            }
+          ],
+          "row": 11
+        },
+        {
+          "cells": [
+            {
+              "column": "A",
+              "value": "Line # of AC"
+            },
+            {
+              "column": "B",
+              "value": "Procurement Category"
+            },
+            {
+              "column": "C",
+              "value": "Dept"
+            },
+            {
+              "column": "D",
+              "value": "Div"
+            },
+            {
+              "column": "E",
+              "value": "Obj Class"
+            },
+            {
+              "column": "F",
+              "value": "Main Acct"
+            },
+            {
+              "column": "G",
+              "value": "Fund"
+            },
+            {
+              "column": "H",
+              "value": "Subfund"
+            },
+            {
+              "column": "I",
+              "value": "Program"
+            },
+            {
+              "column": "J",
+              "value": "Sect 3"
+            },
+            {
+              "column": "K",
+              "value": "Sect 4"
+            },
+            {
+              "column": "L",
+              "value": "Sect 5"
+            },
+            {
+              "column": "M",
+              "value": "Project ID"
+            },
+            {
+              "column": "N",
+              "value": "Optional Field"
+            },
+            {
+              "column": "O",
+              "value": "Planning Area"
+            },
+            {
+              "column": "P",
+              "value": "Amount"
+            }
+          ],
+          "row": 12
+        },
+        {
+          "cells": [
+            {
+              "column": "A",
+              "value": "10"
+            },
+            {
+              "column": "B",
+              "value": ""
+            },
+            {
+              "column": "C",
+              "value": "45"
+            },
+            {
+              "column": "D",
+              "value": "4501"
+            },
+            {
+              "column": "E",
+              "value": "3"
+            },
+            {
+              "column": "F",
+              "value": "63975"
+            },
+            {
+              "column": "G",
+              "value": "1000"
+            },
+            {
+              "column": "H",
+              "value": "100010"
+            },
+            {
+              "column": "I",
+              "value": "FN001"
+            },
+            {
+              "column": "J",
+              "value": ""
+            },
+            {
+              "column": "K",
+              "value": ""
+            },
+            {
+              "column": "L",
+              "value": ""
+            },
+            {
+              "column": "M",
+              "value": ""
+            },
+            {
+              "column": "N",
+              "value": ""
+            },
+            {
+              "column": "O",
+              "value": ""
+            },
+            {
+              "column": "P",
+              "value": "150000"
+            }
+          ],
+          "row": 13
+        },
+        {
+          "cells": [
+            {
+              "column": "A",
+              "value": ""
+            },
+            {
+              "column": "P",
+              "value": ""
+            }
+          ],
+          "row": 14
+        }
+      ]
+    }
+  ],
+  "source_url": "https://webapi.legistar.com/v1/columbus/Matters/136135/Attachments/157814/File",
+  "workbook_size_bytes": 11400
+}
