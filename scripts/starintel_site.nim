@@ -1,4 +1,4 @@
-import std/[algorithm, json, os, osproc, sequtils, sets, strformat, strutils, tables, uri]
+import std/[algorithm, json, os, osproc, sets, strformat, strutils, tables, uri]
 
 import starintel_transport
 
@@ -9,7 +9,10 @@ const
 
 
 type Record = ref object
+  # Parsed JSON is retained only for graph/page-worthy records. Bulk observations
+  # retain their raw JSON line plus the small fields needed by the site indexes.
   document: JsonNode
+  raw: string
   target: string
   run: string
   path: string
@@ -19,6 +22,9 @@ type Record = ref object
   title: string
   summary: string
   updated: string
+  schemaVersion: string
+  status: string
+  sourceKeys: seq[string]
 
 
 type Bucket = ref object
@@ -60,7 +66,7 @@ proc cleanDir(path: string) =
 
 proc slug(value: string): string =
   var source = value.toLowerAscii().strip()
-  if source.startsWith("starintel:"):
+  if source.startsWith("starintel:") and source.len > 10:
     source = source[10 .. ^1]
   var previousDash = false
   for ch in source:
@@ -88,13 +94,13 @@ proc htmlEscape(value: string): string =
 
 
 proc jsonText(node: JsonNode; key: string; fallback = ""): string =
-  if node.kind == JObject and node.hasKey(key) and node[key].kind == JString:
+  if node != nil and node.kind == JObject and node.hasKey(key) and node[key].kind == JString:
     return node[key].getStr()
   fallback
 
 
 proc nestedText(node: JsonNode; parent, key: string; fallback = ""): string =
-  if node.kind == JObject and node.hasKey(parent) and node[parent].kind == JObject:
+  if node != nil and node.kind == JObject and node.hasKey(parent) and node[parent].kind == JObject:
     return jsonText(node[parent], key, fallback)
   fallback
 
@@ -103,7 +109,7 @@ proc recordSummary(node: JsonNode): string =
   result = jsonText(node, "summary")
   if result.len == 0:
     result = jsonText(node, "description")
-  if result.len == 0 and node.kind == JObject and node.hasKey("data") and node["data"].kind == JObject:
+  if result.len == 0 and node.hasKey("data") and node["data"].kind == JObject:
     for key in ["description", "definition", "claim", "bio", "business", "mission"]:
       result = jsonText(node["data"], key)
       if result.len > 0:
@@ -114,13 +120,44 @@ proc recordSummary(node: JsonNode): string =
 
 proc displayTitle(node: JsonNode): string =
   result = jsonText(node, "title")
-  if result.len == 0 and node.kind == JObject and node.hasKey("data") and node["data"].kind == JObject:
+  if result.len == 0 and node.hasKey("data") and node["data"].kind == JObject:
     for key in ["display_name", "name", "full_name"]:
       result = jsonText(node["data"], key)
       if result.len > 0:
         break
   if result.len == 0:
     result = jsonText(node, "_id")
+
+
+proc graphEligible(dtype: string): bool =
+  dtype in [
+    "person", "org", "relation", "event", "claim", "analysis", "concept",
+    "education", "employment"
+  ]
+
+
+proc sourceKey(source: JsonNode): string =
+  case source.kind
+  of JString:
+    result = source.getStr().strip()
+  of JObject:
+    for key in ["source_id", "uri", "url"]:
+      if source.hasKey(key) and source[key].kind == JString:
+        let value = source[key].getStr().strip()
+        if value.len > 0:
+          return value
+    result = $source
+  else:
+    result = $source
+
+
+proc extractSourceKeys(document: JsonNode): seq[string] =
+  if not document.hasKey("sources") or document["sources"].kind != JArray:
+    return
+  for source in document["sources"].items:
+    let key = sourceKey(source)
+    if key.len > 0 and key notin result:
+      result.add(key)
 
 
 proc newBucket(): Bucket =
@@ -240,18 +277,29 @@ proc inferDbTarget(dataset: string; config: SiteConfig): string =
   result = slug(dataset)
 
 
-proc makeRecord(document: JsonNode; target, run, path: string): Record =
+proc makeRecord(document: JsonNode; raw, target, run, path: string): Record =
+  let dtype = jsonText(document, "dtype")
+  let status = nestedText(
+    document,
+    "verification",
+    "status",
+    jsonText(document, "status", "recorded")
+  )
   Record(
-    document: document,
+    document: (if graphEligible(dtype): document else: nil),
+    raw: raw,
     target: target,
     run: run,
     path: path,
     id: jsonText(document, "_id"),
-    dtype: jsonText(document, "dtype"),
+    dtype: dtype,
     dataset: jsonText(document, "dataset"),
     title: displayTitle(document),
     summary: recordSummary(document),
-    updated: jsonText(document, "date_updated")
+    updated: jsonText(document, "date_updated"),
+    schemaVersion: jsonText(document, "schema_version"),
+    status: status,
+    sourceKeys: extractSourceKeys(document)
   )
 
 
@@ -273,7 +321,12 @@ proc scanCorpus(inputRoot, dbRoot: string; config: SiteConfig): tuple[targets: T
       let document = parseJson(raw)
       if document.kind != JObject:
         raise newException(ValueError, &"{packet.path}:{lineNumber}: expected JSON object")
-      addRecord(targets, complete, makeRecord(document, packet.target, packet.run, packet.path), config)
+      addRecord(
+        targets,
+        complete,
+        makeRecord(document, raw, packet.target, packet.run, packet.path),
+        config
+      )
     )
 
   for path in dbFiles(dbRoot):
@@ -289,14 +342,15 @@ proc scanCorpus(inputRoot, dbRoot: string; config: SiteConfig): tuple[targets: T
         input.close()
         raise newException(ValueError, &"{path}:{lineNumber}: expected JSON object")
       let dataset = jsonText(document, "dataset", "database")
-      addRecord(targets, complete, makeRecord(document, inferDbTarget(dataset, config), "db", path), config)
+      addRecord(
+        targets,
+        complete,
+        makeRecord(document, raw, inferDbTarget(dataset, config), "db", path),
+        config
+      )
     input.close()
 
   result = (targets, complete)
-
-
-proc graphEligible(dtype: string): bool =
-  dtype in ["person", "org", "relation", "event", "claim", "analysis", "concept", "education", "employment"]
 
 
 proc endpointIds(value: JsonNode): seq[string] =
@@ -344,7 +398,9 @@ proc buildGraph(bucket: Bucket): JsonNode =
 
   var edgeKeys = initHashSet[string]()
   for record in graphRecords:
-    if record.dtype != "relation" or not record.document.hasKey("data") or record.document["data"].kind != JObject:
+    if record.dtype != "relation" or record.document == nil:
+      continue
+    if not record.document.hasKey("data") or record.document["data"].kind != JObject:
       continue
     let data = record.document["data"]
     if not data.hasKey("subject") or not data.hasKey("object"):
@@ -413,34 +469,14 @@ proc writeJsonl(path: string; bucket: Bucket) =
   defer:
     output.close()
   for id in sortedIds(bucket):
-    output.write($bucket.docs[id].document)
+    output.write(bucket.docs[id].raw)
     output.write("\n")
-
-
-proc sourceKey(source: JsonNode): string =
-  case source.kind
-  of JString:
-    result = source.getStr()
-  of JObject:
-    for key in ["source_id", "uri", "url"]:
-      if source.hasKey(key) and source[key].kind == JString and source[key].getStr().len > 0:
-        return source[key].getStr()
-    result = $source
-  else:
-    result = $source
 
 
 proc sourceInventory(bucket: Bucket): seq[(string, int)] =
   var counts = initTable[string, int]()
   for record in bucket.docs.values:
-    if not record.document.hasKey("sources") or record.document["sources"].kind != JArray:
-      continue
-    var perDocument = initHashSet[string]()
-    for source in record.document["sources"].items:
-      let key = sourceKey(source)
-      if key.len > 0:
-        perDocument.incl(key)
-    for key in perDocument:
+    for key in record.sourceKeys:
       counts[key] = counts.getOrDefault(key) + 1
   for key, count in counts.pairs:
     result.add((key, count))
@@ -484,7 +520,7 @@ proc writeTarget(target: string; bucket: Bucket; output, orgOutput: string; conf
       "dataset": record.dataset,
       "summary": record.summary,
       "review": "reviewed",
-      "status": nestedText(record.document, "verification", "status", jsonText(record.document, "status", "recorded")),
+      "status": record.status,
       "updated": record.updated,
       "url": (if graphEligible(record.dtype): "nodes/" & slug(record.id) & ".html" else: "documents.html?dataset=" & encodeUrl(record.dataset))
     }
@@ -512,14 +548,15 @@ proc writeTarget(target: string; bucket: Bucket; output, orgOutput: string; conf
   var nodeCount = 0
   for id in sortedIds(bucket):
     let record = bucket.docs[id]
-    if not graphEligible(record.dtype):
+    if not graphEligible(record.dtype) or record.document == nil:
       continue
     inc nodeCount
     if nodeCount > NodePageLimit:
       break
-    let nodeBody = "<div class=\"crumb\"><a href=\"../documents.html\">← documents</a></div><h1>" & htmlEscape(record.title) & "</h1><p class=\"lede\">" & htmlEscape(record.summary) & "</p><pre>" & htmlEscape(record.document.pretty()) & "</pre>"
+    let pretty = record.document.pretty()
+    let nodeBody = "<div class=\"crumb\"><a href=\"../documents.html\">← documents</a></div><h1>" & htmlEscape(record.title) & "</h1><p class=\"lede\">" & htmlEscape(record.summary) & "</p><pre>" & htmlEscape(pretty) & "</pre>"
     writeFile(nodeOut / (slug(record.id) & ".html"), page(record.title, nodeBody, "../../"))
-    let org = "#+title: " & record.title.replace("\n", " ") & "\n#+description: " & record.summary.replace("\n", " ") & "\n\n* Raw StarIntel Document\n\n#+begin_src json\n" & record.document.pretty() & "\n#+end_src\n"
+    let org = "#+title: " & record.title.replace("\n", " ") & "\n#+description: " & record.summary.replace("\n", " ") & "\n\n* Raw StarIntel Document\n\n#+begin_src json\n" & pretty & "\n#+end_src\n"
     writeFile(orgOut / (slug(record.id) & ".org"), org)
     writeFile(publicOrg / (slug(record.id) & ".org"), org)
 
@@ -539,10 +576,7 @@ proc directTopicMatch(rule: TopicRule; record: Record): bool =
 proc termTopicMatch(rule: TopicRule; record: Record): bool =
   if rule.terms.len == 0:
     return false
-  var dataText = ""
-  if record.document.hasKey("data"):
-    dataText = $record.document["data"]
-  let text = (record.target & " " & record.dataset & " " & record.title & " " & record.summary & " " & dataText).toLowerAscii()
+  let text = (record.target & " " & record.dataset & " " & record.title & " " & record.summary & " " & record.raw).toLowerAscii()
   for term in rule.terms:
     if term.len > 0 and text.contains(term):
       return true
@@ -600,12 +634,14 @@ proc writeTopicDatasets(targets: Table[string, Bucket]; output, orgOutput: strin
     ensureDir(downloads)
 
     writeTarget(target, bucket, output, orgOutput, topicSiteConfig(target, meta.title, meta.subtitle))
+    let sourceTargets = if topicTargets.hasKey(id): sortedSet(topicTargets[id]) else: newSeq[string]()
+    let sourceDatasets = if topicDatasets.hasKey(id): sortedSet(topicDatasets[id]) else: newSeq[string]()
     let manifest = %*{
       "topic_dataset": id,
       "title": meta.title,
       "record_count": bucket.docs.len,
-      "source_targets": jsonStrings(if topicTargets.hasKey(id): sortedSet(topicTargets[id]) else: @[]),
-      "source_datasets": jsonStrings(if topicDatasets.hasKey(id): sortedSet(topicDatasets[id]) else: @[])
+      "source_targets": jsonStrings(sourceTargets),
+      "source_datasets": jsonStrings(sourceDatasets)
     }
     writeFile(downloads / "topic-manifest.json", manifest.pretty() & "\n")
     writeFile(downloads / "research-history.json", $(%*[manifest]))
@@ -613,8 +649,8 @@ proc writeTopicDatasets(targets: Table[string, Bucket]; output, orgOutput: strin
       "dataset": id,
       "title": meta.title,
       "record_count": bucket.docs.len,
-      "source_target_count": (if topicTargets.hasKey(id): topicTargets[id].len else: 0),
-      "source_dataset_count": (if topicDatasets.hasKey(id): topicDatasets[id].len else: 0),
+      "source_target_count": sourceTargets.len,
+      "source_dataset_count": sourceDatasets.len,
       "url": target & "/index.html",
       "download": target & "/downloads/starintel-documents.jsonl"
     })
@@ -647,9 +683,8 @@ proc writeCompleteCorpus(complete: Bucket; output: string) =
     counts[record.dtype] = counts.getOrDefault(record.dtype) + 1
     if record.updated > updated:
       updated = record.updated
-    let version = jsonText(record.document, "schema_version")
-    if version.len > 0:
-      versions.incl(version)
+    if record.schemaVersion.len > 0:
+      versions.incl(record.schemaVersion)
 
   var countNode = newJObject()
   for dtype, count in counts.pairs:
