@@ -1,4 +1,4 @@
-import std/[algorithm, json, os, strutils, tables]
+import std/[algorithm, json, os, sequtils, strutils, tables]
 
 type
   GroupKey = tuple[target: string, dataset: string]
