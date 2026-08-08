@@ -1,7 +1,7 @@
 import std/[algorithm, base64, os, osproc, streams, strutils, tables]
 
 
-type PacketFile* = object
+type PacketFile* = ref object
   target*: string
   run*: string
   path*: string
