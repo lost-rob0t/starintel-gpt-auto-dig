@@ -2,6 +2,12 @@ name: GOP AutoDig 100k+ materialization
 
 on:
   workflow_dispatch:
+    inputs:
+      materialize:
+        description: Run the expensive FEC download/materialization jobs
+        required: false
+        default: false
+        type: boolean
   push:
     branches:
       - agent/gop-dataset-100k-expansion
@@ -83,7 +89,7 @@ jobs:
           test -x bin/import-gop-receipts
 
   generate-receipts:
-    if: ${{ github.event_name == 'workflow_dispatch' }}
+    if: ${{ github.event_name == 'workflow_dispatch' && inputs.materialize == true }}
     needs: preflight
     runs-on: ubuntu-latest
     timeout-minutes: 540
@@ -130,7 +136,7 @@ jobs:
           compression-level: 0
 
   materialize:
-    if: ${{ github.event_name == 'workflow_dispatch' }}
+    if: ${{ github.event_name == 'workflow_dispatch' && inputs.materialize == true }}
     needs: generate-receipts
     runs-on: ubuntu-latest
     timeout-minutes: 540
