@@ -1,0 +1,91 @@
+{
+  "run": "2026-08-08",
+  "parent_target_id": "starintel:target:wef:open-society-foundations-public-rosters-and-cross-ties",
+  "subject": "Open Society Foundations ↔ European Council on Foreign Relations",
+  "status": "research-staging-not-canonical",
+  "institution_relations": [
+    {
+      "source": "Open Society Foundations",
+      "target": "European Council on Foreign Relations",
+      "relation": "supported_creation_of",
+      "time": "2006",
+      "verification": "OSF current institutional history"
+    },
+    {
+      "source": "Open Society Foundations",
+      "target": "European Council on Foreign Relations",
+      "relation": "donor_to",
+      "time": "current donor page observed 2026-08-08",
+      "amount": null,
+      "verification": "ECFR current funding page"
+    }
+  ],
+  "verified_current_person_relations": [
+    {
+      "person": "Ivan Krastev",
+      "osf_role": "Board Member",
+      "ecfr_role": "Board of Trustees / founding board member"
+    },
+    {
+      "person": "Alex Soros",
+      "osf_role": "Chair",
+      "ecfr_role": "Council Member"
+    },
+    {
+      "person": "George Soros",
+      "osf_role": "Founder",
+      "ecfr_role": "Council Member"
+    },
+    {
+      "person": "Daniel Sachs",
+      "osf_role": "Vice Chair",
+      "ecfr_role": "Council Member"
+    },
+    {
+      "person": "James C. O'Brien",
+      "osf_role": "Board Member",
+      "ecfr_role": "Distinguished Visiting Fellow",
+      "ecfr_display_name": "Jim O'Brien",
+      "entity_resolution_note": "Resolve aliases before canonical person creation."
+    },
+    {
+      "person": "Mark Malloch-Brown",
+      "osf_role": "Former President of the Board of Directors",
+      "ecfr_role": "Council Member"
+    }
+  ],
+  "temporal_or_source_discrepancies": [
+    {
+      "person": "Alex Soros",
+      "osf_claim": "Board member of ECFR",
+      "ecfr_current_evidence": "Council Member; absent from current Board of Trustees list",
+      "canonicalization": "use current Council relation; preserve board claim as attributed/unresolved"
+    },
+    {
+      "person": "Sandra Breka",
+      "ecfr_current_directory_label": "Vice President and COO, Open Society Foundations",
+      "osf_current_leadership": "not listed; Leela Ramdhani is current COO",
+      "canonicalization": "preserve ECFR Council membership but do not treat displayed external job title as current without dating"
+    }
+  ],
+  "next_targets": [
+    "ECFR audited donor history and OSF-specific amounts",
+    "OSF grant directory records naming ECFR",
+    "James C. O'Brien alias and institutional resolution",
+    "Sandra Breka temporal employment history",
+    "ECFR Board and EIB Global Advisory Council overlap",
+    "full ECFR Council cross-resolution against StarIntel"
+  ],
+  "sources": [
+    "https://www.opensocietyfoundations.org/who-we-are/our-history",
+    "https://www.opensocietyfoundations.org/who-we-are/board-of-directors",
+    "https://www.opensocietyfoundations.org/who-we-are/leadership?search=1",
+    "https://www.opensocietyfoundations.org/who-we-are/board-of-directors/alex-soros",
+    "https://ecfr.eu/donors/funding/",
+    "https://ecfr.eu/council/members/",
+    "https://ecfr.eu/about/",
+    "https://ecfr.eu/profile/jim-obrien/",
+    "https://ecfr.eu/profile/ivan-krastev/",
+    "https://www.eib.org/en/projects/topics/global/global-advisory-council.htm"
+  ]
+}
