@@ -112,7 +112,7 @@ jobs:
       - name: Build RNC receipt importer
         run: |
           mkdir -p bin
-          nim c -d:release --opt:speed --mm:orc \
+          nim c -d:release -d:ssl --opt:speed --mm:orc \
             --out:bin/import-gop-receipts \
             scripts/import_gop_fec_deidentified_receipts.nim
 
