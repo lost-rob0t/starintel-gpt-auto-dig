@@ -1,10 +1,13 @@
-import std/[base64, os, osproc, strutils, tables, algorithm]
+import std/[base64, os, osproc, streams, strutils, tables, algorithm]
 
 
 type PacketFile* = object
   target*: string
   run*: string
   path*: string
+
+
+type LineVisitor* = proc(line: string; lineNumber: int) {.closure.}
 
 
 proc transportPriority(path: string): int =
@@ -19,6 +22,10 @@ proc transportPriority(path: string): int =
 
 proc isTransport*(path: string): bool =
   transportPriority(path) < 99
+
+
+proc shellQuote(value: string): string =
+  "'" & value.replace("'", "'\"'\"'") & "'"
 
 
 proc gunzip(data: string): string =
@@ -42,6 +49,45 @@ proc readTransport*(path: string): string =
   if path.endsWith(".gz.b64"):
     return gunzip(decode(readFile(path)))
   readFile(path)
+
+
+proc forEachTransportLine*(path: string; visitor: LineVisitor) =
+  if path.endsWith("starintel-documents.jsonl"):
+    var input = open(path, fmRead)
+    defer: input.close()
+    var line: string
+    var lineNumber = 0
+    while input.readLine(line):
+      inc lineNumber
+      visitor(line, lineNumber)
+    return
+
+  var command = ""
+  if path.endsWith(".parts"):
+    var parts: seq[string]
+    for rawName in readFile(path).splitLines:
+      let name = rawName.strip()
+      if name.len > 0:
+        parts.add(shellQuote(parentDir(path) / name))
+    if parts.len == 0:
+      raise newException(IOError, path & ": transport manifest contains no parts")
+    command = "cat " & parts.join(" ") & " | base64 -d | gzip -dc"
+  elif path.endsWith(".gz.b64"):
+    command = "base64 -d " & shellQuote(path) & " | gzip -dc"
+  else:
+    raise newException(ValueError, "unsupported StarIntel transport: " & path)
+
+  let process = startProcess("sh", args = ["-c", command], options = {poUsePath})
+  let stream = process.outputStream
+  var line: string
+  var lineNumber = 0
+  while stream.readLine(line):
+    inc lineNumber
+    visitor(line, lineNumber)
+  let code = process.waitForExit()
+  process.close()
+  if code != 0:
+    raise newException(IOError, path & ": transport decode command failed with exit code " & $code)
 
 
 proc packetFiles*(root: string): seq[PacketFile] =
