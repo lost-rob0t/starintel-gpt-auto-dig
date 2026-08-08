@@ -23,13 +23,9 @@ This packet adds the supplied YouTube lead to the Flock Safety dataset and separ
 
 - analysis: 1
 - claim: 1
-- event: 1
-- investigation-target: 1
 - org: 3
 - person: 3
-- relation: 5
-- research-pass: 1
-- total: **16**
+- total: **8**
 
 ## Evidence boundaries
 
