@@ -14,7 +14,7 @@ task buildFast, "Build speed-critical StarIntel binaries":
   exec "nim c " & nimFlags & " --path:" & runtimePath & " --out:bin/starintel-validate scripts/starintel_validate.nim"
   exec "nim c " & nimFlags & " --out:bin/starintel-site scripts/starintel_site.nim"
   exec "nim c " & nimFlags & " --out:bin/validate-for-merge scripts/validate-for-merge.nim"
-  exec "nim c " & nimFlags & " --out:bin/import-gop-receipts scripts/import_gop_fec_deidentified_receipts.nim"
+  exec "nim c " & nimFlags & " -d:ssl --out:bin/import-gop-receipts scripts/import_gop_fec_deidentified_receipts.nim"
 
 task validate, "Validate corpus and emit ./unverifed source audit":
   exec "nimble buildFast"
