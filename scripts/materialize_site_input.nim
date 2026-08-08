@@ -128,16 +128,19 @@ proc main() =
   var documents = 0
 
   if dirExists(args.dbRoot):
-    for path in walkDirRec(args.dbRoot):
-      if not path.endsWith(".ndjson"):
+    for dtypeKind, dtypePath in walkDir(args.dbRoot):
+      if dtypeKind != pcDir:
         continue
-      let document = readDocument(path)
-      let dataset = datasetOf(document)
-      let key = (inferTarget(dataset, mappings), slug(dataset))
-      if not grouped.hasKey(key):
-        grouped[key] = @[]
-      grouped[key].add(document)
-      inc documents
+      for fileKind, path in walkDir(dtypePath):
+        if fileKind != pcFile or not path.endsWith(".ndjson"):
+          continue
+        let document = readDocument(path)
+        let dataset = datasetOf(document)
+        let key = (inferTarget(dataset, mappings), slug(dataset))
+        if not grouped.hasKey(key):
+          grouped[key] = @[]
+        grouped[key].add(document)
+        inc documents
 
   var keys = toSeq(grouped.keys)
   keys.sort(proc(a, b: GroupKey): int =
