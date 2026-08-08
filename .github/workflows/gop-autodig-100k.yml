@@ -75,25 +75,27 @@ jobs:
         include:
           - lane: fec-committees
             command: python3 scripts/run_gop_fec_variant.py import_dnc_fec_democratic_committees.py
-            paths: digs/gop/2026-07-31-fec-republican-committees-2026
+            paths: digs/gop/2026-08-08-fec-republican-committees-2026
           - lane: fec-candidates
             command: python3 scripts/run_gop_fec_variant.py import_dnc_fec_democratic_candidates.py
-            paths: digs/gop/2026-07-31-fec-republican-candidates-2026
+            paths: digs/gop/2026-08-08-fec-republican-candidates-2026
           - lane: fec-committee-transactions
             command: python3 scripts/run_gop_fec_variant.py import_dnc_fec_committee_transactions.py
-            paths: digs/gop/2026-07-31-fec-republican-committee-transactions-2026
+            paths: digs/gop/2026-08-08-fec-republican-committee-transactions-2026
           - lane: fec-independent-expenditures
             command: python3 scripts/run_gop_fec_variant.py import_dnc_fec_independent_expenditures.py
-            paths: digs/gop/2026-07-31-fec-independent-expenditures-republican-candidates-2026
+            paths: digs/gop/2026-08-08-fec-independent-expenditures-republican-candidates-2026
           - lane: fec-operating-expenditures
             command: python3 scripts/run_gop_fec_variant.py import_dnc_fec_oppexp.py
-            paths: digs/gop/2026-07-31-fec-operating-expenditures-2026
+            paths: digs/gop/2026-08-08-fec-operating-expenditures-2026
           - lane: fec-administrative-fines
             command: python3 scripts/run_gop_fec_variant.py import_dnc_fec_administrative_fines.py
-            paths: digs/gop/2026-07-31-fec-administrative-fines
+            paths: digs/gop/2026-08-08-fec-administrative-fines
           - lane: fec-deidentified-receipts
-            command: python3 scripts/import_gop_fec_deidentified_receipts.py
-            paths: digs/gop/2026-07-31-fec-individual-contributions-2026
+            command: >-
+              python3 scripts/import_gop_fec_deidentified_receipts.py
+              --output digs/gop/2026-08-08-fec-individual-contributions-2026
+            paths: digs/gop/2026-08-08-fec-individual-contributions-2026
     runs-on: ubuntu-latest
     timeout-minutes: 540
     steps:
@@ -187,13 +189,13 @@ jobs:
           from pathlib import Path
 
           roots = [
-              Path('digs/gop/2026-07-31-fec-republican-committees-2026'),
-              Path('digs/gop/2026-07-31-fec-republican-candidates-2026'),
-              Path('digs/gop/2026-07-31-fec-republican-committee-transactions-2026'),
-              Path('digs/gop/2026-07-31-fec-independent-expenditures-republican-candidates-2026'),
-              Path('digs/gop/2026-07-31-fec-operating-expenditures-2026'),
-              Path('digs/gop/2026-07-31-fec-administrative-fines'),
-              Path('digs/gop/2026-07-31-fec-individual-contributions-2026'),
+              Path('digs/gop/2026-08-08-fec-republican-committees-2026'),
+              Path('digs/gop/2026-08-08-fec-republican-candidates-2026'),
+              Path('digs/gop/2026-08-08-fec-republican-committee-transactions-2026'),
+              Path('digs/gop/2026-08-08-fec-independent-expenditures-republican-candidates-2026'),
+              Path('digs/gop/2026-08-08-fec-operating-expenditures-2026'),
+              Path('digs/gop/2026-08-08-fec-administrative-fines'),
+              Path('digs/gop/2026-08-08-fec-individual-contributions-2026'),
           ]
           manifests = []
           total = 0
@@ -220,13 +222,13 @@ jobs:
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           git add \
-            digs/gop/2026-07-31-fec-republican-committees-2026 \
-            digs/gop/2026-07-31-fec-republican-candidates-2026 \
-            digs/gop/2026-07-31-fec-republican-committee-transactions-2026 \
-            digs/gop/2026-07-31-fec-independent-expenditures-republican-candidates-2026 \
-            digs/gop/2026-07-31-fec-operating-expenditures-2026 \
-            digs/gop/2026-07-31-fec-administrative-fines \
-            digs/gop/2026-07-31-fec-individual-contributions-2026
+            digs/gop/2026-08-08-fec-republican-committees-2026 \
+            digs/gop/2026-08-08-fec-republican-candidates-2026 \
+            digs/gop/2026-08-08-fec-republican-committee-transactions-2026 \
+            digs/gop/2026-08-08-fec-independent-expenditures-republican-candidates-2026 \
+            digs/gop/2026-08-08-fec-operating-expenditures-2026 \
+            digs/gop/2026-08-08-fec-administrative-fines \
+            digs/gop/2026-08-08-fec-individual-contributions-2026
           if git diff --cached --quiet; then
             echo 'Successful GOP packets are unchanged.'
             exit 0
