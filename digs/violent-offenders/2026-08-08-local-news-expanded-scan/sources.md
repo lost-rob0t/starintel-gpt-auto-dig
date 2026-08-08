@@ -37,17 +37,24 @@
 ## 8. Angel Javier Rodriguez — Houston, Texas
 
 - KPRC / Click2Houston (2026-07-26): https://www.click2houston.com/news/local/2026/07/26/two-killed-in-shooting-in-north-harris-county-suspect-flees-hcso-says/
+- ABC13 Houston (2026-07-27): https://abc13.com/post/woman-man-killed-shooting-north-harris-county-suspect-fled-scene-hcso-says/19580608/
+- Houston Chronicle (2026-07-26/27): https://www.houstonchronicle.com/news/houston-texas/trending/article/north-houston-shooting-man-woman-sunday-22360905.php
 
 ## 9. Cody Prince — Houston, Texas
 
-- KPRC / Click2Houston (2026-07-18): https://www.click2houston.com/news/local/2026/07/19/hcso-is-investigating-a-fatal-shooting-in-northeast-harris-county/
+- KPRC / Click2Houston (2026-07-19): https://www.click2houston.com/news/local/2026/07/19/hcso-is-investigating-a-fatal-shooting-in-northeast-harris-county/
+- ABC13 Houston (2026-07-19): https://abc13.com/amp/post/woman-killed-northeast-harris-county-shooting-sheriffs-office-says/19535159/
 
 ## 10. Jonathan Castelan — El Monte, California
 
 - NBC Los Angeles (2026-07-22): https://www.nbclosangeles.com/news/local/el-monte-deadly-stabbing-arrest/3920554/
+- CBS Los Angeles (2026-07-22): https://www.cbsnews.com/losangeles/news/el-monte-teenager-fatally-stabbed-aziel-zacapala-arrest-made-rosemead-high-school-football/
+- FOX 11 Los Angeles (2026-07-23): https://www.foxla.com/news/18-year-old-charged-murder-fatal-el-monte-stabbing-15-year-old-football-player
+- MyNewsLA (2026-07-22): https://mynewsla.com/crime/2026/07/22/young-man-charged-in-stabbing-death-of-teen-in-el-monte/
 
 ## Intake notes
 
 - Victim names are deliberately excluded from the normalized packet.
 - Publication dates span June 15 through August 5, 2026 because the user authorized widening the time window to reach approximately ten solid cases.
-- Single-news-source cases remain draft until the normal identity/publication gate is satisfied.
+- The three initially single-news-source cases were independently corroborated on 2026-08-08. All 10 named-person identity gates now pass under the dataset rule.
+- Criminal allegations remain allegations unless a disposition record establishes otherwise.
