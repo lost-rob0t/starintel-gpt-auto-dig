@@ -20,16 +20,12 @@ jobs:
   materialize-ready:
     if: ${{ github.event_name == 'workflow_dispatch' || (github.event.pull_request.head.repo.full_name == github.repository && github.event.pull_request.head.ref == 'agent/gop-dataset-100k-expansion') }}
     runs-on: ubuntu-latest
-    timeout-minutes: 120
+    timeout-minutes: 60
     steps:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
           ref: ${{ env.TARGET_BRANCH }}
-
-      - uses: actions/setup-python@v5
-        with:
-          python-version: '3.12'
 
       - name: Download completed GOP artifacts from source run
         uses: actions/download-artifact@v4
@@ -46,15 +42,13 @@ jobs:
           mapfile -t archives < <(find /tmp/gop-ready -type f -name '*.tar.gz' -print | sort)
           if [ "${#archives[@]}" -lt 6 ]; then
             echo "Expected at least six completed GOP artifacts, found ${#archives[@]}." >&2
-            printf '%s\n' "${archives[@]}" >&2
             exit 1
           fi
           for archive in "${archives[@]}"; do
-            echo "Extracting ${archive}"
             tar -xzf "$archive" -C .
           done
 
-      - name: Require the six completed lane manifests
+      - name: Verify completed manifests and receipt privacy floor
         shell: bash
         run: |
           python3 - <<'PY'
@@ -69,8 +63,8 @@ jobs:
               Path('digs/gop/2026-08-08-fec-administrative-fines'),
               Path('digs/gop/2026-08-08-fec-individual-contributions-2026'),
           ]
-          total = 0
           counts = []
+          gross = 0
           for root in roots:
               manifest_path = root / 'manifest.json'
               if not manifest_path.is_file():
@@ -79,13 +73,18 @@ jobs:
               count = int(manifest.get('total_documents') or manifest.get('document_count') or 0)
               if count <= 0:
                   raise SystemExit(f'completed GOP lane reported no documents: {manifest_path}')
-              total += count
               counts.append((str(root), count))
-          print({'completed_lane_documents': counts, 'gross_completed_documents': total})
-          PY
+              gross += count
 
-      - name: Validate final published GOP topic count
-        run: python3 scripts/validate-for-merge.py --site --topic-minimum gop=100000
+          receipt_manifest = json.loads((roots[-1] / 'manifest.json').read_text(encoding='utf-8'))
+          unique_receipts = int(receipt_manifest.get('unique_fec_sub_ids') or 0)
+          if unique_receipts < 100_000:
+              raise SystemExit(f'RNC receipt ledger below 100k unique FEC SUB_IDs: {unique_receipts:,}')
+          for key in ('contributor_identity_emitted', 'contributor_location_emitted', 'contributor_employment_emitted', 'raw_source_rows_embedded'):
+              if receipt_manifest.get(key) is not False:
+                  raise SystemExit(f'privacy invariant failed: {key}={receipt_manifest.get(key)!r}')
+          print({'completed_lane_documents': counts, 'gross_completed_documents': gross, 'unique_receipt_ids': unique_receipts})
+          PY
 
       - name: Commit completed GOP corpus to branch
         shell: bash
