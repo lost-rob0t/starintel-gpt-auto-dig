@@ -1,4 +1,4 @@
-import std/[algorithm, json, os, osproc, sets, strformat, strutils, tables, uri]
+import std/[algorithm, json, os, osproc, sequtils, sets, strformat, strutils, tables, uri]
 
 import starintel_transport
 
@@ -59,15 +59,15 @@ proc cleanDir(path: string) =
 
 
 proc slug(value: string): string =
-  var text = value.toLowerAscii().strip()
-  if text.startsWith("starintel:"):
-    text = text[10 .. ^1]
+  var source = value.toLowerAscii().strip()
+  if source.startsWith("starintel:"):
+    source = source[10 .. ^1]
   var previousDash = false
-  for ch in text:
+  for ch in source:
     if ch in {'a'..'z', '0'..'9'}:
       result.add(ch)
       previousDash = false
-    elif not previousDash and result.len > 0:
+    elif result.len > 0 and not previousDash:
       result.add('-')
       previousDash = true
   result = result.strip(chars = {'-'})
@@ -103,7 +103,7 @@ proc recordSummary(node: JsonNode): string =
   result = jsonText(node, "summary")
   if result.len == 0:
     result = jsonText(node, "description")
-  if result.len == 0 and node.hasKey("data") and node["data"].kind == JObject:
+  if result.len == 0 and node.kind == JObject and node.hasKey("data") and node["data"].kind == JObject:
     for key in ["description", "definition", "claim", "bio", "business", "mission"]:
       result = jsonText(node["data"], key)
       if result.len > 0:
@@ -114,7 +114,7 @@ proc recordSummary(node: JsonNode): string =
 
 proc displayTitle(node: JsonNode): string =
   result = jsonText(node, "title")
-  if result.len == 0 and node.hasKey("data") and node["data"].kind == JObject:
+  if result.len == 0 and node.kind == JObject and node.hasKey("data") and node["data"].kind == JObject:
     for key in ["display_name", "name", "full_name"]:
       result = jsonText(node["data"], key)
       if result.len > 0:
@@ -144,6 +144,18 @@ proc sortedIds(bucket: Bucket): seq[string] =
   result.sort()
 
 
+proc sortedSet(values: HashSet[string]): seq[string] =
+  for value in values:
+    result.add(value)
+  result.sort()
+
+
+proc jsonStrings(values: seq[string]): JsonNode =
+  result = newJArray()
+  for value in values:
+    result.add(%value)
+
+
 proc stringList(node: JsonNode): seq[string] =
   if node.kind != JArray:
     return
@@ -152,12 +164,22 @@ proc stringList(node: JsonNode): seq[string] =
       result.add(item.getStr())
 
 
-proc loadSiteConfig(path: string): SiteConfig =
-  result.title = "StarIntel GPT Auto Dig"
+proc emptySiteConfig(title = "StarIntel GPT Auto Dig"): SiteConfig =
+  result.title = title
   result.excludedIds = initHashSet[string]()
   result.databaseTargets = initTable[string, string]()
   result.packetTitles = initTable[string, string]()
   result.packetSubtitles = initTable[string, string]()
+
+
+proc topicSiteConfig(target, title, subtitle: string): SiteConfig =
+  result = emptySiteConfig(title)
+  result.packetTitles[target] = title
+  result.packetSubtitles[target] = subtitle
+
+
+proc loadSiteConfig(path: string): SiteConfig =
+  result = emptySiteConfig()
   if not fileExists(path):
     return
   let root = parseFile(path)
@@ -199,25 +221,23 @@ proc loadTopicConfig(path: string): TopicConfig =
     rule.title = jsonText(item, "title", rule.id.replace("-", " "))
     rule.subtitle = jsonText(item, "subtitle", "Merged topical dataset for " & rule.id)
     if item.hasKey("match") and item["match"].kind == JObject:
-      let match = item["match"]
-      if match.hasKey("targets"):
-        for value in stringList(match["targets"]): rule.targets.add(slug(value))
-      if match.hasKey("datasets"):
-        for value in stringList(match["datasets"]): rule.datasets.add(slug(value))
-      if match.hasKey("terms"):
-        for value in stringList(match["terms"]): rule.terms.add(value.toLowerAscii().strip())
+      let matcher = item["match"]
+      if matcher.hasKey("targets"):
+        for value in stringList(matcher["targets"]):
+          rule.targets.add(slug(value))
+      if matcher.hasKey("datasets"):
+        for value in stringList(matcher["datasets"]):
+          rule.datasets.add(slug(value))
+      if matcher.hasKey("terms"):
+        for value in stringList(matcher["terms"]):
+          rule.terms.add(value.toLowerAscii().strip())
     result.rules.add(rule)
 
 
 proc inferDbTarget(dataset: string; config: SiteConfig): string =
   if config.databaseTargets.hasKey(dataset):
     return config.databaseTargets[dataset]
-  var candidate = slug(dataset)
-  if candidate.len >= 10:
-    let tail = candidate[^10 .. ^1]
-    if tail[0] == '2' and tail[4] == '-' and tail[7] == '-':
-      candidate.setLen(candidate.len - 11)
-  if candidate.len == 0: slug(dataset) else: candidate
+  result = slug(dataset)
 
 
 proc makeRecord(document: JsonNode; target, run, path: string): Record =
@@ -242,7 +262,7 @@ proc addRecord(targets: var Table[string, Bucket]; complete: Bucket; record: Rec
   putLatest(complete, record)
 
 
-proc scanCorpus(inputRoot, dbRoot: string; config: SiteConfig): tuple[Table[string, Bucket], Bucket] =
+proc scanCorpus(inputRoot, dbRoot: string; config: SiteConfig): tuple[targets: Table[string, Bucket], complete: Bucket] =
   var targets = initTable[string, Bucket]()
   let complete = newBucket()
 
@@ -258,7 +278,6 @@ proc scanCorpus(inputRoot, dbRoot: string; config: SiteConfig): tuple[Table[stri
 
   for path in dbFiles(dbRoot):
     var input = open(path, fmRead)
-    defer: input.close()
     var raw: string
     var lineNumber = 0
     while input.readLine(raw):
@@ -267,11 +286,13 @@ proc scanCorpus(inputRoot, dbRoot: string; config: SiteConfig): tuple[Table[stri
         continue
       let document = parseJson(raw)
       if document.kind != JObject:
+        input.close()
         raise newException(ValueError, &"{path}:{lineNumber}: expected JSON object")
       let dataset = jsonText(document, "dataset", "database")
       addRecord(targets, complete, makeRecord(document, inferDbTarget(dataset, config), "db", path), config)
+    input.close()
 
-  (targets, complete)
+  result = (targets, complete)
 
 
 proc graphEligible(dtype: string): bool =
@@ -288,7 +309,8 @@ proc endpointIds(value: JsonNode): seq[string] =
   of JArray:
     for item in value.items:
       result.add(endpointIds(item))
-  else: discard
+  else:
+    discard
 
 
 proc buildGraph(bucket: Bucket): JsonNode =
@@ -329,11 +351,14 @@ proc buildGraph(bucket: Bucket): JsonNode =
       continue
     let predicate = jsonText(data, "predicate", "related to").replace("_", " ")
     for source in endpointIds(data["subject"]):
-      if source notin nodeIds: continue
+      if source notin nodeIds:
+        continue
       for target in endpointIds(data["object"]):
-        if target notin nodeIds or target == source: continue
+        if target notin nodeIds or target == source:
+          continue
         let key = source & "\x1f" & target & "\x1f" & predicate
-        if key in edgeKeys: continue
+        if key in edgeKeys:
+          continue
         edgeKeys.incl(key)
         edges.add(%*{
           "source": source,
@@ -343,7 +368,7 @@ proc buildGraph(bucket: Bucket): JsonNode =
           "reviewed": true
         })
 
-  %*{
+  result = %*{
     "nodes": nodes,
     "edges": edges,
     "meta": {
@@ -369,21 +394,24 @@ proc page(pageTitle, bodyMarkup, prefix: string): string =
   result.add("</main><script src=\"" & prefix & "assets/theme.js\"></script></body></html>")
 
 
-proc writeJsonArray(path: string; bucket: Bucket; mapRecord: proc(record: Record): JsonNode {.closure.}) =
+proc writeJsonArray(path: string; bucket: Bucket; mapper: proc(record: Record): JsonNode {.closure.}) =
   var output = open(path, fmWrite)
-  defer: output.close()
+  defer:
+    output.close()
   output.write("[")
   var first = true
   for id in sortedIds(bucket):
-    if not first: output.write(",")
+    if not first:
+      output.write(",")
     first = false
-    output.write($mapRecord(bucket.docs[id]))
+    output.write($mapper(bucket.docs[id]))
   output.write("]")
 
 
 proc writeJsonl(path: string; bucket: Bucket) =
   var output = open(path, fmWrite)
-  defer: output.close()
+  defer:
+    output.close()
   for id in sortedIds(bucket):
     output.write($bucket.docs[id].document)
     output.write("\n")
@@ -391,13 +419,15 @@ proc writeJsonl(path: string; bucket: Bucket) =
 
 proc sourceKey(source: JsonNode): string =
   case source.kind
-  of JString: source.getStr()
+  of JString:
+    result = source.getStr()
   of JObject:
     for key in ["source_id", "uri", "url"]:
       if source.hasKey(key) and source[key].kind == JString and source[key].getStr().len > 0:
         return source[key].getStr()
-    $source
-  else: $source
+    result = $source
+  else:
+    result = $source
 
 
 proc sourceInventory(bucket: Bucket): seq[(string, int)] =
@@ -416,16 +446,23 @@ proc sourceInventory(bucket: Bucket): seq[(string, int)] =
     result.add((key, count))
   result.sort(proc(a, b: (string, int)): int =
     result = cmp(b[1], a[1])
-    if result == 0: result = cmp(a[0], b[0])
+    if result == 0:
+      result = cmp(a[0], b[0])
   )
 
 
 proc targetTitle(target: string; config: SiteConfig): string =
-  if config.packetTitles.hasKey(target): config.packetTitles[target] else: target.replace("-", " ")
+  if config.packetTitles.hasKey(target):
+    result = config.packetTitles[target]
+  else:
+    result = target.replace("-", " ")
 
 
 proc targetSubtitle(target: string; config: SiteConfig): string =
-  if config.packetSubtitles.hasKey(target): config.packetSubtitles[target] else: "StarIntel public-record research"
+  if config.packetSubtitles.hasKey(target):
+    result = config.packetSubtitles[target]
+  else:
+    result = "StarIntel public-record research"
 
 
 proc writeTarget(target: string; bucket: Bucket; output, orgOutput: string; config: SiteConfig) =
@@ -440,7 +477,7 @@ proc writeTarget(target: string; bucket: Bucket; output, orgOutput: string; conf
   let graph = buildGraph(bucket)
   writeFile(targetOut / "graph.json", $graph)
   writeJsonArray(targetOut / "documents.json", bucket, proc(record: Record): JsonNode =
-    %*{
+    result = %*{
       "id": record.id,
       "title": record.title,
       "dtype": record.dtype,
@@ -480,8 +517,7 @@ proc writeTarget(target: string; bucket: Bucket; output, orgOutput: string; conf
     inc nodeCount
     if nodeCount > NodePageLimit:
       break
-    let raw = htmlEscape(record.document.pretty())
-    let nodeBody = "<div class=\"crumb\"><a href=\"../documents.html\">← documents</a></div><h1>" & htmlEscape(record.title) & "</h1><p class=\"lede\">" & htmlEscape(record.summary) & "</p><pre>" & raw & "</pre>"
+    let nodeBody = "<div class=\"crumb\"><a href=\"../documents.html\">← documents</a></div><h1>" & htmlEscape(record.title) & "</h1><p class=\"lede\">" & htmlEscape(record.summary) & "</p><pre>" & htmlEscape(record.document.pretty()) & "</pre>"
     writeFile(nodeOut / (slug(record.id) & ".html"), page(record.title, nodeBody, "../../"))
     let org = "#+title: " & record.title.replace("\n", " ") & "\n#+description: " & record.summary.replace("\n", " ") & "\n\n* Raw StarIntel Document\n\n#+begin_src json\n" & record.document.pretty() & "\n#+end_src\n"
     writeFile(orgOut / (slug(record.id) & ".org"), org)
@@ -492,18 +528,24 @@ proc directTopicMatch(rule: TopicRule; record: Record): bool =
   let target = slug(record.target)
   let dataset = slug(record.dataset)
   for value in rule.targets:
-    if value.len > 0 and target.contains(value): return true
+    if value.len > 0 and target.contains(value):
+      return true
   for value in rule.datasets:
-    if value.len > 0 and value == dataset: return true
+    if value.len > 0 and value == dataset:
+      return true
   false
 
 
 proc termTopicMatch(rule: TopicRule; record: Record): bool =
   if rule.terms.len == 0:
     return false
-  let text = (record.target & " " & record.dataset & " " & record.title & " " & record.summary & " " & $record.document.getOrDefault("data")).toLowerAscii()
+  var dataText = ""
+  if record.document.hasKey("data"):
+    dataText = $record.document["data"]
+  let text = (record.target & " " & record.dataset & " " & record.title & " " & record.summary & " " & dataText).toLowerAscii()
   for term in rule.terms:
-    if term.len > 0 and text.contains(term): return true
+    if term.len > 0 and text.contains(term):
+      return true
   false
 
 
@@ -517,7 +559,11 @@ proc topicRulesFor(record: Record; topics: TopicConfig): seq[TopicRule] =
     if termTopicMatch(rule, record):
       result.add(rule)
   if result.len == 0:
-    result.add(TopicRule(id: slug(record.target), title: record.target.replace("-", " "), subtitle: "Merged dataset for all " & record.target.replace("-", " ") & " research packets"))
+    result.add(TopicRule(
+      id: slug(record.target),
+      title: record.target.replace("-", " "),
+      subtitle: "Merged dataset for all " & record.target.replace("-", " ") & " research packets"
+    ))
 
 
 proc writeTopicDatasets(targets: Table[string, Bucket]; output, orgOutput: string; topics: TopicConfig): seq[JsonNode] =
@@ -531,15 +577,19 @@ proc writeTopicDatasets(targets: Table[string, Bucket]; output, orgOutput: strin
       for rule in topicRulesFor(record, topics):
         putLatest(getBucket(topicBuckets, rule.id), record)
         topicMeta[rule.id] = rule
-        if not topicTargets.hasKey(rule.id): topicTargets[rule.id] = initHashSet[string]()
+        if not topicTargets.hasKey(rule.id):
+          topicTargets[rule.id] = initHashSet[string]()
         topicTargets[rule.id].incl(target)
         if slug(record.dataset) notin topics.excludedDatasets:
-          if not topicDatasets.hasKey(rule.id): topicDatasets[rule.id] = initHashSet[string]()
+          if not topicDatasets.hasKey(rule.id):
+            topicDatasets[rule.id] = initHashSet[string]()
           topicDatasets[rule.id].incl(record.dataset)
 
   var ids: seq[string]
-  for id in topicBuckets.keys: ids.add(id)
+  for id in topicBuckets.keys:
+    ids.add(id)
   ids.sort()
+
   for id in ids:
     let bucket = topicBuckets[id]
     let meta = topicMeta[id]
@@ -548,17 +598,17 @@ proc writeTopicDatasets(targets: Table[string, Bucket]; output, orgOutput: strin
     let downloads = targetOut / "downloads"
     ensureDir(targetOut)
     ensureDir(downloads)
-    writeJsonl(downloads / "starintel-documents.jsonl", bucket)
+
+    writeTarget(target, bucket, output, orgOutput, topicSiteConfig(target, meta.title, meta.subtitle))
     let manifest = %*{
       "topic_dataset": id,
       "title": meta.title,
       "record_count": bucket.docs.len,
-      "source_targets": (if topicTargets.hasKey(id): toSeq(topicTargets[id]) else: newSeq[string]()),
-      "source_datasets": (if topicDatasets.hasKey(id): toSeq(topicDatasets[id]) else: newSeq[string]())
+      "source_targets": jsonStrings(if topicTargets.hasKey(id): sortedSet(topicTargets[id]) else: @[]),
+      "source_datasets": jsonStrings(if topicDatasets.hasKey(id): sortedSet(topicDatasets[id]) else: @[])
     }
     writeFile(downloads / "topic-manifest.json", manifest.pretty() & "\n")
     writeFile(downloads / "research-history.json", $(%*[manifest]))
-    writeTarget(target, bucket, output, orgOutput, SiteConfig(title: meta.title, excludedIds: initHashSet[string](), databaseTargets: initTable[string, string](), packetTitles: {target: meta.title}.toTable, packetSubtitles: {target: meta.subtitle}.toTable))
     result.add(%*{
       "dataset": id,
       "title": meta.title,
@@ -573,7 +623,8 @@ proc writeTopicDatasets(targets: Table[string, Bucket]; output, orgOutput: strin
 proc writeAssets(assets, output: string) =
   let destination = output / "assets"
   ensureDir(destination)
-  if not dirExists(assets): return
+  if not dirExists(assets):
+    return
   for path in walkDirRec(assets):
     if fileExists(path):
       copyFile(path, destination / lastPathPart(path))
@@ -584,14 +635,26 @@ proc writeCompleteCorpus(complete: Bucket; output: string) =
   ensureDir(downloads)
   let corpus = downloads / "starintel-complete-corpus.jsonl"
   writeJsonl(corpus, complete)
-  let digest = execProcess("sha256sum", args = [corpus], options = {poUsePath}).splitWhitespace()[0]
+  let digestOutput = execProcess("sha256sum", args = [corpus], options = {poUsePath}).splitWhitespace()
+  if digestOutput.len == 0:
+    raise newException(IOError, "sha256sum produced no corpus digest")
+  let digest = digestOutput[0]
+
   var counts = initTable[string, int]()
   var updated = ""
   var versions = initHashSet[string]()
   for record in complete.docs.values:
     counts[record.dtype] = counts.getOrDefault(record.dtype) + 1
-    updated = max(updated, record.updated)
-    versions.incl(jsonText(record.document, "schema_version"))
+    if record.updated > updated:
+      updated = record.updated
+    let version = jsonText(record.document, "schema_version")
+    if version.len > 0:
+      versions.incl(version)
+
+  var countNode = newJObject()
+  for dtype, count in counts.pairs:
+    countNode[dtype] = %count
+
   let manifest = %*{
     "_id": "starintel:dataset-manifest:auto-dig-complete-corpus",
     "dataset": "starintel-auto-dig-complete-corpus",
@@ -606,12 +669,16 @@ proc writeCompleteCorpus(complete: Bucket; output: string) =
     "data": {
       "manifest_type": "dataset",
       "name": "StarIntel Auto Dig complete corpus",
-      "counts_by_dtype": counts,
+      "counts_by_dtype": countNode,
       "record_count": complete.docs.len,
       "hash_algorithm": "sha256",
       "content_hash": digest,
-      "files": [{"path": "starintel-complete-corpus.jsonl", "media_type": "application/x-ndjson", "size_bytes": getFileSize(corpus)}],
-      "schema_versions": toSeq(versions),
+      "files": [{
+        "path": "starintel-complete-corpus.jsonl",
+        "media_type": "application/x-ndjson",
+        "size_bytes": getFileSize(corpus)
+      }],
+      "schema_versions": jsonStrings(sortedSet(versions)),
       "generated_at": updated
     }
   }
@@ -622,7 +689,8 @@ proc writeRoot(targets: Table[string, Bucket]; complete: Bucket; topicRows: seq[
   var datasetRows = newJArray()
   var cards = newStringOfCap(targets.len * 256)
   var targetNames: seq[string]
-  for target in targets.keys: targetNames.add(target)
+  for target in targets.keys:
+    targetNames.add(target)
   targetNames.sort()
 
   for target in targetNames:
@@ -631,9 +699,11 @@ proc writeRoot(targets: Table[string, Bucket]; complete: Bucket; topicRows: seq[
     var byDataset = initTable[string, int]()
     var updatedByDataset = initTable[string, string]()
     for record in bucket.docs.values:
-      if slug(record.dataset) in topics.excludedDatasets: continue
+      if slug(record.dataset) in topics.excludedDatasets:
+        continue
       byDataset[record.dataset] = byDataset.getOrDefault(record.dataset) + 1
-      updatedByDataset[record.dataset] = max(updatedByDataset.getOrDefault(record.dataset), record.updated)
+      if record.updated > updatedByDataset.getOrDefault(record.dataset):
+        updatedByDataset[record.dataset] = record.updated
     for dataset, count in byDataset.pairs:
       datasetRows.add(%*{
         "dataset": dataset,
@@ -645,9 +715,12 @@ proc writeRoot(targets: Table[string, Bucket]; complete: Bucket; topicRows: seq[
       })
 
   writeFile(output / "datasets.json", $datasetRows)
-  writeFile(output / "topic-datasets.json", $(%topicRows))
+  var topicsNode = newJArray()
+  for row in topicRows:
+    topicsNode.add(row)
+  writeFile(output / "topic-datasets.json", $topicsNode)
   writeJsonArray(output / "search-index.json", complete, proc(record: Record): JsonNode =
-    %*{
+    result = %*{
       "target": record.target,
       "id": record.id,
       "title": record.title,
@@ -682,7 +755,8 @@ proc main(): int =
     let arg = paramStr(index)
     template take(): string =
       inc index
-      if index > paramCount(): raise newException(ValueError, "missing value for " & arg)
+      if index > paramCount():
+        raise newException(ValueError, "missing value for " & arg)
       paramStr(index)
     case arg
     of "--input": inputRoot = take()
@@ -692,8 +766,11 @@ proc main(): int =
     of "--config": configPath = take()
     of "--topics": topicsPath = take()
     of "--assets": assets = take()
-    of "-h", "--help": usage(); return 0
-    else: raise newException(ValueError, "unknown argument: " & arg)
+    of "-h", "--help":
+      usage()
+      return 0
+    else:
+      raise newException(ValueError, "unknown argument: " & arg)
     inc index
 
   cleanDir(output)
@@ -703,13 +780,16 @@ proc main(): int =
 
   let config = loadSiteConfig(configPath)
   let topics = loadTopicConfig(topicsPath)
-  let (targets, complete) = scanCorpus(inputRoot, dbRoot, config)
+  let scanned = scanCorpus(inputRoot, dbRoot, config)
+  let targets = scanned.targets
+  let complete = scanned.complete
   if complete.docs.len == 0:
     raise newException(ValueError, "no canonical StarIntel documents found")
 
   writeCompleteCorpus(complete, output)
   var names: seq[string]
-  for target in targets.keys: names.add(target)
+  for target in targets.keys:
+    names.add(target)
   names.sort()
   for target in names:
     writeTarget(target, targets[target], output, orgOutput, config)
