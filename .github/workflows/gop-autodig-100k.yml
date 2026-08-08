@@ -9,8 +9,10 @@ on:
       - .github/workflows/gop-autodig-100k.yml
       - scripts/run_gop_fec_variant.py
       - scripts/import_gop_fec_deidentified_receipts.py
+      - scripts/validate-for-merge.py
       - tests/test_gop_fec_deidentified_receipts.py
       - tests/test_gop_fec_variant_transform.py
+      - tests/test_validate_topic_minimums.py
   pull_request:
     branches:
       - main
@@ -18,8 +20,10 @@ on:
       - .github/workflows/gop-autodig-100k.yml
       - scripts/run_gop_fec_variant.py
       - scripts/import_gop_fec_deidentified_receipts.py
+      - scripts/validate-for-merge.py
       - tests/test_gop_fec_deidentified_receipts.py
       - tests/test_gop_fec_variant_transform.py
+      - tests/test_validate_topic_minimums.py
 
 concurrency:
   group: gop-autodig-100k-${{ github.ref }}
@@ -50,14 +54,19 @@ jobs:
           python3 -m py_compile \
             scripts/run_gop_fec_variant.py \
             scripts/import_gop_fec_deidentified_receipts.py \
+            scripts/validate-for-merge.py \
             tests/test_gop_fec_deidentified_receipts.py \
-            tests/test_gop_fec_variant_transform.py
+            tests/test_gop_fec_variant_transform.py \
+            tests/test_validate_topic_minimums.py
 
       - name: Test GOP transform semantics
         run: python3 tests/test_gop_fec_variant_transform.py
 
       - name: Test de-identified receipt fixture
         run: python3 tests/test_gop_fec_deidentified_receipts.py
+
+      - name: Test final topic-count gate
+        run: python3 tests/test_validate_topic_minimums.py
 
       - name: Compile every transformed GOP FEC importer
         run: |
@@ -196,7 +205,7 @@ jobs:
             tar -xzf "${archive}" -C .
           done
 
-      - name: Enforce 100k+ GOP document floor
+      - name: Require positive GOP lane manifests
         shell: bash
         run: |
           python3 - <<'PY'
@@ -213,7 +222,7 @@ jobs:
               Path('digs/gop/2026-08-08-fec-individual-contributions-2026'),
           ]
           manifests = []
-          total = 0
+          gross_total = 0
           for root in roots:
               manifest_path = root / 'manifest.json'
               if not manifest_path.is_file():
@@ -223,14 +232,12 @@ jobs:
               if count <= 0:
                   raise SystemExit(f'GOP lane reported no documents: {manifest_path}')
               manifests.append((str(root), count))
-              total += count
-          print({'lane_documents': manifests, 'total_generated_documents': total})
-          if total < 100_000:
-              raise SystemExit(f'GOP expansion below required floor: {total:,} < 100,000 documents')
+              gross_total += count
+          print({'lane_documents': manifests, 'gross_lane_documents': gross_total})
           PY
 
-      - name: Validate complete repository
-        run: python3 scripts/validate-for-merge.py --site
+      - name: Validate complete repository and final GOP topic count
+        run: python3 scripts/validate-for-merge.py --site --topic-minimum gop=100000
 
       - name: Commit complete GOP expansion atomically
         shell: bash
