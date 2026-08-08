@@ -16,12 +16,12 @@ ALLOWED = {
     "import_dnc_fec_democratic_candidates.py",
     "import_dnc_fec_democratic_committees.py",
     "import_dnc_fec_independent_expenditures.py",
-    "import_dnc_fec_individual_contributions.py",
     "import_dnc_fec_oppexp.py",
 }
 
 REPLACEMENTS = (
     ('PARTY_CODES = {"DEM", "DFL"}', 'PARTY_CODES = {"REP"}'),
+    ('MAX_MATCHING_ROWS = 50_000', 'MAX_MATCHING_ROWS = 250_000'),
     ('C00010603', 'C00003418'),
     ('starintel:org:dnc', 'starintel:org:republican-national-committee'),
     ('democratic-party-fec-affiliation', 'republican-party-fec-affiliation'),
@@ -90,10 +90,7 @@ def transform(source_path: Path) -> str:
 
     if "PARTY_CODES" in text and 'PARTY_CODES = {"REP"}' not in text:
         raise RuntimeError("party-filtering importer did not resolve to REP-only")
-    if source_path.name in {
-        "import_dnc_fec_individual_contributions.py",
-        "import_dnc_fec_oppexp.py",
-    } and 'COMMITTEE_ID = "C00003418"' not in text:
+    if source_path.name == "import_dnc_fec_oppexp.py" and 'COMMITTEE_ID = "C00003418"' not in text:
         raise RuntimeError("RNC-scoped importer did not resolve to C00003418")
 
     return text
@@ -102,6 +99,11 @@ def transform(source_path: Path) -> str:
 def main() -> int:
     ns, forwarded = parse_args()
     source_path = SCRIPTS / Path(ns.source).name
+    if source_path.name == "import_dnc_fec_individual_contributions.py":
+        raise RuntimeError(
+            "identity-bearing individual-contribution import is disabled for GOP; "
+            "use scripts/import_gop_fec_deidentified_receipts.py"
+        )
     if source_path.name not in ALLOWED:
         raise RuntimeError(f"unsupported GOP variant source: {source_path.name}")
     if not source_path.is_file():
