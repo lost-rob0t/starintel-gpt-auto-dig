@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import re
 import shutil
 import subprocess
 import sys
@@ -22,6 +23,29 @@ PAGES_CONTENT_BUDGET_BYTES = 9_000_000_000
 def run(command: list[str]) -> None:
     print("+", " ".join(command), flush=True)
     subprocess.run(command, cwd=ROOT, check=True)
+
+
+def topic_slug(value: str) -> str:
+    return re.sub(r"[^a-z0-9]+", "-", value.lower()).strip("-")
+
+
+def parse_topic_minimums(values: list[str]) -> dict[str, int]:
+    minimums: dict[str, int] = {}
+    for raw in values:
+        topic, separator, count_text = raw.partition("=")
+        topic = topic_slug(topic)
+        if not separator or not topic or not count_text.isdigit():
+            raise RuntimeError(
+                f"invalid --topic-minimum {raw!r}; expected TOPIC=NONNEGATIVE_INTEGER"
+            )
+        count = int(count_text)
+        old = minimums.get(topic)
+        if old is not None and old != count:
+            raise RuntimeError(
+                f"conflicting --topic-minimum values for {topic}: {old} and {count}"
+            )
+        minimums[topic] = count
+    return minimums
 
 
 def validate_generated_schema() -> None:
@@ -90,7 +114,27 @@ def validate_javascript() -> None:
         run(["node", str(test.relative_to(ROOT))])
 
 
-def validate_site() -> None:
+def validate_topic_minimums(site: Path, minimums: dict[str, int]) -> None:
+    for topic, minimum in sorted(minimums.items()):
+        manifest_path = site / f"dataset-{topic}" / "downloads" / "topic-manifest.json"
+        if not manifest_path.is_file():
+            raise RuntimeError(
+                f"site validation failed; required topic dataset is missing: dataset-{topic}"
+            )
+        manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+        record_count = int(manifest.get("record_count", -1))
+        print(
+            f"topic_dataset={topic} records={record_count} minimum={minimum}",
+            flush=True,
+        )
+        if record_count < minimum:
+            raise RuntimeError(
+                f"site validation failed; dataset-{topic} has {record_count:,} unique records, "
+                f"below required minimum {minimum:,}"
+            )
+
+
+def validate_site(topic_minimums: dict[str, int]) -> None:
     with tempfile.TemporaryDirectory(prefix="starintel-merge-") as directory:
         temporary = Path(directory)
         site = temporary / "site"
@@ -118,6 +162,7 @@ def validate_site() -> None:
         missing = [str(path) for path in required if not path.is_file() or path.stat().st_size == 0]
         if missing:
             raise RuntimeError(f"site validation failed; missing generated artifacts: {missing}")
+        validate_topic_minimums(site, topic_minimums)
         content_bytes = sum(path.stat().st_size for path in site.rglob("*") if path.is_file())
         if content_bytes >= PAGES_CONTENT_BUDGET_BYTES:
             raise RuntimeError(
@@ -131,6 +176,13 @@ def build_parser() -> argparse.ArgumentParser:
         description="Mandatory local and CI gate before merging StarIntel document changes"
     )
     parser.add_argument("--site", action="store_true", help="also build and validate the complete research site")
+    parser.add_argument(
+        "--topic-minimum",
+        action="append",
+        default=[],
+        metavar="TOPIC=COUNT",
+        help="require the generated topic dataset to contain at least COUNT unique records; repeatable and requires --site",
+    )
     parser.add_argument("--skip-git-diff-check", action="store_true")
     return parser
 
@@ -138,18 +190,21 @@ def build_parser() -> argparse.ArgumentParser:
 def main(argv: list[str] | None = None) -> int:
     args = build_parser().parse_args(argv)
     try:
+        topic_minimums = parse_topic_minimums(args.topic_minimum)
+        if topic_minimums and not args.site:
+            raise RuntimeError("--topic-minimum requires --site")
         run([sys.executable, "-m", "compileall", "-q", "starintel_doc", "scripts"])
         run([sys.executable, "-m", "unittest", "discover", "-s", "tests", "-v"])
         validate_javascript()
         validate_generated_schema()
         validate_corpus()
         if args.site:
-            validate_site()
+            validate_site(topic_minimums)
         if not args.skip_git_diff_check and (ROOT / ".git").exists():
             run(["git", "diff", "--check"])
         print("MERGE GATE: PASS")
         return 0
-    except (OSError, RuntimeError, subprocess.CalledProcessError) as exc:
+    except (OSError, RuntimeError, subprocess.CalledProcessError, ValueError, json.JSONDecodeError) as exc:
         print(f"MERGE GATE: FAIL: {exc}", file=sys.stderr)
         return 1
 
