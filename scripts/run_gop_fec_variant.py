@@ -50,6 +50,12 @@ def parse_args() -> tuple[argparse.Namespace, list[str]]:
     return parser.parse_known_args()
 
 
+def transformed_script_name(source_name: str) -> str:
+    name = source_name.replace("dnc", "gop")
+    name = name.replace("democratic", "republican")
+    return name
+
+
 def transform(source_path: Path) -> str:
     text = source_path.read_text(encoding="utf-8")
     if 'DATASET = "dnc"' not in text:
@@ -57,6 +63,12 @@ def transform(source_path: Path) -> str:
 
     for old, new in REPLACEMENTS:
         text = text.replace(old, new)
+
+    generated_name = transformed_script_name(source_path.name)
+    text = text.replace(
+        f"python3 scripts/{generated_name}",
+        f"python3 scripts/run_gop_fec_variant.py {source_path.name}",
+    )
 
     required = (
         'DATASET = "gop"',
@@ -78,6 +90,11 @@ def transform(source_path: Path) -> str:
 
     if "PARTY_CODES" in text and 'PARTY_CODES = {"REP"}' not in text:
         raise RuntimeError("party-filtering importer did not resolve to REP-only")
+    if source_path.name in {
+        "import_dnc_fec_individual_contributions.py",
+        "import_dnc_fec_oppexp.py",
+    } and 'COMMITTEE_ID = "C00003418"' not in text:
+        raise RuntimeError("RNC-scoped importer did not resolve to C00003418")
 
     return text
 
