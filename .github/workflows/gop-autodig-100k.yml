@@ -1,0 +1,190 @@
+name: GOP AutoDig 100k+ materialization
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - agent/gop-dataset-100k-expansion
+    paths:
+      - .github/workflows/gop-autodig-100k.yml
+      - scripts/run_gop_fec_variant.py
+      - scripts/deidentify_gop_fec_receipts.py
+
+permissions:
+  contents: write
+
+env:
+  PYTHONPATH: .
+  TARGET_BRANCH: agent/gop-dataset-100k-expansion
+
+jobs:
+  generate:
+    if: github.actor != 'github-actions[bot]'
+    strategy:
+      fail-fast: false
+      max-parallel: 7
+      matrix:
+        include:
+          - lane: fec-committees
+            command: python3 scripts/run_gop_fec_variant.py import_dnc_fec_democratic_committees.py
+            paths: digs/gop/2026-07-31-fec-republican-committees-2026
+          - lane: fec-candidates
+            command: python3 scripts/run_gop_fec_variant.py import_dnc_fec_democratic_candidates.py
+            paths: digs/gop/2026-07-31-fec-republican-candidates-2026
+          - lane: fec-committee-transactions
+            command: python3 scripts/run_gop_fec_variant.py import_dnc_fec_committee_transactions.py
+            paths: digs/gop/2026-07-31-fec-republican-committee-transactions-2026
+          - lane: fec-independent-expenditures
+            command: python3 scripts/run_gop_fec_variant.py import_dnc_fec_independent_expenditures.py
+            paths: digs/gop/2026-07-31-fec-independent-expenditures-republican-candidates-2026
+          - lane: fec-operating-expenditures
+            command: python3 scripts/run_gop_fec_variant.py import_dnc_fec_oppexp.py
+            paths: digs/gop/2026-07-31-fec-operating-expenditures-2026
+          - lane: fec-administrative-fines
+            command: python3 scripts/run_gop_fec_variant.py import_dnc_fec_administrative_fines.py
+            paths: digs/gop/2026-07-31-fec-administrative-fines
+          - lane: fec-deidentified-receipts
+            command: |
+              python3 scripts/run_gop_fec_variant.py import_dnc_fec_individual_contributions.py
+              python3 scripts/deidentify_gop_fec_receipts.py
+            paths: digs/gop/2026-07-31-fec-individual-contributions-2026
+    runs-on: ubuntu-latest
+    timeout-minutes: 540
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+          ref: ${{ env.TARGET_BRANCH }}
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Generate GOP lane
+        shell: bash
+        run: ${{ matrix.command }}
+
+      - name: Enforce GitHub-safe generated files
+        shell: bash
+        env:
+          GENERATED_PATHS: ${{ matrix.paths }}
+        run: |
+          python3 - <<'PY'
+          import os
+          from pathlib import Path
+
+          roots = [Path(value) for value in os.environ['GENERATED_PATHS'].splitlines() if value.strip()]
+          files = [path for root in roots for path in ([root] if root.is_file() else root.rglob('*')) if path.is_file()]
+          if not files:
+              raise SystemExit('lane emitted no files')
+          oversized = [(str(path), path.stat().st_size) for path in files if path.stat().st_size > 95_000_000]
+          if oversized:
+              raise SystemExit(f'oversized generated files: {oversized}')
+          print({'files': len(files), 'largest': max((path.stat().st_size, str(path)) for path in files)})
+          PY
+
+      - name: Package GOP lane
+        shell: bash
+        env:
+          GENERATED_PATHS: ${{ matrix.paths }}
+        run: |
+          mapfile -t paths < <(printf '%s\n' "$GENERATED_PATHS" | sed '/^[[:space:]]*$/d')
+          tar -czf "${{ matrix.lane }}.tar.gz" "${paths[@]}"
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: gop-lane-${{ matrix.lane }}
+          path: ${{ matrix.lane }}.tar.gz
+          if-no-files-found: error
+          retention-days: 3
+          compression-level: 0
+
+  materialize:
+    if: always() && github.actor != 'github-actions[bot]'
+    needs: generate
+    runs-on: ubuntu-latest
+    timeout-minutes: 540
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: ${{ env.TARGET_BRANCH }}
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: gop-lane-*
+          path: /tmp/gop-lanes
+
+      - name: Materialize successful GOP lane artifacts
+        shell: bash
+        run: |
+          set -euo pipefail
+          mapfile -t archives < <(find /tmp/gop-lanes -type f -name '*.tar.gz' -print | sort)
+          if [ "${#archives[@]}" -eq 0 ]; then
+            echo 'No GOP lane artifacts were produced.' >&2
+            exit 1
+          fi
+          for archive in "${archives[@]}"; do
+            echo "Extracting ${archive}"
+            tar -xzf "${archive}" -C .
+          done
+
+      - name: Enforce 100k+ GOP document floor
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+
+          roots = [
+              Path('digs/gop/2026-07-31-fec-republican-committees-2026'),
+              Path('digs/gop/2026-07-31-fec-republican-candidates-2026'),
+              Path('digs/gop/2026-07-31-fec-republican-committee-transactions-2026'),
+              Path('digs/gop/2026-07-31-fec-independent-expenditures-republican-candidates-2026'),
+              Path('digs/gop/2026-07-31-fec-operating-expenditures-2026'),
+              Path('digs/gop/2026-07-31-fec-administrative-fines'),
+              Path('digs/gop/2026-07-31-fec-individual-contributions-2026'),
+          ]
+          manifests = []
+          total = 0
+          for root in roots:
+              manifest_path = root / 'manifest.json'
+              if not manifest_path.is_file():
+                  continue
+              manifest = json.loads(manifest_path.read_text(encoding='utf-8'))
+              count = int(manifest.get('total_documents') or manifest.get('document_count') or 0)
+              manifests.append((str(root), count))
+              total += count
+          print({'lane_documents': manifests, 'total_generated_documents': total})
+          if total < 100_000:
+              raise SystemExit(f'GOP expansion below required floor: {total:,} < 100,000 documents')
+          PY
+
+      - name: Validate complete repository
+        run: python3 scripts/validate-for-merge.py --site
+
+      - name: Commit successful GOP expansion atomically
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add \
+            digs/gop/2026-07-31-fec-republican-committees-2026 \
+            digs/gop/2026-07-31-fec-republican-candidates-2026 \
+            digs/gop/2026-07-31-fec-republican-committee-transactions-2026 \
+            digs/gop/2026-07-31-fec-independent-expenditures-republican-candidates-2026 \
+            digs/gop/2026-07-31-fec-operating-expenditures-2026 \
+            digs/gop/2026-07-31-fec-administrative-fines \
+            digs/gop/2026-07-31-fec-individual-contributions-2026
+          if git diff --cached --quiet; then
+            echo 'Successful GOP packets are unchanged.'
+            exit 0
+          fi
+          git commit -m 'Materialize 100k+ GOP AutoDig FEC packets [skip ci]'
+          git pull --rebase origin "${TARGET_BRANCH}"
+          git push origin HEAD:${TARGET_BRANCH}
