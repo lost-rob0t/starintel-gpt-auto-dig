@@ -57,6 +57,7 @@ jobs:
           -f state=pending
           -f context='gop-autodig-100k/materialize'
           -f description='Generating seven GOP FEC lanes and validating final topic count'
+          -f target_url="https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"
 
       - uses: actions/setup-python@v5
         with:
@@ -308,7 +309,7 @@ jobs:
         run: |
           set -euo pipefail
           state=failure
-          description="GOP materialization failed before final topic validation"
+          description="preflight=${PREFLIGHT_RESULT} generate=${GENERATE_RESULT} materialize=${MATERIALIZE_RESULT}"
           if [ "$PREFLIGHT_RESULT" = success ] && [ "$GENERATE_RESULT" = success ] && [ "$MATERIALIZE_RESULT" = success ]; then
             state=success
             description="Seven GOP FEC lanes materialized; final topic count and merge gate passed"
@@ -316,4 +317,5 @@ jobs:
           gh api "repos/${{ github.repository }}/statuses/${TARGET_SHA}" \
             -f state="$state" \
             -f context='gop-autodig-100k/materialize' \
-            -f description="$description"
+            -f description="$description" \
+            -f target_url="https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"
