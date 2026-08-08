@@ -60,30 +60,15 @@ jobs:
           sudo apt-get install --yes gzip unzip coreutils
 
       - name: Build speed-critical Nim tools
-        run: |
-          mkdir -p bin
-          nim c -d:release --opt:speed --mm:orc \
-            --path:scripts \
-            --path:.starintel-doc-nim/src \
-            --out:bin/starintel-validate \
-            scripts/starintel_validate.nim
-          nim c -d:release --opt:speed --mm:orc \
-            --path:scripts \
-            --out:bin/starintel-site \
-            scripts/starintel_site.nim
-          nim c -d:release --opt:speed --mm:orc \
-            --path:scripts \
-            --out:bin/validate-for-merge \
-            scripts/validate-for-merge.nim
-          nim c -d:release --opt:speed --mm:orc \
-            --out:bin/import-gop-receipts \
-            scripts/import_gop_fec_deidentified_receipts.nim
+        run: nimble buildFast
 
-      - name: Run Nim transport regression tests
+      - name: Run Nim regression and privacy tests
         run: |
           nim c -r -d:release --opt:speed --mm:orc \
             --path:scripts \
             tests/test_starintel_transport.nim
+          nim c -r -d:release --opt:speed --mm:orc \
+            tests/test_gop_receipt_privacy.nim
 
       - name: Validate canonical corpus and source references
         run: |
@@ -178,21 +163,7 @@ jobs:
           path: digs/gop/2026-08-08-fec-individual-contributions-2026
 
       - name: Build Nim merge gate
-        run: |
-          mkdir -p bin
-          nim c -d:release --opt:speed --mm:orc \
-            --path:scripts \
-            --path:.starintel-doc-nim/src \
-            --out:bin/starintel-validate \
-            scripts/starintel_validate.nim
-          nim c -d:release --opt:speed --mm:orc \
-            --path:scripts \
-            --out:bin/starintel-site \
-            scripts/starintel_site.nim
-          nim c -d:release --opt:speed --mm:orc \
-            --path:scripts \
-            --out:bin/validate-for-merge \
-            scripts/validate-for-merge.nim
+        run: nimble buildFast
 
       - name: Run complete Nim merge gate and GOP minimum
         run: |
