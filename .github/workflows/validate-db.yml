@@ -7,6 +7,11 @@ on:
       - "db/**"
       - "digs/**"
       - ".github/workflows/validate-db.yml"
+  pull_request:
+    paths:
+      - "db/**"
+      - "digs/**"
+      - ".github/workflows/validate-db.yml"
   workflow_dispatch:
 
 permissions:
