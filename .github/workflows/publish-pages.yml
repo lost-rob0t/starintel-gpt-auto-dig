@@ -25,6 +25,10 @@ concurrency:
   group: pages-main
   cancel-in-progress: true
 
+env:
+  NIM_VERSION: 2.2.4
+  STARINTEL_NIM_REF: b55316bae294a146523cd2f977b81096e538c86a
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -32,10 +36,64 @@ jobs:
       - name: Check out repository
         uses: actions/checkout@v6
 
-      - name: Set up Python
+      - name: Checkout canonical StarIntel Nim runtime
+        uses: actions/checkout@v6
+        with:
+          repository: lost-rob0t/starintel-doc.nim
+          ref: ${{ env.STARINTEL_NIM_REF }}
+          path: .starintel-doc-nim
+
+      - name: Set up Nim
+        uses: jiro4989/setup-nim-action@v2
+        with:
+          nim-version: ${{ env.NIM_VERSION }}
+
+      - name: Install Nim transport helpers
+        run: |
+          sudo apt-get update
+          sudo apt-get install --yes gzip unzip coreutils
+
+      - name: Build StarIntel Nim pipeline
+        run: |
+          mkdir -p bin
+          nim c -d:release --opt:speed --mm:orc \
+            --path:scripts \
+            --path:.starintel-doc-nim/src \
+            --out:bin/starintel-validate \
+            scripts/starintel_validate.nim
+          nim c -d:release --opt:speed --mm:orc \
+            --path:scripts \
+            --out:bin/starintel-site \
+            scripts/starintel_site.nim
+
+      - name: Validate corpus and emit source audit
+        run: |
+          bin/starintel-validate --root .
+          test -f unverifed
+          echo "source-less documents: $(grep -vc '^#' unverifed || true)"
+
+      - name: Generate research explorer with Nim
+        run: |
+          bin/starintel-site \
+            --input digs \
+            --db db \
+            --output _site \
+            --org-output .generated/org
+          test -s _site/index.html
+          test -s _site/search-index.json
+          test -s _site/downloads/starintel-complete-corpus.jsonl
+          test -s _site/downloads/starintel-complete-corpus.manifest.json
+
+      - name: Set up Python post-processing
         uses: actions/setup-python@v6
         with:
           python-version: "3.13"
+
+      - name: Publish evidence seal
+        run: |
+          python3 scripts/evidence-seal.py publish \
+            _site/downloads/starintel-complete-corpus.jsonl \
+            _site
 
       - name: Read pinned Quasar runtime
         id: quasar-pin
@@ -81,17 +139,6 @@ jobs:
           npm --prefix .quasar/frontend test
           npm --prefix .quasar/frontend run build
 
-      - name: Run complete StarIntel merge gate
-        run: python3 scripts/validate-for-merge.py --site
-
-      - name: Generate research explorer
-        run: |
-          python3 scripts/build_research_site.py \
-            --input digs \
-            --db db \
-            --output _site \
-            --org-output .generated/org
-
       - name: Install Quasar graph editor
         run: |
           python3 scripts/build-auto-dig-quasar.py \
@@ -118,6 +165,14 @@ jobs:
             _site/downloads/starintel-evidence-seal.json
           grep -q 'data-evidence-seal' _site/index.html
           grep -q 'evidence-seal.html' _site/index.html
+
+      - name: Upload source audit
+        uses: actions/upload-artifact@v4
+        with:
+          name: starintel-unverifed-source-audit
+          path: unverifed
+          if-no-files-found: error
+          retention-days: 7
 
       - name: Configure Pages
         uses: actions/configure-pages@v5
