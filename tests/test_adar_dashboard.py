@@ -96,12 +96,14 @@ class AdarDashboardTests(unittest.TestCase):
         self.assertIn('output / "datasets.html"', source)
         self.assertNotIn('topic_cards = "".join', source)
 
-    def test_cross_site_navigation_is_explicit(self) -> None:
+    def test_cross_site_navigation_is_explicit_and_preserves_local_tools(self) -> None:
         shell = SHELL.read_text(encoding="utf-8")
         self.assertIn("https://auto-research.starintel.actor/", shell)
         self.assertIn('"Dashboard"', shell)
         self.assertIn('"Datasets"', shell)
         self.assertIn('"Research ↗"', shell)
+        self.assertIn("localLinks", shell)
+        self.assertIn('link.label === "Dashboard" ? "Dataset" : link.label', shell)
 
     def test_dashboard_assets_are_dependency_free_and_accessible(self) -> None:
         javascript = DASHBOARD_JS.read_text(encoding="utf-8")
