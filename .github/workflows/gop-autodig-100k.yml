@@ -30,6 +30,7 @@ concurrency:
   cancel-in-progress: true
 
 permissions:
+  actions: write
   contents: write
   statuses: write
 
@@ -47,7 +48,7 @@ jobs:
           ref: ${{ env.TARGET_BRANCH }}
 
       - name: Mark branch materialization pending
-        if: github.event_name == 'push'
+        if: github.event_name != 'pull_request'
         env:
           GH_TOKEN: ${{ github.token }}
           TARGET_SHA: ${{ github.sha }}
@@ -99,6 +100,19 @@ jobs:
               compile(transformed, str(source), 'exec')
               print({'source': name, 'bytes': len(transformed.encode('utf-8'))})
           PY
+
+  dispatch-materialization:
+    if: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository && github.event.pull_request.head.ref == 'agent/gop-dataset-100k-expansion' }}
+    needs: preflight
+    runs-on: ubuntu-latest
+    steps:
+      - name: Dispatch branch materialization
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: >-
+          gh workflow run gop-autodig-100k.yml
+          --repo "${{ github.repository }}"
+          --ref agent/gop-dataset-100k-expansion
 
   generate:
     if: ${{ github.event_name != 'pull_request' && github.actor != 'github-actions[bot]' }}
@@ -274,7 +288,7 @@ jobs:
           git push origin HEAD:${TARGET_BRANCH}
 
   report-materialization-status:
-    if: ${{ always() && github.event_name == 'push' && github.actor != 'github-actions[bot]' }}
+    if: ${{ always() && github.event_name != 'pull_request' && github.actor != 'github-actions[bot]' }}
     needs:
       - preflight
       - generate
