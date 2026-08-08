@@ -11,6 +11,15 @@ on:
       - scripts/import_gop_fec_deidentified_receipts.py
       - tests/test_gop_fec_deidentified_receipts.py
       - tests/test_gop_fec_variant_transform.py
+  pull_request:
+    branches:
+      - main
+    paths:
+      - .github/workflows/gop-autodig-100k.yml
+      - scripts/run_gop_fec_variant.py
+      - scripts/import_gop_fec_deidentified_receipts.py
+      - tests/test_gop_fec_deidentified_receipts.py
+      - tests/test_gop_fec_variant_transform.py
 
 concurrency:
   group: gop-autodig-100k-${{ github.ref }}
@@ -71,7 +80,7 @@ jobs:
           PY
 
   generate:
-    if: github.actor != 'github-actions[bot]'
+    if: ${{ github.event_name != 'pull_request' && github.actor != 'github-actions[bot]' }}
     needs: preflight
     strategy:
       fail-fast: false
