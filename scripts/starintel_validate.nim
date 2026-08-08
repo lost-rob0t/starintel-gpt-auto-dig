@@ -90,26 +90,33 @@ proc auditDocument(state: var AuditState; schema, document: JsonNode; path: stri
       state.errors.add(location(path, line) & ": sources[" & $index & "]: " & reason)
 
 
-proc auditPayload(state: var AuditState; schema: JsonNode; payload, path: string) =
-  var line = 0
-  for raw in payload.splitLines:
-    inc line
-    if raw.strip().len == 0:
-      continue
-    try:
-      let document = parseJson(raw)
-      if document.kind != JObject:
-        state.errors.add(location(path, line) & ": expected JSON object")
-        continue
-      auditDocument(state, schema, document, path, line)
-    except JsonParsingError as exc:
-      state.errors.add(location(path, line) & ": invalid JSON: " & exc.msg)
+proc auditRawLine(state: var AuditState; schema: JsonNode; raw, path: string; line: int) =
+  if raw.strip().len == 0:
+    return
+  try:
+    let document = parseJson(raw)
+    if document.kind != JObject:
+      state.errors.add(location(path, line) & ": expected JSON object")
+      return
+    auditDocument(state, schema, document, path, line)
+  except JsonParsingError as exc:
+    state.errors.add(location(path, line) & ": invalid JSON: " & exc.msg)
 
 
 proc auditFile(state: var AuditState; schema: JsonNode; path: string; transport: bool) =
   try:
-    let payload = if transport: readTransport(path) else: readFile(path)
-    auditPayload(state, schema, payload, path)
+    if transport:
+      forEachTransportLine(path, proc(raw: string; line: int) =
+        auditRawLine(state, schema, raw, path, line)
+      )
+    else:
+      var input = open(path, fmRead)
+      defer: input.close()
+      var raw: string
+      var line = 0
+      while input.readLine(raw):
+        inc line
+        auditRawLine(state, schema, raw, path, line)
   except CatchableError as exc:
     state.errors.add(path & ": read/decode failed: " & exc.msg)
 
