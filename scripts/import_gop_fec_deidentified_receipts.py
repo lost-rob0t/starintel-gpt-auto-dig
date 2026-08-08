@@ -200,11 +200,7 @@ def source_document(cycle: int, committee_id: str, when: str) -> dict[str, Any]:
         "data": {
             "accessed_at": when,
             "credibility": 0.99,
-            "description_uri": DESCRIPTION_URL,
             "kind": "official_fec_bulk_file",
-            "privacy_transform": (
-                "Contributor names, locations, employers, occupations, ZIP codes, and raw contributor rows are omitted."
-            ),
             "publisher": "Federal Election Commission",
             "uri": bulk_url(cycle),
         },
@@ -213,6 +209,15 @@ def source_document(cycle: int, committee_id: str, when: str) -> dict[str, Any]:
         "date_updated": when,
         "dtype": "source",
         "evidence": [],
+        "extensions": {
+            "privacy_transform": {
+                "description_uri": DESCRIPTION_URL,
+                "contributor_identity_emitted": False,
+                "contributor_location_emitted": False,
+                "contributor_employment_emitted": False,
+                "raw_source_rows_embedded": False,
+            }
+        },
         "handling": {
             "handling": "public-source-only",
             "pii": False,
