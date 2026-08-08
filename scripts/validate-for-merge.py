@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 import shutil
 import subprocess
 import sys
@@ -90,6 +91,12 @@ def validate_javascript() -> None:
         run(["node", str(test.relative_to(ROOT))])
 
 
+def site_builder() -> str:
+    if os.environ.get("STARINTEL_SITE_MATERIALIZER"):
+        return "scripts/build_research_site_fast.py"
+    return "scripts/build_research_site.py"
+
+
 def validate_site() -> None:
     with tempfile.TemporaryDirectory(prefix="starintel-merge-") as directory:
         temporary = Path(directory)
@@ -98,7 +105,7 @@ def validate_site() -> None:
         run(
             [
                 sys.executable,
-                "scripts/build_research_site.py",
+                site_builder(),
                 "--input",
                 "digs",
                 "--db",
@@ -143,6 +150,7 @@ def main(argv: list[str] | None = None) -> int:
         validate_javascript()
         validate_generated_schema()
         validate_corpus()
+        os.environ["STARINTEL_CORPUS_VALIDATED"] = "1"
         if args.site:
             validate_site()
         if not args.skip_git_diff_check and (ROOT / ".git").exists():
