@@ -42,12 +42,23 @@ def _jsonl(documents: list[dict]) -> str:
     return "".join(json.dumps(doc, ensure_ascii=False, separators=(",", ":")) + "\n" for doc in documents)
 
 
+def _topic_node_redirect(destination: str) -> str:
+    escaped = html.escape(destination, quote=True)
+    return (
+        "<!doctype html><html><head><meta charset=\"utf-8\">"
+        f'<meta http-equiv="refresh" content="0; url={escaped}">'
+        f'<link rel="canonical" href="{escaped}"><title>Open document</title></head>'
+        f'<body><p><a href="{escaped}">Open the canonical document</a></p></body></html>'
+    )
+
+
 def _write_topic_dataset(
     *,
     topic_id: str,
     title: str,
     subtitle: str,
     docs: list[dict],
+    source_targets_by_id: dict[str, str],
     source_targets: set[str],
     source_datasets: set[str],
     output: Path,
@@ -99,7 +110,9 @@ def _write_topic_dataset(
         org = render_org(doc, known)
         (org_out / f"{name}.org").write_text(org)
         (public_org / f"{name}.org").write_text(org)
-        (node_out / f"{name}.html").write_text(themed(node(doc, target, known), "../../"))
+        source_target = quote(source_targets_by_id[doc["_id"]], safe="")
+        destination = f"../../{source_target}/nodes/{name}.html"
+        (node_out / f"{name}.html").write_text(_topic_node_redirect(destination))
 
     return {
         "dataset": topic_id,
@@ -218,6 +231,7 @@ def build_site(input_root: Path, output: Path, org_output: Path, config_path: Pa
     dataset_rows: list[dict[str, object]] = []
     search = []
     topic_documents: dict[str, dict[str, dict]] = defaultdict(dict)
+    topic_document_targets: dict[str, dict[str, str]] = defaultdict(dict)
     topic_metadata: dict[str, dict[str, str]] = {}
     topic_targets: dict[str, set[str]] = defaultdict(set)
     topic_sources: dict[str, set[str]] = defaultdict(set)
@@ -278,6 +292,7 @@ def build_site(input_root: Path, output: Path, org_output: Path, config_path: Pa
                 old = topic_documents[topic_id].get(doc["_id"])
                 if old is None or str(doc["date_updated"]) >= str(old["date_updated"]):
                     topic_documents[topic_id][doc["_id"]] = doc
+                    topic_document_targets[topic_id][doc["_id"]] = target
                 topic_metadata[topic_id] = topic
                 topic_targets[topic_id].add(target)
                 if not excluded_source_dataset(doc.get("dataset"), topic_config):
@@ -316,6 +331,7 @@ def build_site(input_root: Path, output: Path, org_output: Path, config_path: Pa
                 title=metadata["title"],
                 subtitle=metadata["subtitle"],
                 docs=list(by_id.values()),
+                source_targets_by_id=topic_document_targets[topic_id],
                 source_targets=topic_targets[topic_id],
                 source_datasets=topic_sources[topic_id],
                 output=output,
