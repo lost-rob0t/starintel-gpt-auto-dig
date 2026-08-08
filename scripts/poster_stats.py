@@ -11,7 +11,7 @@ from typing import Any
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT))
 sys.path.insert(0, str(ROOT / "scripts"))
-from starintel_site.model import discover
+from starintel_site.model import load
 
 REVIEWED_TOKENS = (
     "reviewed", "verified", "validated", "confirmed", "corroborated",
@@ -33,16 +33,29 @@ def latest_documents(documents: list[dict[str, Any]]) -> list[dict[str, Any]]:
     return sorted(by_id.values(), key=lambda doc: doc["_id"])
 
 
+def load_comparative_documents(root: Path) -> list[dict[str, Any]]:
+    paths = list(root.glob("*/*/starintel-documents.jsonl"))
+    paths += list(root.glob("*/*/starintel-documents.jsonl.gz.b64"))
+    paths += list(root.glob("*/*/starintel-documents.jsonl.gz.b64.parts"))
+    documents: list[dict[str, Any]] = []
+    seen_dirs: set[Path] = set()
+    for path in sorted(paths):
+        if path.parent in seen_dirs:
+            continue
+        seen_dirs.add(path.parent)
+        rel = path.relative_to(root)
+        if rel.parts[0].lower() == "dnc":
+            continue
+        preferred = path.parent / "starintel-documents.jsonl"
+        selected = preferred if preferred.exists() else path
+        documents.extend(load(selected))
+    return latest_documents(documents)
+
+
 def review_state(doc: dict[str, Any]) -> str:
     verification = doc.get("verification") or {}
     workflow = doc.get("workflow") or {}
-    raw = (
-        verification.get("status")
-        or workflow.get("review_status")
-        or workflow.get("status")
-        or doc.get("status")
-        or ""
-    )
+    raw = verification.get("status") or workflow.get("review_status") or workflow.get("status") or doc.get("status") or ""
     status = str(raw).strip().lower().replace("_", "-")
     if any(token in status for token in UNREVIEWED_TOKENS):
         return "unreviewed"
@@ -98,10 +111,7 @@ def main() -> int:
     parser.add_argument("--output", type=Path, default=Path("poster-stats.json"))
     args = parser.parse_args()
 
-    packets = discover(args.input_root)
-    docs = latest_documents([doc for packet in packets for doc in packet.documents])
-    docs = [doc for doc in docs if not is_bulk_campaign(doc)]
-
+    docs = [doc for doc in load_comparative_documents(args.input_root) if not is_bulk_campaign(doc)]
     by_id = {str(doc.get("_id")): doc for doc in docs if doc.get("_id")}
     people = {doc_id for doc_id, doc in by_id.items() if doc.get("dtype") == "person"}
 
@@ -132,17 +142,9 @@ def main() -> int:
                     all_degree[person_id] += 1
                     counterpart_counts[person_id][other_id] += 1
                     predicate_by_person[person_id][predicate] += 1
-                    if (
-                        relation_reviewed
-                        and review_state(by_id.get(person_id, {})) == "reviewed"
-                        and review_state(by_id.get(other_id, {})) == "reviewed"
-                    ):
+                    if relation_reviewed and review_state(by_id.get(person_id, {})) == "reviewed" and review_state(by_id.get(other_id, {})) == "reviewed":
                         reviewed_degree[person_id] += 1
-                if (
-                    relation_reviewed
-                    and review_state(by_id.get(subject, {})) == "reviewed"
-                    and review_state(by_id.get(object_id, {})) == "reviewed"
-                ):
+                if relation_reviewed and review_state(by_id.get(subject, {})) == "reviewed" and review_state(by_id.get(object_id, {})) == "reviewed":
                     reviewed_relation_edges += 1
 
     ranking_mode = "reviewed"
@@ -159,14 +161,8 @@ def main() -> int:
             "connections": count,
             "published_connections": all_degree.get(person_id, 0),
             "reviewed_connections": reviewed_degree.get(person_id, 0),
-            "top_predicates": [
-                {"predicate": pred, "count": n}
-                for pred, n in predicate_by_person[person_id].most_common(4)
-            ],
-            "top_counterparts": [
-                {"id": other_id, "name": label(other_id, by_id), "count": n}
-                for other_id, n in counterpart_counts[person_id].most_common(4)
-            ],
+            "top_predicates": [{"predicate": pred, "count": n} for pred, n in predicate_by_person[person_id].most_common(4)],
+            "top_counterparts": [{"id": other_id, "name": label(other_id, by_id), "count": n} for other_id, n in counterpart_counts[person_id].most_common(4)],
         })
 
     daily = Counter()
@@ -183,9 +179,8 @@ def main() -> int:
                 sources.add(key)
 
     dataset_counts = Counter(str(doc.get("dataset") or "unknown") for doc in docs)
-
     result = {
-        "scope": "comparative corpus excluding bulk campaign imports",
+        "scope": "comparative corpus",
         "documents": len(docs),
         "people": len(people),
         "unique_sources": len(sources),
@@ -199,7 +194,6 @@ def main() -> int:
         "daily_documents": sorted(daily.items()),
         "dataset_counts": dataset_counts.most_common(20),
     }
-
     args.output.write_text(json.dumps(result, indent=2, sort_keys=True), encoding="utf-8")
     print("POSTER_STATS_JSON=" + json.dumps(result, separators=(",", ":"), sort_keys=True))
     return 0
