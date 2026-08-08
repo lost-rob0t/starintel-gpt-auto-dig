@@ -22,8 +22,47 @@ env:
   TARGET_BRANCH: agent/gop-dataset-100k-expansion
 
 jobs:
+  preflight:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+          ref: ${{ env.TARGET_BRANCH }}
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Compile GOP import tooling
+        run: |
+          python3 -m py_compile \
+            scripts/run_gop_fec_variant.py \
+            scripts/import_gop_fec_deidentified_receipts.py
+
+      - name: Compile every transformed GOP FEC importer
+        run: |
+          python3 - <<'PY'
+          import importlib.util
+          from pathlib import Path
+
+          path = Path('scripts/run_gop_fec_variant.py')
+          spec = importlib.util.spec_from_file_location('gop_variant', path)
+          if spec is None or spec.loader is None:
+              raise SystemExit(f'cannot load {path}')
+          module = importlib.util.module_from_spec(spec)
+          spec.loader.exec_module(module)
+
+          for name in sorted(module.ALLOWED):
+              source = module.SCRIPTS / name
+              transformed = module.transform(source)
+              compile(transformed, str(source), 'exec')
+              print({'source': name, 'bytes': len(transformed.encode('utf-8'))})
+          PY
+
   generate:
     if: github.actor != 'github-actions[bot]'
+    needs: preflight
     strategy:
       fail-fast: false
       max-parallel: 7
