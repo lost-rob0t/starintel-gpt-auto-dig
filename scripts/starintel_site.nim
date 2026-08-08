@@ -9,9 +9,8 @@ const
 
 
 type Record = ref object
-  # Parsed JSON is retained only for graph/page-worthy records. Bulk observations
-  # retain their raw JSON line plus the small fields needed by the site indexes.
-  document: JsonNode
+  # Raw canonical JSON is retained. Parsed trees are deliberately discarded
+  # after indexing and recreated only for the small subset rendered as pages.
   raw: string
   target: string
   run: string
@@ -29,6 +28,8 @@ type Record = ref object
 
 type Bucket = ref object
   docs: Table[string, Record]
+  orderedIds: seq[string]
+  orderDirty: bool
 
 
 type TopicRule = object
@@ -161,7 +162,11 @@ proc extractSourceKeys(document: JsonNode): seq[string] =
 
 
 proc newBucket(): Bucket =
-  Bucket(docs: initTable[string, Record]())
+  Bucket(
+    docs: initTable[string, Record](),
+    orderedIds: @[],
+    orderDirty: true
+  )
 
 
 proc getBucket(buckets: var Table[string, Bucket]; key: string): Bucket =
@@ -171,14 +176,21 @@ proc getBucket(buckets: var Table[string, Bucket]; key: string): Bucket =
 
 
 proc putLatest(bucket: Bucket; record: Record) =
-  if not bucket.docs.hasKey(record.id) or record.updated >= bucket.docs[record.id].updated:
+  let exists = bucket.docs.hasKey(record.id)
+  if not exists or record.updated >= bucket.docs[record.id].updated:
     bucket.docs[record.id] = record
+    if not exists:
+      bucket.orderDirty = true
 
 
 proc sortedIds(bucket: Bucket): seq[string] =
-  for id in bucket.docs.keys:
-    result.add(id)
-  result.sort()
+  if bucket.orderDirty:
+    bucket.orderedIds.setLen(0)
+    for id in bucket.docs.keys:
+      bucket.orderedIds.add(id)
+    bucket.orderedIds.sort()
+    bucket.orderDirty = false
+  result = bucket.orderedIds
 
 
 proc sortedSet(values: HashSet[string]): seq[string] =
@@ -278,7 +290,6 @@ proc inferDbTarget(dataset: string; config: SiteConfig): string =
 
 
 proc makeRecord(document: JsonNode; raw, target, run, path: string): Record =
-  let dtype = jsonText(document, "dtype")
   let status = nestedText(
     document,
     "verification",
@@ -286,13 +297,12 @@ proc makeRecord(document: JsonNode; raw, target, run, path: string): Record =
     jsonText(document, "status", "recorded")
   )
   Record(
-    document: (if graphEligible(dtype): document else: nil),
     raw: raw,
     target: target,
     run: run,
     path: path,
     id: jsonText(document, "_id"),
-    dtype: dtype,
+    dtype: jsonText(document, "dtype"),
     dataset: jsonText(document, "dataset"),
     title: displayTitle(document),
     summary: recordSummary(document),
@@ -398,11 +408,12 @@ proc buildGraph(bucket: Bucket): JsonNode =
 
   var edgeKeys = initHashSet[string]()
   for record in graphRecords:
-    if record.dtype != "relation" or record.document == nil:
+    if record.dtype != "relation":
       continue
-    if not record.document.hasKey("data") or record.document["data"].kind != JObject:
+    let document = parseJson(record.raw)
+    if not document.hasKey("data") or document["data"].kind != JObject:
       continue
-    let data = record.document["data"]
+    let data = document["data"]
     if not data.hasKey("subject") or not data.hasKey("object"):
       continue
     let predicate = jsonText(data, "predicate", "related to").replace("_", " ")
@@ -548,12 +559,13 @@ proc writeTarget(target: string; bucket: Bucket; output, orgOutput: string; conf
   var nodeCount = 0
   for id in sortedIds(bucket):
     let record = bucket.docs[id]
-    if not graphEligible(record.dtype) or record.document == nil:
+    if not graphEligible(record.dtype):
       continue
     inc nodeCount
     if nodeCount > NodePageLimit:
       break
-    let pretty = record.document.pretty()
+    let document = parseJson(record.raw)
+    let pretty = document.pretty()
     let nodeBody = "<div class=\"crumb\"><a href=\"../documents.html\">← documents</a></div><h1>" & htmlEscape(record.title) & "</h1><p class=\"lede\">" & htmlEscape(record.summary) & "</p><pre>" & htmlEscape(pretty) & "</pre>"
     writeFile(nodeOut / (slug(record.id) & ".html"), page(record.title, nodeBody, "../../"))
     let org = "#+title: " & record.title.replace("\n", " ") & "\n#+description: " & record.summary.replace("\n", " ") & "\n\n* Raw StarIntel Document\n\n#+begin_src json\n" & pretty & "\n#+end_src\n"
