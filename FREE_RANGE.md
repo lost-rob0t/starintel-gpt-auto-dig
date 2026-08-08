@@ -58,7 +58,7 @@ The planner:
 
 ## GitHub Action
 
-Run **Free-Range Frontier** from the Actions tab. The workflow tests the planner, generates Markdown and JSONL mission packs, writes a compact job summary, and uploads both plans as an artifact. It is manual by design: the planner proposes work but does not silently mutate the database or launch uncontrolled collection.
+The assistant runs **Free-Range Frontier** whenever it needs a fresh mission batch. The workflow tests the planner, generates Markdown and JSONL mission packs, writes a compact job summary, and uploads both plans as an artifact. Users do not need to open the Actions tab or dispatch the workflow themselves.
 
 ## Evidence boundary
 
