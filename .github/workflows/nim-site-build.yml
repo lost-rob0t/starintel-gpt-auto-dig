@@ -3,7 +3,7 @@ name: Validate Nim site build
 on:
   pull_request:
     paths:
-      - "scripts/build_research_site_fast.py"
+      - "scripts/build_research_site.py"
       - "scripts/materialize_site_input.nim"
       - "scripts/validate-for-merge.py"
       - ".github/workflows/nim-site-build.yml"
