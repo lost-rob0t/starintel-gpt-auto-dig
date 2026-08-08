@@ -9,6 +9,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 SCRIPTS = ROOT / "scripts"
+GENERATED_AT = "2026-08-08T21:55:00Z"
 
 ALLOWED = {
     "import_dnc_fec_administrative_fines.py",
@@ -57,6 +58,18 @@ def transformed_script_name(source_name: str) -> str:
     return name
 
 
+def normalize_generated_at(text: str) -> str:
+    lines = text.splitlines()
+    replaced = False
+    for index, line in enumerate(lines):
+        if line.startswith("GENERATED_AT = "):
+            lines[index] = f'GENERATED_AT = "{GENERATED_AT}"'
+            replaced = True
+    if not replaced:
+        raise RuntimeError("source importer no longer declares GENERATED_AT")
+    return "\n".join(lines) + "\n"
+
+
 def transform(source_path: Path) -> str:
     text = source_path.read_text(encoding="utf-8")
     if 'DATASET = "dnc"' not in text:
@@ -64,6 +77,7 @@ def transform(source_path: Path) -> str:
 
     for old, new in REPLACEMENTS:
         text = text.replace(old, new)
+    text = normalize_generated_at(text)
 
     generated_name = transformed_script_name(source_path.name)
     text = text.replace(
@@ -73,6 +87,7 @@ def transform(source_path: Path) -> str:
 
     required = (
         'DATASET = "gop"',
+        f'GENERATED_AT = "{GENERATED_AT}"',
         'StarIntel-AutoDig/0.9',
     )
     missing = [marker for marker in required if marker not in text]
