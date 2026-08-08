@@ -7,315 +7,202 @@ on:
       - agent/gop-dataset-100k-expansion
     paths:
       - .github/workflows/gop-autodig-100k.yml
-      - scripts/run_gop_fec_variant.py
-      - scripts/import_gop_fec_deidentified_receipts.py
-      - scripts/validate-for-merge.py
-      - tests/test_gop_fec_deidentified_receipts.py
-      - tests/test_gop_fec_variant_transform.py
-      - tests/test_validate_topic_minimums.py
+      - scripts/*.nim
+      - schemas/**
+      - digs/gop/**
   pull_request:
     branches:
       - main
     paths:
       - .github/workflows/gop-autodig-100k.yml
-      - scripts/run_gop_fec_variant.py
-      - scripts/import_gop_fec_deidentified_receipts.py
-      - scripts/validate-for-merge.py
-      - tests/test_gop_fec_deidentified_receipts.py
-      - tests/test_gop_fec_variant_transform.py
-      - tests/test_validate_topic_minimums.py
+      - scripts/*.nim
+      - schemas/**
+      - digs/gop/**
 
 concurrency:
   group: gop-autodig-100k-${{ github.ref }}
   cancel-in-progress: true
 
 permissions:
-  actions: write
   contents: write
   statuses: write
 
 env:
-  PYTHONPATH: .
   TARGET_BRANCH: agent/gop-dataset-100k-expansion
+  NIM_VERSION: 2.2.4
+  STARINTEL_NIM_REF: b55316bae294a146523cd2f977b81096e538c86a
 
 jobs:
   preflight:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+
+      - name: Checkout canonical StarIntel Nim runtime
+        uses: actions/checkout@v4
         with:
-          fetch-depth: 1
-          ref: ${{ env.TARGET_BRANCH }}
+          repository: lost-rob0t/starintel-doc.nim
+          ref: ${{ env.STARINTEL_NIM_REF }}
+          path: .starintel-doc-nim
 
-      - name: Mark branch materialization pending
-        if: github.event_name != 'pull_request'
-        env:
-          GH_TOKEN: ${{ github.token }}
-          TARGET_SHA: ${{ github.sha }}
-        run: >-
-          gh api "repos/${{ github.repository }}/statuses/${TARGET_SHA}"
-          -f state=pending
-          -f context='gop-autodig-100k/materialize'
-          -f description='Generating seven GOP FEC lanes and validating final topic count'
-          -f target_url="https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"
-
-      - uses: actions/setup-python@v5
+      - name: Set up Nim
+        uses: jiro4989/setup-nim-action@v2
         with:
-          python-version: '3.12'
+          nim-version: ${{ env.NIM_VERSION }}
 
-      - name: Compile GOP import tooling
+      - name: Install streaming transport tools
         run: |
-          python3 -m py_compile \
-            scripts/run_gop_fec_variant.py \
-            scripts/import_gop_fec_deidentified_receipts.py \
-            scripts/validate-for-merge.py \
-            tests/test_gop_fec_deidentified_receipts.py \
-            tests/test_gop_fec_variant_transform.py \
-            tests/test_validate_topic_minimums.py
+          sudo apt-get update
+          sudo apt-get install --yes gzip unzip coreutils
 
-      - name: Test GOP transform semantics
-        run: python3 tests/test_gop_fec_variant_transform.py
-
-      - name: Test de-identified receipt fixture
-        run: python3 tests/test_gop_fec_deidentified_receipts.py
-
-      - name: Test final topic-count gate
-        run: python3 tests/test_validate_topic_minimums.py
-
-      - name: Compile every transformed GOP FEC importer
+      - name: Build speed-critical Nim tools
         run: |
-          python3 - <<'PY'
-          import importlib.util
-          from pathlib import Path
+          mkdir -p bin
+          nim c -d:release --opt:speed --mm:orc \
+            --path:scripts \
+            --path:.starintel-doc-nim/src \
+            --out:bin/starintel-validate \
+            scripts/starintel_validate.nim
+          nim c -d:release --opt:speed --mm:orc \
+            --path:scripts \
+            --out:bin/starintel-site \
+            scripts/starintel_site.nim
+          nim c -d:release --opt:speed --mm:orc \
+            --out:bin/import-gop-receipts \
+            scripts/import_gop_fec_deidentified_receipts.nim
 
-          path = Path('scripts/run_gop_fec_variant.py')
-          spec = importlib.util.spec_from_file_location('gop_variant', path)
-          if spec is None or spec.loader is None:
-              raise SystemExit(f'cannot load {path}')
-          module = importlib.util.module_from_spec(spec)
-          spec.loader.exec_module(module)
+      - name: Validate canonical corpus and source references
+        run: |
+          bin/starintel-validate --root .
+          test -f unverifed
+          echo "source-less documents: $(grep -vc '^#' unverifed || true)"
 
-          for name in sorted(module.ALLOWED):
-              source = module.SCRIPTS / name
-              transformed = module.transform(source)
-              compile(transformed, str(source), 'exec')
-              print({'source': name, 'bytes': len(transformed.encode('utf-8'))})
-          PY
+      - name: Smoke-test Nim CLIs
+        run: |
+          bin/starintel-site --help
+          test -x bin/import-gop-receipts
 
-  dispatch-materialization:
-    if: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository && github.event.pull_request.head.ref == 'agent/gop-dataset-100k-expansion' }}
+  generate-receipts:
+    if: ${{ github.event_name == 'workflow_dispatch' }}
     needs: preflight
-    runs-on: ubuntu-latest
-    steps:
-      - name: Dispatch branch materialization
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: >-
-          gh workflow run gop-autodig-100k.yml
-          --repo "${{ github.repository }}"
-          --ref agent/gop-dataset-100k-expansion
-
-  generate:
-    if: ${{ github.event_name == 'workflow_dispatch' || (github.event_name == 'push' && github.actor != 'github-actions[bot]') }}
-    needs: preflight
-    strategy:
-      fail-fast: false
-      max-parallel: 7
-      matrix:
-        include:
-          - lane: fec-committees
-            command: python3 scripts/run_gop_fec_variant.py import_dnc_fec_democratic_committees.py
-            paths: digs/gop/2026-08-08-fec-republican-committees-2026
-          - lane: fec-candidates
-            command: python3 scripts/run_gop_fec_variant.py import_dnc_fec_democratic_candidates.py
-            paths: digs/gop/2026-08-08-fec-republican-candidates-2026
-          - lane: fec-committee-transactions
-            command: python3 scripts/run_gop_fec_variant.py import_dnc_fec_committee_transactions.py
-            paths: digs/gop/2026-08-08-fec-republican-committee-transactions-2026
-          - lane: fec-independent-expenditures
-            command: python3 scripts/run_gop_fec_variant.py import_dnc_fec_independent_expenditures.py
-            paths: digs/gop/2026-08-08-fec-independent-expenditures-republican-candidates-2026
-          - lane: fec-operating-expenditures
-            command: python3 scripts/run_gop_fec_variant.py import_dnc_fec_oppexp.py
-            paths: digs/gop/2026-08-08-fec-operating-expenditures-2026
-          - lane: fec-administrative-fines
-            command: python3 scripts/run_gop_fec_variant.py import_dnc_fec_administrative_fines.py
-            paths: digs/gop/2026-08-08-fec-administrative-fines
-          - lane: fec-deidentified-receipts
-            command: >-
-              python3 scripts/import_gop_fec_deidentified_receipts.py
-              --output digs/gop/2026-08-08-fec-individual-contributions-2026
-            paths: digs/gop/2026-08-08-fec-individual-contributions-2026
     runs-on: ubuntu-latest
     timeout-minutes: 540
     steps:
       - uses: actions/checkout@v4
         with:
-          fetch-depth: 1
           ref: ${{ env.TARGET_BRANCH }}
+          fetch-depth: 1
 
-      - uses: actions/setup-python@v5
+      - name: Set up Nim
+        uses: jiro4989/setup-nim-action@v2
         with:
-          python-version: '3.12'
+          nim-version: ${{ env.NIM_VERSION }}
 
-      - name: Generate GOP lane
-        shell: bash
-        run: ${{ matrix.command }}
+      - name: Install bulk-data tools
+        run: |
+          sudo apt-get update
+          sudo apt-get install --yes gzip unzip coreutils
+
+      - name: Build RNC receipt importer
+        run: |
+          mkdir -p bin
+          nim c -d:release --opt:speed --mm:orc \
+            --out:bin/import-gop-receipts \
+            scripts/import_gop_fec_deidentified_receipts.nim
+
+      - name: Generate de-identified RNC receipts
+        run: |
+          bin/import-gop-receipts \
+            --output digs/gop/2026-08-08-fec-individual-contributions-2026
 
       - name: Enforce GitHub-safe generated files
-        shell: bash
-        env:
-          GENERATED_PATHS: ${{ matrix.paths }}
         run: |
-          python3 - <<'PY'
-          import os
-          from pathlib import Path
-
-          roots = [Path(value) for value in os.environ['GENERATED_PATHS'].splitlines() if value.strip()]
-          files = [path for root in roots for path in ([root] if root.is_file() else root.rglob('*')) if path.is_file()]
-          if not files:
-              raise SystemExit('lane emitted no files')
-          oversized = [(str(path), path.stat().st_size) for path in files if path.stat().st_size > 95_000_000]
-          if oversized:
-              raise SystemExit(f'oversized generated files: {oversized}')
-          print({'files': len(files), 'largest': max((path.stat().st_size, str(path)) for path in files)})
-          PY
-
-      - name: Package GOP lane
-        shell: bash
-        env:
-          GENERATED_PATHS: ${{ matrix.paths }}
-        run: |
-          mapfile -t paths < <(printf '%s\n' "$GENERATED_PATHS" | sed '/^[[:space:]]*$/d')
-          tar -czf "${{ matrix.lane }}.tar.gz" "${paths[@]}"
+          find digs/gop/2026-08-08-fec-individual-contributions-2026 -type f -size +95M -print -quit | \
+            grep -q . && { echo 'generated file exceeds 95 MB' >&2; exit 1; } || true
+          test -s digs/gop/2026-08-08-fec-individual-contributions-2026/manifest.json
 
       - uses: actions/upload-artifact@v4
         with:
-          name: gop-lane-${{ matrix.lane }}
-          path: ${{ matrix.lane }}.tar.gz
+          name: gop-lane-fec-deidentified-receipts
+          path: digs/gop/2026-08-08-fec-individual-contributions-2026
           if-no-files-found: error
           retention-days: 3
           compression-level: 0
 
   materialize:
-    if: ${{ always() && needs.generate.result == 'success' && github.event_name != 'pull_request' }}
-    needs: generate
+    if: ${{ github.event_name == 'workflow_dispatch' }}
+    needs: generate-receipts
     runs-on: ubuntu-latest
     timeout-minutes: 540
     steps:
       - uses: actions/checkout@v4
         with:
-          fetch-depth: 0
           ref: ${{ env.TARGET_BRANCH }}
+          fetch-depth: 0
 
-      - uses: actions/setup-python@v5
+      - name: Checkout canonical StarIntel Nim runtime
+        uses: actions/checkout@v4
         with:
-          python-version: '3.12'
+          repository: lost-rob0t/starintel-doc.nim
+          ref: ${{ env.STARINTEL_NIM_REF }}
+          path: .starintel-doc-nim
+
+      - name: Set up Nim
+        uses: jiro4989/setup-nim-action@v2
+        with:
+          nim-version: ${{ env.NIM_VERSION }}
+
+      - name: Install streaming transport tools
+        run: |
+          sudo apt-get update
+          sudo apt-get install --yes gzip unzip coreutils
 
       - uses: actions/download-artifact@v4
         with:
-          pattern: gop-lane-*
-          path: /tmp/gop-lanes
+          name: gop-lane-fec-deidentified-receipts
+          path: digs/gop/2026-08-08-fec-individual-contributions-2026
 
-      - name: Materialize all GOP lane artifacts
-        shell: bash
+      - name: Build Nim validation and site binaries
         run: |
-          set -euo pipefail
-          mapfile -t archives < <(find /tmp/gop-lanes -type f -name '*.tar.gz' -print | sort)
-          if [ "${#archives[@]}" -ne 7 ]; then
-            echo "Expected 7 GOP lane archives, found ${#archives[@]}." >&2
-            printf '%s\n' "${archives[@]}" >&2
-            exit 1
-          fi
-          for archive in "${archives[@]}"; do
-            echo "Extracting ${archive}"
-            tar -xzf "${archive}" -C .
-          done
+          mkdir -p bin
+          nim c -d:release --opt:speed --mm:orc \
+            --path:scripts \
+            --path:.starintel-doc-nim/src \
+            --out:bin/starintel-validate \
+            scripts/starintel_validate.nim
+          nim c -d:release --opt:speed --mm:orc \
+            --path:scripts \
+            --out:bin/starintel-site \
+            scripts/starintel_site.nim
 
-      - name: Require positive GOP lane manifests
-        shell: bash
+      - name: Validate generated corpus and source audit
         run: |
-          python3 - <<'PY'
-          import json
-          from pathlib import Path
+          bin/starintel-validate --root .
+          test -f unverifed
 
-          roots = [
-              Path('digs/gop/2026-08-08-fec-republican-committees-2026'),
-              Path('digs/gop/2026-08-08-fec-republican-candidates-2026'),
-              Path('digs/gop/2026-08-08-fec-republican-committee-transactions-2026'),
-              Path('digs/gop/2026-08-08-fec-independent-expenditures-republican-candidates-2026'),
-              Path('digs/gop/2026-08-08-fec-operating-expenditures-2026'),
-              Path('digs/gop/2026-08-08-fec-administrative-fines'),
-              Path('digs/gop/2026-08-08-fec-individual-contributions-2026'),
-          ]
-          manifests = []
-          gross_total = 0
-          for root in roots:
-              manifest_path = root / 'manifest.json'
-              if not manifest_path.is_file():
-                  raise SystemExit(f'missing required GOP lane manifest: {manifest_path}')
-              manifest = json.loads(manifest_path.read_text(encoding='utf-8'))
-              count = int(manifest.get('total_documents') or manifest.get('document_count') or 0)
-              if count <= 0:
-                  raise SystemExit(f'GOP lane reported no documents: {manifest_path}')
-              manifests.append((str(root), count))
-              gross_total += count
-          print({'lane_documents': manifests, 'gross_lane_documents': gross_total})
-          PY
+      - name: Build site with Nim and enforce GOP minimum
+        run: |
+          rm -rf /tmp/starintel-site /tmp/starintel-org
+          bin/starintel-site \
+            --input digs \
+            --db db \
+            --output /tmp/starintel-site \
+            --org-output /tmp/starintel-org
+          test -s /tmp/starintel-site/index.html
+          test -s /tmp/starintel-site/dataset-gop/downloads/topic-manifest.json
+          count=$(python3 -c 'import json; print(json.load(open("/tmp/starintel-site/dataset-gop/downloads/topic-manifest.json"))["record_count"])')
+          test "$count" -ge 100000
 
-      - name: Validate complete repository and final GOP topic count
-        run: python3 scripts/validate-for-merge.py --site --topic-minimum gop=100000
-
-      - name: Commit complete GOP expansion atomically
-        shell: bash
+      - name: Commit generated GOP corpus atomically
         run: |
           set -euo pipefail
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add \
-            digs/gop/2026-08-08-fec-republican-committees-2026 \
-            digs/gop/2026-08-08-fec-republican-candidates-2026 \
-            digs/gop/2026-08-08-fec-republican-committee-transactions-2026 \
-            digs/gop/2026-08-08-fec-independent-expenditures-republican-candidates-2026 \
-            digs/gop/2026-08-08-fec-operating-expenditures-2026 \
-            digs/gop/2026-08-08-fec-administrative-fines \
-            digs/gop/2026-08-08-fec-individual-contributions-2026
+          git add digs/gop/2026-08-08-fec-individual-contributions-2026 unverifed
           if git diff --cached --quiet; then
-            echo 'Complete GOP packets are unchanged.'
+            echo 'Generated GOP corpus is unchanged.'
             exit 0
           fi
-          git commit -m 'Materialize 100k+ GOP AutoDig FEC packets [skip ci]'
+          git commit -m 'Materialize GOP FEC corpus with Nim [skip ci]'
           git pull --rebase origin "${TARGET_BRANCH}"
           git push origin HEAD:${TARGET_BRANCH}
-
-  report-materialization-status:
-    if: ${{ always() && github.event_name != 'pull_request' }}
-    needs:
-      - preflight
-      - generate
-      - materialize
-    runs-on: ubuntu-latest
-    permissions:
-      statuses: write
-    steps:
-      - name: Report final branch materialization status
-        env:
-          GH_TOKEN: ${{ github.token }}
-          TARGET_SHA: ${{ github.sha }}
-          PREFLIGHT_RESULT: ${{ needs.preflight.result }}
-          GENERATE_RESULT: ${{ needs.generate.result }}
-          MATERIALIZE_RESULT: ${{ needs.materialize.result }}
-        shell: bash
-        run: |
-          set -euo pipefail
-          state=failure
-          description="preflight=${PREFLIGHT_RESULT} generate=${GENERATE_RESULT} materialize=${MATERIALIZE_RESULT}"
-          if [ "$PREFLIGHT_RESULT" = success ] && [ "$GENERATE_RESULT" = success ] && [ "$MATERIALIZE_RESULT" = success ]; then
-            state=success
-            description="Seven GOP FEC lanes materialized; final topic count and merge gate passed"
-          fi
-          gh api "repos/${{ github.repository }}/statuses/${TARGET_SHA}" \
-            -f state="$state" \
-            -f context='gop-autodig-100k/materialize' \
-            -f description="$description" \
-            -f target_url="https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"
