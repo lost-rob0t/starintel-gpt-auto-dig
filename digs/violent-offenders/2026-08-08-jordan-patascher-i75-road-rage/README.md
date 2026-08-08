@@ -84,6 +84,10 @@ The historical-record section is deliberately conservative. A secondary booking 
 
 ## Files
 
+The 30 StarIntel documents are split into three JSONL shards.
+
 - `README.md`
 - `sources.md`
-- `starintel-documents.jsonl`
+- `starintel-documents-001.jsonl`
+- `starintel-documents-002.jsonl`
+- `starintel-documents-003.jsonl`
