@@ -6,6 +6,9 @@ on:
     paths:
       - "db/**"
       - "digs/**"
+      - "schemas/**"
+      - "scripts/starintel_transport.nim"
+      - "scripts/starintel_validate.nim"
       - ".github/workflows/validate-db.yml"
   workflow_dispatch:
 
@@ -16,14 +19,53 @@ concurrency:
   group: document-validation-${{ github.ref }}
   cancel-in-progress: true
 
+env:
+  NIM_VERSION: 2.2.4
+  STARINTEL_NIM_REF: b55316bae294a146523cd2f977b81096e538c86a
+
 jobs:
   validate-documents:
     runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:
       - uses: actions/checkout@v6
-      - uses: actions/setup-python@v6
+
+      - name: Checkout canonical StarIntel Nim runtime
+        uses: actions/checkout@v6
         with:
-          python-version: "3.13"
-      - name: Validate StarIntel documents
-        run: python3 scripts/starintel.py validate --root .
+          repository: lost-rob0t/starintel-doc.nim
+          ref: ${{ env.STARINTEL_NIM_REF }}
+          path: .starintel-doc-nim
+
+      - name: Set up Nim
+        uses: jiro4989/setup-nim-action@v2
+        with:
+          nim-version: ${{ env.NIM_VERSION }}
+
+      - name: Install streaming transport tools
+        run: |
+          sudo apt-get update
+          sudo apt-get install --yes gzip coreutils
+
+      - name: Build streaming validator
+        run: |
+          mkdir -p bin
+          nim c -d:release --opt:speed --mm:orc \
+            --path:scripts \
+            --path:.starintel-doc-nim/src \
+            --out:bin/starintel-validate \
+            scripts/starintel_validate.nim
+
+      - name: Validate StarIntel documents and audit sources
+        run: |
+          bin/starintel-validate --root .
+          test -f unverifed
+          echo "source-less documents: $(grep -vc '^#' unverifed || true)"
+
+      - name: Upload source audit
+        uses: actions/upload-artifact@v4
+        with:
+          name: starintel-unverifed-source-audit
+          path: unverifed
+          if-no-files-found: error
+          retention-days: 7
