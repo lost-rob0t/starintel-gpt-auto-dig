@@ -57,9 +57,15 @@ class GOPFECVariantTransformTest(unittest.TestCase):
         self.assertIn('linkages = [row for row in linkages if row["CMTE_ID"].strip() not in missing_set]', text)
         self.assertNotIn('raise RuntimeError(f"candidate-linked committees missing from committee master:', text)
 
-    def test_independent_expenditure_importer_has_io_import(self) -> None:
+    def test_independent_expenditure_current_headers_and_party_name_are_normalized(self) -> None:
         text = self.transformed("import_dnc_fec_independent_expenditures.py")
         self.assertIn('\nimport io\n', text)
+        self.assertIn('"cand_id": "CAN_ID"', text)
+        self.assertIn('"cand_pty_aff": "CAN_PAR_AFF"', text)
+        self.assertIn('"amndt_ind": "AMN_IND"', text)
+        self.assertIn('"receipt_dat": "REC_DT"', text)
+        self.assertIn('IE_FIELD_ALIASES.get(name, name)', text)
+        self.assertIn('reported_party != "REPUBLICAN PARTY"', text)
 
     def test_rnc_operating_expenditure_scope(self) -> None:
         text = self.transformed("import_dnc_fec_oppexp.py")
