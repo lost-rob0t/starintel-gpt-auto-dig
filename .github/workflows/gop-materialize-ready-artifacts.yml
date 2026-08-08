@@ -1,0 +1,109 @@
+name: GOP materialize completed FEC artifacts
+
+on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - .github/workflows/gop-materialize-ready-artifacts.yml
+  workflow_dispatch:
+
+permissions:
+  actions: read
+  contents: write
+
+env:
+  TARGET_BRANCH: agent/gop-dataset-100k-expansion
+  SOURCE_RUN_ID: '31281847932'
+
+jobs:
+  materialize-ready:
+    if: ${{ github.event_name == 'workflow_dispatch' || (github.event.pull_request.head.repo.full_name == github.repository && github.event.pull_request.head.ref == 'agent/gop-dataset-100k-expansion') }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: ${{ env.TARGET_BRANCH }}
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Download completed GOP artifacts from source run
+        uses: actions/download-artifact@v4
+        with:
+          pattern: gop-lane-*
+          path: /tmp/gop-ready
+          run-id: ${{ env.SOURCE_RUN_ID }}
+          github-token: ${{ github.token }}
+
+      - name: Extract completed artifacts
+        shell: bash
+        run: |
+          set -euo pipefail
+          mapfile -t archives < <(find /tmp/gop-ready -type f -name '*.tar.gz' -print | sort)
+          if [ "${#archives[@]}" -lt 6 ]; then
+            echo "Expected at least six completed GOP artifacts, found ${#archives[@]}." >&2
+            printf '%s\n' "${archives[@]}" >&2
+            exit 1
+          fi
+          for archive in "${archives[@]}"; do
+            echo "Extracting ${archive}"
+            tar -xzf "$archive" -C .
+          done
+
+      - name: Require the six completed lane manifests
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+
+          roots = [
+              Path('digs/gop/2026-08-08-fec-republican-committees-2026'),
+              Path('digs/gop/2026-08-08-fec-republican-candidates-2026'),
+              Path('digs/gop/2026-08-08-fec-independent-expenditures-republican-candidates-2026'),
+              Path('digs/gop/2026-08-08-fec-operating-expenditures-2026'),
+              Path('digs/gop/2026-08-08-fec-administrative-fines'),
+              Path('digs/gop/2026-08-08-fec-individual-contributions-2026'),
+          ]
+          total = 0
+          counts = []
+          for root in roots:
+              manifest_path = root / 'manifest.json'
+              if not manifest_path.is_file():
+                  raise SystemExit(f'missing completed GOP manifest: {manifest_path}')
+              manifest = json.loads(manifest_path.read_text(encoding='utf-8'))
+              count = int(manifest.get('total_documents') or manifest.get('document_count') or 0)
+              if count <= 0:
+                  raise SystemExit(f'completed GOP lane reported no documents: {manifest_path}')
+              total += count
+              counts.append((str(root), count))
+          print({'completed_lane_documents': counts, 'gross_completed_documents': total})
+          PY
+
+      - name: Validate final published GOP topic count
+        run: python3 scripts/validate-for-merge.py --site --topic-minimum gop=100000
+
+      - name: Commit completed GOP corpus to branch
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add \
+            digs/gop/2026-08-08-fec-republican-committees-2026 \
+            digs/gop/2026-08-08-fec-republican-candidates-2026 \
+            digs/gop/2026-08-08-fec-independent-expenditures-republican-candidates-2026 \
+            digs/gop/2026-08-08-fec-operating-expenditures-2026 \
+            digs/gop/2026-08-08-fec-administrative-fines \
+            digs/gop/2026-08-08-fec-individual-contributions-2026
+          if git diff --cached --quiet; then
+            echo 'Completed GOP artifacts are already materialized.'
+            exit 0
+          fi
+          git commit -m 'Materialize expanded GOP FEC corpus [skip ci]'
+          git pull --rebase origin "${TARGET_BRANCH}"
+          git push origin HEAD:${TARGET_BRANCH}
