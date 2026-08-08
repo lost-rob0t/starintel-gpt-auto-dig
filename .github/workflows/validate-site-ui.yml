@@ -4,6 +4,7 @@ on:
   pull_request:
     paths:
       - "scripts/starintel_site/**"
+      - "scripts/validate-for-merge.py"
       - "site-assets/**"
       - "tests/test_adar_dashboard.py"
       - ".github/workflows/validate-site-ui.yml"
@@ -11,6 +12,7 @@ on:
     branches-ignore: [main]
     paths:
       - "scripts/starintel_site/**"
+      - "scripts/validate-for-merge.py"
       - "site-assets/**"
       - "tests/test_adar_dashboard.py"
       - ".github/workflows/validate-site-ui.yml"
@@ -39,26 +41,5 @@ jobs:
       - name: Run dashboard regression tests
         run: python3 -m unittest tests.test_adar_dashboard tests.test_dashboard_graph
 
-      - name: Run complete StarIntel merge gate
+      - name: Run complete StarIntel merge and ADAR surface gate
         run: python3 scripts/validate-for-merge.py --site
-
-      - name: Verify generated ADAR surfaces
-        run: |
-          test -s _site/index.html
-          test -s _site/datasets.html
-          test -s _site/dashboard-data.json
-          test -s _site/dataset-catalog.json
-          grep -q 'corpus-dashboard' _site/index.html
-          grep -q 'dataset-browser' _site/datasets.html
-          grep -q 'auto-research.starintel.actor' _site/assets/adar-shell.js
-          python3 - <<'PY'
-          import json
-          from pathlib import Path
-
-          dashboard = json.loads(Path("_site/dashboard-data.json").read_text())
-          catalog = json.loads(Path("_site/dataset-catalog.json").read_text())
-          assert dashboard["version"] == 1
-          assert all(row["label"] != "relation" for row in dashboard["document_types"])
-          assert isinstance(dashboard["relation_types"], list)
-          assert all(row["kind"] in {"topic", "source"} for row in catalog)
-          PY
