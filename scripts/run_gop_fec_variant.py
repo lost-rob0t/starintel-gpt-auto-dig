@@ -22,6 +22,8 @@ ALLOWED = {
 
 REPLACEMENTS = (
     ('2026-07-31', '2026-08-08'),
+    ('NAME_LEAD_RE = re.compile(r"\\b(?:DEMOCRAT(?:IC|S)?|DFL|DNC)\\b", re.IGNORECASE)',
+     'NAME_LEAD_RE = re.compile(r"\\b(?:REPUBLICAN(?:S)?|GOP|RNC)\\b", re.IGNORECASE)'),
     ('    if party_code == "DFL":\n        base += 0.01\n', ''),
     ('PARTY_CODES = {"DEM", "DFL"}', 'PARTY_CODES = {"REP"}'),
     ('DEM|DFL', 'REP'),
@@ -107,6 +109,7 @@ def transform(source_path: Path) -> str:
         'DEM and DFL',
         'DEM or DFL',
         'DFL',
+        'DEMOCRAT(?:IC|S)?',
     )
     leaked = [marker for marker in forbidden if marker in text]
     if leaked:
@@ -116,8 +119,8 @@ def transform(source_path: Path) -> str:
         raise RuntimeError("party-filtering importer did not resolve to REP-only")
     if source_path.name == "import_dnc_fec_oppexp.py" and 'COMMITTEE_ID = "C00003418"' not in text:
         raise RuntimeError("RNC-scoped importer did not resolve to C00003418")
-    if 'party_code == "REP"' in text and 'base += 0.01' in text:
-        raise RuntimeError("DFL-specific committee-priority bonus leaked into REP transform")
+    if source_path.name == "import_dnc_fec_administrative_fines.py" and 'REPUBLICAN(?:S)?|GOP|RNC' not in text:
+        raise RuntimeError("administrative-fine GOP name-lead matcher was not installed")
 
     return text
 
