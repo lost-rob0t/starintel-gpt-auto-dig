@@ -7,6 +7,8 @@ from collections import Counter, defaultdict
 from pathlib import Path
 from typing import Any
 
+from scripts.starintel_site.model import discover
+
 REVIEWED_TOKENS = (
     "reviewed", "verified", "validated", "confirmed", "corroborated",
     "source-backed", "source backed", "resolved",
@@ -16,6 +18,15 @@ UNREVIEWED_TOKENS = (
     "unclassified", "needs-review", "needs review", "not-reviewed",
     "not reviewed", "proposed",
 )
+
+
+def latest_documents(documents: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    by_id: dict[str, dict[str, Any]] = {}
+    for doc in documents:
+        old = by_id.get(doc["_id"])
+        if old is None or str(doc["date_updated"]) >= str(old["date_updated"]):
+            by_id[doc["_id"]] = doc
+    return sorted(by_id.values(), key=lambda doc: doc["_id"])
 
 
 def review_state(doc: dict[str, Any]) -> str:
@@ -57,7 +68,7 @@ def is_bulk_campaign(doc: dict[str, Any]) -> bool:
 def label(doc_id: str, by_id: dict[str, dict[str, Any]]) -> str:
     doc = by_id.get(doc_id) or {}
     data = doc.get("data") or {}
-    value = data.get("name") or doc.get("title") or doc.get("name")
+    value = data.get("display_name") or data.get("full_name") or data.get("name") or doc.get("title") or doc.get("name")
     if value and not str(value).startswith("starintel:"):
         return str(value)
     tail = doc_id.rsplit(":", 1)[-1].replace("-", " ").replace("_", " ")
@@ -79,19 +90,13 @@ def source_key(source: Any) -> str | None:
 
 def main() -> int:
     parser = argparse.ArgumentParser()
-    parser.add_argument("corpus", type=Path)
+    parser.add_argument("--input-root", type=Path, default=Path("digs"))
     parser.add_argument("--output", type=Path, default=Path("poster-stats.json"))
     args = parser.parse_args()
 
-    docs: list[dict[str, Any]] = []
-    with args.corpus.open("r", encoding="utf-8") as handle:
-        for line in handle:
-            line = line.strip()
-            if not line:
-                continue
-            doc = json.loads(line)
-            if not is_bulk_campaign(doc):
-                docs.append(doc)
+    packets = discover(args.input_root)
+    docs = latest_documents([doc for packet in packets for doc in packet.documents])
+    docs = [doc for doc in docs if not is_bulk_campaign(doc)]
 
     by_id = {str(doc.get("_id")): doc for doc in docs if doc.get("_id")}
     people = {doc_id for doc_id, doc in by_id.items() if doc.get("dtype") == "person"}
@@ -180,6 +185,7 @@ def main() -> int:
         "documents": len(docs),
         "people": len(people),
         "unique_sources": len(sources),
+        "source_datasets": len({str(doc.get("dataset") or "unknown") for doc in docs}),
         "non_relation_dtype_counts": dtype_counts.most_common(),
         "relation_predicate_counts": predicate_counts.most_common(),
         "all_relation_edges": all_relation_edges,
