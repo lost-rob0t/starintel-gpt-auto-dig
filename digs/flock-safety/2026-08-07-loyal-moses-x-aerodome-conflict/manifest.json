@@ -14,10 +14,10 @@
   "generated_at": "2026-08-07T20:33:00-04:00",
   "hash_algorithm": "sha256",
   "schema_version": "0.9.0",
-  "starintel_documents_sha256": "fc0522c0175613995fcf25de448afd1fdb388ba51a6aabd1ae162afcc740742b",
+  "starintel_documents_sha256": "9372ec874e52dfda92ef5af1d1c525092db497b6fc1935aca0cb4f1a05a5f4d6",
   "total": 8,
   "validation": {
-    "related_id_references": "constructed",
+    "related_id_references": "checked",
     "relation_endpoints": "not-applicable",
     "starintel_doc_validate_document": "not-run",
     "unique_ids": "checked"
