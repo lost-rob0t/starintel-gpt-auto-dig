@@ -1,4 +1,4 @@
-import std/[base64, os, osproc, streams, strutils, tables, algorithm]
+import std/[algorithm, base64, os, osproc, streams, strutils, tables]
 
 
 type PacketFile* = object
@@ -11,11 +11,12 @@ type LineVisitor* = proc(line: string; lineNumber: int) {.closure.}
 
 
 proc transportPriority(path: string): int =
-  if path.endsWith("starintel-documents.jsonl"):
+  let name = lastPathPart(path)
+  if name == "starintel-documents.jsonl":
     return 0
-  if path.endsWith("starintel-documents.jsonl.gz.b64"):
+  if name == "starintel-documents.jsonl.gz.b64":
     return 1
-  if path.endsWith("starintel-documents.jsonl.gz.b64.parts"):
+  if name == "starintel-documents.jsonl.gz.b64.parts":
     return 2
   99
 
@@ -52,9 +53,10 @@ proc readTransport*(path: string): string =
 
 
 proc forEachTransportLine*(path: string; visitor: LineVisitor) =
-  if path.endsWith("starintel-documents.jsonl"):
+  if lastPathPart(path) == "starintel-documents.jsonl":
     var input = open(path, fmRead)
-    defer: input.close()
+    defer:
+      input.close()
     var line: string
     var lineNumber = 0
     while input.readLine(line):
@@ -96,13 +98,18 @@ proc packetFiles*(root: string): seq[PacketFile] =
 
   var selected = initTable[string, string]()
   for path in walkDirRec(root):
-    if not isTransport(path):
+    let rel = relativePath(path, root)
+    let parts = rel.split(DirSep)
+    # Canonical packets live exactly at root/<target>/<run>/starintel-documents.*.
+    # Generated partition shards are intentionally deeper and must never be
+    # treated as independent packets.
+    if parts.len != 3 or not isTransport(path):
       continue
-    let directory = parentDir(path)
-    if not selected.hasKey(directory) or transportPriority(path) < transportPriority(selected[directory]):
-      selected[directory] = path
+    let packetKey = parts[0] & "\x1f" & parts[1]
+    if not selected.hasKey(packetKey) or transportPriority(path) < transportPriority(selected[packetKey]):
+      selected[packetKey] = path
 
-  var paths = newSeq[string]()
+  var paths: seq[string]
   for path in selected.values:
     paths.add(path)
   paths.sort()
@@ -110,8 +117,6 @@ proc packetFiles*(root: string): seq[PacketFile] =
   for path in paths:
     let rel = relativePath(path, root)
     let parts = rel.split(DirSep)
-    if parts.len < 3:
-      continue
     result.add(PacketFile(target: parts[0], run: parts[1], path: path))
 
 
