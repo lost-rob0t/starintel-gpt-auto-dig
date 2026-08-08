@@ -12,8 +12,9 @@
     },
     {
       "organization": "European Council on Foreign Relations",
-      "role": "Founding Board Member / current Board of Trustees",
-      "verification": "ECFR current governance page and profile",
+      "role": "Founding Board Member / member of ECFR public website Board of Trustees",
+      "role_scope": "organization-level public governance surface; not the same as UK charity 1143536 statutory trustee register",
+      "verification": "ECFR current governance page and profile; legal-scope guard from Charity Commission current trustee register",
       "existing_starintel_id": "starintel:org:european-council-on-foreign-relations"
     },
     {
@@ -37,6 +38,11 @@
       "verification": "European Investment Bank current council page and creation announcement"
     }
   ],
+  "ecfr_legal_governance_guard": {
+    "uk_charity_number": "1143536",
+    "current_statutory_trustees": ["Lykke Friis", "Adam Thomas Lury", "Ian Clarkson"],
+    "rule": "Do not convert Ivan Krastev's ECFR public website board role into a UK charity trustee/director predicate. Resolve the ECFR group/legal entity governed by the broader website board first."
+  },
   "strong_cross_corroboration_needing_institution_side_resolution": [
     {
       "organization": "International Crisis Group",
@@ -67,11 +73,13 @@
     "GLOBSEC Board of Directors full current roster cross-resolution",
     "International Crisis Group institution-side governance resolution",
     "IWM governance, partners and public funding disclosures",
-    "Mark Leonard public institutional interlocks"
+    "Mark Leonard public institutional interlocks",
+    "ECFR group legal-entity governance resolution"
   ],
   "sources": [
     "https://ecfr.eu/about/",
     "https://ecfr.eu/profile/ivan-krastev/",
+    "Charity Commission current trustees for ECFR charity 1143536",
     "https://cls-sofia.org/about",
     "https://cls-sofia.org/ivan-krastev-en",
     "https://www.iwm.at/fellow/ivan-krastev",
