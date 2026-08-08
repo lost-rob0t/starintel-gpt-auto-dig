@@ -9,6 +9,7 @@ on:
       - .github/workflows/gop-autodig-100k.yml
       - scripts/run_gop_fec_variant.py
       - scripts/import_gop_fec_deidentified_receipts.py
+      - tests/test_gop_fec_deidentified_receipts.py
 
 concurrency:
   group: gop-autodig-100k-${{ github.ref }}
@@ -38,7 +39,11 @@ jobs:
         run: |
           python3 -m py_compile \
             scripts/run_gop_fec_variant.py \
-            scripts/import_gop_fec_deidentified_receipts.py
+            scripts/import_gop_fec_deidentified_receipts.py \
+            tests/test_gop_fec_deidentified_receipts.py
+
+      - name: Test de-identified receipt fixture
+        run: python3 tests/test_gop_fec_deidentified_receipts.py
 
       - name: Compile every transformed GOP FEC importer
         run: |
