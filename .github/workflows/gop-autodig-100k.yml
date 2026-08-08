@@ -8,6 +8,8 @@ on:
     paths:
       - .github/workflows/gop-autodig-100k.yml
       - scripts/*.nim
+      - tests/*.nim
+      - starintel_auto_dig.nimble
       - schemas/**
       - digs/gop/**
   pull_request:
@@ -16,6 +18,8 @@ on:
     paths:
       - .github/workflows/gop-autodig-100k.yml
       - scripts/*.nim
+      - tests/*.nim
+      - starintel_auto_dig.nimble
       - schemas/**
       - digs/gop/**
 
@@ -68,18 +72,29 @@ jobs:
             --out:bin/starintel-site \
             scripts/starintel_site.nim
           nim c -d:release --opt:speed --mm:orc \
+            --path:scripts \
+            --out:bin/validate-for-merge \
+            scripts/validate-for-merge.nim
+          nim c -d:release --opt:speed --mm:orc \
             --out:bin/import-gop-receipts \
             scripts/import_gop_fec_deidentified_receipts.nim
 
+      - name: Run Nim transport regression tests
+        run: |
+          nim c -r -d:release --opt:speed --mm:orc \
+            --path:scripts \
+            tests/test_starintel_transport.nim
+
       - name: Validate canonical corpus and source references
         run: |
-          bin/starintel-validate --root .
+          bin/validate-for-merge --skip-git-diff-check
           test -f unverifed
           echo "source-less documents: $(grep -vc '^#' unverifed || true)"
 
       - name: Smoke-test Nim CLIs
         run: |
           bin/starintel-site --help
+          bin/validate-for-merge --help
           test -x bin/import-gop-receipts
 
   generate-receipts:
@@ -162,7 +177,7 @@ jobs:
           name: gop-lane-fec-deidentified-receipts
           path: digs/gop/2026-08-08-fec-individual-contributions-2026
 
-      - name: Build Nim validation and site binaries
+      - name: Build Nim merge gate
         run: |
           mkdir -p bin
           nim c -d:release --opt:speed --mm:orc \
@@ -174,24 +189,18 @@ jobs:
             --path:scripts \
             --out:bin/starintel-site \
             scripts/starintel_site.nim
+          nim c -d:release --opt:speed --mm:orc \
+            --path:scripts \
+            --out:bin/validate-for-merge \
+            scripts/validate-for-merge.nim
 
-      - name: Validate generated corpus and source audit
+      - name: Run complete Nim merge gate and GOP minimum
         run: |
-          bin/starintel-validate --root .
+          bin/validate-for-merge \
+            --site \
+            --topic-minimum gop=100000 \
+            --skip-git-diff-check
           test -f unverifed
-
-      - name: Build site with Nim and enforce GOP minimum
-        run: |
-          rm -rf /tmp/starintel-site /tmp/starintel-org
-          bin/starintel-site \
-            --input digs \
-            --db db \
-            --output /tmp/starintel-site \
-            --org-output /tmp/starintel-org
-          test -s /tmp/starintel-site/index.html
-          test -s /tmp/starintel-site/dataset-gop/downloads/topic-manifest.json
-          count=$(python3 -c 'import json; print(json.load(open("/tmp/starintel-site/dataset-gop/downloads/topic-manifest.json"))["record_count"])')
-          test "$count" -ge 100000
 
       - name: Commit generated GOP corpus atomically
         run: |
