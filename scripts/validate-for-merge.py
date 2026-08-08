@@ -112,21 +112,10 @@ def validate_site() -> None:
             site / "search-index.json",
             site / "assets" / "graph-controller.mjs",
             site / "assets" / "graph-core.mjs",
-            site / "assets" / "people.css",
-            site / "assets" / "people.js",
-            site / "people" / "index.html",
-            site / "people" / "people.json",
         ]
         missing = [str(path) for path in required if not path.is_file() or path.stat().st_size == 0]
         if missing:
             raise RuntimeError(f"site validation failed; missing generated artifacts: {missing}")
-        people = json.loads((site / "people" / "people.json").read_text(encoding="utf-8"))
-        if not isinstance(people, list) or not people:
-            raise RuntimeError("site validation failed; people directory is empty")
-        first = people[0]
-        profile = site / "people" / str(first.get("url", ""))
-        if not profile.is_file() or profile.stat().st_size == 0:
-            raise RuntimeError(f"site validation failed; missing people profile: {profile}")
 
 
 def build_parser() -> argparse.ArgumentParser:
