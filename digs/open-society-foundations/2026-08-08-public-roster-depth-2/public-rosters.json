@@ -75,17 +75,94 @@
       {"name": "Laura Silber", "role": "Person with significant control", "control": "voting rights >25% and <=50%", "notified_on": "2024-12-19"}
     ]
   },
-  "alex_soros_interlocks": [
-    {"organization": "Open Society Foundations", "role": "Chair"},
-    {"organization": "Bend the Arc Jewish Action", "role": "Founding Chair"},
-    {"organization": "Bard College", "role": "Board Member"},
-    {"organization": "Center for Jewish History", "role": "Board Member"},
-    {"organization": "Central European University", "role": "Board Member"},
-    {"organization": "European Council on Foreign Relations", "role": "Board Member", "existing_starintel_id": "starintel:org:european-council-on-foreign-relations"},
-    {"organization": "International Crisis Group", "role": "Board Member"},
-    {"organization": "Open Society Foundation London", "role": "Director"},
-    {"organization": "Open Society Foundation London", "role": "Person with significant control"}
+  "verified_cross_institution_interlocks": [
+    {
+      "person": "Alex Soros",
+      "organization": "European Council on Foreign Relations",
+      "role": "Council Member",
+      "verification": "ECFR current Council directory",
+      "existing_starintel_id": "starintel:org:european-council-on-foreign-relations"
+    },
+    {
+      "person": "George Soros",
+      "organization": "European Council on Foreign Relations",
+      "role": "Council Member",
+      "verification": "ECFR current Council directory",
+      "existing_starintel_id": "starintel:org:european-council-on-foreign-relations"
+    },
+    {
+      "person": "Daniel Sachs",
+      "organization": "European Council on Foreign Relations",
+      "role": "Council Member",
+      "verification": "ECFR current Council directory",
+      "existing_starintel_id": "starintel:org:european-council-on-foreign-relations"
+    },
+    {
+      "person": "Ivan Krastev",
+      "organization": "European Council on Foreign Relations",
+      "role": "Board of Trustees",
+      "verification": "ECFR current governance page",
+      "existing_starintel_id": "starintel:org:european-council-on-foreign-relations",
+      "osf_role": "Board Member"
+    },
+    {
+      "person": "Mark Malloch-Brown",
+      "organization": "European Council on Foreign Relations",
+      "role": "Council Member",
+      "verification": "ECFR current Council directory",
+      "osf_role": "Former President"
+    },
+    {
+      "person": "Alex Soros",
+      "organization": "The International Crisis Group",
+      "role": "Director",
+      "appointed": "2018-10-04",
+      "verification": "UK Companies House officer appointments"
+    }
   ],
+  "conflicting_or_unresolved_affiliations": [
+    {
+      "person": "Alex Soros",
+      "organization": "European Council on Foreign Relations",
+      "osf_claim": "Board Member",
+      "institution_side_current_evidence": "Council Member; not listed on current ECFR Board of Trustees",
+      "status": "current board claim unresolved; current Council membership verified"
+    },
+    {
+      "person": "Alex Soros",
+      "organization": "Bard College",
+      "osf_claim": "Board Member",
+      "institution_side_current_evidence": "Not listed on current Bard College Board of Trustees",
+      "status": "current board claim unsupported by current Bard roster; investigate historical term"
+    },
+    {
+      "person": "Alex Soros",
+      "organization": "Central European University",
+      "osf_claim": "Board Member",
+      "status": "institution-side current roster verification pending"
+    },
+    {
+      "person": "Alex Soros",
+      "organization": "Center for Jewish History",
+      "osf_claim": "Board Member",
+      "status": "institution-side current roster verification pending"
+    },
+    {
+      "person": "Alex Soros",
+      "organization": "Bend the Arc Jewish Action",
+      "osf_claim": "Founding Chair",
+      "status": "institution-side current verification pending"
+    }
+  ],
+  "bard_funding_relationship": {
+    "organization": "Bard College",
+    "commitment_year": 2021,
+    "open_society_commitment_usd": 500000000,
+    "matching_goal_usd": 500000000,
+    "completed_endowment_total_usd": 1000000000,
+    "completed_year": 2026,
+    "note": "Funding relationship is independently documented by Bard and is distinct from any trustee claim."
+  },
   "financial_snapshot": {
     "year": 2024,
     "total_expenditures_usd_millions": 1190.1,
@@ -112,6 +189,11 @@
     "https://www.opensocietyfoundations.org/who-we-are/financials?lv=true",
     "https://www.opensocietyfoundations.org/grants/past",
     "https://www.opensocietyfoundations.org/grants/open-society-fellowship",
+    "https://ecfr.eu/council/members/",
+    "https://ecfr.eu/about/",
+    "https://ecfr.eu/profile/ivan-krastev/",
+    "https://www.bard.edu/about/trustees/",
+    "https://www.bard.edu/news/bard-college-completes-its-landmark-endowment-challenge-2026-01-21",
     "https://find-and-update.company-information.service.gov.uk/company/10187396",
     "https://find-and-update.company-information.service.gov.uk/company/10187396/officers",
     "https://find-and-update.company-information.service.gov.uk/company/10187396/persons-with-significant-control",
