@@ -31,6 +31,7 @@ concurrency:
 
 permissions:
   contents: write
+  statuses: write
 
 env:
   PYTHONPATH: .
@@ -44,6 +45,17 @@ jobs:
         with:
           fetch-depth: 1
           ref: ${{ env.TARGET_BRANCH }}
+
+      - name: Mark branch materialization pending
+        if: github.event_name == 'push'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TARGET_SHA: ${{ github.sha }}
+        run: >-
+          gh api "repos/${{ github.repository }}/statuses/${TARGET_SHA}"
+          -f state=pending
+          -f context='gop-autodig-100k/materialize'
+          -f description='Generating seven GOP FEC lanes and validating final topic count'
 
       - uses: actions/setup-python@v5
         with:
@@ -260,3 +272,34 @@ jobs:
           git commit -m 'Materialize 100k+ GOP AutoDig FEC packets [skip ci]'
           git pull --rebase origin "${TARGET_BRANCH}"
           git push origin HEAD:${TARGET_BRANCH}
+
+  report-materialization-status:
+    if: ${{ always() && github.event_name == 'push' && github.actor != 'github-actions[bot]' }}
+    needs:
+      - preflight
+      - generate
+      - materialize
+    runs-on: ubuntu-latest
+    permissions:
+      statuses: write
+    steps:
+      - name: Report final branch materialization status
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TARGET_SHA: ${{ github.sha }}
+          PREFLIGHT_RESULT: ${{ needs.preflight.result }}
+          GENERATE_RESULT: ${{ needs.generate.result }}
+          MATERIALIZE_RESULT: ${{ needs.materialize.result }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          state=failure
+          description="GOP materialization failed before final topic validation"
+          if [ "$PREFLIGHT_RESULT" = success ] && [ "$GENERATE_RESULT" = success ] && [ "$MATERIALIZE_RESULT" = success ]; then
+            state=success
+            description="Seven GOP FEC lanes materialized; final topic count and merge gate passed"
+          fi
+          gh api "repos/${{ github.repository }}/statuses/${TARGET_SHA}" \
+            -f state="$state" \
+            -f context='gop-autodig-100k/materialize' \
+            -f description="$description"
