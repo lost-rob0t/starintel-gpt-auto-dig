@@ -22,14 +22,18 @@ ALLOWED = {
 
 REPLACEMENTS = (
     ('2026-07-31', '2026-08-08'),
+    ('    if party_code == "DFL":\n        base += 0.01\n', ''),
     ('PARTY_CODES = {"DEM", "DFL"}', 'PARTY_CODES = {"REP"}'),
+    ('DEM|DFL', 'REP'),
+    ('`DEM` or `DFL`', '`REP`'),
+    ('DEM and DFL', 'REP'),
+    ('DEM or DFL', 'REP'),
+    ('DEM/DFL', 'REP'),
     ('MAX_MATCHING_ROWS = 50_000', 'MAX_MATCHING_ROWS = 250_000'),
     ('C00010603', 'C00003418'),
     ('starintel:org:dnc', 'starintel:org:republican-national-committee'),
     ('democratic-party-fec-affiliation', 'republican-party-fec-affiliation'),
     ('DEMOCRATIC_PARTY_ID', 'REPUBLICAN_PARTY_ID'),
-    ('DEM or DFL', 'REP'),
-    ('DEM/DFL', 'REP'),
     ('"DEM"', '"REP"'),
     ("'DEM'", "'REP'"),
     ('DFL', 'REP'),
@@ -99,6 +103,10 @@ def transform(source_path: Path) -> str:
         'starintel:org:dnc',
         'PARTY_CODES = {"DEM", "DFL"}',
         'C00010603',
+        'DEM|DFL',
+        'DEM and DFL',
+        'DEM or DFL',
+        'DFL',
     )
     leaked = [marker for marker in forbidden if marker in text]
     if leaked:
@@ -108,6 +116,8 @@ def transform(source_path: Path) -> str:
         raise RuntimeError("party-filtering importer did not resolve to REP-only")
     if source_path.name == "import_dnc_fec_oppexp.py" and 'COMMITTEE_ID = "C00003418"' not in text:
         raise RuntimeError("RNC-scoped importer did not resolve to C00003418")
+    if 'party_code == "REP"' in text and 'base += 0.01' in text:
+        raise RuntimeError("DFL-specific committee-priority bonus leaked into REP transform")
 
     return text
 
