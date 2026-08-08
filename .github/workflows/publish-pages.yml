@@ -98,7 +98,7 @@ jobs:
 
       - name: Generate research explorer once
         run: |
-          python3 scripts/build_research_site_fast.py \
+          python3 scripts/build_research_site.py \
             --input digs \
             --db db \
             --output _site \
