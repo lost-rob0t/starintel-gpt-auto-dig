@@ -42,15 +42,8 @@ jobs:
       - uses: actions/setup-python@v6
         with:
           python-version: "3.13"
-      - name: Build canonical corpus
-        run: |
-          python3 scripts/build_research_site.py \
-            --input digs \
-            --db db \
-            --output _poster_site \
-            --org-output .generated/poster-org
       - name: Compute print-poster statistics
         run: |
           python3 scripts/poster_stats.py \
-            _poster_site/downloads/starintel-complete-corpus.jsonl \
+            --input-root digs \
             --output poster-stats.json
