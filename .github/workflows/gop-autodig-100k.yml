@@ -153,7 +153,7 @@ jobs:
           compression-level: 0
 
   materialize:
-    if: always() && github.actor != 'github-actions[bot]'
+    if: ${{ always() && needs.generate.result == 'success' && github.actor != 'github-actions[bot]' }}
     needs: generate
     runs-on: ubuntu-latest
     timeout-minutes: 540
@@ -172,13 +172,14 @@ jobs:
           pattern: gop-lane-*
           path: /tmp/gop-lanes
 
-      - name: Materialize successful GOP lane artifacts
+      - name: Materialize all GOP lane artifacts
         shell: bash
         run: |
           set -euo pipefail
           mapfile -t archives < <(find /tmp/gop-lanes -type f -name '*.tar.gz' -print | sort)
-          if [ "${#archives[@]}" -eq 0 ]; then
-            echo 'No GOP lane artifacts were produced.' >&2
+          if [ "${#archives[@]}" -ne 7 ]; then
+            echo "Expected 7 GOP lane archives, found ${#archives[@]}." >&2
+            printf '%s\n' "${archives[@]}" >&2
             exit 1
           fi
           for archive in "${archives[@]}"; do
@@ -207,9 +208,11 @@ jobs:
           for root in roots:
               manifest_path = root / 'manifest.json'
               if not manifest_path.is_file():
-                  continue
+                  raise SystemExit(f'missing required GOP lane manifest: {manifest_path}')
               manifest = json.loads(manifest_path.read_text(encoding='utf-8'))
               count = int(manifest.get('total_documents') or manifest.get('document_count') or 0)
+              if count <= 0:
+                  raise SystemExit(f'GOP lane reported no documents: {manifest_path}')
               manifests.append((str(root), count))
               total += count
           print({'lane_documents': manifests, 'total_generated_documents': total})
@@ -220,7 +223,7 @@ jobs:
       - name: Validate complete repository
         run: python3 scripts/validate-for-merge.py --site
 
-      - name: Commit successful GOP expansion atomically
+      - name: Commit complete GOP expansion atomically
         shell: bash
         run: |
           set -euo pipefail
@@ -235,7 +238,7 @@ jobs:
             digs/gop/2026-08-08-fec-administrative-fines \
             digs/gop/2026-08-08-fec-individual-contributions-2026
           if git diff --cached --quiet; then
-            echo 'Successful GOP packets are unchanged.'
+            echo 'Complete GOP packets are unchanged.'
             exit 0
           fi
           git commit -m 'Materialize 100k+ GOP AutoDig FEC packets [skip ci]'
