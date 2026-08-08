@@ -116,7 +116,7 @@ jobs:
           --ref agent/gop-dataset-100k-expansion
 
   generate:
-    if: ${{ github.event_name != 'pull_request' && github.actor != 'github-actions[bot]' }}
+    if: ${{ github.event_name == 'workflow_dispatch' || (github.event_name == 'push' && github.actor != 'github-actions[bot]') }}
     needs: preflight
     strategy:
       fail-fast: false
@@ -198,7 +198,7 @@ jobs:
           compression-level: 0
 
   materialize:
-    if: ${{ always() && needs.generate.result == 'success' && github.actor != 'github-actions[bot]' }}
+    if: ${{ always() && needs.generate.result == 'success' && github.event_name != 'pull_request' }}
     needs: generate
     runs-on: ubuntu-latest
     timeout-minutes: 540
@@ -289,7 +289,7 @@ jobs:
           git push origin HEAD:${TARGET_BRANCH}
 
   report-materialization-status:
-    if: ${{ always() && github.event_name != 'pull_request' && github.actor != 'github-actions[bot]' }}
+    if: ${{ always() && github.event_name != 'pull_request' }}
     needs:
       - preflight
       - generate
