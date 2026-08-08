@@ -16,6 +16,8 @@ if str(ROOT) not in sys.path:
 from starintel_doc.schema_org import document_schema
 from starintel_doc.store import packet_paths, read_transport, validate_repository
 
+PAGES_CONTENT_BUDGET_BYTES = 9_000_000_000
+
 
 def run(command: list[str]) -> None:
     print("+", " ".join(command), flush=True)
@@ -116,6 +118,12 @@ def validate_site() -> None:
         missing = [str(path) for path in required if not path.is_file() or path.stat().st_size == 0]
         if missing:
             raise RuntimeError(f"site validation failed; missing generated artifacts: {missing}")
+        content_bytes = sum(path.stat().st_size for path in site.rglob("*") if path.is_file())
+        if content_bytes >= PAGES_CONTENT_BUDGET_BYTES:
+            raise RuntimeError(
+                "site validation failed; generated content is too large for GitHub Pages "
+                f"after archive overhead: {content_bytes:,} bytes"
+            )
 
 
 def build_parser() -> argparse.ArgumentParser:
