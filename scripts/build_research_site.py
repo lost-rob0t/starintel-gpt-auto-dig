@@ -3,8 +3,10 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 import re
 import shutil
+import subprocess
 import sys
 import unicodedata
 from collections import defaultdict
@@ -185,13 +187,51 @@ def filter_excluded(workspace: Path, config: dict[str, Any]) -> None:
             candidate.unlink()
 
 
-def materialize_input(digs_root: Path, db_root: Path, workspace: Path, config: dict[str, Any]) -> None:
+def materialize_input_native(
+    db_root: Path,
+    workspace: Path,
+    config_path: Path,
+) -> bool:
+    materializer = os.environ.get("STARINTEL_SITE_MATERIALIZER")
+    if not materializer or os.environ.get("STARINTEL_CORPUS_VALIDATED") != "1":
+        return False
+
+    executable = Path(materializer)
+    if not executable.is_file():
+        raise RuntimeError(f"Nim site materializer not found: {executable}")
+
+    subprocess.run(
+        [
+            str(executable),
+            "--db",
+            str(db_root),
+            "--workspace",
+            str(workspace),
+            "--config",
+            str(config_path),
+        ],
+        cwd=ROOT,
+        check=True,
+    )
+    return True
+
+
+def materialize_input(
+    digs_root: Path,
+    db_root: Path,
+    workspace: Path,
+    config: dict[str, Any],
+    config_path: Path = Path("site-config.json"),
+) -> None:
     if workspace.exists():
         shutil.rmtree(workspace)
     workspace.mkdir(parents=True)
     if digs_root.exists():
         shutil.copytree(digs_root, workspace, dirs_exist_ok=True)
     filter_excluded(workspace, config)
+
+    if materialize_input_native(db_root, workspace, config_path):
+        return
 
     mappings = config.get("database_targets", {})
     if not isinstance(mappings, dict):
@@ -228,7 +268,7 @@ def main() -> int:
     args = parser.parse_args()
     try:
         config = load_config(args.config)
-        materialize_input(args.input, args.db, args.workspace, config)
+        materialize_input(args.input, args.db, args.workspace, config, args.config)
         build_site(args.workspace, args.output, args.org_output, args.config, args.assets)
         people = build_people_directory(args.workspace, args.output, args.assets)
         seal = publish_site_seal(
