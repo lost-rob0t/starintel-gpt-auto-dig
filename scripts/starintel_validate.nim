@@ -16,7 +16,7 @@ type MissingSource = object
   title: string
 
 
-type AuditState = object
+type AuditState = ref object
   documents: int
   malformedSources: int
   missing: seq[MissingSource]
@@ -56,7 +56,7 @@ proc sourceShapeError(source: JsonNode): string =
   ""
 
 
-proc auditDocument(state: var AuditState; schema, document: JsonNode; path: string; line: int) =
+proc auditDocument(state: AuditState; schema, document: JsonNode; path: string; line: int) =
   inc state.documents
 
   let checked = validateDocument(document, schema)
@@ -90,7 +90,7 @@ proc auditDocument(state: var AuditState; schema, document: JsonNode; path: stri
       state.errors.add(location(path, line) & ": sources[" & $index & "]: " & reason)
 
 
-proc auditRawLine(state: var AuditState; schema: JsonNode; raw, path: string; line: int) =
+proc auditRawLine(state: AuditState; schema: JsonNode; raw, path: string; line: int) =
   if raw.strip().len == 0:
     return
   try:
@@ -103,7 +103,7 @@ proc auditRawLine(state: var AuditState; schema: JsonNode; raw, path: string; li
     state.errors.add(location(path, line) & ": invalid JSON: " & exc.msg)
 
 
-proc auditFile(state: var AuditState; schema: JsonNode; path: string; transport: bool) =
+proc auditFile(state: AuditState; schema: JsonNode; path: string; transport: bool) =
   try:
     if transport:
       forEachTransportLine(path, proc(raw: string; line: int) =
@@ -111,7 +111,8 @@ proc auditFile(state: var AuditState; schema: JsonNode; path: string; transport:
       )
     else:
       var input = open(path, fmRead)
-      defer: input.close()
+      defer:
+        input.close()
       var raw: string
       var line = 0
       while input.readLine(raw):
@@ -194,7 +195,7 @@ proc main(): int =
 
   putEnv("STARINTEL_SCHEMA", root / "schemas" / "starintel-doc-v0.9.0.schema.json")
   let schema = loadSchema()
-  var state: AuditState
+  let state = AuditState()
 
   for path in dbFiles(root / "db"):
     auditFile(state, schema, path, false)
