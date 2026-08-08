@@ -91,12 +91,6 @@ def validate_javascript() -> None:
         run(["node", str(test.relative_to(ROOT))])
 
 
-def site_builder() -> str:
-    if os.environ.get("STARINTEL_SITE_MATERIALIZER"):
-        return "scripts/build_research_site_fast.py"
-    return "scripts/build_research_site.py"
-
-
 def validate_site() -> None:
     with tempfile.TemporaryDirectory(prefix="starintel-merge-") as directory:
         temporary = Path(directory)
@@ -105,7 +99,7 @@ def validate_site() -> None:
         run(
             [
                 sys.executable,
-                site_builder(),
+                "scripts/build_research_site.py",
                 "--input",
                 "digs",
                 "--db",
