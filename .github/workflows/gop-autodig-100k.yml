@@ -10,6 +10,10 @@ on:
       - scripts/run_gop_fec_variant.py
       - scripts/deidentify_gop_fec_receipts.py
 
+concurrency:
+  group: gop-autodig-100k-${{ github.ref }}
+  cancel-in-progress: true
+
 permissions:
   contents: write
 
