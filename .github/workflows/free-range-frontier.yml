@@ -1,6 +1,7 @@
 name: Free-Range Frontier
 
 on:
+  # Assistant-operated manual entry point.
   workflow_dispatch:
     inputs:
       query:
