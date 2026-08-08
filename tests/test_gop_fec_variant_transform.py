@@ -20,12 +20,14 @@ class GOPFECVariantTransformTest(unittest.TestCase):
         compile(text, name, "exec")
         return text
 
-    def test_every_allowed_importer_is_gop_scoped(self) -> None:
+    def test_every_allowed_importer_is_gop_scoped_and_schema_adapted(self) -> None:
         for name in sorted(MODULE.ALLOWED):
             with self.subTest(name=name):
                 text = self.transformed(name)
                 self.assertIn('DATASET = "gop"', text)
                 self.assertIn(f'GENERATED_AT = "{MODULE.GENERATED_AT}"', text)
+                self.assertIn('fec_legacy_data', text)
+                self.assertIn('_gop_document_schema', text)
                 self.assertNotIn('DATASET = "dnc"', text)
                 self.assertNotIn('starintel:org:dnc', text)
                 self.assertNotIn('C00010603', text)
@@ -41,11 +43,23 @@ class GOPFECVariantTransformTest(unittest.TestCase):
         self.assertNotIn('if party_code == "REP":\n        base += 0.01', text)
         self.assertIn('"scheme": "party_code_set", "value": "REP"', text)
 
-    def test_administrative_fine_name_leads_are_republican(self) -> None:
+    def test_administrative_fine_current_headers_are_normalized(self) -> None:
         text = self.transformed("import_dnc_fec_administrative_fines.py")
         self.assertIn('REPUBLICAN(?:S)?|GOP|RNC', text)
         self.assertNotIn('DEMOCRAT(?:IC|S)?', text)
         self.assertIn('GOP_CLASSIFICATION_BASIS', text)
+        self.assertIn('"case_number": "CAS_NUM"', text)
+        self.assertIn('ADMIN_FINE_FIELD_ALIASES.get(name, name)', text)
+
+    def test_current_candidate_linkages_can_reference_retired_committees(self) -> None:
+        text = self.transformed("import_dnc_fec_democratic_candidates.py")
+        self.assertIn('unresolved_linked_committee_ids', text)
+        self.assertIn('linkages = [row for row in linkages if row["CMTE_ID"].strip() not in missing_set]', text)
+        self.assertNotIn('raise RuntimeError(f"candidate-linked committees missing from committee master:', text)
+
+    def test_independent_expenditure_importer_has_io_import(self) -> None:
+        text = self.transformed("import_dnc_fec_independent_expenditures.py")
+        self.assertIn('\nimport io\n', text)
 
     def test_rnc_operating_expenditure_scope(self) -> None:
         text = self.transformed("import_dnc_fec_oppexp.py")
