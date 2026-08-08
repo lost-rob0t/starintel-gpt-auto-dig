@@ -32,3 +32,25 @@ jobs:
           python-version: "3.13"
       - name: Validate StarIntel documents
         run: python3 scripts/starintel.py validate --root .
+
+  poster-stats:
+    if: startsWith(github.head_ref, 'poster/') || startsWith(github.ref_name, 'poster/')
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.13"
+      - name: Build canonical corpus
+        run: |
+          python3 scripts/build_research_site.py \
+            --input digs \
+            --db db \
+            --output _poster_site \
+            --org-output .generated/poster-org
+      - name: Compute print-poster statistics
+        run: |
+          python3 scripts/poster_stats.py \
+            _poster_site/downloads/starintel-complete-corpus.jsonl \
+            --output poster-stats.json
