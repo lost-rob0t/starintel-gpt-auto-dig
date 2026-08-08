@@ -1,0 +1,62 @@
+name: Validate Nim site build
+
+on:
+  pull_request:
+    paths:
+      - "scripts/build_research_site_fast.py"
+      - "scripts/materialize_site_input.nim"
+      - ".github/workflows/nim-site-build.yml"
+      - ".github/workflows/publish-pages.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: nim-site-build-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.13"
+
+      - name: Build Nim materializer
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends nim
+          mkdir -p .generated/bin
+          nim c -d:release --opt:speed --hints:off --warnings:off \
+            -o:.generated/bin/materialize-site-input \
+            scripts/materialize_site_input.nim
+          echo "STARINTEL_SITE_MATERIALIZER=$GITHUB_WORKSPACE/.generated/bin/materialize-site-input" >> "$GITHUB_ENV"
+
+      - name: Validate corpus
+        run: |
+          python3 scripts/validate-for-merge.py
+          echo "STARINTEL_CORPUS_VALIDATED=1" >> "$GITHUB_ENV"
+
+      - name: Build complete site through Nim fast path
+        run: |
+          time python3 scripts/build_research_site_fast.py \
+            --input digs \
+            --db db \
+            --output _site \
+            --org-output .generated/org
+
+      - name: Validate generated site
+        run: |
+          test -s _site/index.html
+          test -s _site/search-index.json
+          test -s _site/downloads/starintel-complete-corpus.jsonl
+          test -s _site/downloads/starintel-complete-corpus.manifest.json
+          test -s _site/downloads/starintel-evidence-seal.json
+          python3 scripts/evidence-seal.py verify \
+            _site/downloads/starintel-complete-corpus.jsonl \
+            _site/downloads/starintel-evidence-seal.json
