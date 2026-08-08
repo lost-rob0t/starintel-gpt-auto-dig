@@ -86,6 +86,33 @@ ADMIN_FINE_ALIASES = '''ADMIN_FINE_FIELD_ALIASES = {
 }
 '''
 
+IE_FIELD_ALIASES = '''IE_FIELD_ALIASES = {
+    "cand_id": "CAN_ID",
+    "cand_name": "CAN_NAM",
+    "spe_id": "SPE_ID",
+    "spe_nam": "SPE_NAM",
+    "ele_type": "ELE_TYP",
+    "can_office_state": "CAN_OFF_STA",
+    "can_office_dis": "CAN_OFF_DIS",
+    "can_office": "CAN_OFF",
+    "cand_pty_aff": "CAN_PAR_AFF",
+    "exp_amo": "EXP_AMO",
+    "exp_date": "EXP_DAT",
+    "agg_amo": "AGG_AMO",
+    "sup_opp": "SUP_OPP",
+    "pur": "PUR",
+    "pay": "PAY",
+    "file_num": "FILE_NUM",
+    "amndt_ind": "AMN_IND",
+    "tran_id": "TRA_ID",
+    "image_num": "IMA_NUM",
+    "receipt_dat": "REC_DT",
+    "fec_election_yr": "FEC_ELECTION_YR",
+    "prev_file_num": "PREV_FILE_NUM",
+    "dissem_dt": "DISSEM_DT",
+}
+'''
+
 
 def parse_args() -> tuple[argparse.Namespace, list[str]]:
     parser = argparse.ArgumentParser(
@@ -179,6 +206,50 @@ def install_admin_fine_header_compat(text: str, source_name: str) -> str:
     return text.replace(old, new, 1)
 
 
+def install_independent_expenditure_header_compat(text: str, source_name: str) -> str:
+    if source_name != "import_dnc_fec_independent_expenditures.py":
+        return text
+    required_anchor = "REQUIRED_IE_FIELDS = {"
+    if required_anchor not in text:
+        raise RuntimeError("independent-expenditure field declaration changed")
+    text = text.replace(required_anchor, IE_FIELD_ALIASES + "\n" + required_anchor, 1)
+    old = '''        reader = csv.DictReader(handle)
+        fields = set(reader.fieldnames or [])
+        missing = REQUIRED_IE_FIELDS - fields
+        if missing:
+            raise RuntimeError(f"independent-expenditure CSV lacks fields: {sorted(missing)}")
+        fieldnames = list(reader.fieldnames or [])
+        with filtered_path.open("wb") as raw_out, gzip.GzipFile(filename="", mode="wb", fileobj=raw_out, compresslevel=9, mtime=0) as compressed:
+            buffer = io.StringIO()
+            csv_writer = csv.DictWriter(buffer, fieldnames=fieldnames, lineterminator="\\n")
+'''
+    new = '''        reader = csv.DictReader(handle)
+        fieldnames = [IE_FIELD_ALIASES.get(name, name) for name in (reader.fieldnames or [])]
+        missing = REQUIRED_IE_FIELDS - set(fieldnames)
+        if missing:
+            raise RuntimeError(f"independent-expenditure CSV lacks fields: {sorted(missing)}")
+        with filtered_path.open("wb") as raw_out, gzip.GzipFile(filename="", mode="wb", fileobj=raw_out, compresslevel=9, mtime=0) as compressed:
+            buffer = io.StringIO()
+            csv_writer = csv.DictWriter(buffer, fieldnames=fieldnames, lineterminator="\\n")
+'''
+    if old not in text:
+        raise RuntimeError("independent-expenditure CSV reader changed; review GOP compatibility")
+    text = text.replace(old, new, 1)
+    old_row = '''                row = {key: (value or "") for key, value in raw_row.items() if key is not None}
+                fec_candidate_id = row["CAN_ID"].strip()
+                reported_party = row["CAN_PAR_AFF"].strip().upper()
+                if fec_candidate_id not in republican_candidate_ids and reported_party not in PARTY_CODES:
+'''
+    new_row = '''                row = {IE_FIELD_ALIASES.get(key, key): (value or "") for key, value in raw_row.items() if key is not None}
+                fec_candidate_id = row["CAN_ID"].strip()
+                reported_party = row["CAN_PAR_AFF"].strip().upper()
+                if fec_candidate_id not in republican_candidate_ids and reported_party not in PARTY_CODES and reported_party != "REPUBLICAN PARTY":
+'''
+    if old_row not in text:
+        raise RuntimeError("independent-expenditure row normalization changed; review GOP compatibility")
+    return text.replace(old_row, new_row, 1)
+
+
 def transform(source_path: Path) -> str:
     text = source_path.read_text(encoding="utf-8")
     if 'DATASET = "dnc"' not in text:
@@ -190,6 +261,7 @@ def transform(source_path: Path) -> str:
     text = install_missing_imports(text)
     text = install_candidate_linkage_compat(text, source_path.name)
     text = install_admin_fine_header_compat(text, source_path.name)
+    text = install_independent_expenditure_header_compat(text, source_path.name)
     text = install_validation_compat(text)
 
     generated_name = transformed_script_name(source_path.name)
@@ -234,6 +306,11 @@ def transform(source_path: Path) -> str:
             raise RuntimeError("current administrative-fine header aliases were not installed")
     if source_path.name == "import_dnc_fec_democratic_candidates.py" and "unresolved_linked_committee_ids" not in text:
         raise RuntimeError("candidate missing-committee compatibility was not installed")
+    if source_path.name == "import_dnc_fec_independent_expenditures.py":
+        if '"cand_id": "CAN_ID"' not in text:
+            raise RuntimeError("current independent-expenditure header aliases were not installed")
+        if 'reported_party != "REPUBLICAN PARTY"' not in text:
+            raise RuntimeError("current independent-expenditure party-name compatibility was not installed")
 
     return text
 
