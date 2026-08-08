@@ -33,21 +33,25 @@ on:
   pull_request:
     paths:
       - ".github/workflows/free-range-frontier.yml"
+      - "FREE_RANGE.md"
       - "scripts/free-range.py"
       - "starintel_doc/free_range.py"
       - "starintel_doc/frontier_state.py"
       - "tests/test_free_range.py"
       - "tests/test_free_range_state.py"
+      - "digs/free-range/**"
   push:
     branches:
       - main
     paths:
       - ".github/workflows/free-range-frontier.yml"
+      - "FREE_RANGE.md"
       - "scripts/free-range.py"
       - "starintel_doc/free_range.py"
       - "starintel_doc/frontier_state.py"
       - "tests/test_free_range.py"
       - "tests/test_free_range_state.py"
+      - "digs/free-range/**"
 
 permissions:
   contents: read
