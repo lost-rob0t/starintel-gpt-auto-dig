@@ -54,6 +54,12 @@ type SiteConfig = object
   packetSubtitles: Table[string, string]
 
 
+type ScanState = ref object
+  targets: Table[string, Bucket]
+  complete: Bucket
+  config: SiteConfig
+
+
 proc ensureDir(path: string) =
   if not dirExists(path):
     createDir(path)
@@ -313,29 +319,33 @@ proc makeRecord(document: JsonNode; raw, target, run, path: string): Record =
   )
 
 
-proc addRecord(targets: var Table[string, Bucket]; complete: Bucket; record: Record; config: SiteConfig) =
-  if record.id.len == 0 or record.id in config.excludedIds:
+proc addRecord(state: ScanState; record: Record) =
+  if record.id.len == 0 or record.id in state.config.excludedIds:
     return
-  putLatest(getBucket(targets, record.target), record)
-  putLatest(complete, record)
+  putLatest(getBucket(state.targets, record.target), record)
+  putLatest(state.complete, record)
 
 
 proc scanCorpus(inputRoot, dbRoot: string; config: SiteConfig): tuple[targets: Table[string, Bucket], complete: Bucket] =
-  var targets = initTable[string, Bucket]()
-  let complete = newBucket()
+  let state = ScanState(
+    targets: initTable[string, Bucket](),
+    complete: newBucket(),
+    config: config
+  )
 
   for packet in packetFiles(inputRoot):
-    forEachTransportLine(packet.path, proc(raw: string; lineNumber: int) =
+    let packetPath = packet.path
+    let packetTarget = packet.target
+    let packetRun = packet.run
+    forEachTransportLine(packetPath, proc(raw: string; lineNumber: int) =
       if raw.strip().len == 0:
         return
       let document = parseJson(raw)
       if document.kind != JObject:
-        raise newException(ValueError, &"{packet.path}:{lineNumber}: expected JSON object")
+        raise newException(ValueError, &"{packetPath}:{lineNumber}: expected JSON object")
       addRecord(
-        targets,
-        complete,
-        makeRecord(document, raw, packet.target, packet.run, packet.path),
-        config
+        state,
+        makeRecord(document, raw, packetTarget, packetRun, packetPath)
       )
     )
 
@@ -353,14 +363,12 @@ proc scanCorpus(inputRoot, dbRoot: string; config: SiteConfig): tuple[targets: T
         raise newException(ValueError, &"{path}:{lineNumber}: expected JSON object")
       let dataset = jsonText(document, "dataset", "database")
       addRecord(
-        targets,
-        complete,
-        makeRecord(document, raw, inferDbTarget(dataset, config), "db", path),
-        config
+        state,
+        makeRecord(document, raw, inferDbTarget(dataset, state.config), "db", path)
       )
     input.close()
 
-  result = (targets, complete)
+  result = (state.targets, state.complete)
 
 
 proc endpointIds(value: JsonNode): seq[string] =
