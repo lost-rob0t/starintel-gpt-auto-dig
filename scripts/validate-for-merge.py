@@ -75,7 +75,11 @@ def validate_corpus() -> None:
 
 def validate_javascript() -> None:
     modules = sorted((ROOT / "site-assets").glob("*.mjs"))
-    scripts = [ROOT / "site-assets" / "people.js"]
+    scripts = [
+        ROOT / "site-assets" / "people.js",
+        ROOT / "site-assets" / "adar-shell.js",
+        ROOT / "site-assets" / "corpus-dashboard.js",
+    ]
     test = ROOT / "tests" / "test_graph_pathfinding.mjs"
     if not modules and not test.exists() and not any(path.exists() for path in scripts):
         return
@@ -88,6 +92,38 @@ def validate_javascript() -> None:
             run(["node", "--check", str(script.relative_to(ROOT))])
     if test.is_file():
         run(["node", str(test.relative_to(ROOT))])
+
+
+def validate_adar_surfaces(site: Path) -> None:
+    index = site / "index.html"
+    datasets = site / "datasets.html"
+    dashboard_path = site / "dashboard-data.json"
+    catalog_path = site / "dataset-catalog.json"
+    shell = site / "assets" / "adar-shell.js"
+    runtime = site / "assets" / "corpus-dashboard.js"
+
+    index_markup = index.read_text(encoding="utf-8")
+    datasets_markup = datasets.read_text(encoding="utf-8")
+    shell_source = shell.read_text(encoding="utf-8")
+    dashboard = json.loads(dashboard_path.read_text(encoding="utf-8"))
+    catalog = json.loads(catalog_path.read_text(encoding="utf-8"))
+
+    if 'id="corpus-dashboard"' not in index_markup:
+        raise RuntimeError("ADAR site validation failed; root dashboard container missing")
+    if 'id="dataset-browser"' not in datasets_markup:
+        raise RuntimeError("ADAR site validation failed; dataset browser container missing")
+    if "https://auto-research.starintel.actor/" not in shell_source:
+        raise RuntimeError("ADAR site validation failed; Research sibling-site link missing")
+    if dashboard.get("version") != 1:
+        raise RuntimeError("ADAR site validation failed; unsupported dashboard projection version")
+    if any(row.get("label") == "relation" for row in dashboard.get("document_types", [])):
+        raise RuntimeError("ADAR site validation failed; relation leaked into document-type chart")
+    if not isinstance(dashboard.get("relation_types"), list):
+        raise RuntimeError("ADAR site validation failed; relation-type projection missing")
+    if any(row.get("kind") not in {"topic", "source"} for row in catalog):
+        raise RuntimeError("ADAR site validation failed; invalid dataset catalog class")
+    if not runtime.is_file() or runtime.stat().st_size == 0:
+        raise RuntimeError("ADAR site validation failed; dashboard browser runtime missing")
 
 
 def validate_site() -> None:
@@ -111,13 +147,19 @@ def validate_site() -> None:
         )
         required = [
             site / "index.html",
+            site / "datasets.html",
             site / "search-index.json",
+            site / "dashboard-data.json",
+            site / "dataset-catalog.json",
             site / "assets" / "graph-controller.mjs",
             site / "assets" / "graph-core.mjs",
+            site / "assets" / "adar-shell.js",
+            site / "assets" / "corpus-dashboard.js",
         ]
         missing = [str(path) for path in required if not path.is_file() or path.stat().st_size == 0]
         if missing:
             raise RuntimeError(f"site validation failed; missing generated artifacts: {missing}")
+        validate_adar_surfaces(site)
         content_bytes = sum(path.stat().st_size for path in site.rglob("*") if path.is_file())
         if content_bytes >= PAGES_CONTENT_BUDGET_BYTES:
             raise RuntimeError(

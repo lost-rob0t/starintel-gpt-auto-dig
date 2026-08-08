@@ -1,0 +1,45 @@
+name: Validate Auto-Dig site UI
+
+on:
+  pull_request:
+    paths:
+      - "scripts/starintel_site/**"
+      - "scripts/validate-for-merge.py"
+      - "site-assets/**"
+      - "tests/test_adar_dashboard.py"
+      - ".github/workflows/validate-site-ui.yml"
+  push:
+    branches-ignore: [main]
+    paths:
+      - "scripts/starintel_site/**"
+      - "scripts/validate-for-merge.py"
+      - "site-assets/**"
+      - "tests/test_adar_dashboard.py"
+      - ".github/workflows/validate-site-ui.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: site-ui-validation-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  validate-site-ui:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v6
+
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.13"
+
+      - name: Run dashboard regression tests
+        run: python3 -m unittest tests.test_adar_dashboard tests.test_dashboard_graph
+
+      - name: Run complete StarIntel merge and ADAR surface gate
+        run: python3 scripts/validate-for-merge.py --site

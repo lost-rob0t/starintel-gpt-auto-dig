@@ -30,12 +30,17 @@ class SiteThemeTests(unittest.TestCase):
         for color in ("#170c32", "#202146", "#92406e", "#fba922", "#2de2e6", "#f3f4f5", "#f6019d", "#62ff00", "#dd546e", "#9700cc"):
             self.assertIn(color, script)
 
-    def test_builder_publishes_theme_runtime_on_every_page(self) -> None:
+    def test_builder_publishes_theme_and_adar_runtime_on_every_page(self) -> None:
         source = BUILDER.read_text(encoding="utf-8")
-        self.assertIn('shutil.copy2(assets / "theme.js", asset_output / "theme.js")', source)
+        self.assertIn('"theme.js",', source)
+        self.assertIn('"adar-dashboard.css",', source)
+        self.assertIn('"adar-shell.js",', source)
+        self.assertIn('"corpus-dashboard.js",', source)
         self.assertIn('theme_script = f\'<script src="{prefix}assets/theme.js"></script>\'', source)
+        self.assertIn('shell_script = f\'<script defer src="{prefix}assets/adar-shell.js"></script>\'', source)
         self.assertIn('themed(node(doc, target, known), "../../")', source)
-        self.assertIn('themed(page(config.get("site_title", "StarIntel GPT Auto Dig"), body), "")', source)
+        self.assertIn('themed(root_dashboard_page(projection, site_title), "")', source)
+        self.assertIn('themed(datasets_page(catalog, site_title), "")', source)
 
     def test_graph_colors_are_theme_tokens(self) -> None:
         core = (ASSETS / "graph-core.mjs").read_text(encoding="utf-8")

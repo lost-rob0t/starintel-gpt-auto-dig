@@ -7,15 +7,19 @@ ROOT = Path(__file__).resolve().parents[1]
 BUILDER = ROOT / "scripts" / "starintel_site" / "builder.py"
 MERGE_GATE = ROOT / "scripts" / "validate-for-merge.py"
 DASHBOARD_JS = ROOT / "site-assets" / "dashboard.js"
+CORPUS_DASHBOARD = ROOT / "scripts" / "starintel_site" / "corpus_dashboard.py"
 
 
 class DatasetCatalogTests(unittest.TestCase):
-    def test_root_dashboard_lists_source_and_topic_datasets(self) -> None:
+    def test_dataset_catalog_moves_off_root_dashboard(self) -> None:
         source = BUILDER.read_text(encoding="utf-8")
+        dashboard = CORPUS_DASHBOARD.read_text(encoding="utf-8")
         self.assertIn('output / "datasets.json"', source)
         self.assertIn('output / "topic-datasets.json"', source)
-        self.assertIn("Topic datasets", source)
-        self.assertIn("Source datasets", source)
+        self.assertIn('output / "dataset-catalog.json"', source)
+        self.assertIn('output / "datasets.html"', source)
+        self.assertIn("def datasets_page", dashboard)
+        self.assertIn("Every generated topic dataset and source dataset", dashboard)
         self.assertIn("excluded_source_dataset", source)
 
     def test_topic_dataset_has_full_dashboard_and_download(self) -> None:
