@@ -8,7 +8,7 @@ on:
     paths:
       - .github/workflows/gop-autodig-100k.yml
       - scripts/run_gop_fec_variant.py
-      - scripts/deidentify_gop_fec_receipts.py
+      - scripts/import_gop_fec_deidentified_receipts.py
 
 concurrency:
   group: gop-autodig-100k-${{ github.ref }}
@@ -48,9 +48,7 @@ jobs:
             command: python3 scripts/run_gop_fec_variant.py import_dnc_fec_administrative_fines.py
             paths: digs/gop/2026-07-31-fec-administrative-fines
           - lane: fec-deidentified-receipts
-            command: |
-              python3 scripts/run_gop_fec_variant.py import_dnc_fec_individual_contributions.py
-              python3 scripts/deidentify_gop_fec_receipts.py
+            command: python3 scripts/import_gop_fec_deidentified_receipts.py
             paths: digs/gop/2026-07-31-fec-individual-contributions-2026
     runs-on: ubuntu-latest
     timeout-minutes: 540
