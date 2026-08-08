@@ -49,6 +49,43 @@ REPLACEMENTS = (
     ('dnc', 'gop'),
 )
 
+VALIDATION_IMPORT = "from starintel_doc.validation import validate_document"
+VALIDATION_COMPAT = '''from starintel_doc.schema_org import document_schema as _gop_document_schema
+from starintel_doc.validation import validate_document as _gop_schema_validate_document
+
+
+def validate_document(document: dict[str, Any]) -> None:
+    data = document.get("data")
+    dtype = str(document.get("dtype") or "").strip().lower().replace("_", "-")
+    if isinstance(data, dict) and dtype:
+        schema = _gop_document_schema(dtype)
+        data_schema = schema.get("properties", {}).get("data", {})
+        allowed = set(data_schema.get("properties", {}))
+        if allowed:
+            extras = {key: data.pop(key) for key in list(data) if key not in allowed}
+            if extras:
+                extensions = document.setdefault("extensions", {})
+                legacy = extensions.setdefault("fec_legacy_data", {})
+                legacy.update(extras)
+    _gop_schema_validate_document(document)
+'''
+
+ADMIN_FINE_ALIASES = '''ADMIN_FINE_FIELD_ALIASES = {
+    "case_number": "CAS_NUM",
+    "cmte_id": "COM_ID",
+    "cmte_name": "COM_NAM",
+    "report_type": "REP_TYP",
+    "report_year": "REP_YEA",
+    "fine_amount": "FIN_AMO",
+    "office": "OFF",
+    "state": "STA",
+    "district": "DIS",
+    "cand_name": "CAN_NAM",
+    "late_filed_not_filed": "LAT_FIL_NOT_FIL",
+    "paid_yes_no": "PAI_YES_NO",
+}
+'''
+
 
 def parse_args() -> tuple[argparse.Namespace, list[str]]:
     parser = argparse.ArgumentParser(
@@ -60,8 +97,7 @@ def parse_args() -> tuple[argparse.Namespace, list[str]]:
 
 def transformed_script_name(source_name: str) -> str:
     name = source_name.replace("dnc", "gop")
-    name = name.replace("democratic", "republican")
-    return name
+    return name.replace("democratic", "republican")
 
 
 def normalize_generated_at(text: str) -> str:
@@ -76,6 +112,73 @@ def normalize_generated_at(text: str) -> str:
     return "\n".join(lines) + "\n"
 
 
+def install_validation_compat(text: str) -> str:
+    if VALIDATION_IMPORT not in text:
+        raise RuntimeError("source importer no longer imports validate_document in the expected form")
+    return text.replace(VALIDATION_IMPORT, VALIDATION_COMPAT, 1)
+
+
+def install_missing_imports(text: str) -> str:
+    if "io." in text and "\nimport io\n" not in text:
+        anchor = "import hashlib\n"
+        if anchor not in text:
+            raise RuntimeError("cannot install missing io import")
+        text = text.replace(anchor, anchor + "import io\n", 1)
+    return text
+
+
+def install_candidate_linkage_compat(text: str, source_name: str) -> str:
+    if source_name != "import_dnc_fec_democratic_candidates.py":
+        return text
+    old = '''        missing = sorted(linked_committee_ids - committee_rows.keys())
+        if missing:
+            raise RuntimeError(f"candidate-linked committees missing from committee master: {missing[:20]}")
+'''
+    new = '''        missing = sorted(linked_committee_ids - committee_rows.keys())
+        if missing:
+            missing_set = set(missing)
+            linkages = [row for row in linkages if row["CMTE_ID"].strip() not in missing_set]
+'''
+    if old not in text:
+        raise RuntimeError("candidate missing-committee guard changed; review GOP compatibility")
+    text = text.replace(old, new, 1)
+    metadata_anchor = '''            "raw_counts": {"candidate_rows": len(all_candidates), "committee_rows": len(all_committees), "linkage_rows": len(all_linkages)},
+'''
+    if metadata_anchor in text:
+        text = text.replace(
+            metadata_anchor,
+            metadata_anchor + '            "unresolved_linked_committee_ids": missing,\n',
+            1,
+        )
+    return text
+
+
+def install_admin_fine_header_compat(text: str, source_name: str) -> str:
+    if source_name != "import_dnc_fec_administrative_fines.py":
+        return text
+    required_anchor = "REQUIRED_FIELDS = {"
+    if required_anchor not in text:
+        raise RuntimeError("administrative-fine field declaration changed")
+    text = text.replace(required_anchor, ADMIN_FINE_ALIASES + "\n" + required_anchor, 1)
+    old = '''        reader = csv.DictReader(handle)
+        missing = REQUIRED_FIELDS - set(reader.fieldnames or [])
+        if missing:
+            raise RuntimeError(f"administrative-fine CSV lacks fields: {sorted(missing)}")
+        for row in reader:
+'''
+    new = '''        reader = csv.DictReader(handle)
+        normalized_fields = {ADMIN_FINE_FIELD_ALIASES.get(name, name) for name in (reader.fieldnames or [])}
+        missing = REQUIRED_FIELDS - normalized_fields
+        if missing:
+            raise RuntimeError(f"administrative-fine CSV lacks fields: {sorted(missing)}")
+        for raw_row in reader:
+            row = {ADMIN_FINE_FIELD_ALIASES.get(key, key): value for key, value in raw_row.items()}
+'''
+    if old not in text:
+        raise RuntimeError("administrative-fine CSV reader changed; review GOP compatibility")
+    return text.replace(old, new, 1)
+
+
 def transform(source_path: Path) -> str:
     text = source_path.read_text(encoding="utf-8")
     if 'DATASET = "dnc"' not in text:
@@ -84,6 +187,10 @@ def transform(source_path: Path) -> str:
     for old, new in REPLACEMENTS:
         text = text.replace(old, new)
     text = normalize_generated_at(text)
+    text = install_missing_imports(text)
+    text = install_candidate_linkage_compat(text, source_path.name)
+    text = install_admin_fine_header_compat(text, source_path.name)
+    text = install_validation_compat(text)
 
     generated_name = transformed_script_name(source_path.name)
     text = text.replace(
@@ -95,6 +202,7 @@ def transform(source_path: Path) -> str:
         'DATASET = "gop"',
         f'GENERATED_AT = "{GENERATED_AT}"',
         'StarIntel-AutoDig/0.9',
+        'fec_legacy_data',
     )
     missing = [marker for marker in required if marker not in text]
     if missing:
@@ -119,8 +227,13 @@ def transform(source_path: Path) -> str:
         raise RuntimeError("party-filtering importer did not resolve to REP-only")
     if source_path.name == "import_dnc_fec_oppexp.py" and 'COMMITTEE_ID = "C00003418"' not in text:
         raise RuntimeError("RNC-scoped importer did not resolve to C00003418")
-    if source_path.name == "import_dnc_fec_administrative_fines.py" and 'REPUBLICAN(?:S)?|GOP|RNC' not in text:
-        raise RuntimeError("administrative-fine GOP name-lead matcher was not installed")
+    if source_path.name == "import_dnc_fec_administrative_fines.py":
+        if 'REPUBLICAN(?:S)?|GOP|RNC' not in text:
+            raise RuntimeError("administrative-fine GOP name-lead matcher was not installed")
+        if '"case_number": "CAS_NUM"' not in text:
+            raise RuntimeError("current administrative-fine header aliases were not installed")
+    if source_path.name == "import_dnc_fec_democratic_candidates.py" and "unresolved_linked_committee_ids" not in text:
+        raise RuntimeError("candidate missing-committee compatibility was not installed")
 
     return text
 
