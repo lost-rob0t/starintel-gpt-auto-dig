@@ -6,11 +6,13 @@ on:
     paths:
       - "db/**"
       - "digs/**"
+      - "scripts/poster_stats.py"
       - ".github/workflows/validate-db.yml"
   pull_request:
     paths:
       - "db/**"
       - "digs/**"
+      - "scripts/poster_stats.py"
       - ".github/workflows/validate-db.yml"
   workflow_dispatch:
 
