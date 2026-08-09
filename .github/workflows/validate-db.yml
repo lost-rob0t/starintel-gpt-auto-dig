@@ -12,6 +12,16 @@ on:
       - "scripts/starintel_validate.nim"
       - "tests/test_starintel_legacy.nim"
       - ".github/workflows/validate-db.yml"
+  pull_request:
+    paths:
+      - "db/**"
+      - "digs/**"
+      - "schemas/**"
+      - "scripts/starintel_legacy.nim"
+      - "scripts/starintel_transport.nim"
+      - "scripts/starintel_validate.nim"
+      - "tests/test_starintel_legacy.nim"
+      - ".github/workflows/validate-db.yml"
   workflow_dispatch:
 
 permissions:
