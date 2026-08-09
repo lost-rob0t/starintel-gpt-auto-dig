@@ -27,6 +27,26 @@
 - Reclassified the ethics issue from a generic gap to a testable question: determine whether Cantor was a party or represented a party in the relevant Commerce-USAR particular matter, whether Lutnick participated personally/substantially, and whether a separate § 2635.502(d) authorization existed.
 - Added the ELPO gatekeeping agreement and any USAR-specific ethics authorization/recusal memorandum as priority retrieval targets.
 
+### Origination / adviser chronology sub-pass
+
+- Added `ORIGINATION-AND-ADVISORS.md`.
+- Confirmed through SEC-filed USAR disclosures that Cantor already served as lead placement agent on a $75M USAR PIPE in April-May 2025, months before the reported November 2025 USAR/Commerce introduction.
+- Located April 23, 2026 budget-hearing testimony in which Lutnick stated that Ken Moelis introduced USAR executives to him and that Lutnick then introduced USAR to the CHIPS team.
+- Reconciled the Jan. 2026 adviser roles: Moelis was USAR's exclusive financial adviser in structuring the U.S.-government agreements; Cantor was lead placement agent on the linked $1.5B PIPE; Moelis was co-placement agent.
+- Reclassified the simple "Lutnick steered USAR to Cantor" theory as weakened/unsupported by the currently reviewed chronology.
+- Preserved the stronger unresolved question: whether Lutnick participated in the government-side specific-party matter during his former-employer period while a Commerce-required private-capital condition generated new business for an existing Cantor client relationship.
+
+### Fee quantification sub-pass
+
+- Added `FEE-ANALYSIS.md`.
+- Located USAR's exact Q1 2026 accounting entry: **$51.003M** in PIPE/securities-issuance costs against approximately $1.5B of gross PIPE proceeds.
+- Calculated the aggregate issuance-cost burden at approximately **3.4002%** of gross proceeds. This is explicitly **not** classified as Cantor's fee rate.
+- Confirmed from the Securities Purchase Agreement that USAR was solely responsible for fees, costs, expenses, and commissions of Cantor and Moelis.
+- Confirmed that the actual economic terms were contained in separate placement-agent engagement letters dated on or about Jan. 16, 2026.
+- Audited the Jan. 26 SEC filing index: those engagement letters are not among the filed exhibits.
+- Consequently, the public SEC record does not presently permit a defensible allocation of the $51.003M between Cantor, Moelis, counsel, and other issuance expenses.
+- Checked public sources after the July 23 congressional response deadline; no public response disclosing the fee split was located as of Aug. 9. This is recorded only as a negative public-source search, not proof that Congress did not receive a private response.
+
 ### Current classification
 
-The evidence supports a **documented potential conflict / related-party-benefit inquiry with a concrete former-employer recusal question**. It still does not establish insider trading, bribery, kickbacks, criminal corruption, Commerce selection of Cantor, or an ethics violation.
+The evidence supports a **documented potential conflict / related-party-benefit inquiry with a concrete former-employer recusal question**. It also establishes a precise $51.003M aggregate cost pool while leaving Cantor's individual compensation unresolved. It still does not establish insider trading, bribery, kickbacks, criminal corruption, Commerce selection of Cantor, or an ethics violation.
