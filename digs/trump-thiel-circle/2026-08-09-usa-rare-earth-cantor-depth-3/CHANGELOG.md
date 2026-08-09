@@ -47,6 +47,20 @@
 - Consequently, the public SEC record does not presently permit a defensible allocation of the $51.003M between Cantor, Moelis, counsel, and other issuance expenses.
 - Checked public sources after the July 23 congressional response deadline; no public response disclosing the fee split was located as of Aug. 9. This is recorded only as a negative public-source search, not proof that Congress did not receive a private response.
 
+### PIPE purchasers / wall-cross sub-pass
+
+- Added `PIPE-PURCHASERS-AND-WALL-CROSSING.md`.
+- Reconstructed the complete Feb. 3 S-1 purchaser allocation: **69,767,442 shares at $21.50**, arithmetically totaling **$1,500,000,003**.
+- Recorded the institutional allocations without converting control-person SEC language into claims of personal purchases.
+- Confirmed that the largest allocation, **13,955,000 shares / $300,032,500**, went to Inflection Point Freedom Fund LP, a disclosed related-party vehicle linked to USAR chairman Michael Blitzer, board adviser Kevin Shannon, and legal officer David Kronenfeld.
+- Recorded USAR's countervailing governance disclosures: price/terms/allocations approved by a disinterested-director pricing committee; audit committee approved the Freedom Fund related-party participation before SPA execution; Blitzer/Shannon/Freedom Fund did not negotiate PIPE documents.
+- Confirmed that each PIPE purchaser contractually acknowledged the government LOI and relied on the January Investor Presentation most recently supplied in connection with the investment.
+- Confirmed that the presentation contained detailed proposed government economics, including the ~$1.6B structure, $277M direct funding, $1.3B loan, government equity/warrants, and milestone information.
+- Confirmed a contractual cleansing mechanism requiring public disclosure of company/agent-supplied MNPI and a no-trade covenant from purchaser execution through first public announcement.
+- Recorded the public announcement at **7:01 a.m. ET Jan. 26** and SEC 8-K acceptance at **7:07:10 a.m. ET**.
+- Classified the confidential investor process as conventional PIPE wall-crossing, **not evidence of insider trading by itself**.
+- Narrowed the insider-trading test to first wall-cross timestamps, exact purchaser execution times, information barriers, and any actual pre-cleansing trading.
+
 ### Current classification
 
-The evidence supports a **documented potential conflict / related-party-benefit inquiry with a concrete former-employer recusal question**. It also establishes a precise $51.003M aggregate cost pool while leaving Cantor's individual compensation unresolved. It still does not establish insider trading, bribery, kickbacks, criminal corruption, Commerce selection of Cantor, or an ethics violation.
+The evidence supports a **documented potential conflict / related-party-benefit inquiry with a concrete former-employer recusal question**. It establishes a precise $51.003M aggregate PIPE cost pool, a complete institutional purchaser allocation, a disclosed $300.03M related-party allocation, and a documented wall-cross/cleansing process. It still does not establish insider trading, bribery, kickbacks, criminal corruption, Commerce selection of Cantor, an ethics violation, or prohibited preannouncement trading.
