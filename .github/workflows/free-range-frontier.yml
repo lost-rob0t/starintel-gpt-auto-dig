@@ -1,6 +1,7 @@
 name: Free-Range Frontier
 
 on:
+  # Assistant-operated manual entry point.
   workflow_dispatch:
     inputs:
       query:
@@ -32,17 +33,25 @@ on:
   pull_request:
     paths:
       - ".github/workflows/free-range-frontier.yml"
+      - "FREE_RANGE.md"
       - "scripts/free-range.py"
       - "starintel_doc/free_range.py"
+      - "starintel_doc/frontier_state.py"
       - "tests/test_free_range.py"
+      - "tests/test_free_range_state.py"
+      - "digs/free-range/**"
   push:
     branches:
       - main
     paths:
       - ".github/workflows/free-range-frontier.yml"
+      - "FREE_RANGE.md"
       - "scripts/free-range.py"
       - "starintel_doc/free_range.py"
+      - "starintel_doc/frontier_state.py"
       - "tests/test_free_range.py"
+      - "tests/test_free_range_state.py"
+      - "digs/free-range/**"
 
 permissions:
   contents: read
@@ -58,7 +67,7 @@ jobs:
           python-version: "3.12"
 
       - name: Test planner
-        run: python3 -m unittest tests.test_free_range -v
+        run: python3 -m unittest tests.test_free_range tests.test_free_range_state -v
 
       - name: Generate frontier
         env:

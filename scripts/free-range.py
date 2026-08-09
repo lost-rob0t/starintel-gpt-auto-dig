@@ -15,6 +15,7 @@ from starintel_doc.free_range import (
     render_jsonl,
     render_markdown,
 )
+from starintel_doc.frontier_state import resolve_latest_target_states
 from starintel_doc.store import search_documents
 
 
@@ -52,6 +53,8 @@ def main(argv: list[str] | None = None) -> int:
     )
     for warning in warnings:
         print(f"WARNING: {warning}", file=sys.stderr)
+
+    documents = resolve_latest_target_states(documents)
     if args.query or args.dtype or args.dataset:
         documents = search_documents(
             documents,
