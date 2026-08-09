@@ -75,7 +75,7 @@
 ### Inflection Point governance-timing sub-pass
 
 - Added `INFLECTION-POINT-GOVERNANCE-TIMING.md`.
-- Established a pre-change baseline from 2025 SEC filings describing Blitzer as controlling IPAM, Inflection Point GP I and Fund I, including voting/investment discretion.
+- Established a pre-change baseline from 2025 SEC filings describing Blitzer as controlling IPAM and sharing voting/investment discretion over Inflection Point-held securities.
 - Located Jan. 5 Forms 4 reporting a **Jan. 1, 2026 administrative change** in IPAM/GP I internal governance documents that changed beneficial-ownership reporting without any sale, transfer or disposition of securities.
 - Established that subsequent SEC filings describe voting/dispositive power under a **three-member majority investment committee** consisting of Blitzer, Shannon and an unnamed third individual with no prior-three-year issuer relationship.
 - Confirmed that materially identical committee language is used for Freedom Fund's USAR position.
@@ -83,6 +83,19 @@
 - Preserved the causation caveat: the Jan. 1 governance amendment and Jan. 23 ERA effective date are relevant chronology, but no reviewed source establishes that either event was undertaken because of the USAR PIPE.
 - Adam Saks, who became IPAM CFO in Jan. 2026, remains only a candidate lead for the unnamed third committee seat; no explicit source ties him to the committee.
 
+### Freedom Fund beneficiary / control roster sub-pass
+
+- Added `FREEDOM-FUND-BENEFICIARY-SEARCH.md`.
+- Corrected the governance interpretation: later March-May 2026 SEC filings still state that **Michael Blitzer controls IPAM** and signs as CIO; the January amendment is therefore classified as a **fund-level voting/dispositive-authority restructuring**, not evidence that Blitzer relinquished company-level IPAM control.
+- Audited the USAR issuer filing index around the post-registration distribution window. The only Form 4 filed Feb. 17 for a Feb. 12 transaction is **David Kronenfeld's 6,977-share Freedom Fund distribution**.
+- Targeted exact-name SEC searches have not surfaced another specifically named Freedom Fund LP. This is preserved as a negative public-source result, not proof Kronenfeld was the only LP.
+- Established a current source-backed Freedom Fund natural-person roster of **Michael Blitzer, Kevin Shannon, and David Kronenfeld**, plus the still-unnamed third investment-committee seat.
+- Located adjacent **Inflection Point Fund I** disclosures showing economic interests for Blitzer, Shannon, and Andrew Gundlach and/or affiliates through performance allocations, management fees, and LP interests.
+- Explicitly kept Fund I and Freedom Fund separate: Gundlach's Fund I economics do **not** establish a Freedom Fund role.
+- Confirmed across multiple Inflection Point-associated issuer filings that the Blitzer/Shannon/unnamed-third-member committee wording is repeated, strengthening the classification that the unnamed seat is a consistent public-disclosure boundary rather than a USAR-only omission.
+- Raised IPAM's Jan/Feb 2026 Form ADV/private-fund schedules, Freedom Fund formation documents, and the full LP/distribution roster as the next primary evidence targets.
+- Extended `EVIDENCE.md` through **USAR-CANTOR-055**.
+
 ### Current classification
 
-The evidence supports a **documented potential conflict / related-party-benefit inquiry with a concrete former-employer recusal question**. It establishes a precise $51.003M aggregate PIPE cost pool, a complete institutional purchaser allocation, a disclosed $300.03M related-party allocation, documented GP economics, rapid post-registration distributions, and a Jan. 2026 change in Inflection Point fund-control governance. It still does not establish insider trading, bribery, kickbacks, criminal corruption, Commerce selection of Cantor, an ethics violation, prohibited preannouncement trading, or that the Inflection Point governance changes were made to facilitate the USAR transaction.
+The evidence supports a **documented potential conflict / related-party-benefit inquiry with a concrete former-employer recusal question**. It establishes a precise $51.003M aggregate PIPE cost pool, a complete institutional purchaser allocation, a disclosed $300.03M related-party allocation, documented GP economics, rapid post-registration distributions, and a Jan. 2026 restructuring of fund-level investment authority. The Freedom Fund's known natural-person chain is currently Blitzer/Shannon/Kronenfeld plus one unidentified committee member; the broader LP roster remains non-public in the reviewed SEC material. The evidence still does not establish insider trading, bribery, kickbacks, criminal corruption, Commerce selection of Cantor, an ethics violation, prohibited preannouncement trading, or that the Inflection Point governance changes were made to facilitate the USAR transaction.
