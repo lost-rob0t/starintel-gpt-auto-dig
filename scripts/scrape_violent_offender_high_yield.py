@@ -44,6 +44,37 @@ SOURCES = {
     },
 }
 
+NEWORLD_LABELS = {
+    "booking date",
+    "release date",
+    "scheduled release date",
+    "prisoner type",
+    "classification",
+    "housing facility",
+    "total bond amount",
+    "total bail amount",
+    "booking origin",
+    "bond number",
+    "bond type",
+    "bond amount",
+    "charges",
+    "court date",
+    "court",
+    "court room",
+    "number",
+    "charge description",
+    "offense date",
+    "docket number",
+    "sentence date",
+    "disposition",
+    "disposition date",
+    "sentence length",
+    "crime class",
+    "arresting agency",
+    "attempt/commit",
+    "bond",
+}
+
 
 def newworld_case_numbers(text: str) -> list[str]:
     found = core.case_numbers(text)
@@ -84,12 +115,32 @@ def newworld_detail_links(markup: str, base_url: str) -> list[tuple[str, str]]:
 
 def first_booking_block(markup: str) -> list[str]:
     lines = core.text_lines(markup)
-    starts = [index for index, line in enumerate(lines) if re.fullmatch(r"Booking\s+[0-9A-Za-z-]+", line, re.IGNORECASE)]
+    starts = [
+        index
+        for index, line in enumerate(lines)
+        if re.fullmatch(r"Booking\s+\d{4}-\d+", line, re.IGNORECASE)
+    ]
     if not starts:
         return []
     start = starts[0]
     end = starts[1] if len(starts) > 1 else len(lines)
     return lines[start:end]
+
+
+def labeled_value(lines: list[str], label: str) -> str | None:
+    folded = label.casefold()
+    for index, line in enumerate(lines):
+        current = line.casefold()
+        if current.startswith(folded + " "):
+            value = core.normalize_space(line[len(label) :])
+            return value or None
+        if current != folded or index + 1 >= len(lines):
+            continue
+        value = core.normalize_space(lines[index + 1])
+        if value.casefold() in NEWORLD_LABELS:
+            return None
+        return value or None
+    return None
 
 
 def newworld_record(source: str, name: str, markup: str, detail_url: str, fetched_at: str) -> core.BookingRecord | None:
@@ -101,10 +152,7 @@ def newworld_record(source: str, name: str, markup: str, detail_url: str, fetche
     if not charges:
         return None
     text = "\n".join(block)
-    booking = re.match(r"Booking\s+([0-9A-Za-z-]+)", block[0], re.IGNORECASE)
-    booking_date = re.search(r"Booking Date\s*([^\n]+)", text, re.IGNORECASE)
-    release_date = re.search(r"Release Date\s*([^\n]+)", text, re.IGNORECASE)
-    origin = re.search(r"Booking Origin\s*([^\n]+)", text, re.IGNORECASE)
+    booking = re.match(r"Booking\s+(\d{4}-\d+)", block[0], re.IGNORECASE)
     return core.BookingRecord(
         source=source,
         locality=spec["locality"],
@@ -113,9 +161,9 @@ def newworld_record(source: str, name: str, markup: str, detail_url: str, fetche
         source_url=spec["url"],
         detail_url=detail_url,
         booking_id=booking.group(1) if booking else None,
-        booking_date=core.normalize_space(booking_date.group(1)) if booking_date else None,
-        arresting_agency=core.normalize_space(origin.group(1)) if origin else None,
-        release_date=core.normalize_space(release_date.group(1)) if release_date else None,
+        booking_date=labeled_value(block, "Booking Date"),
+        arresting_agency=labeled_value(block, "Booking Origin"),
+        release_date=labeled_value(block, "Release Date"),
         case_numbers=newworld_case_numbers(text),
         violent_charge_matches=charges,
         fetched_at=fetched_at,
@@ -179,13 +227,13 @@ async def collect_newworld(source: str, client: httpx.AsyncClient, fetched_at: s
     pages = 1
     links: dict[str, str] = dict(newworld_detail_links(first.text, str(first.url)))
 
-    async def load_page(page: int) -> tuple[int, list[tuple[str, str]]]:
+    async def load_page(page: int) -> list[tuple[str, str]]:
         response = await fetch(client, spec["url"], params={"InCustody": "True", "Page": page})
-        return page, newworld_detail_links(response.text, str(response.url))
+        return newworld_detail_links(response.text, str(response.url))
 
     page_tasks = [asyncio.create_task(load_page(page)) for page in range(2, page_count + 1)]
     for task in asyncio.as_completed(page_tasks):
-        _, page_links = await task
+        page_links = await task
         pages += 1
         for url, name in page_links:
             links[url] = name
@@ -207,8 +255,8 @@ async def collect_newworld(source: str, client: httpx.AsyncClient, fetched_at: s
             return newworld_record(source, name, response.text, str(response.url), fetched_at)
 
     records: list[core.BookingRecord] = []
-    detail_tasks = [asyncio.create_task(load_detail(item)) for item in list(links.items())[:max_records]]
-    for task in asyncio.as_completed(detail_tasks):
+    tasks = [asyncio.create_task(load_detail(item)) for item in list(links.items())[:max_records]]
+    for task in asyncio.as_completed(tasks):
         record = await task
         if record:
             records.append(record)
