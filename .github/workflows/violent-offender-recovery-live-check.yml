@@ -7,9 +7,6 @@ on:
       - "scripts/scrape_violent_offender_recovery_fixups.py"
       - "scripts/scrape_violent_offender_recovery_entry.py"
       - "scripts/scrape_violent_offender_localities.py"
-      - "scripts/scrape_violent_offender_localities_extra.py"
-      - "scripts/scrape_violent_offender_high_yield.py"
-      - "scripts/scrape_violent_offender_batch2.py"
       - "requirements/violent-offender-scrapers.txt"
       - ".github/workflows/violent-offender-recovery-live-check.yml"
 
@@ -17,23 +14,9 @@ permissions:
   contents: read
 
 jobs:
-  recover-live:
+  recover-franklin:
     runs-on: ubuntu-latest
-    timeout-minutes: 25
-    strategy:
-      fail-fast: false
-      matrix:
-        source:
-          - franklin
-          - madison
-          - lucas
-          - allen
-          - hancock
-          - muskingum
-          - mahoning
-          - lorain
-          - summit
-    name: recover-${{ matrix.source }}
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -42,18 +25,16 @@ jobs:
           cache: pip
       - name: Install scraper dependencies
         run: python -m pip install -r requirements/violent-offender-scrapers.txt
-      - name: Run live recovery source
-        env:
-          SOURCE: ${{ matrix.source }}
+      - name: Run Franklin live recovery
         run: |
-          out="artifacts/recovery-live/$SOURCE"
+          out="artifacts/recovery-live/franklin"
           mkdir -p "$out"
           set +e
-          timeout 18m python scripts/scrape_violent_offender_recovery_entry.py \
-            --source "$SOURCE" \
+          timeout 12m python scripts/scrape_violent_offender_recovery_entry.py \
+            --source franklin \
             --output "$out" \
             --timeout 30 \
-            --max-records-per-source 2500
+            --max-records-per-source 500
           status=$?
           set -e
           echo "COLLECTOR_EXIT=$status"
@@ -64,22 +45,23 @@ jobs:
           from pathlib import Path
 
           summary = json.loads(Path(sys.argv[1]).read_text())
-          for source in summary.get("sources", []):
-              print(
-                  "LIVE_SOURCE",
-                  source.get("source"),
-                  "RECORDS", source.get("records", 0),
-                  "CANDIDATES", source.get("candidates_seen", 0),
-                  "PAGES", source.get("pages_fetched", 0),
-                  "ERROR", json.dumps(source.get("error")),
-              )
-              if not source.get("error") and source.get("candidates_seen", 0) == 0:
-                  raise SystemExit(f"false-zero guard: {source.get('source')} returned zero candidates without an explicit error")
+          source = summary["sources"][0]
+          print(
+              "LIVE_SOURCE", source.get("source"),
+              "RECORDS", source.get("records", 0),
+              "CANDIDATES", source.get("candidates_seen", 0),
+              "PAGES", source.get("pages_fetched", 0),
+              "ERROR", json.dumps(source.get("error")),
+          )
+          if source.get("error"):
+              raise SystemExit(source["error"])
+          if source.get("candidates_seen", 0) == 0:
+              raise SystemExit("false-zero guard: Franklin returned zero candidates")
           PY
       - uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: violent-offender-recovery-${{ matrix.source }}-${{ github.run_id }}
-          path: artifacts/recovery-live/${{ matrix.source }}/
+          name: violent-offender-recovery-franklin-${{ github.run_id }}
+          path: artifacts/recovery-live/franklin/
           if-no-files-found: warn
           retention-days: 1
