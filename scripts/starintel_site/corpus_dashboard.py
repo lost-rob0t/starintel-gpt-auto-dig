@@ -316,14 +316,16 @@ def _activity_row(row: dict[str, Any]) -> str:
 def datasets_page(catalog: list[dict[str, Any]], site_title: str) -> str:
     topic_count = sum(row.get("kind") == "topic" for row in catalog)
     source_count = sum(row.get("kind") == "source" for row in catalog)
+    cards_icon = '<svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>'
+    table_icon = '<svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="1"/><path d="M3 9h18M3 14h18M9 4v16M15 4v16"/></svg>'
     body = f'''
     <div id="dataset-browser" class="dataset-browser" data-catalog="dataset-catalog.json">
-      <section class="dataset-hero"><div><span class="eyebrow">Corpus catalog</span><h1>Datasets</h1><p class="lede">Every generated topic dataset and source dataset in one place. Scan the cards or switch to an analyst table.</p></div><div class="dataset-totals"><strong>{len(catalog):,}</strong><span>datasets</span><small>{topic_count:,} topic · {source_count:,} source</small></div></section>
+      <section class="dataset-hero"><div><span class="eyebrow">Corpus catalog</span><h1>Datasets</h1><p class="lede">Every generated topic dataset and source dataset in one place. Filter it, sort it, then open the dataset view you need.</p></div><div class="dataset-totals"><strong>{len(catalog):,}</strong><span>datasets</span><small>{topic_count:,} topic · {source_count:,} source</small></div></section>
       <section class="dataset-toolbar" aria-label="Dataset controls">
         <input id="dataset-search" type="search" placeholder="Search datasets or research targets…" autocomplete="off">
-        <div class="segmented" role="group" aria-label="Dataset class"><button class="active" data-kind="all">All</button><button data-kind="topic">Topic</button><button data-kind="source">Source</button></div>
+        <div class="segmented" role="group" aria-label="Dataset class"><button type="button" class="active" data-kind="all" aria-pressed="true">All</button><button type="button" data-kind="topic" aria-pressed="false">Topic</button><button type="button" data-kind="source" aria-pressed="false">Source</button></div>
         <select id="dataset-sort" aria-label="Sort datasets"><option value="activity">Recent growth</option><option value="records">Record count</option><option value="sources">Source count</option><option value="updated">Recently updated</option><option value="name">Name</option></select>
-        <div class="segmented" role="group" aria-label="Dataset view"><button class="active" data-view="cards">Cards</button><button data-view="table">Table</button></div>
+        <div class="segmented" role="group" aria-label="Dataset view"><button type="button" class="active icon-only-toggle" data-view="cards" aria-label="Card view" title="Card view" aria-pressed="true">{cards_icon}</button><button type="button" class="icon-only-toggle" data-view="table" aria-label="Table view" title="Table view" aria-pressed="false">{table_icon}</button></div>
       </section>
       <div id="dataset-summary" class="dataset-summary">Loading dataset catalog…</div>
       <section id="dataset-card-grid" class="dataset-card-grid" aria-live="polite"></section>
