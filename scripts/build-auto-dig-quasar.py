@@ -6,12 +6,10 @@ import html
 import json
 import os
 import shutil
-import subprocess
 from pathlib import Path
 from urllib.parse import quote
 
 HOST_SCRIPT = Path(__file__).with_name("auto_dig_quasar_host.js")
-PREPARE_DATA_SCRIPT = Path(__file__).with_name("prepare_pages_data.py")
 
 
 def shell_html(*, correction_repository: str, versions: dict[str, str]) -> str:
@@ -73,33 +71,12 @@ def patch_graph_entrypoints(site: Path) -> list[Path]:
     return patched
 
 
-def prepare_pages_data(root: Path, site: Path) -> None:
-    bulk = root / ".generated" / "bulk"
-    corpus = bulk / "starintel-complete-corpus.jsonl"
-    if not corpus.is_file():
-        return
-    subprocess.run(
-        [
-            "python3",
-            str(PREPARE_DATA_SCRIPT),
-            "--site",
-            str(site),
-            "--bulk",
-            str(bulk),
-        ],
-        check=True,
-        cwd=root,
-    )
-
-
 def build(args: argparse.Namespace) -> Path:
     root = Path(args.auto_dig_root).resolve()
     site = Path(args.site_dir).resolve() if args.site_dir else root / "site"
     quasar_dist = Path(args.quasar_dist).resolve()
     if not quasar_dist.joinpath("index.html").exists():
         raise SystemExit(f"Quasar dist is missing index.html: {quasar_dist}")
-
-    prepare_pages_data(root, site)
 
     output = site / "quasar"
     app = output / "app"

@@ -85,12 +85,17 @@ jobs:
           python3 scripts/externalize_search_indexes.py \
             --site _site \
             --transport pages-static
+          python3 scripts/prepare_pages_data.py \
+            --site _site \
+            --bulk .generated/bulk
           test -s _site/index.html
           test -s _site/search-index.json
           test -d _site/indexes/records
           test -d _site/indexes/search
           test -n "$(find _site/indexes/records -name '*.json' -print -quit)"
           test -n "$(find _site/indexes/search -name '*.json' -print -quit)"
+          test -s _site/quasar-documents.json
+          test -n "$(find _site -mindepth 2 -maxdepth 2 -name quasar-documents.json -print -quit)"
           test -s _site/downloads/starintel-complete-corpus.manifest.json
           test -s .generated/bulk/starintel-complete-corpus.jsonl
           test ! -d _site/org
@@ -179,6 +184,8 @@ jobs:
           test -s _site/search-index.json
           test -d _site/indexes/records
           test -d _site/indexes/search
+          test -s _site/quasar-documents.json
+          test -n "$(find _site -mindepth 2 -maxdepth 2 -name quasar-documents.json -print -quit)"
           test -s _site/downloads/starintel-complete-corpus.manifest.json
           test -s _site/downloads/starintel-bulk-release.manifest.json
           test -s _site/downloads/starintel-evidence-seal.json

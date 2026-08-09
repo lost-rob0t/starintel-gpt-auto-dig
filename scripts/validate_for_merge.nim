@@ -233,10 +233,16 @@ proc validateSite(options: Options) =
     "--site", site,
     "--transport", "pages-static"
   ])
+  run("python3", @[
+    "scripts/prepare_pages_data.py",
+    "--site", site,
+    "--bulk", bulk
+  ])
 
   for required in [
     site / "index.html",
     site / "search-index.json",
+    site / "quasar-documents.json",
     site / "downloads" / "starintel-complete-corpus.manifest.json",
     bulk / "starintel-complete-corpus.jsonl"
   ]:
@@ -248,9 +254,15 @@ proc validateSite(options: Options) =
     raise newException(ValueError, "Pages record metadata segments are missing")
   if not dirExists(site / "indexes" / "search"):
     raise newException(ValueError, "Pages search metadata segments are missing")
+
+  var workingSetCount = 0
   for path in walkDirRec(site):
     if path.endsWith("starintel-documents.jsonl"):
       raise newException(ValueError, "duplicate per-view raw JSONL leaked into Pages: " & path)
+    if extractFilename(path) == "quasar-documents.json":
+      inc workingSetCount
+  if workingSetCount < 2:
+    raise newException(ValueError, "bounded Quasar working sets were not materialized")
 
   let searchConfig = parseFile(site / "search-index.json")
   if searchConfig["format"].getStr() != "starintel-pages-static-index-v1":
@@ -261,6 +273,13 @@ proc validateSite(options: Options) =
     raise newException(ValueError, "Pages record index contains no pages")
   if searchConfig["search"]["segments"].len <= 0:
     raise newException(ValueError, "Pages search index contains no segments")
+  var hasSummaryField = false
+  for field in searchConfig["records"]["fields"].items:
+    if field.kind == JString and field.getStr() == "summary":
+      hasSummaryField = true
+      break
+  if not hasSummaryField:
+    raise newException(ValueError, "Pages record metadata is missing hydrated summaries")
 
   validateTopics(site, options.minimums)
   let siteReport = siteSizeReport(site)
