@@ -12,6 +12,15 @@ on:
       - "tests/test_scrape_violent_offender_high_yield.py"
       - "requirements/violent-offender-scrapers.txt"
       - ".github/workflows/violent-offender-locality-grab.yml"
+  push:
+    branches: [main]
+    paths:
+      - "scripts/scrape_violent_offender_localities.py"
+      - "scripts/scrape_violent_offender_localities_extra.py"
+      - "scripts/scrape_violent_offender_high_yield.py"
+      - "scripts/merge_violent_offender_grabs.py"
+      - "requirements/violent-offender-scrapers.txt"
+      - ".github/workflows/violent-offender-locality-grab.yml"
   workflow_dispatch:
     inputs:
       max_records_per_source:
@@ -75,10 +84,12 @@ jobs:
             --output artifacts/violent-offender-localities/high-yield \
             --max-records-per-source "$MAX_RECORDS" || failures=$((failures + 1))
 
-          for component in . expanded high-yield; do
-            test -f "artifacts/violent-offender-localities/${component}/summary.json" || \
-              test -f "artifacts/violent-offender-localities/summary.json"
-          done
+          test -f artifacts/violent-offender-localities/summary.json
+          test -f artifacts/violent-offender-localities/records.jsonl
+          test -f artifacts/violent-offender-localities/expanded/summary.json
+          test -f artifacts/violent-offender-localities/expanded/records.jsonl
+          test -f artifacts/violent-offender-localities/high-yield/summary.json
+          test -f artifacts/violent-offender-localities/high-yield/records.jsonl
 
           python scripts/merge_violent_offender_grabs.py \
             --root artifacts/violent-offender-localities \
