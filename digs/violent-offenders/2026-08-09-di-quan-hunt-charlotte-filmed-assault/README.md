@@ -70,4 +70,6 @@ The packet distinguishes:
 
 - `README.md`
 - `sources.md`
-- `starintel-documents.jsonl`
+- `starintel-documents-001.jsonl`
+- `starintel-documents-002.jsonl`
+- `starintel-documents-003.jsonl`
