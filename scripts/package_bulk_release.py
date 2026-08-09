@@ -96,9 +96,6 @@ def package_bulk(bulk: Path, site: Path, output: Path, base_url: str) -> dict[st
             index_assets.append(packaged)
             release_assets.append(packaged)
 
-    if not index_assets:
-        raise ValueError("no range-addressable index bundles were produced")
-
     release_manifest = {
         "format": "starintel-auto-dig-bulk-release-v1",
         "base_url": base_url.rstrip("/"),
@@ -107,6 +104,9 @@ def package_bulk(bulk: Path, site: Path, output: Path, base_url: str) -> dict[st
         "canonical_size_bytes": int(manifest["data"]["canonical_size_bytes"]),
         "corpus_shards": files,
         "memberships": membership_assets,
+        "browser_index_transport": (
+            "release-range-index-v1" if index_assets else "pages-static-index-v1"
+        ),
         "range_index_bundles": index_assets,
         "asset_count": len(release_assets) + 1,
     }
@@ -150,6 +150,7 @@ def main() -> int:
         f"{release_manifest['asset_count']} "
         f"records={release_manifest['canonical_record_count']} "
         f"canonical_bytes={release_manifest['canonical_size_bytes']} "
+        f"index_transport={release_manifest['browser_index_transport']} "
         f"index_bundles={len(release_manifest['range_index_bundles'])}"
     )
     return 0

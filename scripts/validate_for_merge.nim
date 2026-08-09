@@ -1,7 +1,7 @@
 import std/[json, os, osproc, strformat, strutils, tables]
 
 
-const PagesContentBudgetBytes = 200_000_000'i64
+const PagesContentBudgetBytes = 750_000_000'i64
 
 
 type Options = object
@@ -21,6 +21,7 @@ type SiteSizeReport = object
   assetsBytes: int64
   quasarBytes: int64
   downloadBytes: int64
+  indexBytes: int64
   largestFile: string
   largestFileBytes: int64
   largestDirectory: string
@@ -151,6 +152,7 @@ proc siteSizeReport(path: string): SiteSizeReport =
     if rel.startsWith("assets/"): result.assetsBytes += bytes
     if rel.startsWith("quasar/"): result.quasarBytes += bytes
     if rel.startsWith("downloads/") or rel.contains("/downloads/"): result.downloadBytes += bytes
+    if rel.startsWith("indexes/"): result.indexBytes += bytes
     if bytes > result.largestFileBytes:
       result.largestFileBytes = bytes
       result.largestFile = rel
@@ -187,6 +189,7 @@ proc printReports(site: SiteSizeReport; bulk: BulkReport) =
   echo &"assets_bytes={site.assetsBytes}"
   echo &"quasar_bytes={site.quasarBytes}"
   echo &"download_bytes={site.downloadBytes}"
+  echo &"index_bytes={site.indexBytes}"
   echo &"largest_file={site.largestFile}"
   echo &"largest_file_bytes={site.largestFileBytes}"
   echo &"largest_directory={site.largestDirectory}"
@@ -228,8 +231,7 @@ proc validateSite(options: Options) =
   run("python3", @[
     "scripts/externalize_search_indexes.py",
     "--site", site,
-    "--bulk", bulk,
-    "--base-url", baseUrl
+    "--transport", "pages-static"
   ])
 
   for required in [
@@ -242,15 +244,23 @@ proc validateSite(options: Options) =
       raise newException(IOError, "site validation failed; missing artifact: " & required)
   if dirExists(site / "org"):
     raise newException(ValueError, "public Org tree must not be materialized inside Pages")
-  if dirExists(site / "indexes"):
-    raise newException(ValueError, "record-count-linear search indexes leaked into Pages")
+  if not dirExists(site / "indexes" / "records"):
+    raise newException(ValueError, "Pages record metadata segments are missing")
+  if not dirExists(site / "indexes" / "search"):
+    raise newException(ValueError, "Pages search metadata segments are missing")
   for path in walkDirRec(site):
     if path.endsWith("starintel-documents.jsonl"):
       raise newException(ValueError, "duplicate per-view raw JSONL leaked into Pages: " & path)
 
   let searchConfig = parseFile(site / "search-index.json")
-  if searchConfig["format"].getStr() != "starintel-release-range-index-v1":
-    raise newException(ValueError, "unexpected external search-index format")
+  if searchConfig["format"].getStr() != "starintel-pages-static-index-v1":
+    raise newException(ValueError, "unexpected Pages search-index format")
+  if searchConfig["record_count"].getInt() <= 0:
+    raise newException(ValueError, "Pages search index reports no canonical records")
+  if searchConfig["records"]["pages"].len <= 0:
+    raise newException(ValueError, "Pages record index contains no pages")
+  if searchConfig["search"]["segments"].len <= 0:
+    raise newException(ValueError, "Pages search index contains no segments")
 
   validateTopics(site, options.minimums)
   let siteReport = siteSizeReport(site)
@@ -260,8 +270,8 @@ proc validateSite(options: Options) =
     raise newException(ValueError, "bulk corpus did not produce deterministic shards")
   if bulkStats.membershipCount < 1:
     raise newException(ValueError, "dataset membership references were not produced")
-  if bulkStats.indexBundleCount < 2:
-    raise newException(ValueError, "record/search indexes were not externalized into range bundles")
+  if siteReport.indexBytes <= 0:
+    raise newException(ValueError, "bounded browser indexes were not materialized into Pages")
   if siteReport.totalBytes >= PagesContentBudgetBytes:
     raise newException(ValueError, &"generated site is too large for safe Pages budget: {siteReport.totalBytes} bytes")
 

@@ -4,6 +4,7 @@
   const scope = script?.dataset.scope || "";
   const rootPrefix = script?.dataset.rootPrefix || "";
   const indexConfigSource = `${rootPrefix}search-index.json`;
+  const indexConfigUrl = new URL(indexConfigSource, location.href);
   const params = new URLSearchParams(location.search);
   const requestedDataset = params.get("dataset") || "";
   const requestedId = params.get("id") || "";
@@ -82,27 +83,43 @@
         <div class="document-card-footer"><code>${esc(record.id)}</code><span>${esc(record.updated || "")}</span></div>
       </article>`).join("");
     const datasetPrefix = requestedDataset ? `${requestedDataset} · ` : "";
-    const mode = searchedRecords === null ? "preview" : "range search";
+    const mode = searchedRecords === null ? "preview" : "search";
     summary.textContent = `${datasetPrefix}${matches.length.toLocaleString()} ${mode} matches · showing ${matches.length ? start + 1 : 0}–${Math.min(start + pageSize, matches.length)}`;
     pageLabel.textContent = `Page ${page + 1} of ${pages}`;
     previous.disabled = page === 0;
     next.disabled = page >= pages - 1;
   };
 
+  const resolveIndexUrl = (url) => new URL(url, indexConfigUrl).href;
+
   const bundleUrl = (group, bundle) => {
     const metadata = indexConfig?.[group]?.bundles?.[bundle];
     const url = typeof metadata === "string" ? metadata : metadata?.url;
     if (!url) throw new Error(`Missing ${group} bundle URL for ${bundle}`);
-    return url;
+    return resolveIndexUrl(url);
   };
 
   const fetchSegment = async (group, segment) => {
     if (!segment) return null;
-    const key = `${group}:${segment.bundle}:${segment.offset}:${segment.length}`;
+    const key = segment.url
+      ? `${group}:static:${segment.url}`
+      : `${group}:${segment.bundle}:${segment.offset}:${segment.length}`;
     if (segmentCache.has(key)) return segmentCache.get(key);
     const promise = (async () => {
-      const start = Number(segment.offset);
       const length = Number(segment.length);
+      if (segment.url) {
+        const response = await fetch(resolveIndexUrl(segment.url));
+        if (!response.ok) {
+          throw new Error(`Index segment load failed (${response.status})`);
+        }
+        const bytes = new Uint8Array(await response.arrayBuffer());
+        if (Number.isSafeInteger(length) && length > 0 && bytes.byteLength !== length) {
+          throw new Error(`Index segment length mismatch: ${bytes.byteLength} != ${length}`);
+        }
+        return JSON.parse(decoder.decode(bytes));
+      }
+
+      const start = Number(segment.offset);
       if (!Number.isSafeInteger(start) || !Number.isSafeInteger(length) || start < 0 || length <= 0) {
         throw new Error("Invalid external index byte range");
       }
@@ -256,7 +273,7 @@
       if (!response.ok) throw new Error(`Document preview load failed: ${response.status}`);
       return response.json();
     }),
-    fetch(indexConfigSource).then((response) => {
+    fetch(indexConfigUrl).then((response) => {
       if (!response.ok) throw new Error(`Search index map load failed: ${response.status}`);
       return response.json();
     })

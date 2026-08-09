@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import hashlib
 import json
 import subprocess
 import tempfile
@@ -91,10 +92,8 @@ class NimSiteScalingTests(unittest.TestCase):
                     "scripts/externalize_search_indexes.py",
                     "--site",
                     str(site),
-                    "--bulk",
-                    str(bulk),
-                    "--base-url",
-                    base_url,
+                    "--transport",
+                    "pages-static",
                 ],
                 check=True,
                 cwd=repo,
@@ -103,7 +102,8 @@ class NimSiteScalingTests(unittest.TestCase):
             canonical = bulk / "starintel-complete-corpus.jsonl"
             self.assertEqual(canonical.read_text(encoding="utf-8").count("\n"), 2)
             self.assertFalse((site / "org").exists())
-            self.assertFalse((site / "indexes").exists())
+            self.assertTrue((site / "indexes" / "records").is_dir())
+            self.assertTrue((site / "indexes" / "search").is_dir())
             self.assertFalse(any(site.rglob("starintel-documents.jsonl")))
             self.assertTrue((org / "alpha" / "person-alice-example.org").is_file())
 
@@ -118,7 +118,7 @@ class NimSiteScalingTests(unittest.TestCase):
             self.assertEqual(alpha_manifest["record_count"], 2)
             self.assertEqual(alpha_manifest["membership"]["format"], "newline-delimited-canonical-ids")
             self.assertTrue(alpha_manifest["membership"]["url"].endswith("topic-alpha.ids.gz"))
-            self.assertEqual(alpha_manifest["search"]["mode"], "release-range-index-v1")
+            self.assertEqual(alpha_manifest["search"]["mode"], "starintel-pages-static-index-v1")
 
             corpus_manifest = json.loads(
                 (site / "downloads" / "starintel-complete-corpus.manifest.json").read_text(encoding="utf-8")
@@ -133,23 +133,35 @@ class NimSiteScalingTests(unittest.TestCase):
             self.assertFalse((site / "alpha" / "nodes").exists())
 
             index_config = json.loads((site / "search-index.json").read_text(encoding="utf-8"))
-            self.assertEqual(index_config["format"], "starintel-release-range-index-v1")
+            self.assertEqual(index_config["format"], "starintel-pages-static-index-v1")
             self.assertEqual(index_config["record_count"], 2)
             self.assertTrue(index_config["records"]["pages"])
             self.assertTrue(index_config["search"]["segments"])
-            for group in ("records", "search"):
-                self.assertTrue(index_config[group]["bundles"])
-                for bundle in index_config[group]["bundles"].values():
-                    self.assertTrue(bundle["url"].startswith(base_url + "/"))
 
             record_segment = index_config["records"]["pages"][0]
-            record_bundle = bulk / "indexes" / record_segment["bundle"]
-            with record_bundle.open("rb") as stream:
-                stream.seek(record_segment["offset"])
-                payload = stream.read(record_segment["length"])
+            record_path = site / record_segment["url"]
+            payload = record_path.read_bytes()
+            self.assertEqual(len(payload), record_segment["length"])
+            self.assertEqual(hashlib.sha256(payload).hexdigest(), record_segment["sha256"])
             rows = json.loads(payload)
             self.assertEqual(len(rows), 2)
             self.assertEqual(rows[0][1], "starintel:org:example-labs")
+
+            search_segment = next(
+                segment
+                for segments in index_config["search"]["segments"].values()
+                for segment in segments
+            )
+            search_path = site / search_segment["url"]
+            search_payload = search_path.read_bytes()
+            self.assertLessEqual(
+                len(search_payload), index_config["search"]["max_segment_bytes"]
+            )
+            self.assertEqual(len(search_payload), search_segment["length"])
+            self.assertEqual(
+                hashlib.sha256(search_payload).hexdigest(), search_segment["sha256"]
+            )
+            self.assertIsInstance(json.loads(search_payload), dict)
 
             site_bytes = sum(path.stat().st_size for path in site.rglob("*") if path.is_file())
             canonical_bytes = canonical.stat().st_size
