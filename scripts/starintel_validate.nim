@@ -1,4 +1,4 @@
-import std/[algorithm, json, os, strformat, strutils]
+import std/[algorithm, json, os, strformat, strutils, tables]
 
 import starintel_doc/v090
 import starintel_legacy
@@ -18,11 +18,18 @@ type
     dtype: string
     title: string
 
+  RelationReference = object
+    path: string
+    endpoint: string
+    id: string
+
   AuditState = ref object
     documents: int
     malformedSources: int
     missing: seq[MissingSource]
     errors: seq[string]
+    dbIds: Table[string, string]
+    relations: seq[RelationReference]
 
 proc text(node: JsonNode; key: string; fallback = ""): string =
   if node.kind == JObject and node.hasKey(key) and node[key].kind == JString:
@@ -40,8 +47,6 @@ proc sourceShapeError(source: JsonNode): string =
     if source.getStr().strip().len == 0:
       return "empty source string"
   of JObject:
-    # The canonical schema defines the object's legal fields. Presence is the
-    # source-audit concern here; do not invent a second identifier contract.
     if source.len == 0:
       return "empty source object"
   of JNull:
@@ -76,16 +81,86 @@ proc auditSources(state: AuditState; document: JsonNode; path: string; line: int
       inc state.malformedSources
       state.errors.add(location(path, line) & ": sources[" & $index & "]: " & reason)
 
-proc auditDocument(state: AuditState; schema, document: JsonNode; path: string; line: int) =
+proc auditDocument(state: AuditState; schema, document: JsonNode; path: string; line: int): bool =
   inc state.documents
   auditSources(state, document, path, line)
   let normalizationError = normalizeLegacyDocument(document)
   if normalizationError.len > 0:
     state.errors.add(location(path, line) & ": legacy_normalization: " & normalizationError)
-    return
+    return false
   let checked = validateDocument(document, schema)
   if not checked.ok:
     state.errors.add(location(path, line) & ": " & checked.category & ": " & checked.message)
+    return false
+  true
+
+proc collectRelationReference(state: AuditState; path, endpoint: string; value: JsonNode) =
+  case value.kind
+  of JArray:
+    for item in value.items:
+      collectRelationReference(state, path, endpoint, item)
+  of JObject:
+    if value.hasKey("id") and value["id"].kind == JString:
+      let id = value["id"].getStr().strip()
+      if id.len > 0:
+        state.relations.add(RelationReference(path: path, endpoint: endpoint, id: id))
+  of JString:
+    let id = value.getStr().strip()
+    if id.len > 0:
+      state.relations.add(RelationReference(path: path, endpoint: endpoint, id: id))
+  else:
+    discard
+
+proc recordDbInvariants(state: AuditState; document: JsonNode; dbRoot, path: string) =
+  let rel = relativePath(path, dbRoot)
+  let parts = rel.split(DirSep)
+  if parts.len != 2:
+    state.errors.add(path & ": canonical DB path must be db/<dtype>/<_id>.ndjson")
+    return
+
+  let dtype = text(document, "dtype")
+  let id = text(document, "_id")
+  let expectedDtype = parts[0]
+  let name = parts[1]
+  let suffix = ".ndjson"
+  let expectedId = if name.endsWith(suffix): name[0 ..< name.len - suffix.len] else: name
+
+  if dtype != expectedDtype:
+    state.errors.add(path & ": dtype=" & dtype & ", directory=" & expectedDtype)
+  if id != expectedId:
+    state.errors.add(path & ": _id=" & id & ", filename=" & expectedId)
+
+  if state.dbIds.hasKey(id):
+    state.errors.add(path & ": duplicate normalized _id also at " & state.dbIds[id])
+  else:
+    state.dbIds[id] = path
+
+  if dtype == "relation" and document.hasKey("data") and document["data"].kind == JObject:
+    let data = document["data"]
+    for endpoint in ["subject", "object"]:
+      if data.hasKey(endpoint):
+        collectRelationReference(state, path, endpoint, data[endpoint])
+
+proc auditDbFile(state: AuditState; schema: JsonNode; dbRoot, path: string) =
+  try:
+    let raw = readFile(path)
+    if not raw.endsWith("\n"):
+      state.errors.add(path & ": missing terminating newline")
+      return
+    if raw.count('\n') != 1 or raw.strip().len == 0:
+      state.errors.add(path & ": expected exactly one non-empty NDJSON line")
+      return
+
+    let document = parseJson(raw)
+    if document.kind != JObject:
+      state.errors.add(path & ":1: expected JSON object")
+      return
+    if auditDocument(state, schema, document, path, 1):
+      recordDbInvariants(state, document, dbRoot, path)
+  except JsonParsingError as exc:
+    state.errors.add(path & ":1: invalid JSON: " & exc.msg)
+  except CatchableError as exc:
+    state.errors.add(path & ": read failed: " & exc.msg)
 
 proc auditRawLine(state: AuditState; schema: JsonNode; raw, path: string; line: int) =
   if raw.strip().len == 0:
@@ -95,26 +170,22 @@ proc auditRawLine(state: AuditState; schema: JsonNode; raw, path: string; line: 
     if document.kind != JObject:
       state.errors.add(location(path, line) & ": expected JSON object")
       return
-    auditDocument(state, schema, document, path, line)
+    discard auditDocument(state, schema, document, path, line)
   except JsonParsingError as exc:
     state.errors.add(location(path, line) & ": invalid JSON: " & exc.msg)
 
-proc auditFile(state: AuditState; schema: JsonNode; path: string; transport: bool) =
+proc auditPacketFile(state: AuditState; schema: JsonNode; path: string) =
   try:
-    if transport:
-      forEachTransportLine(path, proc(raw: string; line: int) =
-        auditRawLine(state, schema, raw, path, line)
-      )
-    else:
-      var input = open(path, fmRead)
-      defer: input.close()
-      var raw: string
-      var line = 0
-      while input.readLine(raw):
-        inc line
-        auditRawLine(state, schema, raw, path, line)
+    forEachTransportLine(path, proc(raw: string; line: int) =
+      auditRawLine(state, schema, raw, path, line)
+    )
   except CatchableError as exc:
     state.errors.add(path & ": read/decode failed: " & exc.msg)
+
+proc validateRelationReferences(state: AuditState) =
+  for relation in state.relations:
+    if not state.dbIds.hasKey(relation.id):
+      state.errors.add(relation.path & ": unresolved relation " & relation.endpoint & "=" & relation.id)
 
 proc writeMissingReport(root, reportPath: string; missing: seq[MissingSource]) =
   var rows = missing
@@ -195,12 +266,14 @@ proc main(): int =
 
   putEnv("STARINTEL_SCHEMA", root / "schemas" / "starintel-doc-v0.9.0.schema.json")
   let schema = loadSchema()
-  let state = AuditState()
+  let state = AuditState(dbIds: initTable[string, string]())
+  let dbRoot = root / "db"
 
-  for path in dbFiles(root / "db"):
-    auditFile(state, schema, path, false)
+  for path in dbFiles(dbRoot):
+    auditDbFile(state, schema, dbRoot, path)
+  validateRelationReferences(state)
   for packet in packetFiles(root / "digs"):
-    auditFile(state, schema, packet.path, true)
+    auditPacketFile(state, schema, packet.path)
 
   writeMissingReport(root, report, state.missing)
   writeErrorsReport(errorsReport, state.errors)
