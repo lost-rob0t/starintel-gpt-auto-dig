@@ -43,3 +43,5 @@ jobs:
 
       - name: Run complete StarIntel merge and ADAR surface gate
         run: python3 scripts/validate-for-merge.py --site
+
+# temporary validation trigger for stacked PR repair
