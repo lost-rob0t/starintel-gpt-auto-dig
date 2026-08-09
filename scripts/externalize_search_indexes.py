@@ -6,10 +6,12 @@ import json
 import shutil
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Any, Iterable
+from typing import Any, Iterable, Iterator
 
 
 DEFAULT_BUNDLE_LIMIT = 1_500_000_000
+DEFAULT_SEARCH_SEGMENT_LIMIT = 16_000_000
+DEFAULT_ORDINAL_CHUNK = 500_000
 
 
 @dataclass(frozen=True)
@@ -101,14 +103,46 @@ def load_json(path: Path) -> Any:
     return json.loads(path.read_text(encoding="utf-8"))
 
 
+def compact_json_bytes(value: Any) -> bytes:
+    return json.dumps(
+        value, ensure_ascii=False, separators=(",", ":")
+    ).encode("utf-8")
+
+
 def write_json(path: Path, value: Any) -> None:
-    path.write_text(
-        json.dumps(value, ensure_ascii=False, separators=(",", ":")) + "\n",
-        encoding="utf-8",
-    )
+    path.write_bytes(compact_json_bytes(value) + b"\n")
 
 
-def externalize(site: Path, bulk: Path, base_url: str, bundle_limit: int) -> dict[str, Any]:
+def search_scope_payloads(
+    scope: str,
+    ordinals: list[int],
+    segment_limit: int,
+    ordinal_chunk: int = DEFAULT_ORDINAL_CHUNK,
+) -> Iterator[bytes]:
+    start = 0
+    while start < len(ordinals):
+        width = min(ordinal_chunk, len(ordinals) - start)
+        while True:
+            end = start + width
+            payload = compact_json_bytes({scope: ordinals[start:end]})
+            if len(payload) <= segment_limit:
+                yield payload
+                start = end
+                break
+            if width <= 1:
+                raise ValueError(
+                    f"search posting for scope {scope!r} cannot fit in {segment_limit} bytes"
+                )
+            width = max(1, width // 2)
+
+
+def externalize(
+    site: Path,
+    bulk: Path,
+    base_url: str,
+    bundle_limit: int,
+    search_segment_limit: int,
+) -> dict[str, Any]:
     indexes = site / "indexes"
     record_root = indexes / "records"
     search_root = indexes / "search"
@@ -142,13 +176,28 @@ def externalize(site: Path, bulk: Path, base_url: str, bundle_limit: int) -> dic
     search_writer = BundleWriter(
         bulk_index_root, "starintel-search-index", bundle_limit
     )
-    search_segments: dict[str, dict[str, Any]] = {}
+    search_segments: dict[str, list[dict[str, Any]]] = {}
     for path in sorted(search_root.glob("*.json")):
         if path.name == "manifest.json":
             continue
         prefix = path.stem
-        segment = search_writer.append(path.read_bytes())
-        search_segments[prefix] = segment.as_json()
+        shard = load_json(path)
+        if not isinstance(shard, dict):
+            raise ValueError(f"search shard must be an object: {path}")
+        segments: list[dict[str, Any]] = []
+        for scope in sorted(shard):
+            ordinals = shard[scope]
+            if not isinstance(ordinals, list):
+                raise ValueError(f"search postings must be arrays: {path}:{scope}")
+            if not ordinals:
+                continue
+            for payload in search_scope_payloads(
+                scope, ordinals, search_segment_limit
+            ):
+                segment = search_writer.append(payload).as_json()
+                segment["scope"] = scope
+                segments.append(segment)
+        search_segments[prefix] = segments
     search_bundles = search_writer.finish()
 
     configured_prefixes = search_manifest.get("prefixes", [])
@@ -163,6 +212,7 @@ def externalize(site: Path, bulk: Path, base_url: str, bundle_limit: int) -> dic
         ),
         "search": {
             "prefix_length": 2,
+            "max_segment_bytes": search_segment_limit,
             "bundles": bundle_metadata(
                 bulk_index_root, search_bundles, base_url
             ),
@@ -193,7 +243,7 @@ def externalize(site: Path, bulk: Path, base_url: str, bundle_limit: int) -> dic
         markup = html_path.read_text(encoding="utf-8")
         markup = markup.replace(
             "Search uses compact canonical metadata shards, never raw corpus payloads.",
-            "Search loads only byte ranges from immutable canonical metadata bundles, never raw corpus payloads.",
+            "Search loads bounded byte ranges from immutable canonical metadata bundles, never raw corpus payloads.",
         )
         html_path.write_text(markup, encoding="utf-8")
 
@@ -202,7 +252,7 @@ def externalize(site: Path, bulk: Path, base_url: str, bundle_limit: int) -> dic
         markup = root_search.read_text(encoding="utf-8")
         markup = markup.replace(
             "The browser loads one compact token-prefix shard and only the canonical metadata pages needed for matching records.",
-            "The browser loads only the byte ranges needed from immutable search and canonical metadata bundles.",
+            "The browser loads only bounded byte ranges needed from immutable search and canonical metadata bundles.",
         )
         root_search.write_text(markup, encoding="utf-8")
 
@@ -220,15 +270,30 @@ def main() -> int:
     parser.add_argument(
         "--bundle-limit", type=int, default=DEFAULT_BUNDLE_LIMIT
     )
+    parser.add_argument(
+        "--search-segment-limit",
+        type=int,
+        default=DEFAULT_SEARCH_SEGMENT_LIMIT,
+    )
     args = parser.parse_args()
-    config = externalize(args.site, args.bulk, args.base_url, args.bundle_limit)
+    config = externalize(
+        args.site,
+        args.bulk,
+        args.base_url,
+        args.bundle_limit,
+        args.search_segment_limit,
+    )
     search_bundle_count = len(config["search"]["bundles"])
     record_bundle_count = len(config["records"]["bundles"])
+    search_segment_count = sum(
+        len(segments) for segments in config["search"]["segments"].values()
+    )
     print(
         f"external_index_records={config['record_count']} "
         f"record_bundles={record_bundle_count} "
         f"search_bundles={search_bundle_count} "
-        f"search_segments={len(config['search']['segments'])}"
+        f"search_segments={search_segment_count} "
+        f"max_search_segment_bytes={config['search']['max_segment_bytes']}"
     )
     return 0
 
