@@ -11,6 +11,23 @@ type Options = object
   minimums: Table[string, int]
 
 
+type SiteSizeReport = object
+  totalBytes: int64
+  fileCount: int64
+  htmlBytes: int64
+  jsonBytes: int64
+  jsonlBytes: int64
+  orgBytes: int64
+  assetsBytes: int64
+  quasarBytes: int64
+  downloadBytes: int64
+  canonicalCorpusBytes: int64
+  largestFile: string
+  largestFileBytes: int64
+  largestDirectory: string
+  largestDirectoryBytes: int64
+
+
 proc run(command: string; args: seq[string] = @[]) =
   echo "+ ", command, " ", args.join(" ")
   let process = startProcess(command, args = args, options = {poParentStreams, poUsePath})
@@ -113,12 +130,72 @@ proc validateTopics(site: string; minimums: Table[string, int]) =
       raise newException(ValueError, &"dataset-{topic} has {actual} records, below minimum {minimum}")
 
 
-proc directoryBytes(path: string): int64 =
+proc siteSizeReport(path: string): SiteSizeReport =
   if not dirExists(path):
-    return 0
+    return
+
+  var topLevelBytes = initTable[string, int64]()
   for item in walkDirRec(path):
-    if fileExists(item):
-      result += getFileSize(item)
+    if not fileExists(item):
+      continue
+
+    let bytes = getFileSize(item).int64
+    let rel = relativePath(item, path).replace('\\', '/')
+    let topLevel = rel.split('/')[0]
+    result.totalBytes += bytes
+    inc result.fileCount
+    topLevelBytes[topLevel] = topLevelBytes.getOrDefault(topLevel) + bytes
+
+    if rel.endsWith(".html"):
+      result.htmlBytes += bytes
+    elif rel.endsWith(".jsonl"):
+      result.jsonlBytes += bytes
+    elif rel.endsWith(".json"):
+      result.jsonBytes += bytes
+    elif rel.endsWith(".org"):
+      result.orgBytes += bytes
+
+    if rel.startsWith("assets/"):
+      result.assetsBytes += bytes
+    if rel.startsWith("quasar/"):
+      result.quasarBytes += bytes
+    if rel.startsWith("downloads/") or rel.contains("/downloads/"):
+      result.downloadBytes += bytes
+    if rel == "downloads/starintel-complete-corpus.jsonl":
+      result.canonicalCorpusBytes = bytes
+
+    if bytes > result.largestFileBytes:
+      result.largestFileBytes = bytes
+      result.largestFile = rel
+
+  for directory, bytes in topLevelBytes.pairs:
+    if bytes > result.largestDirectoryBytes:
+      result.largestDirectoryBytes = bytes
+      result.largestDirectory = directory
+
+
+proc printSiteSizeReport(report: SiteSizeReport) =
+  echo "SITE SIZE REPORT"
+  echo &"total_bytes={report.totalBytes}"
+  echo &"file_count={report.fileCount}"
+  echo &"html_bytes={report.htmlBytes}"
+  echo &"json_bytes={report.jsonBytes}"
+  echo &"jsonl_bytes={report.jsonlBytes}"
+  echo &"org_bytes={report.orgBytes}"
+  echo &"assets_bytes={report.assetsBytes}"
+  echo &"quasar_bytes={report.quasarBytes}"
+  echo &"download_bytes={report.downloadBytes}"
+  echo &"largest_file={report.largestFile}"
+  echo &"largest_file_bytes={report.largestFileBytes}"
+  echo &"largest_directory={report.largestDirectory}"
+  echo &"largest_directory_bytes={report.largestDirectoryBytes}"
+  echo &"canonical_corpus_bytes={report.canonicalCorpusBytes}"
+  if report.canonicalCorpusBytes > 0:
+    let amplification = report.totalBytes.float / report.canonicalCorpusBytes.float
+    echo &"site_amplification_ratio={amplification:.4f}"
+  else:
+    echo "site_amplification_ratio=unavailable"
+  echo &"budget={PagesContentBudgetBytes}"
 
 
 proc validateSite(options: Options) =
@@ -148,10 +225,10 @@ proc validateSite(options: Options) =
       raise newException(IOError, "site validation failed; missing artifact: " & required)
 
   validateTopics(site, options.minimums)
-  let size = directoryBytes(site)
-  echo &"site_bytes={size} budget={PagesContentBudgetBytes}"
-  if size >= PagesContentBudgetBytes:
-    raise newException(ValueError, &"generated site is too large for Pages budget: {size} bytes")
+  let report = siteSizeReport(site)
+  printSiteSizeReport(report)
+  if report.totalBytes >= PagesContentBudgetBytes:
+    raise newException(ValueError, &"generated site is too large for Pages budget: {report.totalBytes} bytes")
 
 
 proc main(): int =
