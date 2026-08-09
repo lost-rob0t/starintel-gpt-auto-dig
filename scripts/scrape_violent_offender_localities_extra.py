@@ -42,11 +42,10 @@ EXTRA_SOURCES = {
 
 def extra_case_numbers(text: str) -> list[str]:
     found = core.case_numbers(text)
-    patterns = (
-        r"\b\d{4}\s+CR(?:\s+[AB])?\s+\d{3,6}\b",
-        r"\b\d{4}\s+TR(?:\s+[A-Z])?\s+\d{3,6}\b",
-    )
-    for pattern in patterns:
+    for pattern in (
+        r"\b\d{4}\s+CR(?:\s+[AB])?\s+\d{3,7}\b",
+        r"\b\d{4}\s+TR(?:\s+[A-Z])?\s+\d{3,7}\b",
+    ):
         found.extend(match.group(0) for match in re.finditer(pattern, text, re.IGNORECASE))
     return core.unique(found)
 
@@ -55,13 +54,17 @@ def clermont_blocks(markup: str) -> list[tuple[str, list[str]]]:
     lines = core.text_lines(markup)
     starts: list[tuple[int, str]] = []
     for index, line in enumerate(lines):
-        match = re.fullmatch(r"(.+?,\s*.+?)\s*-\s*Details", line, re.IGNORECASE)
-        if not match:
-            continue
-        name = core.normalize_space(match.group(1))
-        if len(name) < 4 or len(name) > 120:
-            continue
-        starts.append((index, name))
+        name: str | None = None
+        inline = re.fullmatch(r"(.+?,\s*.+?)\s*-\s*Details", line, re.IGNORECASE)
+        if inline:
+            name = core.normalize_space(inline.group(1))
+        else:
+            split = re.fullmatch(r"(.+?,\s*.+?)\s*-\s*", line, re.IGNORECASE)
+            if split and index + 1 < len(lines) and lines[index + 1].casefold() == "details":
+                name = core.normalize_space(split.group(1))
+        if name and 4 <= len(name) <= 120:
+            starts.append((index, name))
+
     blocks: list[tuple[str, list[str]]] = []
     for position, (start, name) in enumerate(starts):
         end = starts[position + 1][0] if position + 1 < len(starts) else len(lines)
@@ -87,12 +90,12 @@ def parse_clermont_html(markup: str, fetched_at: str) -> list[core.BookingRecord
     records: list[core.BookingRecord] = []
     for name, block in clermont_blocks(markup):
         try:
-            charge_marker = block.index("Charges")
-            charge_lines = block[charge_marker + 1 :]
+            marker = block.index("Charges")
+            charge_lines = block[marker + 1 :]
         except ValueError:
             charge_lines = block
-        matches = core.violent_lines(charge_lines)
-        if not matches:
+        charges = core.violent_lines(charge_lines)
+        if not charges:
             continue
         booking_id, booking_date = clermont_booking(block)
         text = "\n".join(block)
@@ -106,7 +109,7 @@ def parse_clermont_html(markup: str, fetched_at: str) -> list[core.BookingRecord
                 booking_id=booking_id,
                 booking_date=booking_date,
                 case_numbers=extra_case_numbers(text),
-                violent_charge_matches=matches,
+                violent_charge_matches=charges,
                 fetched_at=fetched_at,
             )
         )
@@ -117,25 +120,24 @@ def ocv_detail_links(markup: str, base_url: str, segment: str) -> list[tuple[str
     soup = BeautifulSoup(markup, "html.parser")
     by_url: dict[str, str] = {}
     path_re = re.compile(rf"/{re.escape(segment)}/\d+/?$", re.IGNORECASE)
-    for heading in soup.find_all(["h2", "h3", "h4", "h5"]):
-        anchor = heading.find("a", href=True)
-        if not anchor:
-            continue
+    for anchor in soup.find_all("a", href=True):
         url = urljoin(base_url, anchor["href"])
         if not path_re.search(urlparse(url).path):
             continue
         name = core.normalize_space(anchor.get_text(" "))
-        if not name:
+        if not name or name.casefold() == "view charges":
+            continue
+        if "," not in name:
             continue
         by_url[url] = name
-    return [(url, name) for url, name in by_url.items()]
+    return list(by_url.items())
 
 
 def ocv_detail_record(source: str, name: str, markup: str, detail_url: str, fetched_at: str) -> core.BookingRecord | None:
     spec = EXTRA_SOURCES[source]
     lines = core.text_lines(markup)
-    matches = core.violent_lines(lines)
-    if not matches:
+    charges = core.violent_lines(lines)
+    if not charges:
         return None
     text = "\n".join(lines)
     inmate_id = re.search(r"Inmate ID:\s*([0-9A-Za-z-]+)", text, re.IGNORECASE)
@@ -143,6 +145,8 @@ def ocv_detail_record(source: str, name: str, markup: str, detail_url: str, fetc
     booked = re.search(r"Booked Date:\s*([^\n]+)", text, re.IGNORECASE)
     booking_date = re.search(r"Booking Date:\s*([^\n]+)", text, re.IGNORECASE)
     status = re.search(r"Custody Status:\s*([^\n]+)", text, re.IGNORECASE)
+    identity = booking_id or inmate_id
+    date_match = booked or booking_date
     return core.BookingRecord(
         source=source,
         locality=spec["locality"],
@@ -150,11 +154,11 @@ def ocv_detail_record(source: str, name: str, markup: str, detail_url: str, fetc
         name=name,
         source_url=spec["url"],
         detail_url=detail_url,
-        booking_id=(booking_id or inmate_id).group(1) if (booking_id or inmate_id) else None,
-        booking_date=core.normalize_space((booked or booking_date).group(1)) if (booked or booking_date) else None,
+        booking_id=identity.group(1) if identity else None,
+        booking_date=core.normalize_space(date_match.group(1)) if date_match else None,
         status=core.normalize_space(status.group(1)) if status else None,
         case_numbers=extra_case_numbers(text),
-        violent_charge_matches=matches,
+        violent_charge_matches=charges,
         fetched_at=fetched_at,
     )
 
@@ -188,8 +192,8 @@ async def collect_ocv(source: str, client: httpx.AsyncClient, fetched_at: str, m
             pages += 1
             return ocv_detail_record(source, name, detail.text, str(detail.url), fetched_at)
 
-    tasks = [asyncio.create_task(load(item)) for item in links[:max_records]]
     records: list[core.BookingRecord] = []
+    tasks = [asyncio.create_task(load(item)) for item in links[:max_records]]
     for task in asyncio.as_completed(tasks):
         record = await task
         if record:
