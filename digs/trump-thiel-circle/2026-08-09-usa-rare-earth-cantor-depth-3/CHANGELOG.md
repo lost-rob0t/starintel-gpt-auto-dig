@@ -61,6 +61,28 @@
 - Classified the confidential investor process as conventional PIPE wall-crossing, **not evidence of insider trading by itself**.
 - Narrowed the insider-trading test to first wall-cross timestamps, exact purchaser execution times, information barriers, and any actual pre-cleansing trading.
 
+### Inflection Point Freedom Fund related-party sub-pass
+
+- Added `INFLECTION-POINT-RELATED-PARTY.md`.
+- Confirmed Blitzer and Shannon were each members of Freedom Fund's general partner and special limited partner.
+- Confirmed Freedom Fund GP was entitled to a performance allocation on gains and an approximately **$1.3M one-time setup fee**; individual economics remain undisclosed.
+- Confirmed the Feb. 11, 2026 4:30 p.m. effectiveness of USAR's PIPE resale registration.
+- Confirmed David Kronenfeld received **6,977 USAR shares** on Feb. 12 in a pro-rata Freedom Fund distribution; the reported value/price is consistent with roughly $150K at PIPE pricing but does not prove his original capital commitment.
+- Confirmed that by June Freedom Fund itself was reported as beneficially owning only **15,734 shares**, down **13,939,266 shares (~99.887%)** from its original allocation.
+- Classified the apparent aggregation/SPV-and-distribution role as a strong inference rather than an established exclusive formation purpose because the LP agreement and complete distribution schedule remain unavailable.
+- Recorded Blitzer's Jan. 29 personal open-market purchase of 100,000 USAR shares as a post-announcement transaction, not evidence of preannouncement trading.
+
+### Inflection Point governance-timing sub-pass
+
+- Added `INFLECTION-POINT-GOVERNANCE-TIMING.md`.
+- Established a pre-change baseline from 2025 SEC filings describing Blitzer as controlling IPAM, Inflection Point GP I and Fund I, including voting/investment discretion.
+- Located Jan. 5 Forms 4 reporting a **Jan. 1, 2026 administrative change** in IPAM/GP I internal governance documents that changed beneficial-ownership reporting without any sale, transfer or disposition of securities.
+- Established that subsequent SEC filings describe voting/dispositive power under a **three-member majority investment committee** consisting of Blitzer, Shannon and an unnamed third individual with no prior-three-year issuer relationship.
+- Confirmed that materially identical committee language is used for Freedom Fund's USAR position.
+- Located the SEC/IAPD record showing **Inflection Point Asset Management LLC became an active Exempt Reporting Adviser effective Jan. 23, 2026**, three days before the public PIPE/government-financing announcement.
+- Preserved the causation caveat: the Jan. 1 governance amendment and Jan. 23 ERA effective date are relevant chronology, but no reviewed source establishes that either event was undertaken because of the USAR PIPE.
+- Adam Saks, who became IPAM CFO in Jan. 2026, remains only a candidate lead for the unnamed third committee seat; no explicit source ties him to the committee.
+
 ### Current classification
 
-The evidence supports a **documented potential conflict / related-party-benefit inquiry with a concrete former-employer recusal question**. It establishes a precise $51.003M aggregate PIPE cost pool, a complete institutional purchaser allocation, a disclosed $300.03M related-party allocation, and a documented wall-cross/cleansing process. It still does not establish insider trading, bribery, kickbacks, criminal corruption, Commerce selection of Cantor, an ethics violation, or prohibited preannouncement trading.
+The evidence supports a **documented potential conflict / related-party-benefit inquiry with a concrete former-employer recusal question**. It establishes a precise $51.003M aggregate PIPE cost pool, a complete institutional purchaser allocation, a disclosed $300.03M related-party allocation, documented GP economics, rapid post-registration distributions, and a Jan. 2026 change in Inflection Point fund-control governance. It still does not establish insider trading, bribery, kickbacks, criminal corruption, Commerce selection of Cantor, an ethics violation, prohibited preannouncement trading, or that the Inflection Point governance changes were made to facilitate the USAR transaction.
