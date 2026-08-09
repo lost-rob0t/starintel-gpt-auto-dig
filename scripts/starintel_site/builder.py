@@ -4,6 +4,7 @@ import hashlib
 import html
 import json
 import shutil
+import unicodedata
 from collections import defaultdict
 from pathlib import Path
 from urllib.parse import quote
@@ -139,6 +140,85 @@ def _write_topic_dataset(
     }
 
 
+def _dataset_key(value: object) -> str:
+    normalized = unicodedata.normalize("NFKC", str(value or "unknown")).casefold()
+    return " ".join(normalized.replace("_", " ").replace("-", " ").split())
+
+
+def _write_source_dataset(
+    *,
+    dataset: str,
+    docs: list[dict],
+    source_targets_by_id: dict[str, str],
+    source_targets: set[str],
+    output: Path,
+    org_output: Path,
+) -> dict[str, object]:
+    target = f"dataset-source-{slug(dataset)}"
+    target_out = output / target
+    node_out = target_out / "nodes"
+    org_out = org_output / target
+    public_org = output / "org" / target
+    downloads = target_out / "downloads"
+    for directory in (target_out, node_out, org_out, public_org, downloads):
+        directory.mkdir(parents=True, exist_ok=True)
+
+    docs = _latest_documents(docs)
+    known = {doc["_id"] for doc in docs}
+    target_count = len(source_targets)
+    source_config = {
+        "packets": {
+            target: {
+                "title": dataset,
+                "subtitle": f"Canonical source dataset aggregated across {target_count:,} research target{'s' if target_count != 1 else ''}.",
+            }
+        }
+    }
+    network = annotate_graph(docs, graph(docs))
+    (target_out / "graph.json").write_text(json.dumps(network, ensure_ascii=False, separators=(",", ":")))
+    (target_out / "documents.json").write_text(json.dumps(document_index(docs), ensure_ascii=False, separators=(",", ":")))
+    (target_out / "index.html").write_text(themed(dashboard_page(target, docs, source_config, network), "../"))
+    (target_out / "graph.html").write_text(themed(graph_page(target, source_config, network), "../"))
+    (target_out / "documents.html").write_text(themed(documents_page(target, docs, source_config), "../"))
+    (target_out / "sources.html").write_text(themed(source_inventory(target, docs), "../"))
+
+    index = org_index(dataset, docs)
+    (org_out / "index.org").write_text(index)
+    (public_org / "index.org").write_text(index)
+    (downloads / "starintel-documents.jsonl").write_text(_jsonl(docs))
+    manifest = {
+        "source_dataset": dataset,
+        "record_count": len(docs),
+        "source_targets": sorted(source_targets),
+    }
+    (downloads / "source-manifest.json").write_text(json.dumps(manifest, ensure_ascii=False, indent=2) + "\n")
+    (downloads / "research-history.json").write_text(json.dumps([manifest], ensure_ascii=False, indent=2) + "\n")
+
+    for doc in docs:
+        name = slug(doc["_id"])
+        org = render_org(doc, known)
+        (org_out / f"{name}.org").write_text(org)
+        (public_org / f"{name}.org").write_text(org)
+        source_target = quote(source_targets_by_id[doc["_id"]], safe="")
+        destination = f"../../{source_target}/nodes/{name}.html"
+        (node_out / f"{name}.html").write_text(_topic_node_redirect(destination))
+
+    target_label = f"{target_count:,} research target{'s' if target_count != 1 else ''}"
+    return {
+        "kind": "source",
+        "id": dataset,
+        "dataset": dataset,
+        "title": dataset,
+        "target": target,
+        "target_title": target_label,
+        "source_target_count": target_count,
+        "source_targets": sorted(source_targets),
+        "url": f"{target}/index.html",
+        "download": f"{target}/downloads/starintel-documents.jsonl",
+        **dataset_metrics(docs),
+    }
+
+
 def build_site(input_root: Path, output: Path, org_output: Path, config_path: Path, assets: Path) -> None:
     packets = discover(input_root)
     config = json.loads(config_path.read_text(encoding="utf-8")) if config_path.exists() else {}
@@ -226,6 +306,10 @@ def build_site(input_root: Path, output: Path, org_output: Path, config_path: Pa
     topic_metadata: dict[str, dict[str, str]] = {}
     topic_targets: dict[str, set[str]] = defaultdict(set)
     topic_sources: dict[str, set[str]] = defaultdict(set)
+    source_documents: dict[str, dict[str, dict]] = defaultdict(dict)
+    source_document_targets: dict[str, dict[str, str]] = defaultdict(dict)
+    source_names: dict[str, str] = {}
+    source_targets: dict[str, set[str]] = defaultdict(set)
 
     for target, target_packets in sorted(grouped.items()):
         docs = _latest_documents([doc for item in target_packets for doc in item.documents])
@@ -289,27 +373,16 @@ def build_site(input_root: Path, output: Path, org_output: Path, config_path: Pa
                 if not excluded_source_dataset(doc.get("dataset"), topic_config):
                     topic_sources[topic_id].add(str(doc.get("dataset") or "unknown"))
 
-        cfg = config.get("packets", {}).get(target, {})
-        target_title = cfg.get("title") or target.replace("-", " ").title()
-        datasets: dict[str, list[dict]] = defaultdict(list)
-        for doc in docs:
             if excluded_source_dataset(doc.get("dataset"), topic_config):
                 continue
-            datasets[str(doc.get("dataset") or "unknown")].append(doc)
-        for dataset, dataset_docs in sorted(datasets.items()):
-            dataset_rows.append(
-                {
-                    "kind": "source",
-                    "id": f"{target}:{dataset}",
-                    "dataset": dataset,
-                    "title": dataset,
-                    "target": target,
-                    "target_title": target_title,
-                    "url": f"{target}/documents.html?dataset={quote(dataset, safe='')}",
-                    "download": "",
-                    **dataset_metrics(dataset_docs),
-                }
-            )
+            dataset_name = str(doc.get("dataset") or "unknown")
+            source_key = _dataset_key(dataset_name)
+            old = source_documents[source_key].get(doc["_id"])
+            if old is None or str(doc["date_updated"]) >= str(old["date_updated"]):
+                source_documents[source_key][doc["_id"]] = doc
+                source_document_targets[source_key][doc["_id"]] = target
+            source_names.setdefault(source_key, dataset_name)
+            source_targets[source_key].add(target)
 
     topic_rows = []
     for topic_id, by_id in sorted(topic_documents.items()):
@@ -328,7 +401,19 @@ def build_site(input_root: Path, output: Path, org_output: Path, config_path: Pa
             )
         )
 
-    dataset_rows.sort(key=lambda row: (str(row["dataset"]).lower(), str(row["target"])))
+    for source_key, by_id in sorted(source_documents.items()):
+        dataset_rows.append(
+            _write_source_dataset(
+                dataset=source_names[source_key],
+                docs=list(by_id.values()),
+                source_targets_by_id=source_document_targets[source_key],
+                source_targets=source_targets[source_key],
+                output=output,
+                org_output=org_output,
+            )
+        )
+
+    dataset_rows.sort(key=lambda row: str(row["dataset"]).lower())
     topic_rows.sort(key=lambda row: str(row["title"]).lower())
     catalog = topic_rows + dataset_rows
     catalog.sort(key=lambda row: (str(row.get("title") or row.get("dataset") or "").lower(), str(row.get("kind") or "")))
