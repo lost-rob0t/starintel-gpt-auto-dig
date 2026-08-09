@@ -1,0 +1,83 @@
+name: Violent offender recovery live check
+
+on:
+  pull_request:
+    paths:
+      - "scripts/scrape_violent_offender_recovery.py"
+      - "scripts/scrape_violent_offender_localities.py"
+      - "scripts/scrape_violent_offender_localities_extra.py"
+      - "scripts/scrape_violent_offender_high_yield.py"
+      - "scripts/scrape_violent_offender_batch2.py"
+      - "requirements/violent-offender-scrapers.txt"
+      - ".github/workflows/violent-offender-recovery-live-check.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  recover-live:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    strategy:
+      fail-fast: false
+      matrix:
+        source:
+          - franklin
+          - madison
+          - lucas
+          - allen
+          - hancock
+          - muskingum
+          - mahoning
+          - lorain
+          - summit
+    name: recover-${{ matrix.source }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+      - name: Install scraper dependencies
+        run: python -m pip install -r requirements/violent-offender-scrapers.txt
+      - name: Run live recovery source
+        env:
+          SOURCE: ${{ matrix.source }}
+        run: |
+          out="artifacts/recovery-live/$SOURCE"
+          mkdir -p "$out"
+          set +e
+          timeout 18m python scripts/scrape_violent_offender_recovery.py \
+            --source "$SOURCE" \
+            --output "$out" \
+            --timeout 30 \
+            --max-records-per-source 2500
+          status=$?
+          set -e
+          echo "COLLECTOR_EXIT=$status"
+          test -f "$out/summary.json"
+          python - "$out/summary.json" <<'PY'
+          import json
+          import sys
+          from pathlib import Path
+
+          summary = json.loads(Path(sys.argv[1]).read_text())
+          for source in summary.get("sources", []):
+              print(
+                  "LIVE_SOURCE",
+                  source.get("source"),
+                  "RECORDS", source.get("records", 0),
+                  "CANDIDATES", source.get("candidates_seen", 0),
+                  "PAGES", source.get("pages_fetched", 0),
+                  "ERROR", json.dumps(source.get("error")),
+              )
+              if not source.get("error") and source.get("candidates_seen", 0) == 0:
+                  raise SystemExit(f"false-zero guard: {source.get('source')} returned zero candidates without an explicit error")
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: violent-offender-recovery-${{ matrix.source }}-${{ github.run_id }}
+          path: artifacts/recovery-live/${{ matrix.source }}/
+          if-no-files-found: warn
+          retention-days: 1
