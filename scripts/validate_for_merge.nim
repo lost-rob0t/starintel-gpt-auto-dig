@@ -33,6 +33,8 @@ type BulkReport = object
   canonicalCorpusBytes: int64
   shardCount: int64
   membershipCount: int64
+  indexBundleCount: int64
+  indexBundleBytes: int64
 
 
 proc run(command: string; args: seq[string] = @[]) =
@@ -169,6 +171,9 @@ proc bulkReport(path: string): BulkReport =
     if rel == "starintel-complete-corpus.jsonl": result.canonicalCorpusBytes = bytes
     if rel.startsWith("corpus/") and rel.endsWith(".jsonl"): inc result.shardCount
     if rel.startsWith("memberships/") and rel.endsWith(".ids"): inc result.membershipCount
+    if rel.startsWith("indexes/") and rel.endsWith(".bundle"):
+      inc result.indexBundleCount
+      result.indexBundleBytes += bytes
 
 
 proc printReports(site: SiteSizeReport; bulk: BulkReport) =
@@ -195,6 +200,8 @@ proc printReports(site: SiteSizeReport; bulk: BulkReport) =
   echo &"bulk_file_count={bulk.fileCount}"
   echo &"bulk_shard_count={bulk.shardCount}"
   echo &"membership_file_count={bulk.membershipCount}"
+  echo &"range_index_bundle_count={bulk.indexBundleCount}"
+  echo &"range_index_bundle_bytes={bulk.indexBundleBytes}"
   echo &"budget={PagesContentBudgetBytes}"
 
 
@@ -202,6 +209,7 @@ proc validateSite(options: Options) =
   let site = ".generated/merge-site"
   let org = ".generated/merge-org"
   let bulk = ".generated/merge-bulk"
+  let baseUrl = "https://github.com/lost-rob0t/starintel-gpt-auto-dig/releases/download/ci"
   for path in [site, org, bulk]:
     if dirExists(path): removeDir(path)
   createDir(".generated")
@@ -215,14 +223,18 @@ proc validateSite(options: Options) =
     "--output", site,
     "--org-output", org,
     "--bulk-output", bulk,
-    "--bulk-base-url", "https://github.com/lost-rob0t/starintel-gpt-auto-dig/releases/download/ci"
+    "--bulk-base-url", baseUrl
+  ])
+  run("python3", @[
+    "scripts/externalize_search_indexes.py",
+    "--site", site,
+    "--bulk", bulk,
+    "--base-url", baseUrl
   ])
 
   for required in [
     site / "index.html",
     site / "search-index.json",
-    site / "indexes" / "search" / "manifest.json",
-    site / "indexes" / "records" / "manifest.json",
     site / "downloads" / "starintel-complete-corpus.manifest.json",
     bulk / "starintel-complete-corpus.jsonl"
   ]:
@@ -230,9 +242,15 @@ proc validateSite(options: Options) =
       raise newException(IOError, "site validation failed; missing artifact: " & required)
   if dirExists(site / "org"):
     raise newException(ValueError, "public Org tree must not be materialized inside Pages")
+  if dirExists(site / "indexes"):
+    raise newException(ValueError, "record-count-linear search indexes leaked into Pages")
   for path in walkDirRec(site):
     if path.endsWith("starintel-documents.jsonl"):
       raise newException(ValueError, "duplicate per-view raw JSONL leaked into Pages: " & path)
+
+  let searchConfig = parseFile(site / "search-index.json")
+  if searchConfig["format"].getStr() != "starintel-release-range-index-v1":
+    raise newException(ValueError, "unexpected external search-index format")
 
   validateTopics(site, options.minimums)
   let siteReport = siteSizeReport(site)
@@ -242,6 +260,8 @@ proc validateSite(options: Options) =
     raise newException(ValueError, "bulk corpus did not produce deterministic shards")
   if bulkStats.membershipCount < 1:
     raise newException(ValueError, "dataset membership references were not produced")
+  if bulkStats.indexBundleCount < 2:
+    raise newException(ValueError, "record/search indexes were not externalized into range bundles")
   if siteReport.totalBytes >= PagesContentBudgetBytes:
     raise newException(ValueError, &"generated site is too large for safe Pages budget: {siteReport.totalBytes} bytes")
 
