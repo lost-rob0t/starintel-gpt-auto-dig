@@ -1,0 +1,89 @@
+name: Nim site benchmark status
+
+on:
+  push:
+    branches:
+      - agent/gop-dataset-100k-expansion
+    paths:
+      - .github/workflows/nim-site-benchmark-status.yml
+
+permissions:
+  contents: read
+  statuses: write
+
+concurrency:
+  group: nim-site-benchmark-status-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  NIM_VERSION: 2.2.4
+
+jobs:
+  benchmark:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Set up Nim
+        uses: jiro4989/setup-nim-action@v2
+        with:
+          nim-version: ${{ env.NIM_VERSION }}
+
+      - name: Install benchmark tools
+        run: |
+          sudo apt-get update
+          sudo apt-get install --yes gzip coreutils time
+
+      - name: Build Nim site generator
+        run: |
+          mkdir -p bin
+          nim c -d:release --opt:speed --mm:orc \
+            --path:scripts \
+            --out:bin/starintel-site \
+            scripts/starintel_site.nim
+
+      - name: Benchmark complete corpus and publish status
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set +e
+          rm -rf /tmp/starintel-site /tmp/starintel-org
+          /usr/bin/time \
+            -f 'elapsed=%E maxrss_kb=%M' \
+            -o /tmp/site-time.log \
+            bin/starintel-site \
+              --input digs \
+              --db db \
+              --output /tmp/starintel-site \
+              --org-output /tmp/starintel-org
+          rc=$?
+
+          metrics="$(cat /tmp/site-time.log 2>/dev/null || true)"
+          bytes=0
+          files=0
+          if [ -d /tmp/starintel-site ]; then
+            bytes="$(du -sb /tmp/starintel-site | cut -f1)"
+            files="$(find /tmp/starintel-site -type f | wc -l)"
+          fi
+          description="${metrics} bytes=${bytes} files=${files}"
+          description="${description:0:140}"
+
+          state=failure
+          if [ "$rc" -eq 0 ] && \
+             test -s /tmp/starintel-site/index.html && \
+             test -s /tmp/starintel-site/search-index.json && \
+             test -s /tmp/starintel-site/downloads/starintel-complete-corpus.jsonl && \
+             test -s /tmp/starintel-site/dataset-gop/downloads/topic-manifest.json; then
+            state=success
+          fi
+
+          gh api "repos/${{ github.repository }}/statuses/${{ github.sha }}" \
+            -f state="$state" \
+            -f context='nim-site-benchmark' \
+            -f description="$description" \
+            -f target_url="https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+
+          echo "$description"
+          exit "$rc"
