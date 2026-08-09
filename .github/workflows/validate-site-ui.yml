@@ -4,8 +4,13 @@ on:
   pull_request:
     paths:
       - "scripts/starintel_site/**"
+      - "scripts/starintel_site.nim"
+      - "scripts/starintel_validate.nim"
+      - "scripts/starintel_transport.nim"
+      - "scripts/validate_for_merge.nim"
       - "scripts/validate-for-merge.py"
       - "scripts/build-auto-dig-quasar.py"
+      - "starintel_auto_dig.nimble"
       - "site-assets/**"
       - "tests/test_adar_dashboard.py"
       - "tests/test_dashboard_graph.py"
@@ -17,8 +22,13 @@ on:
     branches-ignore: [main]
     paths:
       - "scripts/starintel_site/**"
+      - "scripts/starintel_site.nim"
+      - "scripts/starintel_validate.nim"
+      - "scripts/starintel_transport.nim"
+      - "scripts/validate_for_merge.nim"
       - "scripts/validate-for-merge.py"
       - "scripts/build-auto-dig-quasar.py"
+      - "starintel_auto_dig.nimble"
       - "site-assets/**"
       - "tests/test_adar_dashboard.py"
       - "tests/test_dashboard_graph.py"
@@ -35,6 +45,10 @@ concurrency:
   group: site-ui-validation-${{ github.ref }}
   cancel-in-progress: true
 
+env:
+  NIM_VERSION: 2.2.4
+  STARINTEL_NIM_REF: b55316bae294a146523cd2f977b81096e538c86a
+
 jobs:
   validate-site-ui:
     runs-on: ubuntu-latest
@@ -42,6 +56,18 @@ jobs:
     steps:
       - name: Check out repository
         uses: actions/checkout@v6
+
+      - name: Check out canonical StarIntel Nim runtime
+        uses: actions/checkout@v6
+        with:
+          repository: lost-rob0t/starintel-doc.nim
+          ref: ${{ env.STARINTEL_NIM_REF }}
+          path: .starintel-doc-nim
+
+      - name: Set up Nim
+        uses: jiro4989/setup-nim-action@v2
+        with:
+          nim-version: ${{ env.NIM_VERSION }}
 
       - name: Set up Python
         uses: actions/setup-python@v6
@@ -95,5 +121,8 @@ jobs:
       - name: Run dashboard and Quasar regression tests
         run: python3 -m unittest tests.test_adar_dashboard tests.test_dashboard_graph tests.test_auto_dig_quasar
 
+      - name: Build canonical Nim merge gate
+        run: nimble buildFast
+
       - name: Run complete StarIntel merge and ADAR surface gate
-        run: python3 scripts/validate-for-merge.py --site
+        run: bin/validate-for-merge --site
