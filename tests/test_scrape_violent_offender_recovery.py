@@ -7,8 +7,8 @@ from pathlib import Path
 SCRIPTS = Path(__file__).resolve().parents[1] / "scripts"
 if str(SCRIPTS) not in sys.path:
     sys.path.insert(0, str(SCRIPTS))
-MODULE_PATH = SCRIPTS / "scrape_violent_offender_recovery.py"
-SPEC = importlib.util.spec_from_file_location("violent_recovery", MODULE_PATH)
+MODULE_PATH = SCRIPTS / "scrape_violent_offender_recovery_fixups.py"
+SPEC = importlib.util.spec_from_file_location("violent_recovery_fixups", MODULE_PATH)
 assert SPEC and SPEC.loader
 MODULE = importlib.util.module_from_spec(SPEC)
 sys.modules[SPEC.name] = MODULE
@@ -31,15 +31,30 @@ def test_newworld_selects_active_booking_not_first_historical_booking():
     block = MODULE.current_booking_block(html)
     assert MODULE.booking_id(block) == "2026-00001888"
     record = MODULE.recovered_newworld_record(
-        "allen",
-        "Example, Person",
-        html,
-        "https://example.test/Inmate/Detail/-1",
-        "2026-08-09T16:00:00Z",
+        "allen", "Example, Person", html, "https://example.test/Inmate/Detail/-1", "2026-08-09T16:00:00Z"
     )
     assert record is not None
     assert record.booking_id == "2026-00001888"
     assert record.violent_charge_matches == ["Domestic Violence - knowingly cause physical harm"]
+
+
+def test_newworld_supports_split_booking_heading_nodes():
+    html = """
+    <div>Booking History</div>
+    <div>Booking</div><div>2025-00000879</div>
+    <div>Booking Date</div><div>04/04/2025 1:18 PM</div>
+    <div>Release Date</div><div></div>
+    <div>Scheduled Release Date</div><div></div>
+    <div>Booking Origin</div><div>Lima Police Department</div>
+    <div>Charge Description</div><div>FELONIOUS ASSAULT</div>
+    """
+    block = MODULE.current_booking_block(html)
+    assert MODULE.booking_id(block) == "2025-00000879"
+    record = MODULE.recovered_newworld_record(
+        "allen", "ALLEN, SHARONIKA DANIELLE", html, "https://example.test/detail", "2026-08-09T16:00:00Z"
+    )
+    assert record is not None
+    assert "FELONIOUS ASSAULT" in record.violent_charge_matches
 
 
 def test_newworld_uses_latest_booking_when_release_label_is_missing():
@@ -67,6 +82,16 @@ def test_mahoning_active_roster_builds_detail_urls_without_detail_anchors():
     ]
 
 
+def test_madison_hex_ocv_links_are_discovered():
+    html = """
+    <a href="/inmateSearch/926d48aac3849e859860a66b2d9bb67a">DOE, JANE</a>
+    <a href="/inmateSearch">Search</a>
+    """
+    assert MODULE.ocv_detail_links(html, "https://www.madisonsheriff.org/inmateSearch", "inmateSearch") == [
+        ("https://www.madisonsheriff.org/inmateSearch/926d48aac3849e859860a66b2d9bb67a", "DOE, JANE")
+    ]
+
+
 def test_madison_ocv_detail_record_is_parsed_from_detail_page():
     html = """
     <div>Inmate ID: 47359</div>
@@ -76,11 +101,8 @@ def test_madison_ocv_detail_record_is_parsed_from_detail_page():
     <div>Charge(s):</div>
     <div>2903.11::FELONIOUS ASSAULT</div>
     """
-    record = MODULE.madison_record(
-        "DOE, JANE",
-        html,
-        "https://www.madisonsheriff.org/inmateSearch/123",
-        "2026-08-09T16:00:00Z",
+    record = MODULE.recovery.madison_record(
+        "DOE, JANE", html, "https://www.madisonsheriff.org/inmateSearch/123", "2026-08-09T16:00:00Z"
     )
     assert record is not None
     assert record.booking_id == "47359"
@@ -96,7 +118,7 @@ def test_franklin_postback_discovery_finds_select_rows():
       <a href="javascript:__doPostBack('ctl00$Main$Pager','Page$2')">2</a>
     </form>
     """
-    assert MODULE.postback_targets(html) == [("ctl00$Main$Bookings", "Select$3")]
+    assert MODULE.recovery.postback_targets(html) == [("ctl00$Main$Bookings", "Select$3")]
 
 
 def test_summit_html_table_fallback_extracts_violent_row():
@@ -108,7 +130,7 @@ def test_summit_html_table_fallback_extracts_violent_row():
       <tr><td>08/29/2026</td><td>09:00:00</td><td>APD</td><td>10</td><td>2925.11</td><td>POSSESSION OF COCAINE</td><td>5000</td></tr>
     </table>
     """
-    records, candidates = MODULE.summit_table_records(html, "2026-08-09T16:00:00Z")
+    records, candidates = MODULE.recovery.summit_table_records(html, "2026-08-09T16:00:00Z")
     assert candidates == 2
     assert len(records) == 1
     assert records[0].name == "ANDERSON, RICHARD E, III"
