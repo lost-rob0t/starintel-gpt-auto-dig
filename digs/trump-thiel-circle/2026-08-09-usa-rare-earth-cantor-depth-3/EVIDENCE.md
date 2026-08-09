@@ -52,11 +52,16 @@ This ledger is cumulative. New evidence is appended or reconciled here; contradi
 | USAR-CANTOR-043 | 2026-06 | USAR registration materials report Freedom Fund beneficially owning only 15,734 shares versus 13,955,000 originally allocated. | confirmed holdings change | SEC registration statement | 13,939,266-share / ~99.887% reduction; do not assume all reduction was LP distributions |
 | USAR-CANTOR-044 | 2026-02 onward | Freedom Fund functioned at least partly as an aggregation/SPV vehicle distributing registered USAR shares to LPs. | analytic inference | effectiveness timing + Kronenfeld Form 4 + later holdings | plausible, **not established as fund's exclusive or original purpose** |
 | USAR-CANTOR-045 | 2026-01-29 | Michael Blitzer bought 100,000 USAR shares in the open market after public announcement and PIPE closing chronology, at ~$21.4386 weighted-average price. | confirmed insider transaction | SEC Form 4 | post-announcement transaction; does not establish preannouncement trading |
-| USAR-CANTOR-046 | pre-2026-01-01 | 2025 SEC filings described Blitzer as controlling IPAM, Inflection Point GP I and Fund I, including voting/investment discretion over Fund I securities. | confirmed pre-change control baseline | SEC filings | confirmed |
+| USAR-CANTOR-046 | pre-2026-01-01 | 2025 SEC filings described Blitzer as controlling IPAM and sharing voting/investment discretion over Inflection Point-held securities. | confirmed pre-change control baseline | SEC filings | confirmed |
 | USAR-CANTOR-047 | 2026-01-01 | Inflection Point amended IPAM/GP I internal governance; Jan. 5 Forms 4 say the resulting beneficial-ownership change was administrative and not caused by sale, transfer or disposition. | confirmed governance chronology | SEC Forms 4 | confirmed; amended governance documents remain unlocated |
-| USAR-CANTOR-048 | 2026-01 onward | Post-change filings place Fund I voting/dispositive power in a three-person majority investment committee: Blitzer, Shannon and an unnamed independent-of-issuer third member; materially identical structure is disclosed for Freedom Fund. | confirmed governance structure | SEC prospectuses / USAR S-1 | confirmed; third member identity unresolved |
+| USAR-CANTOR-048 | 2026-01 onward | Post-change filings place Fund I voting/dispositive power in a three-person majority investment committee: Blitzer, Shannon and an unnamed independent-of-issuer third member; materially identical structure is disclosed for Freedom Fund. | confirmed fund-level governance structure | SEC prospectuses / USAR S-1 | confirmed; third member identity unresolved |
 | USAR-CANTOR-049 | 2026-01-23 | SEC/IAPD lists Inflection Point Asset Management LLC (CRD 340616 / SEC 802-135401) as an active Exempt Reporting Adviser effective Jan. 23, 2026. | confirmed regulatory chronology | SEC/IAPD | confirmed; relationship to Freedom Fund/USAR PIPE not established |
 | USAR-CANTOR-050 | 2026-01 | Adam Saks is the unnamed third investment-committee member. | candidate hypothesis | timing: became IPAM CFO in Jan. 2026; no explicit committee source | **not established; do not graph as member** |
+| USAR-CANTOR-051 | 2026-03/05 | Later 2026 SEC filings continue to state that Michael Blitzer controls IPAM in sponsor/entity contexts and signs as IPAM's CIO. | confirmed company-level control disclosure | SEC Form 3 / Schedule 13G | corrects overbroad reading of Jan. 1 change: fund-level voting authority changed; company-level IPAM control was still attributed to Blitzer |
+| USAR-CANTOR-052 | 2026-02 | A separate Inflection Point Fund I disclosure says Blitzer, Shannon and Andrew Gundlach and/or affiliates have Fund I economic interests including performance allocations, management fees and LP interests. | confirmed adjacent-fund economics | SEC proxy/prospectus | **Fund I only**; no inference that Gundlach participated in Freedom Fund |
+| USAR-CANTOR-053 | 2026-02 | SEC's USAR issuer index shows one Form 4 filed Feb. 17 for a Feb. 12 transaction: Kronenfeld's Freedom Fund pro-rata distribution. | confirmed filing-index result | SEC issuer index + Kronenfeld Form 4 | no second USAR Section 16 insider distribution located for that immediate date/window; does not exclude non-insider LPs |
+| USAR-CANTOR-054 | 2026-08-09 search | Targeted SEC searches using Freedom Fund's exact name plus LP/distribution terms have so far identified Kronenfeld as the only specifically named Freedom Fund limited partner. | negative public-source search | SEC search results / USAR filings | **not proof Kronenfeld was the only LP** |
+| USAR-CANTOR-055 | 2026 filings | Multiple Inflection Point-associated issuer filings repeat the same three-member committee disclosure naming Blitzer and Shannon but leaving the third member unnamed. | confirmed cross-issuer disclosure pattern | SEC prospectuses | supports a consistent public-disclosure boundary; third member remains unverified |
 
 ## Priority document requests / retrieval targets
 
@@ -71,11 +76,12 @@ This ledger is cumulative. New evidence is appended or reconciled here; contradi
 9. Placement-agent allocation book / bookbuilding records and preannouncement trading records sufficient to test information-barrier compliance.
 10. **Freedom Fund LP agreement, Freedom Fund GP LLC operating agreement, LP roster/capital commitments, GP/SLP ownership split and performance-allocation formula.**
 11. **Jan. 1, 2026 IPAM / Inflection Point GP I governance amendments and document identifying the third investment-committee member.**
-12. **IPAM Form ADV/private-fund schedules associated with its Jan. 23, 2026 ERA effective date.**
+12. **IPAM Jan/Feb 2026 Form ADV/private-fund schedules, especially any record naming Freedom Fund, its assets or service providers.**
 13. Full Freedom Fund February distribution schedule and setup-fee invoice/payment record.
-14. Payment history for Cantor's predecessor-SPAC deferred fee and any 2024 capital-raise-linked fee.
-15. Cantor and USAR responses to the July 7, 2026 congressional letters.
-16. Any later Commerce response to the February/July congressional inquiries.
+14. Official entity-formation records for Freedom Fund LP and Freedom Fund GP LLC.
+15. Payment history for Cantor's predecessor-SPAC deferred fee and any 2024 capital-raise-linked fee.
+16. Cantor and USAR responses to the July 7, 2026 congressional letters.
+17. Any later Commerce response to the February/July congressional inquiries.
 
 ## Core sources
 
@@ -87,12 +93,15 @@ This ledger is cumulative. New evidence is appended or reconciled here; contradi
 - https://www.sec.gov/Archives/edgar/data/1970622/000121390026007457/ea027403101ex99-2_usarare.htm
 - https://www.sec.gov/Archives/edgar/data/1970622/000121390026007457/0001213900-26-007457-index.htm
 - https://www.sec.gov/Archives/edgar/data/1970622/000121390026011595/ea0269018-02.htm
+- https://www.sec.gov/edgar/browse/?CIK=CIK0001970622
 - https://www.sec.gov/Archives/edgar/data/1970622/000197062226000038/usar-20260331.htm
 - https://www.sec.gov/Archives/edgar/data/1970622/000162828026003966/form8-k2026x0128.htm
 - https://www.sec.gov/Archives/edgar/data/1970622/000121390026064453/ea029340201ex10-3.htm
 - https://www.sec.gov/Archives/edgar/data/2012318/000121390026001494/xslF345X03/ownership.xml
 - https://www.sec.gov/Archives/edgar/data/1970622/000121390026001486/xslF345X03/ownership.xml
-- https://www.sec.gov/Archives/edgar/data/2097702/000121390026033178/ea0268687-03.htm
+- https://www.sec.gov/Archives/edgar/data/2102041/000121390026034960/xslF345X06/ownership.xml
+- https://www.sec.gov/Archives/edgar/data/2102041/000121390026056718/xslSCHEDULE_13G_X02/primary_doc.xml
+- https://www.sec.gov/Archives/edgar/data/2028707/000121390026015125/ea0258163-07.htm
 - https://adviserinfo.sec.gov/firm/summary/340616
 - https://www.sec.gov/Archives/edgar/data/1094831/000121390025015387/xslSCHEDULE_13D_X01/primary_doc.xml
 - https://www.sec.gov/Archives/edgar/data/1839530/000121390025096631/xslSCHEDULE_13D_X01/primary_doc.xml
