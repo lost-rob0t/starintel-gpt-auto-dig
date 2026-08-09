@@ -37,6 +37,15 @@
     document.head.appendChild(style);
   }
 
+  function installMobileStyles(prefix) {
+    if (document.querySelector('link[data-adar-mobile="true"]')) return;
+    const link = document.createElement("link");
+    link.rel = "stylesheet";
+    link.href = `${prefix}assets/adar-mobile.css`;
+    link.dataset.adarMobile = "true";
+    document.head.appendChild(link);
+  }
+
   function addLink(nav, label, url, siblingSite = "") {
     const link = document.createElement("a");
     const clean = normalizeLabel(label);
@@ -67,6 +76,8 @@
     brand.textContent = "StarIntel Auto-Dig";
     const href = brand.getAttribute("href") || "index.html";
     const prefix = href.endsWith("index.html") ? href.slice(0, -"index.html".length) : "";
+    installMobileStyles(prefix);
+
     let nav = header.querySelector("nav");
     if (!nav) {
       nav = document.createElement("nav");
