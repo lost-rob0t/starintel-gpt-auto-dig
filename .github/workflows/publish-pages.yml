@@ -82,12 +82,16 @@ jobs:
             --org-output .generated/org \
             --bulk-output .generated/bulk \
             --bulk-base-url "$BULK_BASE_URL"
+          python3 scripts/externalize_search_indexes.py \
+            --site _site \
+            --bulk .generated/bulk \
+            --base-url "$BULK_BASE_URL"
           test -s _site/index.html
           test -s _site/search-index.json
-          test -s _site/indexes/search/manifest.json
-          test -s _site/indexes/records/manifest.json
+          test ! -d _site/indexes
           test -s _site/downloads/starintel-complete-corpus.manifest.json
           test -s .generated/bulk/starintel-complete-corpus.jsonl
+          test -n "$(find .generated/bulk/indexes -name '*.bundle' -print -quit)"
           test ! -d _site/org
           test -z "$(find _site -name starintel-documents.jsonl -print -quit)"
 
@@ -102,6 +106,7 @@ jobs:
             --output .generated/release \
             --base-url "$BULK_BASE_URL"
           test -s .generated/release/starintel-bulk-release.manifest.json
+          test -n "$(find .generated/release -name '*.bundle' -print -quit)"
 
       - name: Publish evidence seal over canonical bulk stream
         run: |
@@ -171,6 +176,7 @@ jobs:
         run: |
           test -s _site/index.html
           test -s _site/search-index.json
+          test ! -d _site/indexes
           test -s _site/downloads/starintel-complete-corpus.manifest.json
           test -s _site/downloads/starintel-bulk-release.manifest.json
           test -s _site/downloads/starintel-evidence-seal.json
@@ -199,8 +205,54 @@ jobs:
           gh release create "$BULK_TAG" \
             --target "$GITHUB_SHA" \
             --title "Auto-Dig bulk corpus ${GITHUB_SHA::12}" \
-            --notes "Canonical StarIntel bulk shards and dataset membership references for ${GITHUB_SHA}."
+            --notes "Canonical StarIntel bulk shards, range-addressable search metadata, and dataset membership references for ${GITHUB_SHA}."
           gh release upload "$BULK_TAG" .generated/release/* --clobber
+
+      - name: Verify release byte-range search transport
+        run: |
+          python3 - <<'PY'
+          import json
+          import time
+          import urllib.error
+          import urllib.request
+          from pathlib import Path
+
+          config = json.loads(Path('_site/search-index.json').read_text())
+          for group, segment in (
+              ('search', next(iter(config['search']['segments'].values()))),
+              ('records', config['records']['pages'][0]),
+          ):
+              bundle = config[group]['bundles'][segment['bundle']]
+              start = int(segment['offset'])
+              length = int(segment['length'])
+              end = start + length - 1
+              last_error = None
+              for attempt in range(6):
+                  try:
+                      request = urllib.request.Request(
+                          bundle['url'], headers={'Range': f'bytes={start}-{end}'}
+                      )
+                      with urllib.request.urlopen(request, timeout=30) as response:
+                          status = response.status
+                          payload = response.read()
+                          cors = response.headers.get('Access-Control-Allow-Origin')
+                      if status != 206:
+                          raise RuntimeError(f'{group} range returned HTTP {status}, expected 206')
+                      if len(payload) != length:
+                          raise RuntimeError(f'{group} range length {len(payload)} != {length}')
+                      if cors not in ('*', 'https://auto-dig.starintel.actor'):
+                          raise RuntimeError(f'{group} release asset lacks browser CORS allowance: {cors!r}')
+                      json.loads(payload)
+                      print(f'{group}_range_transport=PASS bytes={length} cors={cors}')
+                      break
+                  except (OSError, ValueError, RuntimeError, urllib.error.HTTPError) as error:
+                      last_error = error
+                      if attempt == 5:
+                          raise
+                      time.sleep(5)
+              if last_error and attempt == 5:
+                  raise last_error
+          PY
 
       - name: Upload source audit
         uses: actions/upload-artifact@v4
