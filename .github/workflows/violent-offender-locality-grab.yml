@@ -9,12 +9,14 @@ on:
       - "scripts/scrape_violent_offender_batch2.py"
       - "scripts/scrape_violent_offender_recovery.py"
       - "scripts/scrape_violent_offender_recovery_fixups.py"
+      - "scripts/scrape_violent_offender_recovery_entry.py"
       - "scripts/merge_violent_offender_grabs.py"
       - "tests/test_scrape_violent_offender_localities.py"
       - "tests/test_scrape_violent_offender_localities_extra.py"
       - "tests/test_scrape_violent_offender_high_yield.py"
       - "tests/test_scrape_violent_offender_batch2.py"
       - "tests/test_scrape_violent_offender_recovery.py"
+      - "tests/test_scrape_violent_offender_recovery_entry.py"
       - "tests/test_merge_violent_offender_grabs.py"
       - "requirements/violent-offender-scrapers.txt"
       - ".github/workflows/violent-offender-locality-grab.yml"
@@ -27,6 +29,7 @@ on:
       - "scripts/scrape_violent_offender_batch2.py"
       - "scripts/scrape_violent_offender_recovery.py"
       - "scripts/scrape_violent_offender_recovery_fixups.py"
+      - "scripts/scrape_violent_offender_recovery_entry.py"
       - "scripts/merge_violent_offender_grabs.py"
       - "requirements/violent-offender-scrapers.txt"
       - ".github/workflows/violent-offender-locality-grab.yml"
@@ -62,6 +65,7 @@ jobs:
             tests/test_scrape_violent_offender_high_yield.py \
             tests/test_scrape_violent_offender_batch2.py \
             tests/test_scrape_violent_offender_recovery.py \
+            tests/test_scrape_violent_offender_recovery_entry.py \
             tests/test_merge_violent_offender_grabs.py
 
   collect:
@@ -100,7 +104,7 @@ jobs:
             --output artifacts/violent-offender-localities/batch2 \
             --max-records-per-source "$MAX_RECORDS" || failures=$((failures + 1))
 
-          python scripts/scrape_violent_offender_recovery_fixups.py \
+          python scripts/scrape_violent_offender_recovery_entry.py \
             --output artifacts/violent-offender-localities/recovered \
             --max-records-per-source "$MAX_RECORDS" || failures=$((failures + 1))
 
