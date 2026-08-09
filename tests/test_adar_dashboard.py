@@ -120,6 +120,16 @@ class AdarDashboardTests(unittest.TestCase):
         self.assertIn("prefers-reduced-motion", css)
         self.assertIn("IBM Plex Sans", css)
 
+    def test_dataset_browser_dedupes_and_switches_views_with_icons(self) -> None:
+        javascript = DASHBOARD_JS.read_text(encoding="utf-8")
+        self.assertIn("dedupeCatalog", javascript)
+        self.assertIn("normalizedDatasetKey", javascript)
+        self.assertIn("duplicates removed", javascript)
+        self.assertIn("VIEW_ICONS", javascript)
+        self.assertIn('aria-label", label', javascript)
+        self.assertIn('cards.style.display = showCards ? "grid" : "none"', javascript)
+        self.assertIn('tableWrap.style.display = showCards ? "none" : "block"', javascript)
+
 
 if __name__ == "__main__":
     unittest.main()
