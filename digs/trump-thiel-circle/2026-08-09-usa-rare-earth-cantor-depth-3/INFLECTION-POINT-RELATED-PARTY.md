@@ -49,7 +49,7 @@ USAR states voting and dispositive power over Freedom Fund's USAR securities was
 
 USAR invokes the SEC "rule of three" concept: because voting/dispositive decisions require a majority of a multi-member committee, it does not treat any one committee member as the beneficial owner solely on that basis.
 
-**Unresolved:** the public USAR filings reviewed do not name the third investment-committee member.
+**Unresolved:** public SEC filings reviewed across USAR and other Inflection Point-associated issuers repeatedly use the same Blitzer/Shannon/unnamed-third-member formulation and do not name the third member.
 
 ### General-partner economics
 
@@ -68,13 +68,16 @@ The disclosure does **not** state:
 - whether the setup fee was paid before or after closing; or
 - whether the fee was borne pro rata by the fund's LPs.
 
-Those are current evidence gaps.
+Those remain current evidence gaps.
 
 ### Inflection Point Asset Management
 
-Separate SEC filings describe Michael Blitzer as chairman/CEO or chief investment officer of Inflection Point Asset Management and Kevin Shannon as a founder/partner, director, and portfolio manager. Other Inflection Point filings describe the manager's strategy as concentrated SPAC sponsor and PIPE positions focused on the Inflection Point franchise.
+Separate SEC filings describe Michael Blitzer as chairman/CEO or chief investment officer of Inflection Point Asset Management and Kevin Shannon as a founder/partner, director, and portfolio manager.
 
-For the Freedom Fund's USAR securities, however, the more specific USAR disclosure controls the ownership classification: voting/dispositive power is described as residing in the three-person investment committee.
+A January 1, 2026 internal-governance amendment changed beneficial-ownership reporting and moved specified fund-level voting/dispositive decisions into a three-person majority committee. Later 2026 SEC filings still state that **Blitzer controls IPAM** in other sponsor/entity contexts. Accordingly, distinguish:
+
+- **IPAM company-level control** — still attributed to Blitzer in later filings; from
+- **Freedom Fund / Fund I position-level voting authority** — attributed to the three-person investment committee.
 
 ## Allocation governance
 
@@ -127,6 +130,14 @@ The one-day sequence — resale registration effective February 11, pro-rata LP 
 
 That inference should be tested against the fund's limited-partnership agreement and subscription documents.
 
+### USAR insider-distribution search
+
+The SEC's USAR issuer index shows **one Form 4 filed February 17, 2026 for a February 12 transaction**: Kronenfeld's 6,977-share Freedom Fund distribution.
+
+No second USAR Section 16 insider Form 4 for the same distribution date was located in the issuer filing index.
+
+**Classification:** among USAR officers/directors subject to Section 16 reporting, Kronenfeld is the only Freedom Fund LP distribution recipient currently identified in that immediate post-effectiveness window. This does **not** rule out non-insider LPs, beneficial owners below disclosure thresholds, entities, trusts, family offices, or recipients whose transactions did not require Form 4 reporting.
+
 ### By June — fund retains only 15,734 shares
 
 USAR's June registration materials report Freedom Fund beneficially owning only **15,734 shares**.
@@ -138,6 +149,33 @@ Compared with the original 13,955,000 allocation:
 - remaining percentage: ~0.113%.
 
 The public filings reviewed do not enumerate all LP distributions. Therefore, classify the reduction as **shares no longer beneficially owned by the fund**, with one directly documented pro-rata distribution to Kronenfeld—not as proof that all 13.939M shares were distributed rather than sold/transferred through other permitted mechanisms.
+
+## Beneficiary search boundary
+
+### Named Freedom Fund economic participants currently source-backed
+
+| Person/entity | Source-backed role |
+|---|---|
+| Michael Blitzer | investment-committee member; member of GP and special LP; USAR board chairman |
+| Kevin Shannon | investment-committee member; member of GP and special LP; USAR board adviser |
+| David Kronenfeld | Freedom Fund limited partner; documented Feb. 12 pro-rata distribution recipient; USAR Chief Legal Officer |
+| Inflection Point Freedom Fund GP LLC | general partner; entitled to performance allocation and ~$1.3M setup fee |
+| Inflection Point Asset Management LLC | investment manager |
+
+### No other named Freedom Fund LP located yet
+
+Targeted SEC searches for the exact Freedom Fund name, "limited partner," and distribution references have so far surfaced Kronenfeld as the only specifically named LP in USAR/Section 16 material.
+
+This is a **negative public-source finding**, not an assertion that Kronenfeld was the only LP.
+
+### Keep Inflection Point Fund I separate
+
+Other SEC filings disclose a broader economic roster for **Inflection Point Fund I**. In particular, a February 2026 proxy/prospectus states that:
+
+- Blitzer and Shannon have Fund I economic interests including performance allocations, management fees and LP interests; and
+- Andrew Gundlach and/or affiliates also have Fund I economic interests including performance allocations, management fees and LP interests.
+
+Those records are useful for mapping the wider Inflection Point ecosystem. They do **not** establish that Gundlach or any other Fund I participant invested in Freedom Fund or received USAR PIPE shares through it.
 
 ## Separate Blitzer post-announcement purchase
 
@@ -179,22 +217,26 @@ It is preserved because it affects Blitzer's direct economic exposure to USAR im
 6. GP/SLP ownership percentages and performance-allocation formula.
 7. Invoice/payment record for the ~$1.3M setup fee.
 8. Full February 2026 distribution schedule identifying LP recipients and shares distributed.
-9. USAR pricing-committee minutes approving the $300.0325M allocation.
-10. USAR audit-committee minutes approving the related-party transaction.
-11. Cantor/Moelis allocation book and demand indications.
-12. Wall-cross/marketing records showing when Freedom Fund committee members and LPs received the government-transaction information.
+9. IPAM Form ADV/private-fund schedules associated with its Jan. 23, 2026 ERA status.
+10. USAR pricing-committee minutes approving the $300.0325M allocation.
+11. USAR audit-committee minutes approving the related-party transaction.
+12. Cantor/Moelis allocation book and demand indications.
+13. Wall-cross/marketing records showing when Freedom Fund committee members and LPs received the government-transaction information.
 
 ## Primary sources
 
 - USAR Feb. 3, 2026 S-1: https://www.sec.gov/Archives/edgar/data/1970622/000121390026011595/ea0269018-02.htm
+- SEC USAR issuer landing page / filing index: https://www.sec.gov/edgar/browse/?CIK=CIK0001970622
 - SEC Notice of Effectiveness, Feb. 11, 2026: https://www.sec.gov/Archives/edgar/data/1970622/999999999526000536/xslEFFECTX01/primary_doc.xml
 - David Kronenfeld Form 4: https://www.sec.gov/Archives/edgar/data/1970622/000205911426000002/xslF345X05/wk-form4_1771363245.xml
 - USAR 2026 proxy / related-person transactions: https://www.sec.gov/Archives/edgar/data/1970622/000121390026047155/ea0287130-01.htm
 - USAR June 2026 registration materials showing Freedom Fund's reduced holdings: https://www.sec.gov/Archives/edgar/data/1970622/000121390026065510/ea0290009-02.htm
 - Michael Blitzer Jan. 29 Form 4: https://www.sec.gov/Archives/edgar/data/1458423/000121390026009472/xslF345X05/ownership.xml
+- Later IPAM/Blitzer control disclosure: https://www.sec.gov/Archives/edgar/data/2102041/000121390026034960/xslF345X06/ownership.xml
+- Fund I economics for Blitzer/Shannon/Gundlach: https://www.sec.gov/Archives/edgar/data/2028707/000121390026015125/ea0258163-07.htm
 
 ## Current classification
 
-**Confirmed:** Freedom Fund was the largest PIPE purchaser and a disclosed USAR related party; Blitzer/Shannon were investment-committee and GP/SLP members; Kronenfeld was an LP; the GP was entitled to performance allocation and an ~$1.3M setup fee; disinterested pricing and audit committees were disclosed as approving the allocation; the resale registration became effective Feb. 11; Kronenfeld received a pro-rata distribution Feb. 12; by June the fund itself retained only 15,734 shares.
+**Confirmed:** Freedom Fund was the largest PIPE purchaser and a disclosed USAR related party; Blitzer/Shannon were investment-committee and GP/SLP members; Kronenfeld was a named LP and the only USAR Section 16 insider currently located receiving a Feb. 12 Freedom Fund distribution; the GP was entitled to performance allocation and an ~$1.3M setup fee; disinterested pricing and audit committees were disclosed as approving the allocation; the resale registration became effective Feb. 11; by June the fund itself retained only 15,734 shares.
 
 **Unresolved:** full LP roster, individual GP economics, third investment-committee member, fund formation purpose/date, all distribution recipients, allocation-demand comparison, and whether any person traded while in possession of uncleansed MNPI.
