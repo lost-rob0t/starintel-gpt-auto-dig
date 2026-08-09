@@ -169,8 +169,14 @@ def externalize(
             f"record page count mismatch: manifest={expected_pages} files={len(record_pages)}"
         )
     for page in record_pages:
-        segment = record_writer.append(page.read_bytes())
-        record_segments.append(segment.as_json())
+        payload = page.read_bytes()
+        rows = json.loads(payload)
+        if not isinstance(rows, list) or not rows:
+            raise ValueError(f"record metadata page must be a non-empty array: {page}")
+        segment = record_writer.append(payload).as_json()
+        segment["first_id"] = str(rows[0][1])
+        segment["last_id"] = str(rows[-1][1])
+        record_segments.append(segment)
     record_bundles = record_writer.finish()
 
     search_writer = BundleWriter(
@@ -222,6 +228,7 @@ def externalize(
             "page_size": int(record_manifest["page_size"]),
             "page_count": len(record_segments),
             "fields": record_manifest.get("fields", []),
+            "sorted_by": "id",
             "bundles": bundle_metadata(
                 bulk_index_root, record_bundles, base_url
             ),
