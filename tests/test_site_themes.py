@@ -25,6 +25,11 @@ class SiteThemeTests(unittest.TestCase):
         ):
             self.assertIn(f'id: "{theme}"', script)
 
+    def test_black_gold_is_the_canonical_default(self) -> None:
+        script = (ASSETS / "theme.js").read_text(encoding="utf-8")
+        self.assertIn('const DEFAULT_THEME = "black-gold";', script)
+        self.assertNotIn('const DEFAULT_THEME = "midnight";', script)
+
     def test_synthwave_uses_dotfile_palette(self) -> None:
         script = (ASSETS / "theme.js").read_text(encoding="utf-8").lower()
         for color in ("#170c32", "#202146", "#92406e", "#fba922", "#2de2e6", "#f3f4f5", "#f6019d", "#62ff00", "#dd546e", "#9700cc"):
