@@ -12,6 +12,7 @@ on:
       - "tests/**"
       - "docs/quasar-integration.md"
       - "docs/evidence-seal.md"
+      - "docs/pages-site-size-architecture.md"
       - "quasar-fork.lock.json"
       - "site-assets/**"
       - "site-config.json"
@@ -19,7 +20,7 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: write
 
 concurrency:
   group: pages-main
@@ -28,10 +29,12 @@ concurrency:
 env:
   NIM_VERSION: 2.2.4
   STARINTEL_NIM_REF: b55316bae294a146523cd2f977b81096e538c86a
+  PAGES_SAFE_BUDGET_BYTES: "700000000"
 
 jobs:
   build:
     runs-on: ubuntu-latest
+    timeout-minutes: 45
     steps:
       - name: Check out repository
         uses: actions/checkout@v6
@@ -48,23 +51,18 @@ jobs:
         with:
           nim-version: ${{ env.NIM_VERSION }}
 
-      - name: Install Nim transport helpers
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.13"
+
+      - name: Install transport helpers
         run: |
           sudo apt-get update
           sudo apt-get install --yes gzip unzip coreutils
 
       - name: Build StarIntel Nim pipeline
-        run: |
-          mkdir -p bin
-          nim c -d:release --opt:speed --mm:orc \
-            --path:scripts \
-            --path:.starintel-doc-nim/src \
-            --out:bin/starintel-validate \
-            scripts/starintel_validate.nim
-          nim c -d:release --opt:speed --mm:orc \
-            --path:scripts \
-            --out:bin/starintel-site \
-            scripts/starintel_site.nim
+        run: nimble buildFast
 
       - name: Validate corpus and emit source audit
         run: |
@@ -72,28 +70,47 @@ jobs:
           test -f unverifed
           echo "source-less documents: $(grep -vc '^#' unverifed || true)"
 
-      - name: Generate research explorer with Nim
+      - name: Generate bounded Pages site and canonical bulk shards
+        env:
+          BULK_TAG: auto-dig-data-${{ github.sha }}
         run: |
+          BULK_BASE_URL="https://github.com/${GITHUB_REPOSITORY}/releases/download/${BULK_TAG}"
           bin/starintel-site \
             --input digs \
             --db db \
             --output _site \
-            --org-output .generated/org
+            --org-output .generated/org \
+            --bulk-output .generated/bulk \
+            --bulk-base-url "$BULK_BASE_URL"
           test -s _site/index.html
           test -s _site/search-index.json
-          test -s _site/downloads/starintel-complete-corpus.jsonl
+          test -s _site/indexes/search/manifest.json
+          test -s _site/indexes/records/manifest.json
           test -s _site/downloads/starintel-complete-corpus.manifest.json
+          test -s .generated/bulk/starintel-complete-corpus.jsonl
+          test ! -d _site/org
+          test -z "$(find _site -name starintel-documents.jsonl -print -quit)"
 
-      - name: Set up Python post-processing
-        uses: actions/setup-python@v6
-        with:
-          python-version: "3.13"
+      - name: Package deterministic release assets
+        env:
+          BULK_TAG: auto-dig-data-${{ github.sha }}
+        run: |
+          BULK_BASE_URL="https://github.com/${GITHUB_REPOSITORY}/releases/download/${BULK_TAG}"
+          python3 scripts/package_bulk_release.py \
+            --bulk .generated/bulk \
+            --site _site \
+            --output .generated/release \
+            --base-url "$BULK_BASE_URL"
+          test -s .generated/release/starintel-bulk-release.manifest.json
 
-      - name: Publish evidence seal
+      - name: Publish evidence seal over canonical bulk stream
         run: |
           python3 scripts/evidence-seal.py publish \
-            _site/downloads/starintel-complete-corpus.jsonl \
+            .generated/bulk/starintel-complete-corpus.jsonl \
             _site
+          python3 scripts/evidence-seal.py verify \
+            .generated/bulk/starintel-complete-corpus.jsonl \
+            _site/downloads/starintel-evidence-seal.json
 
       - name: Read pinned Quasar runtime
         id: quasar-pin
@@ -150,21 +167,40 @@ jobs:
             --auto-dig-version "${{ steps.quasar-pin.outputs.auto_dig }}" \
             --starintel-schema-version "${{ steps.quasar-pin.outputs.schema }}"
 
-      - name: Validate publish artifacts and evidence seal
+      - name: Validate final Pages artifact
         run: |
           test -s _site/index.html
           test -s _site/search-index.json
-          test -s _site/downloads/starintel-complete-corpus.jsonl
           test -s _site/downloads/starintel-complete-corpus.manifest.json
+          test -s _site/downloads/starintel-bulk-release.manifest.json
           test -s _site/downloads/starintel-evidence-seal.json
           test -s _site/evidence-seal.html
           test -s _site/quasar/app/index.html
           test -s _site/quasar/version.json
-          python3 scripts/evidence-seal.py verify \
-            _site/downloads/starintel-complete-corpus.jsonl \
-            _site/downloads/starintel-evidence-seal.json
           grep -q 'data-evidence-seal' _site/index.html
-          grep -q 'evidence-seal.html' _site/index.html
+          grep -q 'starintel-complete-corpus.manifest.json' _site/evidence-seal.html
+          python3 - <<'PY'
+          from pathlib import Path
+          total = sum(p.stat().st_size for p in Path('_site').rglob('*') if p.is_file())
+          budget = int('${{ env.PAGES_SAFE_BUDGET_BYTES }}')
+          print(f'final_pages_bytes={total} budget={budget}')
+          if total >= budget:
+              raise SystemExit(f'Pages artifact exceeds safe budget: {total} >= {budget}')
+          PY
+
+      - name: Create immutable bulk release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          BULK_TAG: auto-dig-data-${{ github.sha }}
+        run: |
+          if gh release view "$BULK_TAG" >/dev/null 2>&1; then
+            gh release delete "$BULK_TAG" --cleanup-tag --yes
+          fi
+          gh release create "$BULK_TAG" \
+            --target "$GITHUB_SHA" \
+            --title "Auto-Dig bulk corpus ${GITHUB_SHA::12}" \
+            --notes "Canonical StarIntel bulk shards and dataset membership references for ${GITHUB_SHA}."
+          gh release upload "$BULK_TAG" .generated/release/* --clobber
 
       - name: Upload source audit
         uses: actions/upload-artifact@v4
