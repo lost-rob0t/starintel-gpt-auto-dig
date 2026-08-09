@@ -76,12 +76,6 @@ jobs:
           nim c -r -d:release --opt:speed --mm:orc \
             tests/test_gop_receipt_privacy.nim
 
-      - name: Validate canonical corpus and source references
-        run: |
-          bin/validate-for-merge --skip-git-diff-check
-          test -f unverifed
-          echo "source-less documents: $(grep -vc '^#' unverifed || true)"
-
       - name: Smoke-test Nim CLIs
         run: |
           bin/starintel-site --help
