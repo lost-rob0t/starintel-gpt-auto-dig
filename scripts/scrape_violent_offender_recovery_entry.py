@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import asyncio
+import os
 
 import scrape_violent_offender_recovery_fixups as fixups
 
@@ -38,11 +39,19 @@ def set_current_status(form, payload: dict[str, str]) -> None:
         return
 
 
+def franklin_prefixes() -> list[str]:
+    focused = os.environ.get("FRANKLIN_PREFIXES", "").strip()
+    if focused:
+        return [part.strip().upper() for part in focused.split(",") if part.strip()]
+    return ["", *"ABCDEFGHIJKLMNOPQRSTUVWXYZ"]
+
+
 async def collect_franklin(client, fetched_at: str, max_records: int):
     spec = fixups.recovery.RECOVERY_SOURCES["franklin"]
     first = await fixups.recovery.fetch(client, spec["url"])
     pages = 1
-    search_semaphore = asyncio.Semaphore(6)
+    prefixes = franklin_prefixes()
+    search_semaphore = asyncio.Semaphore(min(6, max(1, len(prefixes))))
 
     async def search(prefix: str):
         async with search_semaphore:
@@ -52,10 +61,7 @@ async def collect_franklin(client, fetched_at: str, max_records: int):
             except Exception as exc:
                 return exc
 
-    # The blank/current search is useful on deployments that return the full current
-    # roster. Run A-Z in parallel too because Franklin often paginates/searches by
-    # surname prefix and sequential probing turns one locality into the whole job.
-    search_results = await asyncio.gather(*(search(prefix) for prefix in ["", *"ABCDEFGHIJKLMNOPQRSTUVWXYZ"]))
+    search_results = await asyncio.gather(*(search(prefix) for prefix in prefixes))
     direct: dict[str, str] = {}
     postbacks: list[tuple[str, str, str, str]] = []
     postback_seen: set[tuple[str, str, str]] = set()
@@ -78,7 +84,7 @@ async def collect_franklin(client, fetched_at: str, max_records: int):
     if candidate_total == 0:
         error = (
             "ParserDrift: Franklin Current-status searches returned no detail links/postbacks "
-            f"({search_errors}/27 searches failed)"
+            f"({search_errors}/{len(prefixes)} searches failed; prefixes={','.join(prefixes) or '<blank>'})"
         )
         return fixups.core.SourceResult(
             "franklin", spec["locality"], spec["url"], fetched_at, [], pages, 0, error
@@ -118,13 +124,9 @@ async def collect_franklin(client, fetched_at: str, max_records: int):
     )
 
 
-# Franklin's public BookingFind page currently renders Offender Status=Current as
-# an input control rather than the select assumed by the original adapter.
 fixups.core.set_current_status = set_current_status
 fixups.recovery.collect_franklin = collect_franklin
 
-# The sheriff site's legacy Current-Inmate-Roster.html entry point no longer
-# contains the report payload. Point at the current official head-count PDF.
 fixups.recovery.RECOVERY_SOURCES["summit"]["url"] = (
     "https://sheriff.summitoh.net/files/31565/file/activeoffenderreport.pdf"
 )
