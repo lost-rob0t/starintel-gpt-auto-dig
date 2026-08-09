@@ -18,6 +18,19 @@ suite "StarIntel Nim legacy normalization":
     check document["lineage"]["migration_notes"].len == 1
     check document["lineage"]["migration_notes"][0].getStr == LegacyFileFormatNote
 
+  test "normalization is idempotent":
+    let document = %*{
+      "dtype": "source",
+      "data": {
+        "file_format": "application/pdf"
+      }
+    }
+
+    check normalizeLegacyDocument(document) == ""
+    check normalizeLegacyDocument(document) == ""
+    check document["data"]["medium"].getStr == "application/pdf"
+    check document["lineage"]["migration_notes"].len == 1
+
   test "matching canonical medium is accepted":
     let document = %*{
       "dtype": "source",
