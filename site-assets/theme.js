@@ -2,7 +2,7 @@
   "use strict";
 
   const STORAGE_KEY = "starintel-theme";
-  const DEFAULT_THEME = "black-gold";
+  const DEFAULT_THEME = "midnight";
   const THEMES = Object.freeze([
     {
       id: "midnight", label: "Midnight", scheme: "dark",
@@ -107,6 +107,7 @@
     persist(theme.id);
     updateThemeColor(theme);
     window.dispatchEvent(new CustomEvent("starintel:themechange", { detail: { theme: theme.id } }));
+    requestAnimationFrame(() => window.dispatchEvent(new Event("resize")));
     return theme.id;
   }
 
