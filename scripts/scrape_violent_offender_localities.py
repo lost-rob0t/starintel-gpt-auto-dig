@@ -109,13 +109,15 @@ class BookingRecord:
     fetched_at: str = ""
 
     def dedupe_key(self) -> str:
-        parts = (
-            self.source,
-            self.booking_id or "",
-            self.booking_date or "",
-            normalize_space(self.name).casefold(),
+        raw = "\x1f".join(
+            (
+                self.source,
+                self.booking_id or "",
+                self.booking_date or "",
+                normalize_space(self.name).casefold(),
+            )
         )
-        return hashlib.sha256("\x1f".join(parts).encode()).hexdigest()
+        return hashlib.sha256(raw.encode()).hexdigest()
 
 
 @dataclass(slots=True)
@@ -164,11 +166,11 @@ def violent_lines(lines: Iterable[str]) -> list[str]:
 
 def case_numbers(text: str) -> list[str]:
     patterns = (
-        r"\b\d{2}CR[A-Z]?\d{2,6}\b",
-        r"\b\d{2}CRA\d{2,6}\b",
-        r"\b\d{2}CRB\d{2,6}\b",
+        r"\b\d{2}CR[A-Z]?\d{2,7}\b",
+        r"\b\d{4}CR[A-Z]?\d{2,7}\b",
+        r"\b\d{2}TR[A-Z]?\d{2,7}\b",
+        r"\b\d{4}TR[A-Z]?\d{2,7}\b",
         r"\bB\s?\d{6,8}\b",
-        r"\b\d{4}-\d{3,8}\b",
     )
     found: list[str] = []
     for pattern in patterns:
@@ -179,19 +181,19 @@ def case_numbers(text: str) -> list[str]:
 def parse_licking_html(markup: str, fetched_at: str) -> list[BookingRecord]:
     spec = SOURCE_SPECS["licking"]
     lines = text_lines(markup)
-    records: list[BookingRecord] = []
     starts: list[int] = []
     for index, line in enumerate(lines):
         if not re.fullmatch(r"[A-Z][A-Z .,'’-]+,\s*[A-Z][A-Z .,'’-]*(?:,\s*Jr|,\s*Sr)?", line):
             continue
-        lookahead = " ".join(lines[index + 1 : index + 7])
-        if "Booking#" in lookahead:
+        if "Booking#" in " ".join(lines[index + 1 : index + 7]):
             starts.append(index)
+
+    records: list[BookingRecord] = []
     for position, start in enumerate(starts):
         end = starts[position + 1] if position + 1 < len(starts) else len(lines)
         block = lines[start:end]
-        matches = violent_lines(block)
-        if not matches:
+        charges = violent_lines(block)
+        if not charges:
             continue
         text = "\n".join(block)
         booking = re.search(r"Booking#\s*([0-9-]+)", text, re.IGNORECASE)
@@ -210,7 +212,7 @@ def parse_licking_html(markup: str, fetched_at: str) -> list[BookingRecord]:
                 arresting_agency=normalize_space(agency.group(1)) if agency else None,
                 release_date=normalize_space(release.group(1)) if release else None,
                 case_numbers=case_numbers(text),
-                violent_charge_matches=matches,
+                violent_charge_matches=charges,
                 fetched_at=fetched_at,
             )
         )
@@ -227,15 +229,15 @@ def parse_madison_html(markup: str, fetched_at: str) -> list[BookingRecord]:
         lookahead = " ".join(lines[index + 1 : index + 12])
         if "Inmate Details:" in lookahead and "Booking Details:" in lookahead:
             starts.append(index)
+
     records: list[BookingRecord] = []
     for position, start in enumerate(starts):
         end = starts[position + 1] if position + 1 < len(starts) else len(lines)
         block = lines[start:end]
         text = "\n".join(block)
-        charge_marker = next((i for i, line in enumerate(block) if line.casefold() == "charge(s):"), None)
-        charge_lines = block[charge_marker + 1 :] if charge_marker is not None else block
-        matches = violent_lines(charge_lines)
-        if not matches:
+        marker = next((i for i, line in enumerate(block) if line.casefold() == "charge(s):"), None)
+        charges = violent_lines(block[marker + 1 :] if marker is not None else block)
+        if not charges:
             continue
         booking_date = re.search(r"Booking Date:\s*([0-9/]+)", text, re.IGNORECASE)
         booking_number = re.search(r"Booking Number:\s*([0-9A-Za-z-]+)", text, re.IGNORECASE)
@@ -251,7 +253,7 @@ def parse_madison_html(markup: str, fetched_at: str) -> list[BookingRecord]:
                 booking_date=booking_date.group(1) if booking_date else None,
                 arresting_agency=normalize_space(agency.group(1)) if agency else None,
                 case_numbers=case_numbers(text),
-                violent_charge_matches=matches,
+                violent_charge_matches=charges,
                 fetched_at=fetched_at,
             )
         )
@@ -260,14 +262,14 @@ def parse_madison_html(markup: str, fetched_at: str) -> list[BookingRecord]:
 
 def parse_lucas_text(text: str, fetched_at: str) -> list[BookingRecord]:
     spec = SOURCE_SPECS["lucas"]
-    line_re = re.compile(
+    booking_re = re.compile(
         r"(?m)^\s*([A-Z][A-Za-zÀ-ÖØ-öø-ÿ .,'’-]{2,80})\s+Book Dttm:\s*([0-9/]+(?:\s+[0-9:]+)?)\s*$"
     )
-    matches = list(line_re.finditer(text))
+    starts = list(booking_re.finditer(text))
     records: list[BookingRecord] = []
-    for index, match in enumerate(matches):
-        block_end = matches[index + 1].start() if index + 1 < len(matches) else len(text)
-        block = text[match.start() : block_end]
+    for index, match in enumerate(starts):
+        end = starts[index + 1].start() if index + 1 < len(starts) else len(text)
+        block = text[match.start() : end]
         charges = violent_lines(block.splitlines())
         if not charges:
             continue
@@ -309,13 +311,10 @@ def form_field(form, tokens: tuple[str, ...], tag_names: tuple[str, ...] = ("inp
         if all(token in haystack for token in tokens):
             return name
     for label in form.find_all("label"):
-        label_text = normalize_space(label.get_text(" ")).casefold()
-        if not all(token in label_text for token in tokens):
+        if not all(token in normalize_space(label.get_text(" ")).casefold() for token in tokens):
             continue
         target = label.get("for")
-        if not target:
-            continue
-        tag = form.find(id=target)
+        tag = form.find(id=target) if target else None
         if tag and tag.get("name"):
             return tag["name"]
     return None
@@ -327,22 +326,20 @@ def form_payload(form) -> dict[str, str]:
         name = tag.get("name")
         if not name:
             continue
-        kind = (tag.get("type") or "text").casefold()
-        if kind in {"hidden", "submit"}:
+        if (tag.get("type") or "text").casefold() in {"hidden", "submit"}:
             payload[name] = tag.get("value", "")
     return payload
 
 
 def set_current_status(form, payload: dict[str, str]) -> None:
-    status_name = form_field(form, ("status",), ("select",))
-    if not status_name:
-        return
-    select = form.find("select", attrs={"name": status_name})
+    name = form_field(form, ("status",), ("select",))
+    select = form.find("select", attrs={"name": name}) if name else None
     if not select:
         return
     for option in select.find_all("option"):
-        if "current" in normalize_space(option.get_text(" ")).casefold():
-            payload[status_name] = option.get("value", normalize_space(option.get_text(" ")))
+        text = normalize_space(option.get_text(" "))
+        if "current" in text.casefold():
+            payload[name] = option.get("value", text)
             return
 
 
@@ -354,16 +351,14 @@ def search_detail_links(markup: str, base_url: str) -> list[str]:
         folded = href.casefold()
         if not any(token in folded for token in ("bookingdetail", "booking-detail", "inmate-detail", "inmatedetail")):
             continue
-        if "find" in folded:
-            continue
-        output.append(urljoin(base_url, href))
+        if "find" not in folded:
+            output.append(urljoin(base_url, href))
     return unique(output)
 
 
 def detail_name(markup: str) -> str | None:
     soup = BeautifulSoup(markup, "html.parser")
-    text = soup.get_text("\n")
-    match = re.search(r"\bInmate:\s*([^\n]+)", text, re.IGNORECASE)
+    match = re.search(r"\bInmate:\s*([^\n]+)", soup.get_text("\n"), re.IGNORECASE)
     if match:
         return normalize_space(match.group(1)).strip(" ,") or None
     for tag in soup.find_all(["h1", "h2", "h3", "h4"]):
@@ -376,16 +371,16 @@ def detail_name(markup: str) -> str | None:
 def detail_record(source: str, markup: str, detail_url: str, fetched_at: str) -> BookingRecord | None:
     spec = SOURCE_SPECS[source]
     lines = text_lines(markup)
-    matches = violent_lines(lines)
-    if not matches:
+    charges = violent_lines(lines)
+    if not charges:
         return None
-    full_text = "\n".join(lines)
+    text = "\n".join(lines)
     name = detail_name(markup)
     if not name:
         return None
-    booking = re.search(r"(?:Booking Number|Booking#|JMS Number|Inmate Number)\s*:?\s*([0-9A-Za-z-]+)", full_text, re.IGNORECASE)
-    booking_date = re.search(r"(?:Booking Date|Admitted Date)\s*:?\s*([0-9/]+(?:\s+[0-9:APM ]+)?)", full_text, re.IGNORECASE)
-    status = re.search(r"Current Status\s*:?\s*([^\n]+)", full_text, re.IGNORECASE)
+    booking = re.search(r"(?:Booking Number|Booking#|JMS Number|Inmate Number)\s*:?\s*([0-9A-Za-z-]+)", text, re.IGNORECASE)
+    booking_date = re.search(r"(?:Booking Date|Admitted Date)\s*:?\s*([0-9/]+(?:\s+[0-9:APM ]+)?)", text, re.IGNORECASE)
+    status = re.search(r"Current Status\s*:?\s*([^\n]+)", text, re.IGNORECASE)
     return BookingRecord(
         source=source,
         locality=spec["locality"],
@@ -396,8 +391,8 @@ def detail_record(source: str, markup: str, detail_url: str, fetched_at: str) ->
         booking_id=booking.group(1) if booking else None,
         booking_date=normalize_space(booking_date.group(1)) if booking_date else None,
         status=normalize_space(status.group(1)) if status else None,
-        case_numbers=case_numbers(full_text),
-        violent_charge_matches=matches,
+        case_numbers=case_numbers(text),
+        violent_charge_matches=charges,
         fetched_at=fetched_at,
     )
 
@@ -411,24 +406,19 @@ async def fetch(client: httpx.AsyncClient, url: str, *, method: str = "GET", dat
 async def collect_static_html(source: str, client: httpx.AsyncClient, fetched_at: str) -> SourceResult:
     spec = SOURCE_SPECS[source]
     response = await fetch(client, spec["url"])
-    if source == "licking":
-        records = parse_licking_html(response.text, fetched_at)
-    elif source == "madison":
-        records = parse_madison_html(response.text, fetched_at)
-    else:
-        raise RuntimeError(f"unsupported static HTML source: {source}")
+    parser = parse_licking_html if source == "licking" else parse_madison_html
+    records = parser(response.text, fetched_at)
     return SourceResult(source, spec["locality"], spec["url"], fetched_at, records, 1, len(records))
 
 
 async def collect_lucas(client: httpx.AsyncClient, fetched_at: str) -> SourceResult:
     spec = SOURCE_SPECS["lucas"]
     response = await fetch(client, spec["url"])
-    text = await asyncio.to_thread(pdf_text, response.content)
-    records = parse_lucas_text(text, fetched_at)
+    records = parse_lucas_text(await asyncio.to_thread(pdf_text, response.content), fetched_at)
     return SourceResult("lucas", spec["locality"], spec["url"], fetched_at, records, 1, len(records))
 
 
-async def submit_form_search(client: httpx.AsyncClient, source: str, markup: str, page_url: str, prefix: str) -> httpx.Response:
+async def submit_form_search(client: httpx.AsyncClient, markup: str, page_url: str, prefix: str) -> httpx.Response:
     soup = BeautifulSoup(markup, "html.parser")
     form = soup.find("form")
     if not form:
@@ -445,8 +435,7 @@ async def submit_form_search(client: httpx.AsyncClient, source: str, markup: str
     if submit and submit.get("name"):
         payload[submit["name"]] = submit.get("value", "Search")
     action = urljoin(page_url, form.get("action") or page_url)
-    method = (form.get("method") or "get").casefold()
-    if method == "post":
+    if (form.get("method") or "get").casefold() == "post":
         return await fetch(client, action, method="POST", data=payload)
     response = await client.get(action, params=payload, follow_redirects=True)
     response.raise_for_status()
@@ -457,27 +446,25 @@ async def collect_search_form(source: str, client: httpx.AsyncClient, fetched_at
     spec = SOURCE_SPECS[source]
     first = await fetch(client, spec["url"])
     pages = 1
-    seen_links: set[str] = set()
-    detail_links: list[str] = []
+    seen: set[str] = set()
+    links: list[str] = []
 
     async def search(prefix: str) -> None:
         nonlocal pages
-        response = await submit_form_search(client, source, first.text, str(first.url), prefix)
+        response = await submit_form_search(client, first.text, str(first.url), prefix)
         pages += 1
         for link in search_detail_links(response.text, str(response.url)):
-            if link in seen_links:
-                continue
-            seen_links.add(link)
-            detail_links.append(link)
+            if link not in seen:
+                seen.add(link)
+                links.append(link)
 
     await search("")
-    if not detail_links:
+    if not links:
         for letter in "ABCDEFGHIJKLMNOPQRSTUVWXYZ":
             await search(letter)
-            if len(detail_links) >= max_records:
+            if len(links) >= max_records:
                 break
 
-    records: list[BookingRecord] = []
     semaphore = asyncio.Semaphore(8)
 
     async def load_detail(url: str) -> BookingRecord | None:
@@ -487,12 +474,13 @@ async def collect_search_form(source: str, client: httpx.AsyncClient, fetched_at
             pages += 1
             return detail_record(source, response.text, str(response.url), fetched_at)
 
-    tasks = [asyncio.create_task(load_detail(url)) for url in detail_links[:max_records]]
+    records: list[BookingRecord] = []
+    tasks = [asyncio.create_task(load_detail(url)) for url in links[:max_records]]
     for task in asyncio.as_completed(tasks):
         record = await task
         if record:
             records.append(record)
-    return SourceResult(source, spec["locality"], spec["url"], fetched_at, records, pages, len(detail_links))
+    return SourceResult(source, spec["locality"], spec["url"], fetched_at, records, pages, len(links))
 
 
 class CollectorActor:
@@ -512,10 +500,8 @@ class CollectorActor:
                     result = await collect_static_html(self.source, client, fetched_at)
                 elif spec["kind"] == "lucas-pdf":
                     result = await collect_lucas(client, fetched_at)
-                elif spec["kind"] in {"webform", "html-form"}:
-                    result = await collect_search_form(self.source, client, fetched_at, self.max_records)
                 else:
-                    raise RuntimeError(f"unknown collector kind: {spec['kind']}")
+                    result = await collect_search_form(self.source, client, fetched_at, self.max_records)
         except Exception as exc:
             result = SourceResult(
                 source=self.source,
@@ -580,7 +566,7 @@ def write_outputs(output: Path, results: list[SourceResult]) -> None:
 
 
 def parse_args() -> argparse.Namespace:
-    parser = argparse.ArgumentParser(description="Collect public Ohio jail/custody records matching violent-charge terms")
+    parser = argparse.ArgumentParser(description="Collect Ohio jail/custody records matching violent-charge terms")
     parser.add_argument("--source", action="append", choices=sorted(SOURCE_SPECS), dest="sources")
     parser.add_argument("--output", type=Path, default=DEFAULT_OUTPUT)
     parser.add_argument("--timeout", type=float, default=45.0)
@@ -590,8 +576,7 @@ def parse_args() -> argparse.Namespace:
 
 def main() -> int:
     args = parse_args()
-    sources = args.sources or list(SOURCE_SPECS)
-    results = asyncio.run(collect_all(sources, args.timeout, args.max_records_per_source))
+    results = asyncio.run(collect_all(args.sources or list(SOURCE_SPECS), args.timeout, args.max_records_per_source))
     write_outputs(args.output, results)
     for result in results:
         status = f"error={result.error}" if result.error else f"records={len(result.records)} candidates={result.candidates_seen} pages={result.pages_fetched}"
