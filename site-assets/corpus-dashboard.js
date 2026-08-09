@@ -265,7 +265,7 @@
         .style("cursor", "crosshair")
         .on("pointermove", function (event) {
           const [px] = d3.pointer(event, this);
-          const date = x.invert(px + margin.left);
+          const date = x.invert(px);
           const index = Math.max(0, Math.min(data.length - 1, bisect(data, date)));
           showFocus(data[index]);
         })
