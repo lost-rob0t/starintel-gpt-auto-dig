@@ -43,6 +43,7 @@ on:
   push:
     branches:
       - main
+      - "agent/free-range-exec-*"
     paths:
       - ".github/workflows/free-range-frontier.yml"
       - "FREE_RANGE.md"
