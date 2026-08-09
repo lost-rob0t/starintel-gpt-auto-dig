@@ -59,6 +59,7 @@ class NimSiteScalingTests(unittest.TestCase):
             site = root / "site"
             org = root / "org"
             bulk = root / "bulk"
+            base_url = "https://example.invalid/release"
             subprocess.run(
                 [
                     str(binary),
@@ -73,7 +74,7 @@ class NimSiteScalingTests(unittest.TestCase):
                     "--bulk-output",
                     str(bulk),
                     "--bulk-base-url",
-                    "https://example.invalid/release",
+                    base_url,
                     "--config",
                     str(root / "missing-site-config.json"),
                     "--topics",
@@ -84,10 +85,25 @@ class NimSiteScalingTests(unittest.TestCase):
                 check=True,
                 cwd=repo,
             )
+            subprocess.run(
+                [
+                    "python3",
+                    "scripts/externalize_search_indexes.py",
+                    "--site",
+                    str(site),
+                    "--bulk",
+                    str(bulk),
+                    "--base-url",
+                    base_url,
+                ],
+                check=True,
+                cwd=repo,
+            )
 
             canonical = bulk / "starintel-complete-corpus.jsonl"
             self.assertEqual(canonical.read_text(encoding="utf-8").count("\n"), 2)
             self.assertFalse((site / "org").exists())
+            self.assertFalse((site / "indexes").exists())
             self.assertFalse(any(site.rglob("starintel-documents.jsonl")))
             self.assertTrue((org / "alpha" / "person-alice-example.org").is_file())
 
@@ -102,6 +118,7 @@ class NimSiteScalingTests(unittest.TestCase):
             self.assertEqual(alpha_manifest["record_count"], 2)
             self.assertEqual(alpha_manifest["membership"]["format"], "newline-delimited-canonical-ids")
             self.assertTrue(alpha_manifest["membership"]["url"].endswith("topic-alpha.ids.gz"))
+            self.assertEqual(alpha_manifest["search"]["mode"], "release-range-index-v1")
 
             corpus_manifest = json.loads(
                 (site / "downloads" / "starintel-complete-corpus.manifest.json").read_text(encoding="utf-8")
@@ -114,8 +131,25 @@ class NimSiteScalingTests(unittest.TestCase):
             self.assertTrue(graph["nodes"])
             self.assertIn("documents.html?id=", graph["nodes"][0]["href"])
             self.assertFalse((site / "alpha" / "nodes").exists())
-            self.assertTrue((site / "indexes" / "search" / "manifest.json").is_file())
-            self.assertTrue((site / "indexes" / "records" / "manifest.json").is_file())
+
+            index_config = json.loads((site / "search-index.json").read_text(encoding="utf-8"))
+            self.assertEqual(index_config["format"], "starintel-release-range-index-v1")
+            self.assertEqual(index_config["record_count"], 2)
+            self.assertTrue(index_config["records"]["pages"])
+            self.assertTrue(index_config["search"]["segments"])
+            for group in ("records", "search"):
+                self.assertTrue(index_config[group]["bundles"])
+                for bundle in index_config[group]["bundles"].values():
+                    self.assertTrue(bundle["url"].startswith(base_url + "/"))
+
+            record_segment = index_config["records"]["pages"][0]
+            record_bundle = bulk / "indexes" / record_segment["bundle"]
+            with record_bundle.open("rb") as stream:
+                stream.seek(record_segment["offset"])
+                payload = stream.read(record_segment["length"])
+            rows = json.loads(payload)
+            self.assertEqual(len(rows), 2)
+            self.assertEqual(rows[0][1], "starintel:org:example-labs")
 
             site_bytes = sum(path.stat().st_size for path in site.rglob("*") if path.is_file())
             canonical_bytes = canonical.stat().st_size
