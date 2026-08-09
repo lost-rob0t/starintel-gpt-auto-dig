@@ -157,6 +157,43 @@
     return records;
   };
 
+  const findExactRecord = async (id) => {
+    const pages = indexConfig?.records?.pages || [];
+    let low = 0;
+    let high = pages.length - 1;
+    while (low <= high) {
+      const middle = Math.floor((low + high) / 2);
+      const segment = pages[middle];
+      if (id < segment.first_id) {
+        high = middle - 1;
+        continue;
+      }
+      if (id > segment.last_id) {
+        low = middle + 1;
+        continue;
+      }
+      const rows = await loadRecordPage(middle);
+      const row = rows.find((candidate) => candidate?.[1] === id);
+      return row ? decodeRecord(row) : null;
+    }
+    return null;
+  };
+
+  const runExactId = async () => {
+    const serial = ++searchSerial;
+    summary.textContent = "Resolving canonical record…";
+    try {
+      const record = await findExactRecord(requestedId);
+      if (serial !== searchSerial) return;
+      searchedRecords = record ? [record] : [];
+      page = 0;
+      render();
+    } catch (error) {
+      if (serial !== searchSerial) return;
+      summary.textContent = error.message;
+    }
+  };
+
   const runShardedSearch = async () => {
     const serial = ++searchSerial;
     const needle = String(search?.value || "").trim();
@@ -173,8 +210,11 @@
       render();
       return;
     }
-    const segment = indexConfig?.search?.segments?.[prefix];
-    if (!segment) {
+    const allSegments = indexConfig?.search?.segments?.[prefix] || [];
+    const segments = scope
+      ? allSegments.filter((segment) => segment.scope === scope)
+      : allSegments;
+    if (!segments.length) {
       searchedRecords = [];
       page = 0;
       render();
@@ -182,18 +222,20 @@
     }
     summary.textContent = `Searching ${prefix}…`;
     try {
-      const shard = await fetchSegment("search", segment);
-      let ordinals = [];
-      if (scope) {
-        ordinals = Array.isArray(shard?.[scope]) ? shard[scope] : [];
-      } else {
-        for (const values of Object.values(shard || {})) {
-          if (!Array.isArray(values)) continue;
-          ordinals.push(...values);
-          if (ordinals.length >= candidateLimit) break;
+      const ordinals = [];
+      for (const segment of segments) {
+        const shard = await fetchSegment("search", segment);
+        if (serial !== searchSerial) return;
+        if (scope) {
+          const values = shard?.[scope];
+          if (Array.isArray(values)) ordinals.push(...values);
+        } else {
+          for (const values of Object.values(shard || {})) {
+            if (Array.isArray(values)) ordinals.push(...values);
+          }
         }
+        if (ordinals.length >= candidateLimit) break;
       }
-      if (serial !== searchSerial) return;
       searchedRecords = await resolveOrdinals(ordinals);
       if (serial !== searchSerial) return;
       page = 0;
@@ -223,7 +265,8 @@
     indexConfig = config;
     recordPageSize = Number(indexConfig?.records?.page_size) || recordPageSize;
     render();
-    if (search?.value) runShardedSearch();
+    if (requestedId) runExactId();
+    else if (search?.value) runShardedSearch();
   }).catch((error) => {
     summary.textContent = error.message;
   });
