@@ -11,6 +11,7 @@ BUILDER = ROOT / "scripts" / "starintel_site" / "builder.py"
 SHELL = ROOT / "site-assets" / "adar-shell.js"
 DASHBOARD_JS = ROOT / "site-assets" / "corpus-dashboard.js"
 DASHBOARD_CSS = ROOT / "site-assets" / "adar-dashboard.css"
+MOBILE_CSS = ROOT / "site-assets" / "adar-mobile.css"
 
 
 class AdarDashboardTests(unittest.TestCase):
@@ -129,6 +130,19 @@ class AdarDashboardTests(unittest.TestCase):
         self.assertIn('aria-label", label', javascript)
         self.assertIn('cards.style.display = showCards ? "grid" : "none"', javascript)
         self.assertIn('tableWrap.style.display = showCards ? "none" : "block"', javascript)
+
+    def test_mobile_dashboard_has_compact_touch_first_shell(self) -> None:
+        shell = SHELL.read_text(encoding="utf-8")
+        css = MOBILE_CSS.read_text(encoding="utf-8")
+        self.assertIn("adar-mobile.css", shell)
+        self.assertIn("installMobileStyles(prefix)", shell)
+        self.assertIn("@media (max-width: 760px)", css)
+        self.assertIn("flex-wrap: nowrap !important", css)
+        self.assertIn("overflow-x: auto", css)
+        self.assertIn("-webkit-overflow-scrolling: touch", css)
+        self.assertIn("font-size: 16px", css)
+        self.assertIn("min-width: 620px", css)
+        self.assertIn("@media (max-width: 420px)", css)
 
 
 if __name__ == "__main__":
