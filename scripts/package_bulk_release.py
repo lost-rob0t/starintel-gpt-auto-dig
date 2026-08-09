@@ -4,6 +4,7 @@ import argparse
 import gzip
 import hashlib
 import json
+import shutil
 from pathlib import Path
 from typing import Any
 
@@ -28,6 +29,16 @@ def gzip_file(source: Path, destination: Path) -> dict[str, Any]:
         "compressed_sha256": sha256(destination),
         "raw_size_bytes": source.stat().st_size,
         "raw_sha256": sha256(source),
+    }
+
+
+def raw_file(source: Path, destination: Path) -> dict[str, Any]:
+    destination.parent.mkdir(parents=True, exist_ok=True)
+    shutil.copyfile(source, destination)
+    return {
+        "asset": destination.name,
+        "size_bytes": destination.stat().st_size,
+        "sha256": sha256(destination),
     }
 
 
@@ -71,6 +82,23 @@ def package_bulk(bulk: Path, site: Path, output: Path, base_url: str) -> dict[st
             membership_assets.append(packaged)
             release_assets.append(packaged)
 
+    index_root = bulk / "indexes"
+    index_assets: list[dict[str, Any]] = []
+    if index_root.is_dir():
+        for source in sorted(index_root.glob("*.bundle")):
+            packaged = raw_file(source, output / source.name)
+            packaged.update(
+                {
+                    "kind": "range-index-bundle",
+                    "url": f"{base_url.rstrip('/')}/{source.name}",
+                }
+            )
+            index_assets.append(packaged)
+            release_assets.append(packaged)
+
+    if not index_assets:
+        raise ValueError("no range-addressable index bundles were produced")
+
     release_manifest = {
         "format": "starintel-auto-dig-bulk-release-v1",
         "base_url": base_url.rstrip("/"),
@@ -79,7 +107,8 @@ def package_bulk(bulk: Path, site: Path, output: Path, base_url: str) -> dict[st
         "canonical_size_bytes": int(manifest["data"]["canonical_size_bytes"]),
         "corpus_shards": files,
         "memberships": membership_assets,
-        "asset_count": len(release_assets),
+        "range_index_bundles": index_assets,
+        "asset_count": len(release_assets) + 1,
     }
     release_manifest_path = output / "starintel-bulk-release.manifest.json"
     release_manifest_path.write_text(
@@ -90,8 +119,8 @@ def package_bulk(bulk: Path, site: Path, output: Path, base_url: str) -> dict[st
         {
             "kind": "release-manifest",
             "asset": release_manifest_path.name,
-            "compressed_size_bytes": release_manifest_path.stat().st_size,
-            "compressed_sha256": sha256(release_manifest_path),
+            "size_bytes": release_manifest_path.stat().st_size,
+            "sha256": sha256(release_manifest_path),
             "url": f"{base_url.rstrip('/')}/{release_manifest_path.name}",
         }
     )
@@ -120,7 +149,8 @@ def main() -> int:
         "bulk_release_assets="
         f"{release_manifest['asset_count']} "
         f"records={release_manifest['canonical_record_count']} "
-        f"canonical_bytes={release_manifest['canonical_size_bytes']}"
+        f"canonical_bytes={release_manifest['canonical_size_bytes']} "
+        f"index_bundles={len(release_manifest['range_index_bundles'])}"
     )
     return 0
 
