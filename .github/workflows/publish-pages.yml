@@ -29,7 +29,7 @@ concurrency:
 env:
   NIM_VERSION: 2.2.4
   STARINTEL_NIM_REF: b55316bae294a146523cd2f977b81096e538c86a
-  PAGES_SAFE_BUDGET_BYTES: "700000000"
+  PAGES_SAFE_BUDGET_BYTES: "200000000"
 
 jobs:
   build:
@@ -219,7 +219,7 @@ jobs:
 
           config = json.loads(Path('_site/search-index.json').read_text())
           for group, segment in (
-              ('search', next(iter(config['search']['segments'].values()))),
+              ('search', next(iter(config['search']['segments'].values()))[0]),
               ('records', config['records']['pages'][0]),
           ):
               bundle = config[group]['bundles'][segment['bundle']]
