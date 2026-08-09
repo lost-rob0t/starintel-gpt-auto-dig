@@ -7,11 +7,14 @@ on:
       - "scripts/scrape_violent_offender_localities_extra.py"
       - "scripts/scrape_violent_offender_high_yield.py"
       - "scripts/scrape_violent_offender_batch2.py"
+      - "scripts/scrape_violent_offender_recovery.py"
       - "scripts/merge_violent_offender_grabs.py"
       - "tests/test_scrape_violent_offender_localities.py"
       - "tests/test_scrape_violent_offender_localities_extra.py"
       - "tests/test_scrape_violent_offender_high_yield.py"
       - "tests/test_scrape_violent_offender_batch2.py"
+      - "tests/test_scrape_violent_offender_recovery.py"
+      - "tests/test_merge_violent_offender_grabs.py"
       - "requirements/violent-offender-scrapers.txt"
       - ".github/workflows/violent-offender-locality-grab.yml"
   push:
@@ -21,6 +24,7 @@ on:
       - "scripts/scrape_violent_offender_localities_extra.py"
       - "scripts/scrape_violent_offender_high_yield.py"
       - "scripts/scrape_violent_offender_batch2.py"
+      - "scripts/scrape_violent_offender_recovery.py"
       - "scripts/merge_violent_offender_grabs.py"
       - "requirements/violent-offender-scrapers.txt"
       - ".github/workflows/violent-offender-locality-grab.yml"
@@ -54,13 +58,15 @@ jobs:
             tests/test_scrape_violent_offender_localities.py \
             tests/test_scrape_violent_offender_localities_extra.py \
             tests/test_scrape_violent_offender_high_yield.py \
-            tests/test_scrape_violent_offender_batch2.py
+            tests/test_scrape_violent_offender_batch2.py \
+            tests/test_scrape_violent_offender_recovery.py \
+            tests/test_merge_violent_offender_grabs.py
 
   collect:
     if: github.event_name != 'pull_request'
     needs: test
     runs-on: ubuntu-latest
-    timeout-minutes: 45
+    timeout-minutes: 60
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -92,6 +98,10 @@ jobs:
             --output artifacts/violent-offender-localities/batch2 \
             --max-records-per-source "$MAX_RECORDS" || failures=$((failures + 1))
 
+          python scripts/scrape_violent_offender_recovery.py \
+            --output artifacts/violent-offender-localities/recovered \
+            --max-records-per-source "$MAX_RECORDS" || failures=$((failures + 1))
+
           test -f artifacts/violent-offender-localities/summary.json
           test -f artifacts/violent-offender-localities/records.jsonl
           test -f artifacts/violent-offender-localities/expanded/summary.json
@@ -100,12 +110,15 @@ jobs:
           test -f artifacts/violent-offender-localities/high-yield/records.jsonl
           test -f artifacts/violent-offender-localities/batch2/summary.json
           test -f artifacts/violent-offender-localities/batch2/records.jsonl
+          test -f artifacts/violent-offender-localities/recovered/summary.json
+          test -f artifacts/violent-offender-localities/recovered/records.jsonl
 
           python scripts/merge_violent_offender_grabs.py \
             --root artifacts/violent-offender-localities \
             --component artifacts/violent-offender-localities/expanded \
             --component artifacts/violent-offender-localities/high-yield \
-            --component artifacts/violent-offender-localities/batch2
+            --component artifacts/violent-offender-localities/batch2 \
+            --component artifacts/violent-offender-localities/recovered
 
           python - <<'PY'
           import json
@@ -121,6 +134,12 @@ jobs:
               f"successful_sources={len(good)}/{len(summary['sources'])} "
               f"failed_sources={','.join(source['source'] for source in failed) or 'none'}"
           )
+          for source in summary["sources"]:
+              print(
+                  f"source={source['source']} records={source['records']} "
+                  f"candidates={source['candidates_seen']} pages={source['pages_fetched']} "
+                  f"error={source['error'] or 'none'}"
+              )
           PY
 
           if (( failures != 0 )); then
