@@ -8,6 +8,7 @@ on:
       - "scripts/scrape_violent_offender_high_yield.py"
       - "scripts/scrape_violent_offender_batch2.py"
       - "scripts/scrape_violent_offender_recovery.py"
+      - "scripts/scrape_violent_offender_recovery_fixups.py"
       - "scripts/merge_violent_offender_grabs.py"
       - "tests/test_scrape_violent_offender_localities.py"
       - "tests/test_scrape_violent_offender_localities_extra.py"
@@ -25,6 +26,7 @@ on:
       - "scripts/scrape_violent_offender_high_yield.py"
       - "scripts/scrape_violent_offender_batch2.py"
       - "scripts/scrape_violent_offender_recovery.py"
+      - "scripts/scrape_violent_offender_recovery_fixups.py"
       - "scripts/merge_violent_offender_grabs.py"
       - "requirements/violent-offender-scrapers.txt"
       - ".github/workflows/violent-offender-locality-grab.yml"
@@ -98,7 +100,7 @@ jobs:
             --output artifacts/violent-offender-localities/batch2 \
             --max-records-per-source "$MAX_RECORDS" || failures=$((failures + 1))
 
-          python scripts/scrape_violent_offender_recovery.py \
+          python scripts/scrape_violent_offender_recovery_fixups.py \
             --output artifacts/violent-offender-localities/recovered \
             --max-records-per-source "$MAX_RECORDS" || failures=$((failures + 1))
 
