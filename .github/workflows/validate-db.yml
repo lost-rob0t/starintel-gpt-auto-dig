@@ -7,8 +7,10 @@ on:
       - "db/**"
       - "digs/**"
       - "schemas/**"
+      - "scripts/starintel_legacy.nim"
       - "scripts/starintel_transport.nim"
       - "scripts/starintel_validate.nim"
+      - "tests/test_starintel_legacy.nim"
       - ".github/workflows/validate-db.yml"
   workflow_dispatch:
 
@@ -55,6 +57,12 @@ jobs:
             --path:.starintel-doc-nim/src \
             --out:bin/starintel-validate \
             scripts/starintel_validate.nim
+
+      - name: Test Nim legacy normalization parity
+        run: |
+          nim c -r -d:release --opt:speed --mm:orc \
+            --path:scripts \
+            tests/test_starintel_legacy.nim
 
       - name: Validate StarIntel documents and audit sources
         shell: bash
