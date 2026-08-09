@@ -775,21 +775,20 @@ proc writeCompleteCorpus(complete: Bucket; bulkOutput, output, bulkBaseUrl: stri
   var shardRecords = 0
   var shards: seq[BulkShard]
 
-  proc closeShard() =
-    if shardIndex < 0:
-      return
-    shardFile.close()
-    let fileName = &"starintel-complete-corpus-{shardIndex:04}.jsonl"
-    let path = corpusDir / fileName
-    shards.add(BulkShard(
-      path: path,
-      fileName: fileName,
-      records: shardRecords,
-      bytes: getFileSize(path).int64,
-      sha256: sha256File(path)
-    ))
+  template closeShard() =
+    if shardIndex >= 0:
+      shardFile.close()
+      let fileName = &"starintel-complete-corpus-{shardIndex:04}.jsonl"
+      let path = corpusDir / fileName
+      shards.add(BulkShard(
+        path: path,
+        fileName: fileName,
+        records: shardRecords,
+        bytes: getFileSize(path).int64,
+        sha256: sha256File(path)
+      ))
 
-  proc openShard() =
+  template openShard() =
     inc shardIndex
     shardBytes = 0
     shardRecords = 0
@@ -879,13 +878,15 @@ proc searchPrefixes(record: Record): seq[string] =
   var seen = initHashSet[string]()
   let text = (record.title & " " & record.id & " " & record.dataset & " " & record.dtype).toLowerAscii()
   var token = ""
-  proc commitToken() =
+
+  template commitToken() =
     if token.len >= 2:
       let prefix = token[0 .. 1]
       if prefix notin seen:
         seen.incl(prefix)
         result.add(prefix)
     token.setLen(0)
+
   for ch in text:
     if ch in {'a'..'z', '0'..'9'}:
       token.add(ch)
@@ -913,13 +914,13 @@ proc writeRecordAndSearchIndexes(complete: Bucket; topicBuild: TopicBuild; outpu
   var ordinal = 0
   var postings: SearchPostings = initTable[string, Table[string, seq[int]]]()
 
-  proc openPage() =
+  template openPage() =
     inc pageIndex
     pageCount = 0
     pageFile = open(recordRoot / &"page-{pageIndex:05}.json", fmWrite)
     pageFile.write("[")
 
-  proc closePage() =
+  template closePage() =
     if pageIndex >= 0:
       pageFile.write("]")
       pageFile.close()
