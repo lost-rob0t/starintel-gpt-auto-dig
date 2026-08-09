@@ -1,0 +1,123 @@
+name: Violent offender locality grab
+
+on:
+  pull_request:
+    paths:
+      - "scripts/scrape_violent_offender_localities.py"
+      - "scripts/scrape_violent_offender_localities_extra.py"
+      - "scripts/scrape_violent_offender_high_yield.py"
+      - "scripts/merge_violent_offender_grabs.py"
+      - "tests/test_scrape_violent_offender_localities.py"
+      - "tests/test_scrape_violent_offender_localities_extra.py"
+      - "tests/test_scrape_violent_offender_high_yield.py"
+      - "requirements/violent-offender-scrapers.txt"
+      - ".github/workflows/violent-offender-locality-grab.yml"
+  push:
+    branches: [main]
+    paths:
+      - "scripts/scrape_violent_offender_localities.py"
+      - "scripts/scrape_violent_offender_localities_extra.py"
+      - "scripts/scrape_violent_offender_high_yield.py"
+      - "scripts/merge_violent_offender_grabs.py"
+      - "requirements/violent-offender-scrapers.txt"
+      - ".github/workflows/violent-offender-locality-grab.yml"
+  workflow_dispatch:
+    inputs:
+      max_records_per_source:
+        description: Maximum detail records followed per source
+        required: false
+        default: "10000"
+        type: string
+  schedule:
+    - cron: "11 13 * * *"
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+      - name: Install scraper dependencies
+        run: python -m pip install -r requirements/violent-offender-scrapers.txt pytest
+      - name: Test locality parsers
+        run: |
+          python -m pytest -q \
+            tests/test_scrape_violent_offender_localities.py \
+            tests/test_scrape_violent_offender_localities_extra.py \
+            tests/test_scrape_violent_offender_high_yield.py
+
+  collect:
+    if: github.event_name != 'pull_request'
+    needs: test
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+      - name: Install scraper dependencies
+        run: python -m pip install -r requirements/violent-offender-scrapers.txt
+      - name: Collect Ohio locality records
+        env:
+          MAX_RECORDS: ${{ inputs.max_records_per_source || '10000' }}
+        run: |
+          mkdir -p artifacts/violent-offender-localities
+          failures=0
+
+          python scripts/scrape_violent_offender_localities.py \
+            --output artifacts/violent-offender-localities \
+            --max-records-per-source "$MAX_RECORDS" || failures=$((failures + 1))
+
+          python scripts/scrape_violent_offender_localities_extra.py \
+            --output artifacts/violent-offender-localities/expanded \
+            --max-records-per-source "$MAX_RECORDS" || failures=$((failures + 1))
+
+          python scripts/scrape_violent_offender_high_yield.py \
+            --output artifacts/violent-offender-localities/high-yield \
+            --max-records-per-source "$MAX_RECORDS" || failures=$((failures + 1))
+
+          test -f artifacts/violent-offender-localities/summary.json
+          test -f artifacts/violent-offender-localities/records.jsonl
+          test -f artifacts/violent-offender-localities/expanded/summary.json
+          test -f artifacts/violent-offender-localities/expanded/records.jsonl
+          test -f artifacts/violent-offender-localities/high-yield/summary.json
+          test -f artifacts/violent-offender-localities/high-yield/records.jsonl
+
+          python scripts/merge_violent_offender_grabs.py \
+            --root artifacts/violent-offender-localities \
+            --component artifacts/violent-offender-localities/expanded \
+            --component artifacts/violent-offender-localities/high-yield
+
+          python - <<'PY'
+          import json
+          from pathlib import Path
+
+          summary = json.loads(Path("artifacts/violent-offender-localities/summary.json").read_text())
+          good = [source for source in summary["sources"] if source["error"] is None]
+          failed = [source for source in summary["sources"] if source["error"] is not None]
+          if not good:
+              raise SystemExit("all locality collectors failed")
+          print(
+              f"records={summary['record_count']} "
+              f"successful_sources={len(good)}/{len(summary['sources'])} "
+              f"failed_sources={','.join(source['source'] for source in failed) or 'none'}"
+          )
+          PY
+
+          if (( failures != 0 )); then
+            echo "One or more source groups had failures; successful-source output was preserved."
+          fi
+      - uses: actions/upload-artifact@v4
+        with:
+          name: violent-offender-localities-${{ github.run_id }}
+          path: artifacts/violent-offender-localities/
+          if-no-files-found: error
+          retention-days: 30
