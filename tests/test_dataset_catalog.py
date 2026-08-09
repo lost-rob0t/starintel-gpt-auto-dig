@@ -29,11 +29,31 @@ class DatasetCatalogTests(unittest.TestCase):
         self.assertIn('downloads / "topic-manifest.json"', source)
         self.assertIn('downloads / "starintel-documents.jsonl"', source)
 
-    def test_topic_nodes_redirect_to_canonical_source_pages(self) -> None:
+    def test_source_datasets_are_canonical_and_deduplicated_by_generator(self) -> None:
+        source = BUILDER.read_text(encoding="utf-8")
+        self.assertIn("def _dataset_key", source)
+        self.assertIn("unicodedata.normalize", source)
+        self.assertIn("def _write_source_dataset", source)
+        self.assertIn('target = f"dataset-source-{slug(dataset)}"', source)
+        self.assertIn('downloads / "source-manifest.json"', source)
+        self.assertIn("source_documents[source_key]", source)
+        self.assertNotIn('"id": f"{target}:{dataset}"', source)
+
+    def test_topic_and_source_nodes_redirect_to_canonical_source_pages(self) -> None:
         source = BUILDER.read_text(encoding="utf-8")
         self.assertIn("def _topic_node_redirect", source)
         self.assertIn("source_targets_by_id", source)
         self.assertIn('destination = f"../../{source_target}/nodes/{name}.html"', source)
+
+    def test_dataset_page_renders_icon_view_controls_without_text_labels(self) -> None:
+        dashboard = CORPUS_DASHBOARD.read_text(encoding="utf-8")
+        self.assertIn('aria-label="Card view"', dashboard)
+        self.assertIn('aria-label="Table view"', dashboard)
+        self.assertIn('data-view="cards"', dashboard)
+        self.assertIn('data-view="table"', dashboard)
+        self.assertIn('width="18" height="18"', dashboard)
+        self.assertNotIn('data-view="cards">Cards</button>', dashboard)
+        self.assertNotIn('data-view="table">Table</button>', dashboard)
 
     def test_merge_gate_reserves_pages_archive_overhead(self) -> None:
         source = MERGE_GATE.read_text(encoding="utf-8")
