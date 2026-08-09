@@ -1,0 +1,298 @@
+import std/[algorithm, json, os, strformat, strutils, tables]
+
+import starintel_doc/v090
+import starintel_legacy
+import starintel_transport
+
+const
+  DefaultReport = "unverifed"
+  DefaultErrorsReport = "validation-errors"
+  MaxPrintedErrors = 50
+
+type
+  MissingSource = object
+    path: string
+    line: int
+    id: string
+    dataset: string
+    dtype: string
+    title: string
+
+  RelationReference = object
+    path: string
+    endpoint: string
+    id: string
+
+  AuditState = ref object
+    documents: int
+    malformedSources: int
+    missing: seq[MissingSource]
+    errors: seq[string]
+    dbIds: Table[string, string]
+    relations: seq[RelationReference]
+
+proc text(node: JsonNode; key: string; fallback = ""): string =
+  if node.kind == JObject and node.hasKey(key) and node[key].kind == JString:
+    return node[key].getStr()
+  fallback
+
+proc oneLine(value: string): string =
+  value.replace("\t", " ").replace("\r", " ").replace("\n", " ").strip()
+
+proc location(path: string; line: int): string = path & ":" & $line
+
+proc sourceShapeError(source: JsonNode): string =
+  case source.kind
+  of JString:
+    if source.getStr().strip().len == 0:
+      return "empty source string"
+  of JObject:
+    if source.len == 0:
+      return "empty source object"
+  of JNull:
+    return "null source entry"
+  else:
+    return "source entry must be a string or object"
+  ""
+
+proc auditSources(state: AuditState; document: JsonNode; path: string; line: int) =
+  if not document.hasKey("sources"):
+    state.errors.add(location(path, line) & ": missing sources field")
+    return
+  if document["sources"].kind != JArray:
+    state.errors.add(location(path, line) & ": sources must be an array")
+    return
+
+  let sources = document["sources"]
+  if sources.len == 0:
+    state.missing.add(MissingSource(
+      path: path,
+      line: line,
+      id: text(document, "_id", "<missing-id>"),
+      dataset: text(document, "dataset"),
+      dtype: text(document, "dtype"),
+      title: text(document, "title")
+    ))
+    return
+
+  for index in 0 ..< sources.len:
+    let reason = sourceShapeError(sources[index])
+    if reason.len > 0:
+      inc state.malformedSources
+      state.errors.add(location(path, line) & ": sources[" & $index & "]: " & reason)
+
+proc auditDocument(state: AuditState; schema, document: JsonNode; path: string; line: int): bool =
+  inc state.documents
+  auditSources(state, document, path, line)
+  let normalizationError = normalizeLegacyDocument(document)
+  if normalizationError.len > 0:
+    state.errors.add(location(path, line) & ": legacy_normalization: " & normalizationError)
+    return false
+  let checked = validateDocument(document, schema)
+  if not checked.ok:
+    state.errors.add(location(path, line) & ": " & checked.category & ": " & checked.message)
+    return false
+  true
+
+proc collectRelationReference(state: AuditState; path, endpoint: string; value: JsonNode) =
+  case value.kind
+  of JArray:
+    for item in value.items:
+      collectRelationReference(state, path, endpoint, item)
+  of JObject:
+    if value.hasKey("id") and value["id"].kind == JString:
+      let id = value["id"].getStr().strip()
+      if id.len > 0:
+        state.relations.add(RelationReference(path: path, endpoint: endpoint, id: id))
+  of JString:
+    let id = value.getStr().strip()
+    if id.len > 0:
+      state.relations.add(RelationReference(path: path, endpoint: endpoint, id: id))
+  else:
+    discard
+
+proc recordDbInvariants(state: AuditState; document: JsonNode; dbRoot, path: string) =
+  let rel = relativePath(path, dbRoot)
+  let parts = rel.split(DirSep)
+  if parts.len != 2:
+    state.errors.add(path & ": canonical DB path must be db/<dtype>/<_id>.ndjson")
+    return
+
+  let dtype = text(document, "dtype")
+  let id = text(document, "_id")
+  let expectedDtype = parts[0]
+  let name = parts[1]
+  let suffix = ".ndjson"
+  let expectedId = if name.endsWith(suffix): name[0 ..< name.len - suffix.len] else: name
+
+  if dtype != expectedDtype:
+    state.errors.add(path & ": dtype=" & dtype & ", directory=" & expectedDtype)
+  if id != expectedId:
+    state.errors.add(path & ": _id=" & id & ", filename=" & expectedId)
+
+  if state.dbIds.hasKey(id):
+    state.errors.add(path & ": duplicate normalized _id also at " & state.dbIds[id])
+  else:
+    state.dbIds[id] = path
+
+  if dtype == "relation" and document.hasKey("data") and document["data"].kind == JObject:
+    let data = document["data"]
+    for endpoint in ["subject", "object"]:
+      if data.hasKey(endpoint):
+        collectRelationReference(state, path, endpoint, data[endpoint])
+
+proc auditDbFile(state: AuditState; schema: JsonNode; dbRoot, path: string) =
+  try:
+    let raw = readFile(path)
+    if not raw.endsWith("\n"):
+      state.errors.add(path & ": missing terminating newline")
+      return
+    if raw.count('\n') != 1 or raw.strip().len == 0:
+      state.errors.add(path & ": expected exactly one non-empty NDJSON line")
+      return
+
+    let document = parseJson(raw)
+    if document.kind != JObject:
+      state.errors.add(path & ":1: expected JSON object")
+      return
+    if auditDocument(state, schema, document, path, 1):
+      recordDbInvariants(state, document, dbRoot, path)
+  except JsonParsingError as exc:
+    state.errors.add(path & ":1: invalid JSON: " & exc.msg)
+  except CatchableError as exc:
+    state.errors.add(path & ": read failed: " & exc.msg)
+
+proc auditRawLine(state: AuditState; schema: JsonNode; raw, path: string; line: int) =
+  if raw.strip().len == 0:
+    return
+  try:
+    let document = parseJson(raw)
+    if document.kind != JObject:
+      state.errors.add(location(path, line) & ": expected JSON object")
+      return
+    discard auditDocument(state, schema, document, path, line)
+  except JsonParsingError as exc:
+    state.errors.add(location(path, line) & ": invalid JSON: " & exc.msg)
+
+proc auditPacketFile(state: AuditState; schema: JsonNode; path: string) =
+  try:
+    forEachTransportLine(path, proc(raw: string; line: int) =
+      auditRawLine(state, schema, raw, path, line)
+    )
+  except CatchableError as exc:
+    state.errors.add(path & ": read/decode failed: " & exc.msg)
+
+proc validateRelationReferences(state: AuditState) =
+  for relation in state.relations:
+    if not state.dbIds.hasKey(relation.id):
+      state.errors.add(relation.path & ": unresolved relation " & relation.endpoint & "=" & relation.id)
+
+proc writeMissingReport(root, reportPath: string; missing: seq[MissingSource]) =
+  var rows = missing
+  rows.sort(proc(a, b: MissingSource): int =
+    result = cmp(a.path, b.path)
+    if result == 0: result = cmp(a.line, b.line)
+    if result == 0: result = cmp(a.id, b.id)
+  )
+
+  var output = newStringOfCap(max(1024, rows.len * 128))
+  output.add("# StarIntel documents lacking sources\n")
+  output.add("# Generated by scripts/starintel_validate.nim\n")
+  output.add("# path\tline\t_id\tdtype\tdataset\ttitle\n")
+  for item in rows:
+    output.add(oneLine(relativePath(item.path, root)))
+    output.add('\t')
+    output.add($item.line)
+    output.add('\t')
+    output.add(oneLine(item.id))
+    output.add('\t')
+    output.add(oneLine(item.dtype))
+    output.add('\t')
+    output.add(oneLine(item.dataset))
+    output.add('\t')
+    output.add(oneLine(item.title))
+    output.add('\n')
+  writeFile(reportPath, output)
+
+proc writeErrorsReport(reportPath: string; errors: seq[string]) =
+  var output = newStringOfCap(max(1024, errors.len * 160))
+  output.add("# StarIntel validation errors\n")
+  output.add("# Generated by scripts/starintel_validate.nim\n")
+  for error in errors:
+    output.add(oneLine(error))
+    output.add('\n')
+  writeFile(reportPath, output)
+
+proc usage() =
+  echo "usage: starintel_validate [--root PATH] [--report PATH] [--errors-report PATH] [--require-sources]"
+
+proc main(): int =
+  var root = "."
+  var report = ""
+  var errorsReport = ""
+  var requireSources = false
+  var index = 1
+  while index <= paramCount():
+    let arg = paramStr(index)
+    case arg
+    of "--root":
+      inc index
+      if index > paramCount(): usage(); return 2
+      root = paramStr(index)
+    of "--report":
+      inc index
+      if index > paramCount(): usage(); return 2
+      report = paramStr(index)
+    of "--errors-report":
+      inc index
+      if index > paramCount(): usage(); return 2
+      errorsReport = paramStr(index)
+    of "--require-sources":
+      requireSources = true
+    of "-h", "--help":
+      usage()
+      return 0
+    else:
+      stderr.writeLine("unknown argument: " & arg)
+      usage()
+      return 2
+    inc index
+
+  root = absolutePath(root)
+  if report.len == 0: report = root / DefaultReport
+  elif not report.isAbsolute: report = root / report
+  if errorsReport.len == 0: errorsReport = root / DefaultErrorsReport
+  elif not errorsReport.isAbsolute: errorsReport = root / errorsReport
+
+  putEnv("STARINTEL_SCHEMA", root / "schemas" / "starintel-doc-v0.9.0.schema.json")
+  let schema = loadSchema()
+  let state = AuditState(dbIds: initTable[string, string]())
+  let dbRoot = root / "db"
+
+  for path in dbFiles(dbRoot):
+    auditDbFile(state, schema, dbRoot, path)
+  validateRelationReferences(state)
+  for packet in packetFiles(root / "digs"):
+    auditPacketFile(state, schema, packet.path)
+
+  writeMissingReport(root, report, state.missing)
+  writeErrorsReport(errorsReport, state.errors)
+
+  echo &"documents={state.documents} missing_sources={state.missing.len} malformed_sources={state.malformedSources} report={relativePath(report, root)} errors_report={relativePath(errorsReport, root)}"
+  for index in 0 ..< min(state.errors.len, MaxPrintedErrors):
+    stderr.writeLine("ERROR: " & state.errors[index])
+  if state.errors.len > MaxPrintedErrors:
+    stderr.writeLine(&"ERROR: {state.errors.len - MaxPrintedErrors} additional error(s) written to {errorsReport}")
+
+  if state.errors.len > 0:
+    stderr.writeLine(&"VALIDATION: FAIL ({state.errors.len} error(s))")
+    return 1
+  if requireSources and state.missing.len > 0:
+    stderr.writeLine(&"VALIDATION: FAIL ({state.missing.len} document(s) lack sources; see {report})")
+    return 1
+
+  echo "VALIDATION: PASS"
+  0
+
+when isMainModule:
+  quit(main())

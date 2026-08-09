@@ -2,7 +2,7 @@
 
 ## Non-negotiable authority
 
-The repository-local `starintel_doc/` package is the only StarIntel document specification. Never create a parallel JSON shape, a prompt-only “StarIntel style,” a renderer-specific schema, or undocumented fields.
+The repository-local `starintel_doc/` package and generated `schemas/starintel-doc-v0.9.0.schema.json` are the StarIntel document specification. Never create a parallel JSON shape, a prompt-only “StarIntel style,” a renderer-specific schema, or undocumented fields. The Nim runtime is an implementation of this contract, not an independent schema.
 
 Before creating or changing a document, every agent must inspect the executable schema:
 
@@ -110,24 +110,28 @@ Any emitted target documents must still be imported through the canonical batch 
 
 ## Mandatory validation and merge gate
 
+Performance-critical validation and site generation are Nim-first. CI checks out `lost-rob0t/starintel-doc.nim` at `.starintel-doc-nim`; local validation should use the same layout.
+
 Before marking a pull request ready, approving it, or merging it, run:
 
 ```bash
-python3 scripts/validate-for-merge.py --site
+nimble buildFast
+bin/validate-for-merge --site
 ```
 
-This gate verifies:
+The gate verifies:
 
-- Python compilation;
-- the complete unit-test suite;
-- generated-schema reproducibility;
-- strict v0.9.0 validation of every DB and packet document;
-- DB path and filename consistency;
-- one-record-per-file NDJSON formatting;
-- duplicate IDs;
-- relation endpoint integrity;
-- full research-site generation;
+- strict v0.9.0 validation of every canonical DB and packet document using the generated repository schema;
+- source-reference shape checks;
+- creation of root-level `unverifed`, listing every document with an empty `sources` array;
+- canonical packet discovery without treating generated partition shards as separate packets;
+- JavaScript syntax checks when Node is available;
+- full research-site generation through the Nim static-site engine;
+- explicit topic minimums when supplied with `--topic-minimum TOPIC=COUNT`;
+- the generated Pages content-size budget;
 - `git diff --check` when a Git checkout is available.
+
+Use `bin/starintel-validate --root . --require-sources` only when the current task explicitly requires every document to have at least one source. Empty-source records otherwise remain visible in `unverifed` without hiding them or silently dropping them.
 
 ## Never merge invalid documents
 
@@ -151,7 +155,7 @@ Legacy records must be migrated with:
 python3 scripts/migrate-starintel-v0.9.py --write
 ```
 
-The migrator preserves unknown legacy values in `extensions.legacy.v0`; it does not silently discard them.
+The migrator preserves unknown legacy values in `extensions.legacy.v0`; it does not silently discard them. After migration, run the Nim merge gate.
 
 Existing IDs are stable:
 

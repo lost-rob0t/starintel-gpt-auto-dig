@@ -1,0 +1,484 @@
+{
+  "bulk_urls": {
+    "candidate": "https://www.fec.gov/files/bulk-downloads/2026/cn26.zip",
+    "committee": "https://www.fec.gov/files/bulk-downloads/2026/cm26.zip",
+    "linkage": "https://www.fec.gov/files/bulk-downloads/2026/ccl26.zip"
+  },
+  "candidate_description_url": "https://www.fec.gov/campaign-finance-data/candidate-master-file-description/",
+  "candidate_inventory_sha256": "2ae7192d2949ae2b6bd4e6ec9bcf70b831f0cb6514662f426b2ce998bc50dc0f",
+  "committee_description_url": "https://www.fec.gov/campaign-finance-data/committee-master-file-description/",
+  "counts": {
+    "investigation-target": 25770,
+    "org": 2991,
+    "person": 3288,
+    "relation": 9303,
+    "source": 3
+  },
+  "dataset": "gop",
+  "document_stream_sha256": "28748a6f9511d6134114ca8b3e30ec527591f2eb000f73405c7f77ac7200ef80",
+  "generated_at": "2026-08-08T21:55:00Z",
+  "linkage_description_url": "https://www.fec.gov/campaign-finance-data/candidate-committee-linkage-file-description/",
+  "linkage_inventory_sha256": "865c163aeec1ee8f74b610eac866cf10e4ff1a80c8f2b3fe23947befe4f3c4cb",
+  "matching_candidates": 3288,
+  "matching_linkages": 3110,
+  "partition_count": 64,
+  "partitions": [
+    {
+      "documents": 649,
+      "part": 0,
+      "sha256": "3fd72a9dd9e0eeb017aa20e301db6f268eb364bd9968ec253a4e44d7a82225b6",
+      "size": 1814538
+    },
+    {
+      "documents": 656,
+      "part": 1,
+      "sha256": "1402d1106ba3cb861bc28af0135deca59dd0647511d61b48f5c99f37400ee45d",
+      "size": 1865114
+    },
+    {
+      "documents": 643,
+      "part": 2,
+      "sha256": "0660dfd3b7a6dae5e0e8c8deaa80fb46f3fa94b50be764896dfb5d16244c92fa",
+      "size": 1779061
+    },
+    {
+      "documents": 627,
+      "part": 3,
+      "sha256": "223e6629d3b48449abc9af119731700d15f90ed6d08c30ca8947876b0ce0840f",
+      "size": 1748254
+    },
+    {
+      "documents": 636,
+      "part": 4,
+      "sha256": "8a2f497c52dd733df698278741f1978a15db9f3d344873929547bd956b8b09a8",
+      "size": 1822978
+    },
+    {
+      "documents": 594,
+      "part": 5,
+      "sha256": "e70138a6644d351361e2a4e9f9c98154f4781f60c2aa9e75d58d5d9347a0de5e",
+      "size": 1744236
+    },
+    {
+      "documents": 628,
+      "part": 6,
+      "sha256": "174bff822cacd134e6ae1f3e79012dbcc1221d8a164ca61ab4b90cbb39e520ef",
+      "size": 1755770
+    },
+    {
+      "documents": 664,
+      "part": 7,
+      "sha256": "4c667cf519f58016448d60a2742dd8c3c9152e3405a39c97122155ccc03a86bb",
+      "size": 1907988
+    },
+    {
+      "documents": 641,
+      "part": 8,
+      "sha256": "267459ac873e47288d56de4227469dd68c904e1b671d5037dd3dd310404bf0c9",
+      "size": 1778430
+    },
+    {
+      "documents": 648,
+      "part": 9,
+      "sha256": "34090d347112c3f12ed29334a4bfbeff1e46bf2d7f84ff1b59646171c4bb52b8",
+      "size": 1828343
+    },
+    {
+      "documents": 631,
+      "part": 10,
+      "sha256": "5b3ed06b4f606d8971a9cddb55e6103e3239f03f1334c2e56b563c96815ebf63",
+      "size": 1842279
+    },
+    {
+      "documents": 652,
+      "part": 11,
+      "sha256": "3850511609898474f7e178258d9be2a27b12b2bc3a5d2e413c242b060e2af04c",
+      "size": 1807704
+    },
+    {
+      "documents": 658,
+      "part": 12,
+      "sha256": "44ed849ed30d5e0c583d6f04d5cf8096d6f941308ac0cc9e839d59752159f12e",
+      "size": 1815649
+    },
+    {
+      "documents": 636,
+      "part": 13,
+      "sha256": "2818393e10eef913524801d05ca59eb75a6125d204ba80e6b16ac5505876b2f1",
+      "size": 1783375
+    },
+    {
+      "documents": 599,
+      "part": 14,
+      "sha256": "51bd664c023fbcf9b22d0068400187b030e74a9ebe788fcb78e31c6c772683e9",
+      "size": 1755551
+    },
+    {
+      "documents": 623,
+      "part": 15,
+      "sha256": "e730f0b2093864d3a955f6bbf1e7140c780b677647d04d5a71698c822b180eb0",
+      "size": 1760884
+    },
+    {
+      "documents": 648,
+      "part": 16,
+      "sha256": "c95fb0ff617dcbb6a7e5adcb9669b2be0cb2b902d893c778d340942ab0df72c0",
+      "size": 1824578
+    },
+    {
+      "documents": 656,
+      "part": 17,
+      "sha256": "f1c7fc8f809c15ada577c958abc331157a91bc9ab25e428780da644008d5f0b0",
+      "size": 1851420
+    },
+    {
+      "documents": 652,
+      "part": 18,
+      "sha256": "841464dd8dfe1fe1f2d942a23aec25751a490e861d7d01e7c21df7982e25e418",
+      "size": 1884436
+    },
+    {
+      "documents": 628,
+      "part": 19,
+      "sha256": "d169a6ef25b8de4a2269e72ed303a23d2bb586704280aff14976cd4837f4d544",
+      "size": 1868473
+    },
+    {
+      "documents": 651,
+      "part": 20,
+      "sha256": "1afc5671a9561a847aa0e9aa1ef24f9007a901c86d0572d0b29331890ee50568",
+      "size": 1865455
+    },
+    {
+      "documents": 648,
+      "part": 21,
+      "sha256": "b3d284e05bb21cc4cd1bc397524c61ba7b6ccf0ff49cd46208f07775106cb900",
+      "size": 1841402
+    },
+    {
+      "documents": 652,
+      "part": 22,
+      "sha256": "c6f07bbf97f628592cb4323c563aea3fee998e97a381b2ec0a7e6d953c579b5c",
+      "size": 1839429
+    },
+    {
+      "documents": 642,
+      "part": 23,
+      "sha256": "759e32e8946939bb22973d87846d736a71815cd457cd9cb287ed2cf5768cd449",
+      "size": 1828206
+    },
+    {
+      "documents": 644,
+      "part": 24,
+      "sha256": "bad633a6a92d0410ade30bbc13a81b769f5e1802ee906d9fd89d561698ca9ab6",
+      "size": 1809583
+    },
+    {
+      "documents": 660,
+      "part": 25,
+      "sha256": "83d4ad90256380acaf4e5e3b12aef305014e503c16a5f839dab3101447ef2a55",
+      "size": 1843790
+    },
+    {
+      "documents": 692,
+      "part": 26,
+      "sha256": "4bf7c224bd335db819e80e3bd31b686e89742dfb78976df1b6f10b529eaf1df8",
+      "size": 1971344
+    },
+    {
+      "documents": 614,
+      "part": 27,
+      "sha256": "4d11f3c4649af716a22979aa14bd49136675ddc28652615c1b182b2dd47e833c",
+      "size": 1677544
+    },
+    {
+      "documents": 695,
+      "part": 28,
+      "sha256": "4e0583ceb795f969e5642b26755b5d73dd02fa79e704ab1d5a013cd9f35bce36",
+      "size": 1950949
+    },
+    {
+      "documents": 675,
+      "part": 29,
+      "sha256": "75555f9cbb35289814d7a82e3ca7c74a66ec3ef6c647b30b3a59e1f20572c485",
+      "size": 1909468
+    },
+    {
+      "documents": 631,
+      "part": 30,
+      "sha256": "a348a5a76cf509d1255a19c769e0ac223a42729d1d1805c64848a102a8851b4f",
+      "size": 1757213
+    },
+    {
+      "documents": 666,
+      "part": 31,
+      "sha256": "edae78b621b117f952d7768ac0dca211761af952224944c9ac81f57eb653a6c3",
+      "size": 1905326
+    },
+    {
+      "documents": 640,
+      "part": 32,
+      "sha256": "4c0533194977da689c26fc85953834bbd0f304dc23a790fcbe43b7986377247e",
+      "size": 1832406
+    },
+    {
+      "documents": 639,
+      "part": 33,
+      "sha256": "890c008394fc40da9cbd388d39fc25e836eefce175b54a893ee663aa495acd49",
+      "size": 1813104
+    },
+    {
+      "documents": 646,
+      "part": 34,
+      "sha256": "fc8917625398275abb175965cd1e859e2bc0b7e6c7f0335d9acf110ffe8f505e",
+      "size": 1867071
+    },
+    {
+      "documents": 625,
+      "part": 35,
+      "sha256": "aaed67e35c7b8ed0b0938d64bf0e673568105a0f24ada455802858009fc8e780",
+      "size": 1787310
+    },
+    {
+      "documents": 633,
+      "part": 36,
+      "sha256": "bfafc087a6d67011b89860009a7ff761d78a2904a803645af8c40535c23d6cb4",
+      "size": 1750590
+    },
+    {
+      "documents": 644,
+      "part": 37,
+      "sha256": "11bbab4b851ed669f16585b1cc33ef690c5358fc56ee280f6a4ce6010b6767e6",
+      "size": 1827661
+    },
+    {
+      "documents": 625,
+      "part": 38,
+      "sha256": "84a2f467e110d7a51adb9a8fa4aa301932df59c98e16368245d9ea6239842634",
+      "size": 1762560
+    },
+    {
+      "documents": 634,
+      "part": 39,
+      "sha256": "076cd7b50b2fcc5fa8a8af63b0e06309d712b73bf2755812a07c2c785f6bdb0d",
+      "size": 1848053
+    },
+    {
+      "documents": 636,
+      "part": 40,
+      "sha256": "03a075fd48e7c176faa3d5a14794d29103031b656b975cfa8a6d7ef3fbccd62c",
+      "size": 1749856
+    },
+    {
+      "documents": 631,
+      "part": 41,
+      "sha256": "d11b269fb12dc514898d8f438a446223310f5fb94d484212bf4f879352633891",
+      "size": 1830945
+    },
+    {
+      "documents": 631,
+      "part": 42,
+      "sha256": "4c72a55f47706e56673d2eb723659260d2c2c8cf4eca5741cc9407cb88dd403d",
+      "size": 1795272
+    },
+    {
+      "documents": 684,
+      "part": 43,
+      "sha256": "4277e6326413aad359c7fcb38cb3ea10216edadff99f6d92161fbe89227237f2",
+      "size": 1924474
+    },
+    {
+      "documents": 658,
+      "part": 44,
+      "sha256": "f8c6430cbccd17d50dc362b83ad1ab90cf6d75b865d36142cf477a9b88294fb8",
+      "size": 1843851
+    },
+    {
+      "documents": 718,
+      "part": 45,
+      "sha256": "5e2bd200f96d40e10ac49149d89fcc1ed07e2382db8f95788ae85da7406af63d",
+      "size": 2013498
+    },
+    {
+      "documents": 600,
+      "part": 46,
+      "sha256": "b7cc2731d33a6324e10652f20428a80c648f9f142ee55e47283001eb15fff7e8",
+      "size": 1684124
+    },
+    {
+      "documents": 635,
+      "part": 47,
+      "sha256": "a009660c5dcfc10d5774a9fecaa1565558a998187c84a5b425f0da7c0b7af65c",
+      "size": 1799737
+    },
+    {
+      "documents": 693,
+      "part": 48,
+      "sha256": "f5f634ec32ba07ca729dfef0e760b9ecee98c11d720598bcb789df114693eae3",
+      "size": 2014931
+    },
+    {
+      "documents": 639,
+      "part": 49,
+      "sha256": "b79a2272021be01f3b4c359e87f22666e982cf3b1f847dd34ddfaa5f9d9a4116",
+      "size": 1811109
+    },
+    {
+      "documents": 694,
+      "part": 50,
+      "sha256": "542ffc1f849003168f874e7853fb7641ee0a2ca4c5eecc1cc2665e741119229a",
+      "size": 1929588
+    },
+    {
+      "documents": 657,
+      "part": 51,
+      "sha256": "9dd3cdbec73837db9c917e0df179bb3c869ab69985e5620978bfdcec8c9cb064",
+      "size": 1770709
+    },
+    {
+      "documents": 618,
+      "part": 52,
+      "sha256": "d1cf2dfdacdaa8e9e4fc99e79479e03c31a2fc43abc38cb14ef179a5523d4dc0",
+      "size": 1751433
+    },
+    {
+      "documents": 616,
+      "part": 53,
+      "sha256": "862d654c8ab19235ae9736b750cc3dd5ce41242dc171aa253a5a63336fecc372",
+      "size": 1745357
+    },
+    {
+      "documents": 654,
+      "part": 54,
+      "sha256": "cb8e2a69500c9f4427998b91cd0dc93e4e3b919fc2103d1524c4144aef773f73",
+      "size": 1866339
+    },
+    {
+      "documents": 687,
+      "part": 55,
+      "sha256": "a7e51f413cefff91e8baf58a79730736c88813c9e933661ece8978c2e015d23c",
+      "size": 1976843
+    },
+    {
+      "documents": 628,
+      "part": 56,
+      "sha256": "ee78076825884419db6e06373475300ddd241a990ef9cd2fadfbb6e665a07025",
+      "size": 1794484
+    },
+    {
+      "documents": 684,
+      "part": 57,
+      "sha256": "011a23514b9b9435fb81dcc4fe71847124d78f1029e518d2c2d9f86311ae006e",
+      "size": 1926725
+    },
+    {
+      "documents": 625,
+      "part": 58,
+      "sha256": "e00bc134189b8e1125c6b888d38d49e04f190fa0d0bfae75a3150e161a9fce67",
+      "size": 1785251
+    },
+    {
+      "documents": 647,
+      "part": 59,
+      "sha256": "dcf2ed3204990d1c96b47f0d6dcc9cac6e1d7b7718920c1d98b2c970c12b257b",
+      "size": 1774490
+    },
+    {
+      "documents": 651,
+      "part": 60,
+      "sha256": "029c6a8bcf7faeea8f3dc83ab6f8362925cfad5043471020a4aacb29e87a9245",
+      "size": 1926596
+    },
+    {
+      "documents": 622,
+      "part": 61,
+      "sha256": "7b09810d060d312eb9a6f39b2fef764911f8467e4c829bde124b0d042c8d664a",
+      "size": 1791296
+    },
+    {
+      "documents": 666,
+      "part": 62,
+      "sha256": "265d6deef2da4d8fd224d5b3b96045b40148c691f5cdc310e783726c91191ef5",
+      "size": 1875993
+    },
+    {
+      "documents": 653,
+      "part": 63,
+      "sha256": "6a133a1090de408abcaf4a65b545e6d6bd9aa2c06b97e564f9c3c25f03c97c3f",
+      "size": 1813094
+    }
+  ],
+  "party_codes": [
+    "REP"
+  ],
+  "party_codes_url": "https://www.fec.gov/campaign-finance-data/party-code-descriptions/",
+  "raw_counts": {
+    "candidate_rows": 8284,
+    "committee_rows": 20360,
+    "linkage_rows": 7853
+  },
+  "raw_sha256": {
+    "candidate": "7865f949862e1f05678f864d51812c277e9a02e895955f97a0836884bc9fb348",
+    "committee": "3e7751c2895e9c55351aeee480287c8a380c3eaa3a5b917f7f99796f873d5b33",
+    "linkage": "c910ea4848038d88537a5fc171a6152d6981aac7e33ab6e4fa0487ec86c5e8af"
+  },
+  "schema_version": "0.9.0",
+  "target_counts": {
+    "fec_candidate_committee_network": 3288,
+    "fec_candidate_finance_network": 3288,
+    "fec_candidate_identity_filing_history": 3288,
+    "fec_candidate_linked_committee_affiliates": 3110,
+    "fec_candidate_linked_committee_money_vendors": 3110,
+    "fec_candidate_linked_committee_registration": 3110,
+    "fec_candidate_public_role_cross_ties": 3288,
+    "fec_candidate_staff_consultants_vendors": 3288
+  },
+  "total_documents": 41355,
+  "total_targets": 25770,
+  "unresolved_linked_committee_ids": [
+    "C00207993",
+    "C00332650",
+    "C00355404",
+    "C00384552",
+    "C00389254",
+    "C00440420",
+    "C00459354",
+    "C00462143",
+    "C00463620",
+    "C00464602",
+    "C00467522",
+    "C00468959",
+    "C00477984",
+    "C00554337",
+    "C00590653",
+    "C00610402",
+    "C00617365",
+    "C00651075",
+    "C00663864",
+    "C00672907",
+    "C00706788",
+    "C00734400",
+    "C00735530",
+    "C00735563",
+    "C00745505",
+    "C00752139",
+    "C00764076",
+    "C00768705",
+    "C00785352",
+    "C00786475",
+    "C00786921",
+    "C00787713",
+    "C00798629",
+    "C00799254",
+    "C00800847",
+    "C00802934",
+    "C00892349",
+    "C00892943",
+    "C00892950",
+    "C00893123",
+    "C00911602",
+    "C00911677",
+    "C00915710",
+    "C00925073"
+  ]
+}
