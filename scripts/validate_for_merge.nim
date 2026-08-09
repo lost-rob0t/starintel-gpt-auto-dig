@@ -1,7 +1,7 @@
 import std/[json, os, osproc, strformat, strutils, tables]
 
 
-const PagesContentBudgetBytes = 700_000_000'i64
+const PagesContentBudgetBytes = 200_000_000'i64
 
 
 type Options = object
