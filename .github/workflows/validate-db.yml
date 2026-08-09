@@ -87,6 +87,7 @@ jobs:
           /usr/bin/time -f 'validator_elapsed=%E validator_maxrss_kb=%M' \
             bin/starintel-validate --root . 2>&1 | tee validator.log
           status=${PIPESTATUS[0]}
+          set -e
           test -f unverifed
           test -f validation-errors
           echo "source-less documents: $(grep -vc '^#' unverifed || true)"
