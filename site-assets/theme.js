@@ -2,7 +2,7 @@
   "use strict";
 
   const STORAGE_KEY = "starintel-theme";
-  const DEFAULT_THEME = "midnight";
+  const DEFAULT_THEME = "black-gold";
   const THEMES = Object.freeze([
     {
       id: "midnight", label: "Midnight", scheme: "dark",
