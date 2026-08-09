@@ -1,0 +1,36 @@
+name: One-shot Nim migration fixup
+
+on:
+  push:
+    branches:
+      - agent/gop-dataset-100k-expansion
+    paths:
+      - .github/workflows/nim-migration-fixup.yml
+
+permissions:
+  contents: write
+
+jobs:
+  fixup:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          ref: agent/gop-dataset-100k-expansion
+          fetch-depth: 0
+
+      - name: Canonicalize corrected Nim validator and remove one-shot files
+        shell: bash
+        run: |
+          set -euo pipefail
+          cp scripts/starintel_validate_fast.nim scripts/starintel_validate.nim
+          rm scripts/starintel_validate_fast.nim
+          rm -f .github/workflows/nim-site-benchmark.yml
+          rm -f .github/workflows/nim-site-benchmark-status.yml
+          rm .github/workflows/nim-migration-fixup.yml
+
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -A
+          git commit -m 'Canonicalize fast Nim validator and clean one-shot workflows'
+          git push origin HEAD:agent/gop-dataset-100k-expansion
