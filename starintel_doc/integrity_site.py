@@ -85,7 +85,9 @@ def render_verification_page(receipt: dict[str, Any]) -> str:
     root = html.escape(str(receipt["merkle_root_sha256"]))
     leaf_count = int(receipt["leaf_count"])
     dtype_count = len(receipt.get("counts_by_dtype", {}))
-    script = _proof_verifier_script(str(receipt["merkle_root_sha256"])).replace("</script>", "<\\/script>")
+    script = _proof_verifier_script(str(receipt["merkle_root_sha256"])).replace(
+        "</script>", "<\\/script>"
+    )
     return f"""<!doctype html>
 <html lang="en">
 <head>
@@ -109,19 +111,20 @@ form {{ display:grid; gap:1rem; }} button {{ background:#ffd400; color:#000; bor
 <section class="hero">
 <p>STARINTEL / PUBLIC VERIFICATION</p>
 <h1>Evidence Seal</h1>
-<p>This corpus is committed to a deterministic, domain-separated SHA-256 Merkle tree.</p>
+<p>The canonical corpus is committed to a deterministic, domain-separated SHA-256 Merkle tree. Bulk bytes are distributed as ordered compressed shards instead of being duplicated inside GitHub Pages.</p>
 <code class="root">{root}</code>
 </section>
 <section class="grid">
 <div class="card"><strong>{leaf_count:,}</strong>sealed records</div>
 <div class="card"><strong>{dtype_count:,}</strong>document types</div>
 <div class="card"><strong>SHA-256</strong>hash algorithm</div>
-<div class="card"><strong>{int(receipt["corpus_size_bytes"]):,}</strong>published bytes</div>
+<div class="card"><strong>{int(receipt["corpus_size_bytes"]):,}</strong>canonical bytes</div>
 </section>
 <h2>Download and verify</h2>
-<p><a href="downloads/starintel-complete-corpus.jsonl">Complete canonical corpus</a> · <a href="downloads/starintel-evidence-seal.json">Seal receipt</a></p>
+<p><a href="downloads/starintel-complete-corpus.manifest.json">Canonical corpus manifest</a> · <a href="downloads/starintel-bulk-release.manifest.json">Bulk release manifest</a> · <a href="downloads/starintel-evidence-seal.json">Seal receipt</a></p>
+<p>Download the ordered <code>.jsonl.gz</code> shards from the manifest, decompress them in manifest order into <code>starintel-complete-corpus.jsonl</code>, then run the verifier against that reconstructed canonical stream.</p>
 <pre>python3 scripts/evidence-seal.py verify \\
-  _site/downloads/starintel-complete-corpus.jsonl \\
+  starintel-complete-corpus.jsonl \\
   _site/downloads/starintel-evidence-seal.json
 
 python3 scripts/evidence-seal.py verify-proof proof.json \\
