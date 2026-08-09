@@ -16,7 +16,7 @@ permissions:
 jobs:
   recover-franklin:
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 8
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -26,11 +26,13 @@ jobs:
       - name: Install scraper dependencies
         run: python -m pip install -r requirements/violent-offender-scrapers.txt
       - name: Run Franklin live recovery
+        env:
+          FRANKLIN_PREFIXES: A
         run: |
           out="artifacts/recovery-live/franklin"
           mkdir -p "$out"
           set +e
-          timeout 7m python scripts/scrape_violent_offender_recovery_entry.py \
+          timeout 5m python scripts/scrape_violent_offender_recovery_entry.py \
             --source franklin \
             --output "$out" \
             --timeout 30 \
