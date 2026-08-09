@@ -25,8 +25,10 @@ class NimSiteScalingTests(unittest.TestCase):
                     "dtype": "person",
                     "title": "Alice Example",
                     "summary": "alpha beta overlap",
+                    "date_added": "2026-08-08T00:00:00Z",
                     "date_updated": "2026-08-09T00:00:00Z",
                     "schema_version": "0.9.0",
+                    "status": "reviewed",
                     "sources": ["https://example.invalid/alice"],
                 },
                 {
@@ -35,8 +37,10 @@ class NimSiteScalingTests(unittest.TestCase):
                     "dtype": "org",
                     "title": "Example Labs",
                     "summary": "alpha beta overlap",
+                    "date_added": "2026-08-09T00:00:00Z",
                     "date_updated": "2026-08-09T00:00:00Z",
                     "schema_version": "0.9.0",
+                    "status": "reviewed",
                     "sources": ["https://example.invalid/labs"],
                 },
             ]
@@ -106,6 +110,33 @@ class NimSiteScalingTests(unittest.TestCase):
             self.assertTrue((site / "indexes" / "search").is_dir())
             self.assertFalse(any(site.rglob("starintel-documents.jsonl")))
             self.assertTrue((org / "alpha" / "person-alice-example.org").is_file())
+
+            root_html = (site / "index.html").read_text(encoding="utf-8")
+            self.assertIn('id="corpus-dashboard"', root_html)
+            self.assertIn("Follow the evidence.", root_html)
+            self.assertIn("assets/adar-dashboard.css", root_html)
+            self.assertIn("assets/adar-shell.js", root_html)
+            self.assertIn("assets/corpus-dashboard.js", root_html)
+            self.assertTrue((site / "datasets.html").is_file())
+            self.assertTrue((site / "dataset-catalog.json").is_file())
+
+            dashboard = json.loads((site / "dashboard-data.json").read_text(encoding="utf-8"))
+            self.assertEqual(dashboard["summary"]["documents"], 2)
+            self.assertEqual(dashboard["summary"]["people"], 1)
+            self.assertEqual(dashboard["summary"]["organizations"], 1)
+            self.assertEqual(
+                dashboard["documents_by_day"],
+                [
+                    {"date": "2026-08-08", "count": 1},
+                    {"date": "2026-08-09", "count": 1},
+                ],
+            )
+            catalog = json.loads((site / "dataset-catalog.json").read_text(encoding="utf-8"))
+            source = next(row for row in catalog if row["dataset"] == "alpha-dataset")
+            self.assertEqual(source["kind"], "source")
+            self.assertEqual(source["record_count"], 2)
+            self.assertEqual(source["added_30d"], 2)
+            self.assertIn("search.html?dataset=alpha-dataset", source["url"])
 
             alpha_members = (bulk / "memberships" / "topic-alpha.ids").read_text(encoding="utf-8")
             beta_members = (bulk / "memberships" / "topic-beta.ids").read_text(encoding="utf-8")
