@@ -16,6 +16,18 @@ def key(record: dict[str, Any]) -> tuple[str, str, str, str]:
     )
 
 
+def normalize_record(record: dict[str, Any]) -> dict[str, Any]:
+    booking_id = str(record.get("booking_id") or "").casefold().strip()
+    case_numbers = record.get("case_numbers") or []
+    if isinstance(case_numbers, list):
+        record["case_numbers"] = [
+            value
+            for value in case_numbers
+            if str(value).casefold().strip() != booking_id
+        ]
+    return record
+
+
 def load_jsonl(path: Path) -> list[dict[str, Any]]:
     if not path.exists():
         return []
@@ -28,7 +40,7 @@ def load_jsonl(path: Path) -> list[dict[str, Any]]:
             value = json.loads(line)
             if not isinstance(value, dict):
                 raise RuntimeError(f"{path}:{line_number}: expected object")
-            output.append(value)
+            output.append(normalize_record(value))
     return output
 
 
@@ -41,12 +53,17 @@ def load_summary(path: Path) -> dict[str, Any]:
     return value
 
 
-def merge(root: Path, extra: Path) -> int:
-    primary_records = load_jsonl(root / "records.jsonl")
-    extra_records = load_jsonl(extra / "records.jsonl")
+def merge(root: Path, components: list[Path]) -> int:
+    groups: list[tuple[str, list[dict[str, Any]], dict[str, Any]]] = [
+        ("primary", load_jsonl(root / "records.jsonl"), load_summary(root / "summary.json"))
+    ]
+    for component in components:
+        groups.append((component.name, load_jsonl(component / "records.jsonl"), load_summary(component / "summary.json")))
+
     merged: dict[tuple[str, str, str, str], dict[str, Any]] = {}
-    for record in primary_records + extra_records:
-        merged[key(record)] = record
+    for _, records, _ in groups:
+        for record in records:
+            merged[key(record)] = record
     records = sorted(
         merged.values(),
         key=lambda record: (
@@ -59,29 +76,32 @@ def merge(root: Path, extra: Path) -> int:
         for record in records:
             handle.write(json.dumps(record, ensure_ascii=False, sort_keys=True) + "\n")
 
-    primary_summary = load_summary(root / "summary.json")
-    extra_summary = load_summary(extra / "summary.json")
-    primary_summary["record_count"] = len(records)
-    primary_summary["sources"] = list(primary_summary.get("sources") or []) + list(extra_summary.get("sources") or [])
-    primary_summary["component_record_counts"] = {
-        "primary": len(primary_records),
-        "expanded": len(extra_records),
+    summary = groups[0][2]
+    summary["record_count"] = len(records)
+    summary["sources"] = [
+        source
+        for _, _, component_summary in groups
+        for source in list(component_summary.get("sources") or [])
+    ]
+    summary["component_record_counts"] = {
+        name: len(group_records)
+        for name, group_records, _ in groups
     }
-    (root / "summary.json").write_text(json.dumps(primary_summary, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+    (root / "summary.json").write_text(json.dumps(summary, indent=2, sort_keys=True) + "\n", encoding="utf-8")
     return len(records)
 
 
 def parse_args() -> argparse.Namespace:
-    parser = argparse.ArgumentParser(description="Merge primary and expanded violent-offender locality grabs")
+    parser = argparse.ArgumentParser(description="Merge violent-offender locality scraper output groups")
     parser.add_argument("--root", type=Path, default=Path("artifacts/violent-offender-localities"))
-    parser.add_argument("--extra", type=Path)
+    parser.add_argument("--component", action="append", type=Path, dest="components")
     return parser.parse_args()
 
 
 def main() -> int:
     args = parse_args()
-    extra = args.extra or args.root / "expanded"
-    count = merge(args.root, extra)
+    components = args.components or [args.root / "expanded", args.root / "high-yield"]
+    count = merge(args.root, components)
     print(f"merged_records={count}")
     return 0
 
