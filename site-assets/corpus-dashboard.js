@@ -3,7 +3,14 @@
 
   const NS = "http://www.w3.org/2000/svg";
   const DAY_MS = 86400000;
-  const PALETTE = ["var(--accent)", "var(--warm)", "var(--success)", "var(--purple)", "var(--orange)", "var(--teal)", "var(--blue)", "var(--pink)", "var(--neutral)"];
+  const PALETTE = [
+    "var(--accent)", "var(--warm)", "var(--success)", "var(--purple)",
+    "var(--orange)", "var(--teal)", "var(--blue)", "var(--pink)", "var(--neutral)"
+  ];
+  const VIEW_ICONS = Object.freeze({
+    cards: '<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>',
+    table: '<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="1"/><path d="M3 9h18M3 14h18M9 4v16M15 4v16"/></svg>'
+  });
 
   function number(value) {
     return new Intl.NumberFormat().format(Number(value || 0));
@@ -68,7 +75,9 @@
   function shortDate(value) {
     const date = parseDay(value);
     if (!date) return String(value || "");
-    return new Intl.DateTimeFormat(undefined, { month: "short", day: "numeric", timeZone: "UTC" }).format(date);
+    return new Intl.DateTimeFormat(undefined, {
+      month: "short", day: "numeric", timeZone: "UTC"
+    }).format(date);
   }
 
   function chooseTicks(length, maxTicks = 7) {
@@ -107,7 +116,11 @@
     const plotHeight = height - top - bottom;
     const maxCount = Math.max(...rows.map((row) => Number(row.count || 0)), 1);
     const roundedMax = Math.max(1, Math.ceil(maxCount / 5) * 5);
-    const chart = svg("svg", { viewBox: `0 0 ${width} ${height}`, role: "img", "aria-label": "Documents added by canonical date_added over time" });
+    const chart = svg("svg", {
+      viewBox: `0 0 ${width} ${height}`,
+      role: "img",
+      "aria-label": "Documents added by canonical date_added over time"
+    });
     chart.classList.add("line-chart");
 
     for (let tick = 0; tick <= 4; tick += 1) {
@@ -129,15 +142,14 @@
       return [x, y, row];
     });
 
-    const area = svg("path", {
+    chart.appendChild(svg("path", {
       d: `M ${points[0][0]} ${top + plotHeight} L ${points.map(([x, y]) => `${x} ${y}`).join(" L ")} L ${points.at(-1)[0]} ${top + plotHeight} Z`,
       class: "line-area"
-    });
-    const path = svg("path", {
+    }));
+    chart.appendChild(svg("path", {
       d: `M ${points.map(([x, y]) => `${x} ${y}`).join(" L ")}`,
       class: "line-path"
-    });
-    chart.append(area, path);
+    }));
 
     const ticks = chooseTicks(rows.length);
     points.forEach(([x, y, row], index) => {
@@ -221,8 +233,7 @@
   }
 
   function mountDashboard(root) {
-    const source = root.dataset.dashboard;
-    fetch(source)
+    fetch(root.dataset.dashboard)
       .then((response) => {
         if (!response.ok) throw new Error(`dashboard data ${response.status}`);
         return response.json();
@@ -232,10 +243,7 @@
         const typeTarget = document.getElementById("document-types-chart");
         const relationTarget = document.getElementById("relation-types-chart");
         const allRows = denseDailyRows(data.documents_by_day || []);
-
-        const renderRange = (range) => {
-          renderLine(lineTarget, rowsForRange(allRows, range));
-        };
+        const renderRange = (range) => renderLine(lineTarget, rowsForRange(allRows, range));
 
         renderRange("90");
         renderDonut(typeTarget, data.document_types || []);
@@ -275,6 +283,58 @@
     return `<tr><td><strong>${title}</strong>${row.target_title ? `<small>${escapeHtml(row.target_title)}</small>` : ""}</td><td>${escapeHtml(row.kind)}</td><td>${number(row.record_count)}</td><td>${number(row.people_count)}</td><td>${number(row.organization_count)}</td><td>${number(row.relation_count)}</td><td>${number(row.source_count)}</td><td>${number(row.added_30d)}</td><td>${escapeHtml(String(row.updated_through || "").slice(0, 10))}</td><td><a href="${escapeHtml(row.url)}">open</a>${download}</td></tr>`;
   }
 
+  function normalizedDatasetKey(row) {
+    return String(row.dataset || row.title || row.id || "")
+      .normalize("NFKC")
+      .trim()
+      .toLowerCase()
+      .replace(/[\s_-]+/g, " ");
+  }
+
+  function datasetPriority(row) {
+    const aggregate = row.kind === "topic" ? 1_000_000_000_000 : 0;
+    return aggregate
+      + Number(row.record_count || 0) * 1_000_000
+      + Number(row.source_count || 0) * 1_000
+      + Number(row.added_30d || 0);
+  }
+
+  function dedupeCatalog(rows) {
+    const unique = new Map();
+    rows.forEach((row) => {
+      const key = normalizedDatasetKey(row);
+      if (!key) return;
+      const current = unique.get(key);
+      if (!current || datasetPriority(row) > datasetPriority(current)) unique.set(key, row);
+    });
+    return [...unique.values()];
+  }
+
+  function installDatasetControlStyles() {
+    if (document.getElementById("dataset-control-hotfix")) return;
+    const style = document.createElement("style");
+    style.id = "dataset-control-hotfix";
+    style.textContent = `
+      .segmented button.icon-only-toggle{width:2.35rem;min-width:2.35rem;padding:.35rem;display:inline-grid;place-items:center}
+      .segmented button.icon-only-toggle svg{width:1.05rem;height:1.05rem;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+      .dataset-table-wrap[hidden],.dataset-card-grid[hidden]{display:none!important}
+    `;
+    document.head.appendChild(style);
+  }
+
+  function iconifyViewButtons(root) {
+    root.querySelectorAll("[data-view]").forEach((button) => {
+      const view = button.dataset.view;
+      const label = view === "table" ? "Table view" : "Card view";
+      button.type = "button";
+      button.classList.add("icon-only-toggle");
+      button.innerHTML = VIEW_ICONS[view] || "";
+      button.title = label;
+      button.setAttribute("aria-label", label);
+      button.setAttribute("aria-pressed", String(button.classList.contains("active")));
+    });
+  }
+
   function mountDatasets(root) {
     const search = document.getElementById("dataset-search");
     const sort = document.getElementById("dataset-sort");
@@ -283,15 +343,29 @@
     const tableWrap = document.getElementById("dataset-table-wrap");
     const tableBody = document.getElementById("dataset-table-body");
     let catalog = [];
+    let rawCatalogCount = 0;
     let kind = "all";
     let view = "cards";
+
+    installDatasetControlStyles();
+    iconifyViewButtons(root);
+    cards.hidden = false;
+    cards.style.display = "grid";
+    tableWrap.hidden = true;
+    tableWrap.style.display = "none";
+
+    root.querySelectorAll("[data-kind]").forEach((button) => {
+      button.type = "button";
+      button.setAttribute("aria-pressed", String(button.classList.contains("active")));
+    });
 
     function render() {
       const query = search.value.trim().toLowerCase();
       const rows = catalog.filter((row) => {
         if (kind !== "all" && row.kind !== kind) return false;
         if (!query) return true;
-        return [row.title, row.dataset, row.target_title, row.id].some((value) => String(value || "").toLowerCase().includes(query));
+        return [row.title, row.dataset, row.target_title, row.id]
+          .some((value) => String(value || "").toLowerCase().includes(query));
       });
       const comparators = {
         activity: (a, b) => Number(b.added_30d || 0) - Number(a.added_30d || 0) || Number(b.record_count || 0) - Number(a.record_count || 0),
@@ -301,11 +375,16 @@
         name: (a, b) => String(a.title || a.dataset || "").localeCompare(String(b.title || b.dataset || ""))
       };
       rows.sort(comparators[sort.value] || comparators.activity);
-      summary.textContent = `${number(rows.length)} of ${number(catalog.length)} datasets`;
+      const dedupeNote = rawCatalogCount > catalog.length ? ` · ${number(rawCatalogCount - catalog.length)} duplicates removed` : "";
+      summary.textContent = `${number(rows.length)} of ${number(catalog.length)} unique datasets${dedupeNote}`;
       cards.innerHTML = rows.map(datasetCard).join("");
       tableBody.innerHTML = rows.map(datasetTableRow).join("");
-      cards.hidden = view !== "cards";
-      tableWrap.hidden = view !== "table";
+
+      const showCards = view === "cards";
+      cards.hidden = !showCards;
+      tableWrap.hidden = showCards;
+      cards.style.display = showCards ? "grid" : "none";
+      tableWrap.style.display = showCards ? "none" : "block";
     }
 
     fetch(root.dataset.catalog)
@@ -314,10 +393,13 @@
         return response.json();
       })
       .then((rows) => {
-        catalog = rows;
+        rawCatalogCount = rows.length;
+        catalog = dedupeCatalog(rows);
         render();
       })
-      .catch((error) => { summary.textContent = `Dataset catalog unavailable: ${error.message}`; });
+      .catch((error) => {
+        summary.textContent = `Dataset catalog unavailable: ${error.message}`;
+      });
 
     search.addEventListener("input", render);
     sort.addEventListener("change", render);
