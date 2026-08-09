@@ -3,6 +3,8 @@ name: Validate Auto-Dig site UI
 on:
   pull_request:
     paths:
+      - "db/**"
+      - "digs/**"
       - "scripts/starintel_site/**"
       - "scripts/validate-for-merge.py"
       - "site-assets/**"
@@ -11,6 +13,8 @@ on:
   push:
     branches-ignore: [main]
     paths:
+      - "db/**"
+      - "digs/**"
       - "scripts/starintel_site/**"
       - "scripts/validate-for-merge.py"
       - "site-assets/**"
