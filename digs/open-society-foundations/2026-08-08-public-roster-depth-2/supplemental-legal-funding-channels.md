@@ -7,7 +7,7 @@
 
 ## Executive finding
 
-The generic edge `Open Society Foundations -> European Council on Foreign Relations` is legally under-specified. Public filings expose multiple distinct Open Society entities and multiple recipient entities. They must not be collapsed into one donor or one recipient node.
+The generic edge `Open Society Foundations -> European Council on Foreign Relations` is legally and financially under-specified. Public records expose multiple distinct Open Society entities, different recipient entities, and different accounting concepts. **Award commitments, annual filing-reported payments, refunds, and recipient-side audited income must remain separate.**
 
 Candidate legal nodes not returned by exact-name repository search in this pass include:
 
@@ -19,23 +19,48 @@ Candidate legal nodes not returned by exact-name repository search in this pass 
 - ECFR Deutschland GmbH — German registry identifier still unresolved;
 - Soros Economic Development Fund Open Society Foundation - London — UK establishment `BR021288`, requiring entity resolution.
 
-## 1. Open Society Institute -> ECFR: corrected longitudinal series
+## 1. Open Society Institute -> ECFR: award versus payment
 
-IRS-derived grant data for **Open Society Institute** identifies **European Council on Foreign Relations** as a repeated grantee.
+Two source families describe related but non-equivalent financial facts.
 
-The funder-level grant index reports:
+### Archived OSF award record
 
-- **$5.0 million across two ECFR grants in 2022–2023**;
-- **$2.5 million across two ECFR grants in 2020–2021**.
+A historical first-party OSF grant record preserved by Wikidata references reports:
 
-The FY2023 filing directly shows a **$2.5 million** ECFR grant. Therefore the 2022 member of the 2022–2023 pair is **$2.5 million**, not $5 million.
+- recipient: European Council on Foreign Relations;
+- award amount: **$5,000,000**;
+- displayed point in time: **2022**;
+- purpose: general support;
+- historical OSF grant ID: **`OR2021-83857`**.
 
-This corrects an earlier secondary-database lead that described a $5 million 2022 award. The secondary value is superseded and must not be canonicalized.
+This is an **award/commitment record**, not automatically an annual cash-payment amount.
 
-The 2020–2021 pair totals $2.5 million, but this pass has not resolved the exact split between those two years; do not invent it.
+### IRS-derived Open Society Institute payment records
+
+Open Society Institute's IRS-derived funder index separately reports:
+
+- **$5.0 million total across two ECFR grant rows in 2022–2023**;
+- FY2023 directly reports **$2.5 million** to ECFR;
+- therefore the other 2022–2023 IRS row is **$2.5 million**;
+- another **$2.5 million total across two ECFR grant rows in 2020–2021**, with the annual split unresolved in this pass.
+
+### Reconciliation
+
+Do **not** call the $5m award and the $2.5m FY2022 filing row contradictory. A multi-year or installment award can produce annual tax-return payments smaller than the original award amount. The sources currently support this as the leading accounting explanation, but the actual payment schedule still needs the underlying grant agreement or complete first-party grant record.
+
+Canonical modeling should therefore distinguish something like:
+
+```text
+award / commitment:  $5,000,000  (historical OSF grant record)
+payment / outlay:     $2,500,000  (OSI FY2022 IRS-reported grant row, inferred from two-year aggregate)
+payment / outlay:     $2,500,000  (OSI FY2023 direct IRS-derived row)
+```
+
+Do not sum the award and payments as if they were three independent grants.
 
 **Sources:**
 
+- historical OSF reference: `https://www.opensocietyfoundations.org/grants/past?grant_id=OR2021-83857` (preserved in Wikidata reference index);
 - https://philanthropy.org/990/report/137029285/open-society-institute/2023
 - https://philanthropy.org/990/grants-by/137029285/open-society-institute
 
@@ -47,7 +72,7 @@ Indexed historical OSF grant references identify a **$17,732,000** general-suppo
 
 Indexed grant sources identify **Foundation to Promote Open Society** as the legal funder and describe a 2023–2028 term.
 
-Verification remains below direct-filing-row level until the exact FPOS Part XV/foreign-grant row or restored first-party OSF grant page is captured. The exact grant ID is a strong source-recovery key, not a substitute for the filing row.
+Treat **$17.732m as the award/commitment amount**, not automatically as the amount paid in any one FPOS tax year or recognized by ECFR in one audited year. Direct FPOS filing-row capture remains pending.
 
 ## 3. Verified FPOS -> Open Society Foundation London channel
 
@@ -58,12 +83,10 @@ FPOS FY2022 IRS e-file controlled-entity data reports two separate flows involvi
 
 Do not net these silently.
 
-FPOS FY2024 IRS-derived Part XV grant data then directly lists two additional OSF London awards:
+FPOS FY2024 IRS-derived Part XV grant data directly lists two additional OSF London awards/payments as filed:
 
 - **$44,927,239**;
 - **$8,072,761**.
-
-The earlier staging note that treated these FY2024 values as pending is superseded: the rows are now filing-derived and are staged as verified public filing facts.
 
 Open Society Foundation London is independently an active UK company, number `10187396`.
 
@@ -113,19 +136,21 @@ The Delaware entity repeatedly funds the New York Inc entity:
 
 This is a documented inter-entity funding chain, not an alias relationship.
 
-The New York Inc entity's FY2024 filing also names current OSF leadership figures in governance/management roles, including Pedro Abramovay, Binaifer Nowrojee, Leonard Benardo, and Maija Arbolino. These are organization-reported roles and should be modeled temporally.
+The New York Inc entity's FY2024 filing also names current OSF leadership figures in governance/management roles, including Pedro Abramovay, Binaifer Nowrojee, Leonard Benardo, Debbie Fine, and Maija Arbolino. These are organization-reported roles and should be modeled temporally.
 
 ## 6. Fund For Policy Reform Inc -> ECFR Deutschland leads
 
-A secondary Candid-backed grant compilation identifies:
+Historical first-party OSF grant references preserved in Wikidata independently preserve the exact values, purposes, and old OSF grant IDs for the `Unlock Europe's Majority` series:
 
-| Year | Recipient | Amount | Purpose | Verification |
-|---|---|---:|---|---|
-| 2020 | ECFR Deutschland GmbH | $1,000,261 | Unlock Europe's Majority | direct foreign-grant row pending |
-| 2021 | ECFR Deutschland GmbH | $999,774 | nonpartisan Unlock Europe's Majority activities | direct foreign-grant row pending |
-| 2022 | ECFR Deutschland GmbH | $2,132,355 | Unlock Europe's Majority | direct foreign-grant row pending |
+| Display year | Amount | Historical OSF grant ID |
+|---|---:|---|
+| 2020 | $1,000,261 | `OR2020-70385` |
+| 2021 | $999,774 | `OR2021-80195` |
+| 2022 | $2,132,355 | `OR2022-85024` |
 
-The current IRS-derived Fund For Policy Reform Inc profile confirms substantial foreign-grant spending, but its simplified Schedule I display does not expose these foreign-recipient rows. They remain strong acquisition targets, not canonical facts.
+A separate Candid-backed compilation attributes those awards to **Fund For Policy Reform Inc** and recipient **ECFR Deutschland GmbH**. That legal-payer/recipient-entity attribution still needs direct Schedule F capture before canonicalization.
+
+So the amount/purpose/source-recovery keys are stronger than before, while the exact legal payer remains one verification step lower.
 
 ## 7. Separate UK SEDF establishment
 
@@ -135,39 +160,41 @@ Do not merge this with Open Society Foundation London `10187396` based on naming
 
 ## 8. Modeling consequence
 
-The defensible legal-funding graph now contains at least:
+The defensible graph now contains different relation classes:
 
 ```text
-Open Society Institute
-    -> European Council on Foreign Relations
+Open Society network / grant system
+    -> award or commitment records
 
-Foundation to Promote Open Society
-    -> Open Society Foundation London
-    -> European Council on Foreign Relations [large 2023 award lead; direct row pending]
-    -> Institute for Human Sciences
-    -> Bard College
-    -> Central European University
-    -> Soros Economic Development Fund
+Open Society Institute (EIN 13-7029285)
+    -> annual IRS-reported ECFR grant payments
 
-Fund for Policy Reform (35-7090597)
-    -> Fund For Policy Reform Inc (26-4351242)
-        -> ECFR Deutschland GmbH [2020-2022 foreign-grant series pending direct row capture]
+Foundation to Promote Open Society (EIN 26-3753801)
+    -> annual IRS-reported grants / controlled-entity transfers
+
+Fund for Policy Reform (EIN 35-7090597)
+    -> Fund For Policy Reform Inc (EIN 26-4351242)
+        -> ECFR Deutschland GmbH [legal payer/recipient attribution awaiting Schedule F]
+
+ECFR legal entities
+    -> recipient-side audited income
 ```
 
-This is why `Open Society Foundations` should remain an umbrella/network analytical node rather than being used as the legal payer for every transaction.
+Never collapse these accounting layers into one edge amount.
 
 ## Next source-acquisition targets
 
-1. Capture the direct FPOS filing row for grant ID `OR2023-88176` / $17.732m ECFR award.
-2. Resolve the 2020 and 2021 Open Society Institute ECFR grant amounts individually; only their combined $2.5m is presently filing-index verified.
-3. Capture Fund For Policy Reform Inc Schedule F rows for ECFR Deutschland, 2020–2022.
-4. Parse OSF London 2023–2025 accounts for grant income, related-party flows, and onward grants.
-5. Resolve ECFR Deutschland's legal registry identifier.
-6. Resolve SEDF's U.S./foreign legal identity against UK establishment `BR021288`.
+1. Capture the direct FPOS filing row/payment schedule for award `OR2023-88176` / $17.732m.
+2. Recover the full first-party grant record for `OR2021-83857` to confirm term and installment schedule for the $5m ECFR award.
+3. Resolve the individual 2020 and 2021 OSI ECFR payment rows; only their combined $2.5m is currently filing-index verified.
+4. Capture Fund For Policy Reform Inc Schedule F rows for ECFR Deutschland, 2020–2022.
+5. Parse OSF London 2023–2025 accounts for grant income, related-party flows, and onward grants.
+6. Resolve ECFR Deutschland's legal registry identifier.
+7. Resolve SEDF's U.S./foreign legal identity against UK establishment `BR021288`.
 
 ## Guardrails
 
-- Do not sum grant commitments, annual payments, refunds, and recipient-side audited income unless periods and accounting bases match.
+- Keep **award value**, **obligation/commitment**, **annual payment/outlay**, **refund**, and **recipient recognized income** separate.
 - Funding is not evidence of policy control or misconduct.
-- Preserve exact legal names, EINs, company numbers, and filing-year roles.
+- Preserve exact legal names, EINs, company numbers, grant IDs, and filing-year roles.
 - Do not collapse similarly named entities.
