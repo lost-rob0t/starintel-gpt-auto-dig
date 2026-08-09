@@ -46,6 +46,17 @@ This ledger is cumulative. New evidence is appended or reconciled here; contradi
 | USAR-CANTOR-037 | 2026-01 | SPA §4.12 barred each purchaser and covered persons from buying, selling or shorting USAR from execution until first public announcement and expressly addressed multi-manager/information-barrier structures. | confirmed contract / trading restriction | Securities Purchase Agreement | conventional PIPE information-control mechanism |
 | USAR-CANTOR-038 | 2026-01-26 | USAR's public announcement was timestamped 7:01 a.m. ET; the associated 8-K was accepted by SEC at 7:07:10 a.m. ET. | confirmed public-cleansing chronology | USAR release; SEC filing index | exact purchaser execution/wall-cross timestamps unresolved |
 | USAR-CANTOR-039 | pre-2026-01-26 | Any PIPE purchaser or related trading desk traded USAR while aware of transaction MNPI before cleansing. | hypothesis | no sufficient evidence located | **not established**; first-contact/wall-cross timestamps and trading records are required |
+| USAR-CANTOR-040 | 2026-01 | Blitzer and Shannon were each members of Freedom Fund's general partner and special limited partner; the GP was entitled to a performance allocation on fund gains and an approximately $1.3M one-time setup fee. | confirmed related-party economics | USAR S-1 / proxy | confirmed economics; individual split and carry percentage unresolved |
+| USAR-CANTOR-041 | 2026-02-11 | The SEC declared USAR's PIPE resale registration effective at 4:30 p.m. ET. | confirmed registration chronology | SEC Notice of Effectiveness | confirmed |
+| USAR-CANTOR-042 | 2026-02-12 | David Kronenfeld received 6,977 USAR shares in a pro-rata distribution from Freedom Fund, of which he was a limited partner. | confirmed related-party distribution | SEC Form 4 | confirmed; filing value/price implies ~$150K, but original LP contribution not established |
+| USAR-CANTOR-043 | 2026-06 | USAR registration materials report Freedom Fund beneficially owning only 15,734 shares versus 13,955,000 originally allocated. | confirmed holdings change | SEC registration statement | 13,939,266-share / ~99.887% reduction; do not assume all reduction was LP distributions |
+| USAR-CANTOR-044 | 2026-02 onward | Freedom Fund functioned at least partly as an aggregation/SPV vehicle distributing registered USAR shares to LPs. | analytic inference | effectiveness timing + Kronenfeld Form 4 + later holdings | plausible, **not established as fund's exclusive or original purpose** |
+| USAR-CANTOR-045 | 2026-01-29 | Michael Blitzer bought 100,000 USAR shares in the open market after public announcement and PIPE closing chronology, at ~$21.4386 weighted-average price. | confirmed insider transaction | SEC Form 4 | post-announcement transaction; does not establish preannouncement trading |
+| USAR-CANTOR-046 | pre-2026-01-01 | 2025 SEC filings described Blitzer as controlling IPAM, Inflection Point GP I and Fund I, including voting/investment discretion over Fund I securities. | confirmed pre-change control baseline | SEC filings | confirmed |
+| USAR-CANTOR-047 | 2026-01-01 | Inflection Point amended IPAM/GP I internal governance; Jan. 5 Forms 4 say the resulting beneficial-ownership change was administrative and not caused by sale, transfer or disposition. | confirmed governance chronology | SEC Forms 4 | confirmed; amended governance documents remain unlocated |
+| USAR-CANTOR-048 | 2026-01 onward | Post-change filings place Fund I voting/dispositive power in a three-person majority investment committee: Blitzer, Shannon and an unnamed independent-of-issuer third member; materially identical structure is disclosed for Freedom Fund. | confirmed governance structure | SEC prospectuses / USAR S-1 | confirmed; third member identity unresolved |
+| USAR-CANTOR-049 | 2026-01-23 | SEC/IAPD lists Inflection Point Asset Management LLC (CRD 340616 / SEC 802-135401) as an active Exempt Reporting Adviser effective Jan. 23, 2026. | confirmed regulatory chronology | SEC/IAPD | confirmed; relationship to Freedom Fund/USAR PIPE not established |
+| USAR-CANTOR-050 | 2026-01 | Adam Saks is the unnamed third investment-committee member. | candidate hypothesis | timing: became IPAM CFO in Jan. 2026; no explicit committee source | **not established; do not graph as member** |
 
 ## Priority document requests / retrieval targets
 
@@ -58,9 +69,13 @@ This ledger is cumulative. New evidence is appended or reconciled here; contradi
 7. First-contact/wall-cross timestamps, confidentiality letters, investor-presentation distribution logs, and signature/execution times for the January PIPE purchasers.
 8. USAR pricing-committee and audit-committee minutes approving the $300.0325M Inflection Point Freedom Fund allocation.
 9. Placement-agent allocation book / bookbuilding records and preannouncement trading records sufficient to test information-barrier compliance.
-10. Payment history for Cantor's predecessor-SPAC deferred fee and any 2024 capital-raise-linked fee.
-11. Cantor and USAR responses to the July 7, 2026 congressional letters.
-12. Any later Commerce response to the February/July congressional inquiries.
+10. **Freedom Fund LP agreement, Freedom Fund GP LLC operating agreement, LP roster/capital commitments, GP/SLP ownership split and performance-allocation formula.**
+11. **Jan. 1, 2026 IPAM / Inflection Point GP I governance amendments and document identifying the third investment-committee member.**
+12. **IPAM Form ADV/private-fund schedules associated with its Jan. 23, 2026 ERA effective date.**
+13. Full Freedom Fund February distribution schedule and setup-fee invoice/payment record.
+14. Payment history for Cantor's predecessor-SPAC deferred fee and any 2024 capital-raise-linked fee.
+15. Cantor and USAR responses to the July 7, 2026 congressional letters.
+16. Any later Commerce response to the February/July congressional inquiries.
 
 ## Core sources
 
@@ -75,6 +90,10 @@ This ledger is cumulative. New evidence is appended or reconciled here; contradi
 - https://www.sec.gov/Archives/edgar/data/1970622/000197062226000038/usar-20260331.htm
 - https://www.sec.gov/Archives/edgar/data/1970622/000162828026003966/form8-k2026x0128.htm
 - https://www.sec.gov/Archives/edgar/data/1970622/000121390026064453/ea029340201ex10-3.htm
+- https://www.sec.gov/Archives/edgar/data/2012318/000121390026001494/xslF345X03/ownership.xml
+- https://www.sec.gov/Archives/edgar/data/1970622/000121390026001486/xslF345X03/ownership.xml
+- https://www.sec.gov/Archives/edgar/data/2097702/000121390026033178/ea0268687-03.htm
+- https://adviserinfo.sec.gov/firm/summary/340616
 - https://www.sec.gov/Archives/edgar/data/1094831/000121390025015387/xslSCHEDULE_13D_X01/primary_doc.xml
 - https://www.sec.gov/Archives/edgar/data/1839530/000121390025096631/xslSCHEDULE_13D_X01/primary_doc.xml
 - https://www.whitehouse.gov/wp-content/uploads/2025/07/Howard-W.-Lutnick-Limited-Waiver-Pursuant-to-18-U.S.C.-208b1.pdf
