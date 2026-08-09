@@ -105,7 +105,7 @@ class AdarDashboardTests(unittest.TestCase):
         self.assertIn('addLink(nav, "Graph", `${local}graph.html`)', shell)
         self.assertIn('addLink(nav, "Documents", `${local}documents.html`)', shell)
         self.assertIn('addLink(nav, "Sources", `${local}sources.html`)', shell)
-        self.assertIn('window.StarIntelThemes?.apply("black-gold")', shell)
+        self.assertNotIn("applyBlackGoldDefault", shell)
         self.assertIn("<svg", shell)
 
     def test_dashboard_assets_are_dependency_free_and_accessible(self) -> None:
