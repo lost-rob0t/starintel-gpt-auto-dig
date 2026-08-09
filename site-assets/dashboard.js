@@ -44,8 +44,8 @@
     dataset: row[4],
     status: row[5],
     updated: row[6],
+    summary: row[7] || "",
     review: "reviewed",
-    summary: "",
     url: `${rootPrefix}${row[0]}/documents.html?id=${encodeURIComponent(row[1])}`
   });
 
