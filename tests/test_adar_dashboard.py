@@ -96,23 +96,39 @@ class AdarDashboardTests(unittest.TestCase):
         self.assertIn('output / "datasets.html"', source)
         self.assertNotIn('topic_cards = "".join', source)
 
-    def test_cross_site_navigation_is_explicit_and_preserves_local_tools(self) -> None:
+    def test_cross_site_navigation_is_explicit_and_has_working_local_routes(self) -> None:
         shell = SHELL.read_text(encoding="utf-8")
         self.assertIn("https://auto-research.starintel.actor/", shell)
-        self.assertIn('"Dashboard"', shell)
-        self.assertIn('"Datasets"', shell)
-        self.assertIn('"Research ↗"', shell)
-        self.assertIn("localLinks", shell)
-        self.assertIn('link.label === "Dashboard" ? "Dataset" : link.label', shell)
+        self.assertIn('addLink(nav, "Dashboard", `${prefix}index.html#corpus-dashboard`)', shell)
+        self.assertIn('addLink(nav, "Datasets", `${prefix}datasets.html`)', shell)
+        self.assertIn('addLink(nav, "Research", RESEARCH_URL, "research")', shell)
+        self.assertIn('addLink(nav, "Graph", `${local}graph.html`)', shell)
+        self.assertIn('addLink(nav, "Documents", `${local}documents.html`)', shell)
+        self.assertIn('addLink(nav, "Sources", `${local}sources.html`)', shell)
+        self.assertNotIn("applyBlackGoldDefault", shell)
+        self.assertIn("<svg", shell)
 
     def test_dashboard_assets_are_dependency_free_and_accessible(self) -> None:
         javascript = DASHBOARD_JS.read_text(encoding="utf-8")
         css = DASHBOARD_CSS.read_text(encoding="utf-8")
         self.assertNotIn("cdn", javascript.lower())
         self.assertIn('role: "img"', javascript)
+        self.assertIn("denseDailyRows", javascript)
+        self.assertIn("rowsForRange", javascript)
+        self.assertIn("canonical <code>date_added</code>", javascript)
         self.assertIn("chart-fallback", css)
         self.assertIn("prefers-reduced-motion", css)
         self.assertIn("IBM Plex Sans", css)
+
+    def test_dataset_browser_dedupes_and_switches_views_with_icons(self) -> None:
+        javascript = DASHBOARD_JS.read_text(encoding="utf-8")
+        self.assertIn("dedupeCatalog", javascript)
+        self.assertIn("normalizedDatasetKey", javascript)
+        self.assertIn("duplicates removed", javascript)
+        self.assertIn("VIEW_ICONS", javascript)
+        self.assertIn('aria-label", label', javascript)
+        self.assertIn('cards.style.display = showCards ? "grid" : "none"', javascript)
+        self.assertIn('tableWrap.style.display = showCards ? "none" : "block"', javascript)
 
 
 if __name__ == "__main__":
