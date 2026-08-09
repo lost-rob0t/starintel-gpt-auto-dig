@@ -109,13 +109,19 @@ class AdarDashboardTests(unittest.TestCase):
         self.assertNotIn("applyBlackGoldDefault", shell)
         self.assertIn("<svg", shell)
 
-    def test_dashboard_assets_are_dependency_free_and_accessible(self) -> None:
+    def test_dashboard_assets_use_pinned_d3_and_accessible_adaptive_scaling(self) -> None:
         javascript = DASHBOARD_JS.read_text(encoding="utf-8")
         css = DASHBOARD_CSS.read_text(encoding="utf-8")
-        self.assertNotIn("cdn", javascript.lower())
-        self.assertIn('role: "img"', javascript)
+        self.assertIn("https://cdn.jsdelivr.net/npm/d3@7.9.0/dist/d3.min.js", javascript)
+        self.assertIn("scaleSymlog", javascript)
+        self.assertIn("scaleUtc", javascript)
+        self.assertIn("scaleProfile", javascript)
+        self.assertIn("symlogTicks", javascript)
+        self.assertIn("ResizeObserver", javascript)
+        self.assertIn('.attr("role", "img")', javascript)
         self.assertIn("denseDailyRows", javascript)
         self.assertIn("rowsForRange", javascript)
+        self.assertIn("adaptive symlog", javascript)
         self.assertIn("canonical <code>date_added</code>", javascript)
         self.assertIn("chart-fallback", css)
         self.assertIn("prefers-reduced-motion", css)
