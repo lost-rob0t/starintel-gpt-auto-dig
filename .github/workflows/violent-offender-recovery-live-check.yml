@@ -5,6 +5,7 @@ on:
     paths:
       - "scripts/scrape_violent_offender_recovery.py"
       - "scripts/scrape_violent_offender_recovery_fixups.py"
+      - "scripts/scrape_violent_offender_recovery_entry.py"
       - "scripts/scrape_violent_offender_localities.py"
       - "scripts/scrape_violent_offender_localities_extra.py"
       - "scripts/scrape_violent_offender_high_yield.py"
@@ -48,7 +49,7 @@ jobs:
           out="artifacts/recovery-live/$SOURCE"
           mkdir -p "$out"
           set +e
-          timeout 18m python scripts/scrape_violent_offender_recovery_fixups.py \
+          timeout 18m python scripts/scrape_violent_offender_recovery_entry.py \
             --source "$SOURCE" \
             --output "$out" \
             --timeout 30 \
