@@ -3,6 +3,7 @@
   const source = script?.dataset.documents || "documents.json";
   const params = new URLSearchParams(location.search);
   const requestedDataset = params.get("dataset") || "";
+  const requestedId = params.get("id") || "";
   const search = document.getElementById("documents-search");
   const type = document.getElementById("documents-type");
   const review = document.getElementById("documents-review");
@@ -20,9 +21,8 @@
   let records = [];
   let page = 0;
 
-  if (requestedDataset && search) {
-    search.placeholder = `Search within ${requestedDataset}…`;
-  }
+  if (requestedDataset && search) search.placeholder = `Search within ${requestedDataset}…`;
+  if (requestedId && search) search.value = requestedId;
 
   const filtered = () => {
     const needle = String(search?.value || "").trim().toLowerCase();
@@ -52,7 +52,7 @@
         <div class="document-card-footer"><code>${esc(record.id)}</code><span>${esc(record.updated || "")}</span></div>
       </article>`).join("");
     const datasetPrefix = requestedDataset ? `${requestedDataset} · ` : "";
-    summary.textContent = `${datasetPrefix}${matches.length.toLocaleString()} matching records · showing ${matches.length ? start + 1 : 0}–${Math.min(start + pageSize, matches.length)}`;
+    summary.textContent = `${datasetPrefix}${matches.length.toLocaleString()} indexed matches · showing ${matches.length ? start + 1 : 0}–${Math.min(start + pageSize, matches.length)}`;
     pageLabel.textContent = `Page ${page + 1} of ${pages}`;
     previous.disabled = page === 0;
     next.disabled = page >= pages - 1;
