@@ -8,14 +8,18 @@ on:
       - "scripts/starintel_validate.nim"
       - "scripts/starintel_transport.nim"
       - "scripts/validate_for_merge.nim"
+      - "scripts/package_bulk_release.py"
       - "scripts/validate-for-merge.py"
       - "scripts/build-auto-dig-quasar.py"
       - "starintel_auto_dig.nimble"
+      - "starintel_doc/integrity_site.py"
       - "site-assets/**"
       - "tests/test_adar_dashboard.py"
       - "tests/test_dashboard_graph.py"
       - "tests/test_auto_dig_quasar.py"
+      - "tests/test_nim_site_scaling.py"
       - "docs/quasar-integration.md"
+      - "docs/pages-site-size-architecture.md"
       - "quasar-fork.lock.json"
       - ".github/workflows/validate-site-ui.yml"
   push:
@@ -26,14 +30,18 @@ on:
       - "scripts/starintel_validate.nim"
       - "scripts/starintel_transport.nim"
       - "scripts/validate_for_merge.nim"
+      - "scripts/package_bulk_release.py"
       - "scripts/validate-for-merge.py"
       - "scripts/build-auto-dig-quasar.py"
       - "starintel_auto_dig.nimble"
+      - "starintel_doc/integrity_site.py"
       - "site-assets/**"
       - "tests/test_adar_dashboard.py"
       - "tests/test_dashboard_graph.py"
       - "tests/test_auto_dig_quasar.py"
+      - "tests/test_nim_site_scaling.py"
       - "docs/quasar-integration.md"
+      - "docs/pages-site-size-architecture.md"
       - "quasar-fork.lock.json"
       - ".github/workflows/validate-site-ui.yml"
   workflow_dispatch:
@@ -123,6 +131,9 @@ jobs:
 
       - name: Build canonical Nim merge gate
         run: nimble buildFast
+
+      - name: Test Pages deduplication invariants
+        run: python3 -m unittest tests.test_nim_site_scaling
 
       - name: Run complete StarIntel merge and ADAR surface gate
         run: bin/validate-for-merge --site
