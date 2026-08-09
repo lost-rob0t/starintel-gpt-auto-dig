@@ -96,6 +96,37 @@
 - Raised IPAM's Jan/Feb 2026 Form ADV/private-fund schedules, Freedom Fund formation documents, and the full LP/distribution roster as the next primary evidence targets.
 - Extended `EVIDENCE.md` through **USAR-CANTOR-055**.
 
+### IPAM Form ADV public-source boundary
+
+- Added `IPAM-FORM-ADV-SEARCH.md`.
+- Confirmed IPAM's current IAPD identity: CRD 340616 / SEC 802-135401 / active Exempt Reporting Adviser effective Jan. 23, 2026.
+- Resolved the SEC's monthly exempt-adviser archive path for Dec. 2025-Jan./Feb. 2026 but documented a binary-download/tooling boundary that prevented extraction in the current research environment.
+- Explicitly classified this as a **tool-access limitation**, not evidence that the underlying adviser data are unavailable publicly.
+- Targeted exact-name EDGAR searches did not locate a standalone Freedom Fund Schedule 13D/13G or Form D filing exposing additional LPs; preserved as a negative indexed-search result only.
+- Kept the public source-backed Freedom Fund roster at Blitzer/Shannon/Kronenfeld plus the unnamed committee seat pending the actual Form ADV/private-fund schedule.
+
+### Commerce ELPO / gatekeeping sub-pass
+
+- Added `COMMERCE-ELPO-GATEKEEPING-SEARCH.md` and then expanded it with named ethics-program custodians.
+- Confirmed from OGE's current Agency Ethics Program Contact Information that **John K. Guenther** is Commerce's Designated Agency Ethics Official, designated Jan. 24, 2025, and **Monica Trucco** is Alternate DAEO.
+- Confirmed Commerce currently identifies Trucco as Acting Assistant General Counsel for Ethics Law and Program and Guenther as Deputy General Counsel for Administration / senior career legal officer.
+- Confirmed OGE treats **5 C.F.R. § 2635.502(d) authorizations as discrete ethics records** and has released such records through its Electronic Reading Room / FOIA process.
+- Reframed the missing USAR ethics record as a concrete written-record target: date, approving official, matter description, factual basis, scope and screening conditions of any authorization.
+- Targeted official Commerce/OGE/White House searches still did not locate the gatekeeping agreement itself, a USAR-specific recusal memorandum, or a USAR/Cantor-specific § 2635.502(d) authorization.
+- Preserved this strictly as a **negative public-index search**, not proof no authorization/screening existed.
+- Added a FOIA-ready custodian list led by Guenther, Trucco, Office of the Secretary and the NIST/CHIPS USAR deal team.
+
+### § 2635.502 matter-classification sub-pass
+
+- Added `SECTION-2635-502-MATTER-TEST.md`.
+- Located OGE DAEOgram DO-06-029 explaining that a particular matter involving specific parties typically includes an **isolatable transaction or related set of transactions between identified parties**, with contracts/grants/agreements as examples.
+- OGE guidance says specific-party government agreement matters can begin at preliminary stages when the government identifies the prospective outside party, not only when final documents are executed.
+- Applied that framework cautiously to USAR: the Nov. 2025 introduction and resulting USAR-specific CHIPS engagement are a plausible start point for the matter analysis, subject to Commerce ELPO's actual classification.
+- Located OGE precedent emphasizing that a covered relationship alone does not answer § 2635.502(a); the covered former employer must be a **party or represent a party in the relevant matter** for the core specific-party trigger.
+- Reframed the decisive legal/factual issue as whether the government financing and Cantor-led PIPE were an integrated **related set of transactions** for ethics purposes or separate matters despite their disclosed economic dependency.
+- Recorded counterevidence: Cantor is not shown as a direct signatory to the federal financing agreements in reviewed public documents; Moelis—not Cantor—was USAR's exclusive financial adviser on the government agreements.
+- Elevated the Jan. 16 Cantor engagement letter from a fee target to a **representation-scope target** because it may define whether Cantor represented USAR beyond the private placement workstream.
+
 ### Current classification
 
-The evidence supports a **documented potential conflict / related-party-benefit inquiry with a concrete former-employer recusal question**. It establishes a precise $51.003M aggregate PIPE cost pool, a complete institutional purchaser allocation, a disclosed $300.03M related-party allocation, documented GP economics, rapid post-registration distributions, and a Jan. 2026 restructuring of fund-level investment authority. The Freedom Fund's known natural-person chain is currently Blitzer/Shannon/Kronenfeld plus one unidentified committee member; the broader LP roster remains non-public in the reviewed SEC material. The evidence still does not establish insider trading, bribery, kickbacks, criminal corruption, Commerce selection of Cantor, an ethics violation, prohibited preannouncement trading, or that the Inflection Point governance changes were made to facilitate the USAR transaction.
+The evidence supports a **documented potential conflict / related-party-benefit inquiry with a concrete former-employer recusal question**. The public record now supports treating the USAR Commerce process itself as a specific-party matter and supports analyzing its origin before final June agreements. The unresolved hinge is whether Cantor's private-placement representation belonged to that same particular matter or remained a distinct financing matter, how substantially Lutnick participated after Cantor's Jan. 16 engagement, and whether a written § 2635.502(d) authorization or screening determination existed. No ethics violation, insider trading, bribery, kickback, or criminal corruption finding is established.
