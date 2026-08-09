@@ -16,7 +16,7 @@ permissions:
 jobs:
   recover-franklin:
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -30,11 +30,11 @@ jobs:
           out="artifacts/recovery-live/franklin"
           mkdir -p "$out"
           set +e
-          timeout 12m python scripts/scrape_violent_offender_recovery_entry.py \
+          timeout 7m python scripts/scrape_violent_offender_recovery_entry.py \
             --source franklin \
             --output "$out" \
             --timeout 30 \
-            --max-records-per-source 500
+            --max-records-per-source 50
           status=$?
           set -e
           echo "COLLECTOR_EXIT=$status"
