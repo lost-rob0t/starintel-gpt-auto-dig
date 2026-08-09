@@ -1,8 +1,8 @@
 (() => {
   "use strict";
 
-  const NS = "http://www.w3.org/2000/svg";
   const DAY_MS = 86400000;
+  const D3_URL = "https://cdn.jsdelivr.net/npm/d3@7.9.0/dist/d3.min.js";
   const PALETTE = [
     "var(--accent)", "var(--warm)", "var(--success)", "var(--purple)",
     "var(--orange)", "var(--teal)", "var(--blue)", "var(--pink)", "var(--neutral)"
@@ -11,9 +11,19 @@
     cards: '<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>',
     table: '<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="1"/><path d="M3 9h18M3 14h18M9 4v16M15 4v16"/></svg>'
   });
+  let d3Promise = null;
 
   function number(value) {
     return new Intl.NumberFormat().format(Number(value || 0));
+  }
+
+  function compactNumber(value) {
+    const numeric = Number(value || 0);
+    if (Math.abs(numeric) < 1000) return number(Math.round(numeric));
+    return new Intl.NumberFormat(undefined, {
+      notation: "compact",
+      maximumFractionDigits: Math.abs(numeric) >= 100000 ? 0 : 1
+    }).format(numeric);
   }
 
   function escapeHtml(value) {
@@ -22,10 +32,22 @@
     })[char]);
   }
 
-  function svg(name, attrs = {}) {
-    const node = document.createElementNS(NS, name);
-    Object.entries(attrs).forEach(([key, value]) => node.setAttribute(key, String(value)));
-    return node;
+  function loadD3() {
+    if (window.d3?.scaleSymlog && window.d3?.scaleUtc) return Promise.resolve(window.d3);
+    if (d3Promise) return d3Promise;
+    d3Promise = new Promise((resolve, reject) => {
+      const script = document.createElement("script");
+      script.src = D3_URL;
+      script.async = true;
+      script.crossOrigin = "anonymous";
+      script.addEventListener("load", () => {
+        if (window.d3?.scaleSymlog && window.d3?.scaleUtc) resolve(window.d3);
+        else reject(new Error("D3 loaded without required scale modules"));
+      }, { once: true });
+      script.addEventListener("error", () => reject(new Error("D3 chart runtime failed to load")), { once: true });
+      document.head.appendChild(script);
+    });
+    return d3Promise;
   }
 
   function parseDay(value) {
@@ -72,123 +94,204 @@
     });
   }
 
-  function shortDate(value) {
-    const date = parseDay(value);
-    if (!date) return String(value || "");
-    return new Intl.DateTimeFormat(undefined, {
-      month: "short", day: "numeric", timeZone: "UTC"
-    }).format(date);
+  function scaleProfile(d3, rows) {
+    const counts = rows.map((row) => Math.max(0, Number(row.count || 0)));
+    const positive = counts.filter((value) => value > 0).sort((left, right) => left - right);
+    const max = d3.max(counts) || 1;
+    const median = d3.median(positive) || 1;
+    const lowerQuartile = d3.quantileSorted(positive, 0.25) || median;
+    const zeroShare = counts.length ? counts.filter((value) => value === 0).length / counts.length : 0;
+    const skew = max / Math.max(median, 1);
+    const symlog = max >= 10000 && (skew >= 12 || zeroShare >= 0.45);
+    const constant = Math.max(1, Math.min(lowerQuartile, max / 1000));
+    return { max, symlog, constant };
   }
 
-  function chooseTicks(length, maxTicks = 7) {
-    if (length <= maxTicks) return new Set(Array.from({ length }, (_, index) => index));
-    const ticks = new Set([0, length - 1]);
-    const step = (length - 1) / (maxTicks - 1);
-    for (let index = 1; index < maxTicks - 1; index += 1) ticks.add(Math.round(index * step));
-    return ticks;
-  }
-
-  function chartLabel(x, y, text, anchor = "middle") {
-    const node = svg("text", {
-      x,
-      y,
-      "text-anchor": anchor,
-      style: "fill:var(--muted);font:600 11px 'IBM Plex Mono',ui-monospace,monospace;letter-spacing:.01em"
+  function symlogTicks(d3, scale, count = 6) {
+    const [bottom, top] = scale.range();
+    const values = d3.range(count).map((index) => {
+      const ratio = index / Math.max(count - 1, 1);
+      return Math.max(0, Math.round(scale.invert(bottom + (top - bottom) * ratio)));
     });
-    node.textContent = text;
-    return node;
+    return [...new Set(values)];
   }
 
   function renderLine(container, rows) {
+    if (container._lineResizeObserver) {
+      container._lineResizeObserver.disconnect();
+      container._lineResizeObserver = null;
+    }
     container.replaceChildren();
     if (!rows.length) {
       container.textContent = "No canonical date_added values in this range.";
       return;
     }
 
-    const width = 960;
-    const height = 340;
-    const left = 62;
-    const right = 24;
-    const top = 24;
-    const bottom = 54;
-    const plotWidth = width - left - right;
-    const plotHeight = height - top - bottom;
-    const maxCount = Math.max(...rows.map((row) => Number(row.count || 0)), 1);
-    const roundedMax = Math.max(1, Math.ceil(maxCount / 5) * 5);
-    const chart = svg("svg", {
-      viewBox: `0 0 ${width} ${height}`,
-      role: "img",
-      "aria-label": "Documents added by canonical date_added over time"
-    });
-    chart.classList.add("line-chart");
-
-    for (let tick = 0; tick <= 4; tick += 1) {
-      const value = Math.round((roundedMax * tick) / 4);
-      const y = top + plotHeight - (value / roundedMax) * plotHeight;
-      chart.appendChild(svg("line", {
-        x1: left,
-        x2: width - right,
-        y1: y,
-        y2: y,
-        style: `stroke:${tick === 0 ? "var(--line)" : "color-mix(in srgb,var(--line) 48%,transparent)"};stroke-width:1`
-      }));
-      chart.appendChild(chartLabel(left - 10, y + 4, number(value), "end"));
+    const d3 = window.d3;
+    if (!d3?.scaleSymlog || !d3?.scaleUtc) throw new Error("D3 runtime is unavailable");
+    const data = rows.map((row) => ({
+      date: parseDay(row.date),
+      dateKey: row.date,
+      count: Math.max(0, Number(row.count || 0))
+    })).filter((row) => row.date);
+    if (!data.length) {
+      container.textContent = "No canonical date_added values in this range.";
+      return;
     }
 
-    const points = rows.map((row, index) => {
-      const x = left + (index / Math.max(rows.length - 1, 1)) * plotWidth;
-      const y = top + plotHeight - (Number(row.count || 0) / roundedMax) * plotHeight;
-      return [x, y, row];
-    });
+    let lastWidth = 0;
+    let frameRequest = 0;
 
-    chart.appendChild(svg("path", {
-      d: `M ${points[0][0]} ${top + plotHeight} L ${points.map(([x, y]) => `${x} ${y}`).join(" L ")} L ${points.at(-1)[0]} ${top + plotHeight} Z`,
-      class: "line-area"
-    }));
-    chart.appendChild(svg("path", {
-      d: `M ${points.map(([x, y]) => `${x} ${y}`).join(" L ")}`,
-      class: "line-path"
-    }));
+    const draw = () => {
+      const measured = Math.floor(container.getBoundingClientRect().width || 960);
+      const width = Math.max(360, measured);
+      if (Math.abs(width - lastWidth) < 2) return;
+      lastWidth = width;
+      container.replaceChildren();
 
-    const ticks = chooseTicks(rows.length);
-    points.forEach(([x, y, row], index) => {
-      if (ticks.has(index)) {
-        chart.appendChild(svg("line", {
-          x1: x,
-          x2: x,
-          y1: top + plotHeight,
-          y2: top + plotHeight + 6,
-          style: "stroke:var(--line);stroke-width:1"
-        }));
-        chart.appendChild(chartLabel(x, height - 20, shortDate(row.date)));
-      }
+      const height = Math.max(320, Math.min(430, Math.round(width * 0.42)));
+      const margin = { top: 20, right: 24, bottom: 48, left: width < 560 ? 58 : 72 };
+      const plotWidth = width - margin.left - margin.right;
+      const plotHeight = height - margin.top - margin.bottom;
+      const profile = scaleProfile(d3, data);
+      const firstDate = data[0].date;
+      const lastDate = data.at(-1).date;
+      const xDomain = firstDate.getTime() === lastDate.getTime()
+        ? [new Date(firstDate.getTime() - DAY_MS / 2), new Date(lastDate.getTime() + DAY_MS / 2)]
+        : [firstDate, lastDate];
+      const x = d3.scaleUtc().domain(xDomain).range([margin.left, width - margin.right]);
+      const y = profile.symlog
+        ? d3.scaleSymlog().constant(profile.constant).domain([0, profile.max * 1.03]).nice().range([height - margin.bottom, margin.top])
+        : d3.scaleLinear().domain([0, profile.max]).nice(5).range([height - margin.bottom, margin.top]);
+      const yTicks = profile.symlog ? symlogTicks(d3, y) : y.ticks(5);
+      const xTickCount = Math.max(3, Math.min(8, Math.floor(plotWidth / 105)));
+      const shell = document.createElement("div");
+      shell.style.cssText = "position:relative;width:100%";
+      const tooltip = document.createElement("div");
+      tooltip.setAttribute("role", "status");
+      tooltip.style.cssText = "position:absolute;display:none;z-index:5;pointer-events:none;min-width:9rem;padding:.55rem .65rem;border:1px solid var(--line);border-radius:.45rem;background:color-mix(in srgb,var(--panel) 96%,transparent);box-shadow:0 10px 28px color-mix(in srgb,var(--bg) 72%,transparent);color:var(--text);font:600 .72rem 'IBM Plex Mono',ui-monospace,monospace";
+      const chart = d3.select(shell).append("svg")
+        .attr("class", "line-chart")
+        .attr("viewBox", `0 0 ${width} ${height}`)
+        .attr("width", width)
+        .attr("height", height)
+        .attr("role", "img")
+        .attr("aria-label", `Documents added by canonical date_added over time using ${profile.symlog ? "adaptive symlog" : "linear"} scaling`);
 
-      const point = svg("circle", {
-        cx: x,
-        cy: y,
-        r: Number(row.count || 0) > 0 ? 5.5 : 3.25,
-        tabindex: 0,
-        class: "line-point",
-        style: Number(row.count || 0) > 0
-          ? "fill:var(--bg);stroke:var(--warm);stroke-width:3;cursor:crosshair"
-          : "fill:var(--bg);stroke:var(--line);stroke-width:1.5;opacity:.75"
+      const grid = chart.append("g")
+        .attr("transform", `translate(${margin.left},0)`)
+        .call(d3.axisLeft(y).tickValues(yTicks).tickSize(-plotWidth).tickFormat(""));
+      grid.select(".domain").remove();
+      grid.selectAll(".tick line")
+        .attr("stroke", "var(--line)")
+        .attr("stroke-opacity", 0.42)
+        .attr("shape-rendering", "crispEdges");
+
+      const yAxis = chart.append("g")
+        .attr("transform", `translate(${margin.left},0)`)
+        .call(d3.axisLeft(y).tickValues(yTicks).tickSize(0).tickPadding(10).tickFormat(compactNumber));
+      yAxis.select(".domain").remove();
+      yAxis.selectAll("text")
+        .attr("fill", "var(--muted)")
+        .style("font", "600 11px 'IBM Plex Mono',ui-monospace,monospace");
+
+      const xAxis = chart.append("g")
+        .attr("transform", `translate(0,${height - margin.bottom})`)
+        .call(d3.axisBottom(x).ticks(xTickCount).tickSize(6).tickPadding(10).tickFormat(d3.utcFormat("%b %-d")));
+      xAxis.select(".domain").attr("stroke", "var(--line)");
+      xAxis.selectAll("line").attr("stroke", "var(--line)");
+      xAxis.selectAll("text")
+        .attr("fill", "var(--muted)")
+        .style("font", "600 11px 'IBM Plex Mono',ui-monospace,monospace");
+
+      const area = d3.area()
+        .x((row) => x(row.date))
+        .y0(y(0))
+        .y1((row) => y(row.count));
+      const line = d3.line()
+        .x((row) => x(row.date))
+        .y((row) => y(row.count));
+
+      chart.append("path").datum(data).attr("class", "line-area").attr("d", area);
+      chart.append("path").datum(data).attr("class", "line-path").attr("d", line);
+
+      const active = chart.append("g").selectAll("circle")
+        .data(data.filter((row) => row.count > 0))
+        .join("circle")
+        .attr("class", "line-point")
+        .attr("cx", (row) => x(row.date))
+        .attr("cy", (row) => y(row.count))
+        .attr("r", 5.25)
+        .attr("tabindex", 0)
+        .attr("aria-label", (row) => `${row.dateKey}: ${number(row.count)} documents added`);
+      active.append("title").text((row) => `${row.dateKey}: ${number(row.count)} documents added`);
+
+      const focus = chart.append("g").style("display", "none").attr("aria-hidden", "true");
+      focus.append("line")
+        .attr("y1", margin.top)
+        .attr("y2", height - margin.bottom)
+        .attr("stroke", "var(--accent-2)")
+        .attr("stroke-opacity", 0.55)
+        .attr("stroke-dasharray", "3 4");
+      focus.append("circle")
+        .attr("r", 6.5)
+        .attr("fill", "var(--bg)")
+        .attr("stroke", "var(--warm)")
+        .attr("stroke-width", 3);
+      const bisect = d3.bisector((row) => row.date).center;
+
+      const hideFocus = () => {
+        focus.style("display", "none");
+        tooltip.style.display = "none";
+      };
+      const showFocus = (row) => {
+        const px = x(row.date);
+        const py = y(row.count);
+        focus.style("display", null);
+        focus.select("line").attr("x1", px).attr("x2", px);
+        focus.select("circle").attr("cx", px).attr("cy", py);
+        tooltip.innerHTML = `<strong style="display:block;color:var(--text-strong);font-size:.78rem">${escapeHtml(row.dateKey)}</strong><span style="display:block;margin-top:.18rem;color:var(--accent-2)">${number(row.count)} documents</span>`;
+        tooltip.style.display = "block";
+        tooltip.style.left = `${Math.max(4, Math.min(width - 164, px + 12))}px`;
+        tooltip.style.top = `${Math.max(4, py - 58)}px`;
+      };
+
+      chart.append("rect")
+        .attr("x", margin.left)
+        .attr("y", margin.top)
+        .attr("width", plotWidth)
+        .attr("height", plotHeight)
+        .attr("fill", "transparent")
+        .style("cursor", "crosshair")
+        .on("pointermove", function (event) {
+          const [px] = d3.pointer(event, this);
+          const date = x.invert(px + margin.left);
+          const index = Math.max(0, Math.min(data.length - 1, bisect(data, date)));
+          showFocus(data[index]);
+        })
+        .on("pointerleave", hideFocus);
+
+      shell.appendChild(tooltip);
+      container.appendChild(shell);
+
+      const total = data.reduce((sum, row) => sum + row.count, 0);
+      const activeDays = data.filter((row) => row.count > 0).length;
+      const caption = document.createElement("div");
+      caption.setAttribute("role", "status");
+      caption.style.cssText = "display:flex;flex-wrap:wrap;gap:.65rem 1.25rem;margin:.55rem 0 0;color:var(--muted);font:600 .72rem 'IBM Plex Mono',ui-monospace,monospace";
+      caption.innerHTML = `<span>${escapeHtml(data[0].dateKey)} → ${escapeHtml(data.at(-1).dateKey)}</span><span>${number(total)} documents</span><span>${number(activeDays)} active days</span><span>scale: ${profile.symlog ? "adaptive symlog" : "linear"} · D3 v7</span><span>source: canonical <code>date_added</code></span>`;
+      container.appendChild(caption);
+    };
+
+    draw();
+    if ("ResizeObserver" in window) {
+      const observer = new ResizeObserver(() => {
+        cancelAnimationFrame(frameRequest);
+        frameRequest = requestAnimationFrame(draw);
       });
-      point.setAttribute("aria-label", `${row.date}: ${number(row.count)} documents added`);
-      const title = svg("title");
-      title.textContent = `${row.date}: ${number(row.count)} documents added`;
-      point.appendChild(title);
-      chart.appendChild(point);
-    });
-
-    container.appendChild(chart);
-    const total = rows.reduce((sum, row) => sum + Number(row.count || 0), 0);
-    const activeDays = rows.filter((row) => Number(row.count || 0) > 0).length;
-    const caption = document.createElement("div");
-    caption.setAttribute("role", "status");
-    caption.style.cssText = "display:flex;flex-wrap:wrap;gap:.65rem 1.25rem;margin:.55rem 0 0;color:var(--muted);font:600 .72rem 'IBM Plex Mono',ui-monospace,monospace";
-    caption.innerHTML = `<span>${escapeHtml(rows[0].date)} → ${escapeHtml(rows.at(-1).date)}</span><span>${number(total)} documents</span><span>${number(activeDays)} active days</span><span>source: canonical <code>date_added</code></span>`;
-    container.appendChild(caption);
+      observer.observe(container);
+      container._lineResizeObserver = observer;
+    }
   }
 
   function renderDonut(container, rows) {
@@ -243,7 +346,19 @@
         const typeTarget = document.getElementById("document-types-chart");
         const relationTarget = document.getElementById("relation-types-chart");
         const allRows = denseDailyRows(data.documents_by_day || []);
-        const renderRange = (range) => renderLine(lineTarget, rowsForRange(allRows, range));
+        let activeRange = "90";
+        const renderRange = (range) => {
+          activeRange = range;
+          lineTarget.textContent = "Loading chart runtime…";
+          loadD3()
+            .then(() => {
+              if (activeRange === range) renderLine(lineTarget, rowsForRange(allRows, range));
+            })
+            .catch((error) => {
+              lineTarget.textContent = `Chart unavailable: ${error.message}`;
+              lineTarget.classList.add("chart-error");
+            });
+        };
 
         renderRange("90");
         renderDonut(typeTarget, data.document_types || []);
