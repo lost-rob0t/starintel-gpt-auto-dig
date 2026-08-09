@@ -1,0 +1,60 @@
+{
+  "run":"2026-08-08",
+  "status":"research-staging-not-canonical",
+  "subject":"Fund for Policy Reform legal-entity split",
+  "entities":[
+    {
+      "name":"Fund for Policy Reform",
+      "ein":"35-7090597",
+      "jurisdiction":"Delaware",
+      "tax_status":"501(c)(4)",
+      "tax_exempt_since":"2015-05"
+    },
+    {
+      "name":"Fund For Policy Reform Inc",
+      "ein":"26-4351242",
+      "jurisdiction":"New York",
+      "tax_status":"501(c)(4)",
+      "tax_exempt_since":"2009-04"
+    }
+  ],
+  "inter_entity_grants":[
+    {"year":2020,"amount_usd":196000000},
+    {"year":2021,"amount_usd":375000000},
+    {"year":2022,"amount_usd":332700000},
+    {"year":2023,"amount_usd":327000000},
+    {"year":2024,"amount_usd":412000000}
+  ],
+  "observed_total_2020_2024_usd":1642700000,
+  "upstream_fy2024_governance":[
+    {"name":"Bryn Mawr Trust","role":"Administrative Trustee"},
+    {"name":"Debbie Fine","role":"Secretary","valid_from":"2024-01-17"},
+    {"name":"Maija Arbolino","role":"Treasurer"},
+    {"name":"Binaifer Nowrojee","role":"Trustee","valid_from":"2024-12-01"},
+    {"name":"Leonard Benardo","role":"Trustee","valid_to":"2024-12-01"}
+  ],
+  "downstream_fy2024_governance_and_management":[
+    {"name":"Pedro Abramovay","role":"Vice President, Programs"},
+    {"name":"Maija Arbolino","role":"Treasurer"},
+    {"name":"Binaifer Nowrojee","role":"Director","valid_from":"2024-12-01"},
+    {"name":"Leonard Benardo","role":"Director","valid_to":"2024-12-01"}
+  ],
+  "synchronized_transition":{
+    "date":"2024-12-01",
+    "incoming":"Binaifer Nowrojee",
+    "outgoing":"Leonard Benardo",
+    "scope":"reported across both legal entities with filer-specific titles"
+  },
+  "ecfr_deutschland_leads_pending_schedule_f":[
+    {"year":2020,"amount_usd":1000261,"purpose":"Unlock Europe's Majority"},
+    {"year":2021,"amount_usd":999774,"purpose":"nonpartisan Unlock Europe's Majority activities"},
+    {"year":2022,"amount_usd":2132355,"purpose":"Unlock Europe's Majority"}
+  ],
+  "canonicalization_guard":"Do not merge EIN 35-7090597 and EIN 26-4351242; they are distinct filers connected by repeated grant relations.",
+  "sources":[
+    "https://projects.propublica.org/nonprofits/organizations/357090597",
+    "https://philanthropy.org/990/report/357090597/fund-for-policy-reform",
+    "https://projects.propublica.org/nonprofits/organizations/264351242",
+    "https://philanthropy.org/990/report/264351242/fund-for-policy-reform-inc"
+  ]
+}
