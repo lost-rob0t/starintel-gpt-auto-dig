@@ -1,0 +1,81 @@
+name: Violent offender live stats check
+
+on:
+  pull_request:
+    paths:
+      - ".github/workflows/violent-offender-live-stats-check.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  collect-live-stats:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+      - name: Install collector dependencies
+        run: python -m pip install -r requirements/violent-offender-scrapers.txt
+      - name: Run all locality collectors and print stats
+        run: |
+          mkdir -p artifacts/violent-offender-localities
+          failures=0
+
+          python scripts/scrape_violent_offender_localities.py \
+            --output artifacts/violent-offender-localities \
+            --max-records-per-source 10000 || failures=$((failures + 1))
+
+          python scripts/scrape_violent_offender_localities_extra.py \
+            --output artifacts/violent-offender-localities/expanded \
+            --max-records-per-source 10000 || failures=$((failures + 1))
+
+          python scripts/scrape_violent_offender_high_yield.py \
+            --output artifacts/violent-offender-localities/high-yield \
+            --max-records-per-source 10000 || failures=$((failures + 1))
+
+          python scripts/scrape_violent_offender_batch2.py \
+            --output artifacts/violent-offender-localities/batch2 \
+            --max-records-per-source 10000 || failures=$((failures + 1))
+
+          python scripts/merge_violent_offender_grabs.py \
+            --root artifacts/violent-offender-localities \
+            --component artifacts/violent-offender-localities/expanded \
+            --component artifacts/violent-offender-localities/high-yield \
+            --component artifacts/violent-offender-localities/batch2
+
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          summary = json.loads(Path("artifacts/violent-offender-localities/summary.json").read_text())
+          print("=== VIOLENT_OFFENDER_LIVE_STATS ===")
+          print("TOTAL_RECORDS", summary.get("record_count", 0))
+          good = 0
+          failed = 0
+          for source in summary.get("sources", []):
+              if source.get("error"):
+                  failed += 1
+              else:
+                  good += 1
+              print(
+                  "SOURCE",
+                  source.get("source"),
+                  "LOCALITY", json.dumps(source.get("locality")),
+                  "RECORDS", source.get("records", 0),
+                  "CANDIDATES", source.get("candidates_seen", 0),
+                  "PAGES", source.get("pages_fetched", 0),
+                  "ERROR", json.dumps(source.get("error")),
+              )
+          print("SUCCESSFUL_SOURCES", good)
+          print("FAILED_SOURCES", failed)
+          print("COLLECTOR_GROUP_FAILURES", "'"$failures"'")
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: violent-offender-live-stats-${{ github.run_id }}
+          path: artifacts/violent-offender-localities/
+          if-no-files-found: error
+          retention-days: 1
