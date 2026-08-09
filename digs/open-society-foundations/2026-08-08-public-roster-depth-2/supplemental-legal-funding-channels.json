@@ -4,177 +4,131 @@
   "pass_type": "user-directed-post-max-depth-supplement",
   "status": "research-staging-not-canonical",
   "handling": "public-source-only",
-  "core_assessment": "Generic Open Society funding edges are legally under-specified. Multiple distinct Open Society legal entities have separate public filing and ECFR-related funding surfaces.",
+  "core_assessment": "Open Society financial relations require legal-entity resolution; similarly named entities must not be collapsed.",
   "candidate_entities": [
-    {
-      "name": "Open Society Institute",
-      "identifier": {"scheme": "EIN", "value": "13-7029285"},
-      "jurisdiction": "United States",
-      "entity_type": "501(c)(3) private foundation",
-      "repo_exact_name_hit": false
-    },
-    {
-      "name": "Foundation to Promote Open Society",
-      "identifier": {"scheme": "EIN", "value": "26-3753801"},
-      "jurisdiction": "United States",
-      "entity_type": "501(c)(3) private foundation",
-      "repo_exact_name_hit": false
-    },
-    {
-      "name": "Fund For Policy Reform Inc",
-      "identifier": {"scheme": "EIN", "value": "26-4351242"},
-      "jurisdiction": "United States",
-      "entity_type": "501(c)(4)",
-      "repo_exact_name_hit": false
-    },
-    {
-      "name": "Open Society Foundation London",
-      "identifier": {"scheme": "companies_house", "value": "10187396"},
-      "jurisdiction": "United Kingdom",
-      "entity_type": "private company limited by guarantee",
-      "repo_exact_name_hit": false
-    },
-    {
-      "name": "ECFR Deutschland GmbH",
-      "identifier": null,
-      "jurisdiction": "Germany",
-      "entity_type": "company",
-      "repo_exact_name_hit": false,
-      "status": "registry identifier unresolved"
-    },
-    {
-      "name": "Soros Economic Development Fund Open Society Foundation - London",
-      "identifier": {"scheme": "companies_house_establishment", "value": "BR021288"},
-      "jurisdiction": "United Kingdom",
-      "entity_type": "UK establishment",
-      "status": "entity resolution required before canonicalization"
-    }
+    {"name":"Open Society Institute","ein":"13-7029285","jurisdiction":"US","repo_exact_name_hit":false},
+    {"name":"Foundation to Promote Open Society","ein":"26-3753801","jurisdiction":"US","repo_exact_name_hit":false},
+    {"name":"Fund For Policy Reform Inc","ein":"26-4351242","jurisdiction":"US","repo_exact_name_hit":false},
+    {"name":"Fund for Policy Reform","ein":"35-7090597","jurisdiction":"US","repo_exact_name_hit":false},
+    {"name":"Open Society Foundation London","companies_house":"10187396","jurisdiction":"UK","repo_exact_name_hit":false},
+    {"name":"ECFR Deutschland GmbH","jurisdiction":"Germany","registry_id":null,"repo_exact_name_hit":false},
+    {"name":"Soros Economic Development Fund Open Society Foundation - London","companies_house_establishment":"BR021288","jurisdiction":"UK","entity_resolution_required":true}
   ],
   "verified_relations": [
     {
-      "source": "Open Society Institute",
-      "target": "European Council on Foreign Relations",
-      "relation": "granted_to",
-      "amount": 2500000,
-      "currency": "USD",
-      "fiscal_year": 2023,
-      "verification": "IRS-derived FY2023 Form 990-PF grant row",
-      "source_url": "https://philanthropy.org/990/report/137029285/open-society-institute/2023"
+      "source":"Open Society Institute",
+      "target":"European Council on Foreign Relations",
+      "relation":"granted_to",
+      "amount_usd":2500000,
+      "fiscal_year":2023,
+      "verification":"IRS-derived FY2023 grant row"
     },
     {
-      "source": "Foundation to Promote Open Society",
-      "target": "Open Society Foundation London",
-      "relation": "grant_payment_to",
-      "amount": 46999529,
-      "currency": "USD",
-      "fiscal_year": 2022,
-      "verification": "IRS e-file controlled-entity schedule"
+      "source":"Open Society Institute",
+      "target":"European Council on Foreign Relations",
+      "relation":"aggregate_grants_to",
+      "amount_usd":5000000,
+      "period":"2022-2023",
+      "grant_count":2,
+      "verification":"IRS-derived funder grant index",
+      "inference":"Because FY2023 is directly $2.5m, FY2022 resolves to $2.5m."
     },
     {
-      "source": "Open Society Foundation London",
-      "target": "Foundation to Promote Open Society",
-      "relation": "grant_payment_refund_to",
-      "amount": 5668104,
-      "currency": "USD",
-      "fiscal_year": 2022,
-      "verification": "IRS e-file controlled-entity schedule",
-      "accounting_guard": "Do not silently net against the outbound grant payment."
+      "source":"Open Society Institute",
+      "target":"European Council on Foreign Relations",
+      "relation":"aggregate_grants_to",
+      "amount_usd":2500000,
+      "period":"2020-2021",
+      "grant_count":2,
+      "verification":"IRS-derived funder grant index",
+      "year_split":"unresolved"
+    },
+    {
+      "source":"Foundation to Promote Open Society",
+      "target":"Open Society Foundation London",
+      "relation":"grant_payment_to",
+      "amount_usd":46999529,
+      "fiscal_year":2022,
+      "verification":"IRS controlled-entity schedule"
+    },
+    {
+      "source":"Open Society Foundation London",
+      "target":"Foundation to Promote Open Society",
+      "relation":"grant_payment_refund_to",
+      "amount_usd":5668104,
+      "fiscal_year":2022,
+      "verification":"IRS controlled-entity schedule"
+    },
+    {
+      "source":"Foundation to Promote Open Society",
+      "target":"Open Society Foundation London",
+      "relation":"granted_to",
+      "amount_usd":44927239,
+      "fiscal_year":2024,
+      "verification":"IRS-derived Part XV grant row"
+    },
+    {
+      "source":"Foundation to Promote Open Society",
+      "target":"Open Society Foundation London",
+      "relation":"granted_to",
+      "amount_usd":8072761,
+      "fiscal_year":2024,
+      "verification":"IRS-derived Part XV grant row"
+    },
+    {"source":"Fund for Policy Reform","target":"Fund For Policy Reform Inc","relation":"granted_to","amount_usd":196000000,"fiscal_year":2020,"verification":"IRS-derived grant row"},
+    {"source":"Fund for Policy Reform","target":"Fund For Policy Reform Inc","relation":"granted_to","amount_usd":375000000,"fiscal_year":2021,"verification":"IRS-derived grant row"},
+    {"source":"Fund for Policy Reform","target":"Fund For Policy Reform Inc","relation":"granted_to","amount_usd":332700000,"fiscal_year":2022,"verification":"IRS-derived grant row"},
+    {"source":"Fund for Policy Reform","target":"Fund For Policy Reform Inc","relation":"granted_to","amount_usd":327000000,"fiscal_year":2023,"verification":"IRS-derived grant row"},
+    {"source":"Fund for Policy Reform","target":"Fund For Policy Reform Inc","relation":"granted_to","amount_usd":412000000,"fiscal_year":2024,"verification":"IRS-derived grant row"}
+  ],
+  "superseded_claims": [
+    {
+      "claim":"Open Society Institute gave ECFR $5m in 2022",
+      "replacement":"IRS-derived aggregate shows $5m total across 2022-2023, with FY2023 directly $2.5m; therefore FY2022 is $2.5m.",
+      "status":"corrected"
+    },
+    {
+      "claim":"FPOS FY2024 OSF London rows still require filing-row capture",
+      "replacement":"FY2024 $44,927,239 and $8,072,761 rows are directly exposed in IRS-derived Part XV data.",
+      "status":"corrected"
     }
   ],
   "strong_leads_pending_direct_filing_row": [
     {
-      "source": "Foundation to Promote Open Society",
-      "target": "European Council on Foreign Relations",
-      "relation": "granted_to",
-      "amount": 17732000,
-      "currency": "USD",
-      "grant_id": "OR2023-88176",
-      "term_start_year": 2023,
-      "term_end_year": 2028,
-      "purpose": "general support",
-      "evidence": "archived OSF grant identifier retained in indexed grant sources",
-      "required_next_verification": "capture FPOS IRS grant row or restored first-party OSF grant record"
+      "source":"Foundation to Promote Open Society",
+      "target":"European Council on Foreign Relations",
+      "amount_usd":17732000,
+      "grant_id":"OR2023-88176",
+      "term_start_year":2023,
+      "term_end_year":2028,
+      "purpose":"general support",
+      "required_next_verification":"direct FPOS filing row or restored first-party OSF grant record"
     },
-    {
-      "source": "Open Society Institute",
-      "target": "European Council on Foreign Relations",
-      "relation": "granted_to",
-      "amount": 5000000,
-      "currency": "USD",
-      "year": 2022,
-      "purpose": "general support",
-      "required_next_verification": "capture FY2022 IRS Part XV grant row"
-    },
-    {
-      "source": "Fund For Policy Reform Inc",
-      "target": "ECFR Deutschland GmbH",
-      "relation": "granted_to",
-      "amount": 1000261,
-      "currency": "USD",
-      "year": 2020,
-      "purpose": "Unlock Europe's Majority",
-      "required_next_verification": "capture IRS foreign-grant row"
-    },
-    {
-      "source": "Fund For Policy Reform Inc",
-      "target": "ECFR Deutschland GmbH",
-      "relation": "granted_to",
-      "amount": 999774,
-      "currency": "USD",
-      "year": 2021,
-      "purpose": "nonpartisan Unlock Europe's Majority activities",
-      "required_next_verification": "capture IRS foreign-grant row"
-    },
-    {
-      "source": "Fund For Policy Reform Inc",
-      "target": "ECFR Deutschland GmbH",
-      "relation": "granted_to",
-      "amount": 2132355,
-      "currency": "USD",
-      "year": 2022,
-      "purpose": "Unlock Europe's Majority",
-      "required_next_verification": "capture IRS foreign-grant row"
-    }
+    {"source":"Fund For Policy Reform Inc","target":"ECFR Deutschland GmbH","amount_usd":1000261,"year":2020,"purpose":"Unlock Europe's Majority","required_next_verification":"Schedule F row"},
+    {"source":"Fund For Policy Reform Inc","target":"ECFR Deutschland GmbH","amount_usd":999774,"year":2021,"purpose":"nonpartisan Unlock Europe's Majority activities","required_next_verification":"Schedule F row"},
+    {"source":"Fund For Policy Reform Inc","target":"ECFR Deutschland GmbH","amount_usd":2132355,"year":2022,"purpose":"Unlock Europe's Majority","required_next_verification":"Schedule F row"}
   ],
-  "entity_financial_context": {
-    "foundation_to_promote_open_society": {
-      "ein": "26-3753801",
-      "fy2023_revenue_usd": 842821637,
-      "fy2023_expenses_usd": 874683497,
-      "fy2023_end_assets_usd": 10502606362,
-      "source": "ProPublica Nonprofit Explorer IRS-derived filing data"
-    },
-    "fund_for_policy_reform_inc": {
-      "ein": "26-4351242",
-      "fy2024_revenue_usd": 470129351,
-      "fy2024_net_assets_usd": 819344248,
-      "source": "ProPublica Nonprofit Explorer IRS-derived filing data"
-    }
+  "fund_for_policy_reform_split": {
+    "upstream":{"name":"Fund for Policy Reform","ein":"35-7090597","jurisdiction":"Delaware"},
+    "downstream":{"name":"Fund For Policy Reform Inc","ein":"26-4351242","jurisdiction":"New York"},
+    "classification":"distinct legal entities connected by repeated grants, not aliases"
   },
-  "new_registry_lead": {
-    "name": "Soros Economic Development Fund Open Society Foundation - London",
-    "companies_house_establishment": "BR021288",
-    "opened": "2016-08-17",
-    "parent_company_reference": "FC036200",
-    "canonicalization_guard": "Do not merge with Open Society Foundation London 10187396 based on name similarity."
-  },
-  "unresolved_question": "Which exact Open Society legal entity or entities correspond to the singular 'Open Society Foundation' donor label in ECFR's audited 2024 accounts?",
+  "unresolved_question":"Which exact Open Society legal entity or mixture corresponds to ECFR's audited singular donor label 'Open Society Foundation'?",
   "next_source_acquisition": [
-    "FPOS FY2023 grant row for OR2023-88176 / $17.732m ECFR award",
-    "Open Society Institute FY2022 Part XV ECFR $5m row",
-    "Fund For Policy Reform Inc FY2020-FY2022 ECFR Deutschland foreign-grant rows",
-    "OSF London 2023-2025 accounts related-party and grant-income notes",
-    "ECFR Deutschland legal registry identifier",
-    "SEDF UK establishment BR021288 parent/entity resolution"
+    "FPOS direct row for OR2023-88176 / $17.732m ECFR award",
+    "OSI individual 2020 and 2021 ECFR rows",
+    "Fund For Policy Reform Inc Schedule F ECFR Deutschland rows 2020-2022",
+    "OSF London 2023-2025 account notes",
+    "ECFR Deutschland registry identifier",
+    "SEDF BR021288 parent/entity resolution"
   ],
-  "source_urls": [
+  "sources": [
     "https://philanthropy.org/990/report/137029285/open-society-institute/2023",
+    "https://philanthropy.org/990/grants-by/137029285/open-society-institute",
     "https://projects.propublica.org/nonprofits/organizations/263753801",
-    "https://projects.propublica.org/nonprofits/organizations/264351242",
-    "https://www.wikidata.org/wiki/Q1376496",
-    "https://www.developmentaid.org/organizations/awards/view/603539/europe-and-central-asia-to-provide-general-support",
-    "https://find-and-update.company-information.service.gov.uk/company/10187396",
-    "https://find-and-update.company-information.service.gov.uk/company/10187396/filing-history",
-    "https://www.influencewatch.org/non-profit/fund-for-policy-reform-trust/"
+    "https://philanthropy.org/990/report/264351242/fund-for-policy-reform-inc",
+    "https://projects.propublica.org/nonprofits/organizations/357090597",
+    "https://philanthropy.org/990/report/357090597/fund-for-policy-reform",
+    "https://find-and-update.company-information.service.gov.uk/company/10187396"
   ]
 }
