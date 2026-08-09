@@ -1,10 +1,9 @@
 (() => {
   const script = document.currentScript;
   const previewSource = script?.dataset.documents || "documents.json";
-  const searchRoot = script?.dataset.searchRoot || "";
-  const recordRoot = script?.dataset.recordRoot || "";
   const scope = script?.dataset.scope || "";
   const rootPrefix = script?.dataset.rootPrefix || "";
+  const indexConfigSource = `${rootPrefix}search-index.json`;
   const params = new URLSearchParams(location.search);
   const requestedDataset = params.get("dataset") || "";
   const requestedId = params.get("id") || "";
@@ -24,18 +23,17 @@
     "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"
   })[character]);
   const slug = (value) => String(value || "").toLowerCase().replace(/^starintel:/, "").replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
-  const queryPrefix = (value) => {
-    const token = String(value || "").toLowerCase().match(/[a-z0-9]{2,}/);
-    return token ? token[0].slice(0, 2) : "";
-  };
   const pageSize = 36;
   const candidateLimit = 5000;
+  const decoder = new TextDecoder();
   let previewRecords = [];
   let searchedRecords = null;
   let page = 0;
   let searchSerial = 0;
-  const recordPageCache = new Map();
+  let indexConfig = null;
   let recordPageSize = 2000;
+  const recordPageCache = new Map();
+  const segmentCache = new Map();
 
   const decodeRecord = (row) => ({
     target: row[0],
@@ -80,31 +78,62 @@
       <article data-review="${esc(record.review)}">
         <div class="document-card-meta"><span>${esc(record.dtype)}</span><span class="review-badge ${esc(record.review)}">${esc(record.review)}</span></div>
         <h3><a href="${esc(record.url)}">${esc(record.title)}</a></h3>
-        <p>${esc(record.summary || "Canonical metadata result. Open the record context or bulk corpus for the full payload.")}</p>
+        <p>${esc(record.summary || "Canonical metadata result. Full payloads live in the canonical bulk corpus.")}</p>
         <div class="document-card-footer"><code>${esc(record.id)}</code><span>${esc(record.updated || "")}</span></div>
       </article>`).join("");
     const datasetPrefix = requestedDataset ? `${requestedDataset} · ` : "";
-    const mode = searchedRecords === null ? "preview" : "sharded search";
+    const mode = searchedRecords === null ? "preview" : "range search";
     summary.textContent = `${datasetPrefix}${matches.length.toLocaleString()} ${mode} matches · showing ${matches.length ? start + 1 : 0}–${Math.min(start + pageSize, matches.length)}`;
     pageLabel.textContent = `Page ${page + 1} of ${pages}`;
     previous.disabled = page === 0;
     next.disabled = page >= pages - 1;
   };
 
-  const loadRecordManifest = async () => {
-    if (!recordRoot) return;
-    const response = await fetch(`${recordRoot}/manifest.json`);
-    if (!response.ok) throw new Error(`Record index manifest load failed: ${response.status}`);
-    const manifest = await response.json();
-    recordPageSize = Number(manifest.page_size) || recordPageSize;
+  const bundleUrl = (group, bundle) => {
+    const metadata = indexConfig?.[group]?.bundles?.[bundle];
+    const url = typeof metadata === "string" ? metadata : metadata?.url;
+    if (!url) throw new Error(`Missing ${group} bundle URL for ${bundle}`);
+    return url;
+  };
+
+  const fetchSegment = async (group, segment) => {
+    if (!segment) return null;
+    const key = `${group}:${segment.bundle}:${segment.offset}:${segment.length}`;
+    if (segmentCache.has(key)) return segmentCache.get(key);
+    const promise = (async () => {
+      const start = Number(segment.offset);
+      const length = Number(segment.length);
+      if (!Number.isSafeInteger(start) || !Number.isSafeInteger(length) || start < 0 || length <= 0) {
+        throw new Error("Invalid external index byte range");
+      }
+      const response = await fetch(bundleUrl(group, segment.bundle), {
+        headers: { Range: `bytes=${start}-${start + length - 1}` }
+      });
+      if (response.status !== 206) {
+        throw new Error(`Index host ignored byte range (${response.status}); refusing a full bundle download`);
+      }
+      const bytes = new Uint8Array(await response.arrayBuffer());
+      if (bytes.byteLength !== length) {
+        throw new Error(`Index byte-range length mismatch: ${bytes.byteLength} != ${length}`);
+      }
+      return JSON.parse(decoder.decode(bytes));
+    })();
+    segmentCache.set(key, promise);
+    return promise;
+  };
+
+  const queryPrefix = (value) => {
+    const minimum = Number(indexConfig?.minimum_query_characters) || 2;
+    const prefixLength = Number(indexConfig?.search?.prefix_length) || 2;
+    const token = String(value || "").toLowerCase().match(new RegExp(`[a-z0-9]{${minimum},}`));
+    return token ? token[0].slice(0, prefixLength) : "";
   };
 
   const loadRecordPage = async (pageNumber) => {
     if (recordPageCache.has(pageNumber)) return recordPageCache.get(pageNumber);
-    const promise = fetch(`${recordRoot}/page-${String(pageNumber).padStart(5, "0")}.json`).then((response) => {
-      if (!response.ok) throw new Error(`Record metadata page load failed: ${response.status}`);
-      return response.json();
-    });
+    const segment = indexConfig?.records?.pages?.[pageNumber];
+    if (!segment) throw new Error(`Missing record metadata page ${pageNumber}`);
+    const promise = fetchSegment("records", segment);
     recordPageCache.set(pageNumber, promise);
     return promise;
   };
@@ -131,7 +160,8 @@
   const runShardedSearch = async () => {
     const serial = ++searchSerial;
     const needle = String(search?.value || "").trim();
-    if (!searchRoot || !recordRoot || needle.length < 2 || requestedId || requestedLegacy) {
+    const minimum = Number(indexConfig?.minimum_query_characters) || 2;
+    if (!indexConfig || needle.length < minimum) {
       searchedRecords = null;
       page = 0;
       render();
@@ -143,21 +173,21 @@
       render();
       return;
     }
+    const segment = indexConfig?.search?.segments?.[prefix];
+    if (!segment) {
+      searchedRecords = [];
+      page = 0;
+      render();
+      return;
+    }
     summary.textContent = `Searching ${prefix}…`;
     try {
-      const response = await fetch(`${searchRoot}/${prefix}.json`);
-      if (response.status === 404) {
-        searchedRecords = [];
-        render();
-        return;
-      }
-      if (!response.ok) throw new Error(`Search shard load failed: ${response.status}`);
-      const shard = await response.json();
+      const shard = await fetchSegment("search", segment);
       let ordinals = [];
       if (scope) {
-        ordinals = Array.isArray(shard[scope]) ? shard[scope] : [];
+        ordinals = Array.isArray(shard?.[scope]) ? shard[scope] : [];
       } else {
-        for (const values of Object.values(shard)) {
+        for (const values of Object.values(shard || {})) {
           if (!Array.isArray(values)) continue;
           ordinals.push(...values);
           if (ordinals.length >= candidateLimit) break;
@@ -184,11 +214,16 @@
       if (!response.ok) throw new Error(`Document preview load failed: ${response.status}`);
       return response.json();
     }),
-    loadRecordManifest()
-  ]).then(([data]) => {
+    fetch(indexConfigSource).then((response) => {
+      if (!response.ok) throw new Error(`Search index map load failed: ${response.status}`);
+      return response.json();
+    })
+  ]).then(([data, config]) => {
     previewRecords = Array.isArray(data) ? data : [];
+    indexConfig = config;
+    recordPageSize = Number(indexConfig?.records?.page_size) || recordPageSize;
     render();
-    if (search?.value && !requestedId && !requestedLegacy) runShardedSearch();
+    if (search?.value) runShardedSearch();
   }).catch((error) => {
     summary.textContent = error.message;
   });
