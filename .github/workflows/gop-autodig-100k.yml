@@ -63,7 +63,7 @@ jobs:
       - name: Install streaming transport tools
         run: |
           sudo apt-get update
-          sudo apt-get install --yes gzip unzip coreutils
+          sudo apt-get install --yes gzip unzip coreutils curl
 
       - name: Build speed-critical Nim tools
         run: nimble buildFast
@@ -107,14 +107,14 @@ jobs:
       - name: Install bulk-data tools
         run: |
           sudo apt-get update
-          sudo apt-get install --yes gzip unzip coreutils
+          sudo apt-get install --yes gzip unzip coreutils curl
 
       - name: Build RNC receipt importer
         run: |
           mkdir -p bin
-          nim c -d:release -d:ssl --opt:speed --mm:orc \
+          nim c -d:release --opt:speed --mm:orc \
             --out:bin/import-gop-receipts \
-            scripts/import_gop_fec_deidentified_receipts.nim
+            scripts/import_gop_fec_receipts.nim
 
       - name: Generate de-identified RNC receipts
         run: |
@@ -161,7 +161,7 @@ jobs:
       - name: Install streaming transport tools
         run: |
           sudo apt-get update
-          sudo apt-get install --yes gzip unzip coreutils
+          sudo apt-get install --yes gzip unzip coreutils curl
 
       - uses: actions/download-artifact@v4
         with:
