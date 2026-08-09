@@ -72,6 +72,9 @@ jobs:
         run: |
           nim c -r -d:release --opt:speed --mm:orc \
             --path:scripts \
+            tests/test_starintel_legacy.nim
+          nim c -r -d:release --opt:speed --mm:orc \
+            --path:scripts \
             tests/test_starintel_transport.nim
           nim c -r -d:release --opt:speed --mm:orc \
             tests/test_gop_receipt_privacy.nim
