@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 from __future__ import annotations
 
-import re
+import asyncio
 
 import scrape_violent_offender_recovery_fixups as fixups
 
@@ -32,16 +32,96 @@ def set_current_status(form, payload: dict[str, str]) -> None:
         haystack = " ".join((name, control_id, value, label_text, parent_text)).casefold()
         if "current" not in haystack:
             continue
-        # Avoid unrelated controls where 'current' happens to occur elsewhere in the row.
         if not ("status" in haystack or label_text.casefold() == "current" or value.casefold() == "current"):
             continue
         payload[name] = value or "Current"
         return
 
 
+async def collect_franklin(client, fetched_at: str, max_records: int):
+    spec = fixups.recovery.RECOVERY_SOURCES["franklin"]
+    first = await fixups.recovery.fetch(client, spec["url"])
+    pages = 1
+    search_semaphore = asyncio.Semaphore(6)
+
+    async def search(prefix: str):
+        async with search_semaphore:
+            try:
+                response = await fixups.core.submit_form_search(client, first.text, str(first.url), prefix)
+                return response
+            except Exception as exc:
+                return exc
+
+    # The blank/current search is useful on deployments that return the full current
+    # roster. Run A-Z in parallel too because Franklin often paginates/searches by
+    # surname prefix and sequential probing turns one locality into the whole job.
+    search_results = await asyncio.gather(*(search(prefix) for prefix in ["", *"ABCDEFGHIJKLMNOPQRSTUVWXYZ"]))
+    direct: dict[str, str] = {}
+    postbacks: list[tuple[str, str, str, str]] = []
+    postback_seen: set[tuple[str, str, str]] = set()
+    search_errors = 0
+    for result in search_results:
+        if isinstance(result, Exception):
+            search_errors += 1
+            continue
+        pages += 1
+        for url in fixups.recovery.direct_detail_links(result.text, str(result.url)):
+            direct[url] = url
+        for target, argument in fixups.recovery.postback_targets(result.text):
+            key = (str(result.url), target, argument)
+            if key in postback_seen:
+                continue
+            postback_seen.add(key)
+            postbacks.append((result.text, str(result.url), target, argument))
+
+    candidate_total = len(direct) + len(postbacks)
+    if candidate_total == 0:
+        error = (
+            "ParserDrift: Franklin Current-status searches returned no detail links/postbacks "
+            f"({search_errors}/27 searches failed)"
+        )
+        return fixups.core.SourceResult(
+            "franklin", spec["locality"], spec["url"], fetched_at, [], pages, 0, error
+        )
+
+    detail_semaphore = asyncio.Semaphore(12)
+
+    async def load_direct(url: str):
+        nonlocal pages
+        async with detail_semaphore:
+            try:
+                detail = await fixups.recovery.fetch(client, url)
+                pages += 1
+                return fixups.core.detail_record("franklin", detail.text, str(detail.url), fetched_at)
+            except Exception:
+                return None
+
+    async def load_postback(item: tuple[str, str, str, str]):
+        nonlocal pages
+        markup, page_url, target, argument = item
+        async with detail_semaphore:
+            try:
+                detail = await fixups.recovery.follow_postback(client, markup, page_url, target, argument)
+                pages += 1
+                return fixups.core.detail_record("franklin", detail.text, str(detail.url), fetched_at)
+            except Exception:
+                return None
+
+    direct_items = list(direct)[:max_records]
+    remaining = max(0, max_records - len(direct_items))
+    work = [load_direct(url) for url in direct_items]
+    work.extend(load_postback(item) for item in postbacks[:remaining])
+    records = [record for record in await asyncio.gather(*work) if record is not None]
+    followed = len(direct_items) + min(len(postbacks), remaining)
+    return fixups.core.SourceResult(
+        "franklin", spec["locality"], spec["url"], fetched_at, records, pages, followed, None
+    )
+
+
 # Franklin's public BookingFind page currently renders Offender Status=Current as
 # an input control rather than the select assumed by the original adapter.
 fixups.core.set_current_status = set_current_status
+fixups.recovery.collect_franklin = collect_franklin
 
 # The sheriff site's legacy Current-Inmate-Roster.html entry point no longer
 # contains the report payload. Point at the current official head-count PDF.
