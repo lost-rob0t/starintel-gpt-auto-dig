@@ -25,10 +25,15 @@ class SiteThemeTests(unittest.TestCase):
         ):
             self.assertIn(f'id: "{theme}"', script)
 
-    def test_black_gold_is_the_canonical_default(self) -> None:
+    def test_midnight_is_the_canonical_default(self) -> None:
         script = (ASSETS / "theme.js").read_text(encoding="utf-8")
-        self.assertIn('const DEFAULT_THEME = "black-gold";', script)
-        self.assertNotIn('const DEFAULT_THEME = "midnight";', script)
+        self.assertIn('const DEFAULT_THEME = "midnight";', script)
+        self.assertNotIn('const DEFAULT_THEME = "black-gold";', script)
+
+    def test_theme_change_forces_runtime_redraw(self) -> None:
+        script = (ASSETS / "theme.js").read_text(encoding="utf-8")
+        self.assertIn('new CustomEvent("starintel:themechange"', script)
+        self.assertIn('requestAnimationFrame(() => window.dispatchEvent(new Event("resize")))', script)
 
     def test_synthwave_uses_dotfile_palette(self) -> None:
         script = (ASSETS / "theme.js").read_text(encoding="utf-8").lower()
