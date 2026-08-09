@@ -53,6 +53,32 @@ def load_summary(path: Path) -> dict[str, Any]:
     return value
 
 
+def source_score(source: dict[str, Any]) -> tuple[int, int, int, int]:
+    return (
+        1 if source.get("error") is None else 0,
+        int(source.get("records") or 0),
+        int(source.get("candidates_seen") or 0),
+        int(source.get("pages_fetched") or 0),
+    )
+
+
+def coalesce_sources(groups: list[tuple[str, list[dict[str, Any]], dict[str, Any]]]) -> list[dict[str, Any]]:
+    best: dict[str, dict[str, Any]] = {}
+    unnamed: list[dict[str, Any]] = []
+    for _, _, component_summary in groups:
+        for source in list(component_summary.get("sources") or []):
+            if not isinstance(source, dict):
+                continue
+            name = str(source.get("source") or "").strip()
+            if not name:
+                unnamed.append(source)
+                continue
+            existing = best.get(name)
+            if existing is None or source_score(source) >= source_score(existing):
+                best[name] = source
+    return sorted(best.values(), key=lambda source: str(source.get("source") or "")) + unnamed
+
+
 def merge(root: Path, components: list[Path]) -> int:
     groups: list[tuple[str, list[dict[str, Any]], dict[str, Any]]] = [
         ("primary", load_jsonl(root / "records.jsonl"), load_summary(root / "summary.json"))
@@ -78,11 +104,7 @@ def merge(root: Path, components: list[Path]) -> int:
 
     summary = groups[0][2]
     summary["record_count"] = len(records)
-    summary["sources"] = [
-        source
-        for _, _, component_summary in groups
-        for source in list(component_summary.get("sources") or [])
-    ]
+    summary["sources"] = coalesce_sources(groups)
     summary["component_record_counts"] = {
         name: len(group_records)
         for name, group_records, _ in groups
