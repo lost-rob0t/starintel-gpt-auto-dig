@@ -2,8 +2,6 @@
   "use strict";
 
   const RESEARCH_URL = "https://auto-research.starintel.actor/";
-  const THEME_KEY = "starintel-theme";
-  const DEFAULT_MARKER_KEY = "starintel-black-gold-default-v1";
 
   const ICONS = Object.freeze({
     Dashboard: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 4h6v6H4zM14 4h6v10h-6zM4 14h6v6H4zM14 18h6v2h-6z"/></svg>',
@@ -39,20 +37,6 @@
     document.head.appendChild(style);
   }
 
-  function applyBlackGoldDefault() {
-    try {
-      if (!localStorage.getItem(DEFAULT_MARKER_KEY)) {
-        const current = localStorage.getItem(THEME_KEY);
-        if (!current || current === "midnight") window.StarIntelThemes?.apply("black-gold");
-        localStorage.setItem(DEFAULT_MARKER_KEY, "1");
-      }
-    } catch (_) {
-      if (window.StarIntelThemes?.active?.() === "midnight") window.StarIntelThemes.apply("black-gold");
-    }
-    const picker = document.getElementById("theme-select");
-    if (picker && window.StarIntelThemes?.active?.() === "black-gold") picker.value = "black-gold";
-  }
-
   function addLink(nav, label, url, siblingSite = "") {
     const link = document.createElement("a");
     const clean = normalizeLabel(label);
@@ -77,7 +61,6 @@
     const header = document.querySelector("header");
     if (!header) return;
     styleShell();
-    applyBlackGoldDefault();
 
     const brand = header.querySelector(".brand") || header.querySelector("a");
     if (!brand) return;
@@ -109,8 +92,6 @@
     }
 
     if (picker) nav.appendChild(picker);
-    const currentTheme = document.getElementById("theme-select");
-    if (currentTheme && window.StarIntelThemes?.active?.() === "black-gold") currentTheme.value = "black-gold";
   }
 
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", mount, { once: true });
