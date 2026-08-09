@@ -11,6 +11,7 @@ on:
       - "scripts/starintel_transport.nim"
       - "scripts/starintel_validate.nim"
       - "tests/test_starintel_legacy.nim"
+      - "tests/test_starintel_transport.nim"
       - ".github/workflows/validate-db.yml"
   pull_request:
     paths:
@@ -21,6 +22,7 @@ on:
       - "scripts/starintel_transport.nim"
       - "scripts/starintel_validate.nim"
       - "tests/test_starintel_legacy.nim"
+      - "tests/test_starintel_transport.nim"
       - ".github/workflows/validate-db.yml"
   workflow_dispatch:
 
@@ -68,11 +70,14 @@ jobs:
             --out:bin/starintel-validate \
             scripts/starintel_validate.nim
 
-      - name: Test Nim legacy normalization parity
+      - name: Test Nim validator compatibility
         run: |
           nim c -r -d:release --opt:speed --mm:orc \
             --path:scripts \
             tests/test_starintel_legacy.nim
+          nim c -r -d:release --opt:speed --mm:orc \
+            --path:scripts \
+            tests/test_starintel_transport.nim
 
       - name: Validate StarIntel documents and audit sources
         shell: bash
