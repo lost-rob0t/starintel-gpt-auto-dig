@@ -9,22 +9,14 @@ permissions:
   contents: read
 
 jobs:
-  collect-live-stats:
+  collect-primary-locality:
     strategy:
       fail-fast: false
       matrix:
-        include:
-          - group: primary
-            script: scripts/scrape_violent_offender_localities.py
-          - group: expanded
-            script: scripts/scrape_violent_offender_localities_extra.py
-          - group: high-yield
-            script: scripts/scrape_violent_offender_high_yield.py
-          - group: batch2
-            script: scripts/scrape_violent_offender_batch2.py
-    name: collect-${{ matrix.group }}
+        source: [franklin, licking, madison, lucas, hamilton]
+    name: collect-${{ matrix.source }}
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 12
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -33,15 +25,17 @@ jobs:
           cache: pip
       - name: Install collector dependencies
         run: python -m pip install -r requirements/violent-offender-scrapers.txt
-      - name: Run ${{ matrix.group }} collectors and print stats
+      - name: Run ${{ matrix.source }} and print stats
         env:
-          GROUP: ${{ matrix.group }}
-          SCRIPT: ${{ matrix.script }}
+          SOURCE: ${{ matrix.source }}
         run: |
-          out="artifacts/live-stats/$GROUP"
+          out="artifacts/live-stats/$SOURCE"
           mkdir -p "$out"
           set +e
-          python "$SCRIPT" --output "$out" --max-records-per-source 2500
+          python scripts/scrape_violent_offender_localities.py \
+            --source "$SOURCE" \
+            --output "$out" \
+            --max-records-per-source 2500
           status=$?
           set -e
           echo "COLLECTOR_EXIT $status"
@@ -50,37 +44,22 @@ jobs:
           import json
           import sys
           from pathlib import Path
-
-          cap = 2500
           summary = json.loads(Path(sys.argv[1]).read_text())
-          print("=== VIOLENT_OFFENDER_GROUP_STATS ===")
+          print("=== VIOLENT_OFFENDER_LOCALITY_STATS ===")
           print("GROUP_RECORDS", summary.get("record_count", 0))
-          good = failed = 0
-          capped = []
           for source in summary.get("sources", []):
-              if source.get("error"):
-                  failed += 1
-              else:
-                  good += 1
-              candidates = source.get("candidates_seen", 0) or 0
-              if candidates >= cap:
-                  capped.append(source.get("source"))
               print(
-                  "SOURCE",
-                  source.get("source"),
+                  "SOURCE", source.get("source"),
                   "LOCALITY", json.dumps(source.get("locality")),
                   "RECORDS", source.get("records", 0),
-                  "CANDIDATES", candidates,
+                  "CANDIDATES", source.get("candidates_seen", 0) or 0,
                   "PAGES", source.get("pages_fetched", 0),
                   "ERROR", json.dumps(source.get("error")),
               )
-          print("SUCCESSFUL_SOURCES", good)
-          print("FAILED_SOURCES", failed)
-          print("CAPPED_SOURCES", ",".join(capped) if capped else "none")
           PY
       - uses: actions/upload-artifact@v4
         with:
-          name: violent-offender-live-stats-${{ matrix.group }}-${{ github.run_id }}
-          path: artifacts/live-stats/${{ matrix.group }}/
+          name: violent-offender-live-stats-${{ matrix.source }}-${{ github.run_id }}
+          path: artifacts/live-stats/${{ matrix.source }}/
           if-no-files-found: error
           retention-days: 1
