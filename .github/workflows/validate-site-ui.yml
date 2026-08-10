@@ -144,8 +144,8 @@ jobs:
           npm --prefix .quasar/frontend test
           npm --prefix .quasar/frontend run build
 
-      - name: Run dashboard and Quasar regression tests
-        run: python3 -m unittest tests.test_adar_dashboard tests.test_dashboard_graph tests.test_auto_dig_quasar tests.test_prepare_pages_data
+      - name: Run dashboard, Quasar, and scraper regression tests
+        run: python3 -m unittest tests.test_adar_dashboard tests.test_dashboard_graph tests.test_auto_dig_quasar tests.test_prepare_pages_data tests.test_dark_academia_bilderberg
 
       - name: Build canonical Nim merge gate
         run: nimble buildFast
