@@ -15,6 +15,8 @@ on:
       - "scripts/package_bulk_release.py"
       - "scripts/validate-for-merge.py"
       - "scripts/build-auto-dig-quasar.py"
+      - "scripts/scrape_dark_academia_memberships.py"
+      - "scripts/dark_academia_memberships_core.py"
       - "starintel_auto_dig.nimble"
       - "starintel_doc/integrity_site.py"
       - "site-assets/**"
@@ -23,6 +25,8 @@ on:
       - "tests/test_auto_dig_quasar.py"
       - "tests/test_prepare_pages_data.py"
       - "tests/test_nim_site_scaling.py"
+      - "tests/test_dark_academia_bilderberg.py"
+      - "tests/fixtures/bilderberg_participants_split.html"
       - "docs/quasar-integration.md"
       - "docs/pages-site-size-architecture.md"
       - "quasar-fork.lock.json"
@@ -42,6 +46,8 @@ on:
       - "scripts/package_bulk_release.py"
       - "scripts/validate-for-merge.py"
       - "scripts/build-auto-dig-quasar.py"
+      - "scripts/scrape_dark_academia_memberships.py"
+      - "scripts/dark_academia_memberships_core.py"
       - "starintel_auto_dig.nimble"
       - "starintel_doc/integrity_site.py"
       - "site-assets/**"
@@ -50,6 +56,8 @@ on:
       - "tests/test_auto_dig_quasar.py"
       - "tests/test_prepare_pages_data.py"
       - "tests/test_nim_site_scaling.py"
+      - "tests/test_dark_academia_bilderberg.py"
+      - "tests/fixtures/bilderberg_participants_split.html"
       - "docs/quasar-integration.md"
       - "docs/pages-site-size-architecture.md"
       - "quasar-fork.lock.json"
@@ -91,6 +99,9 @@ jobs:
         uses: actions/setup-python@v6
         with:
           python-version: "3.13"
+
+      - name: Install scraper parsing dependencies
+        run: python3 -m pip install --disable-pip-version-check requests beautifulsoup4 lxml
 
       - name: Read pinned Quasar runtime
         id: quasar-pin
@@ -136,8 +147,8 @@ jobs:
           npm --prefix .quasar/frontend test
           npm --prefix .quasar/frontend run build
 
-      - name: Run dashboard and Quasar regression tests
-        run: python3 -m unittest tests.test_adar_dashboard tests.test_dashboard_graph tests.test_auto_dig_quasar tests.test_prepare_pages_data
+      - name: Run dashboard, Quasar, and scraper regression tests
+        run: python3 -m unittest tests.test_adar_dashboard tests.test_dashboard_graph tests.test_auto_dig_quasar tests.test_prepare_pages_data tests.test_dark_academia_bilderberg
 
       - name: Build canonical Nim merge gate
         run: nimble buildFast
