@@ -100,6 +100,9 @@ jobs:
         with:
           python-version: "3.13"
 
+      - name: Install scraper parsing dependencies
+        run: python3 -m pip install --disable-pip-version-check requests beautifulsoup4 lxml
+
       - name: Read pinned Quasar runtime
         id: quasar-pin
         run: |
