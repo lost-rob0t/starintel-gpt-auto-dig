@@ -1,0 +1,23 @@
+{
+  "counts": {
+    "analysis": 1,
+    "investigation-target": 1,
+    "relation": 1,
+    "research-pass": 1
+  },
+  "dataset": "wef-thiel-company-employee-crossmatch-depth-3-2026-08-12",
+  "files": [
+    "README.md",
+    "sources.md",
+    "starintel-documents.jsonl"
+  ],
+  "generated_at": "2026-08-12T13:52:00Z",
+  "hash_algorithm": "sha256",
+  "schema_version": "0.9.0",
+  "starintel_documents_sha256": "16c4f30d3177c9e023320b2f26d3c1eb30c44814d8033a01a7f9ee3d7b967906",
+  "total": 4,
+  "validation": {
+    "local_merge_gate": "not-run: connector session does not have a local repository checkout",
+    "schema_review": "matched against repository-local v0.9.0 relation, analysis, investigation-target, and research-pass schemas"
+  }
+}
