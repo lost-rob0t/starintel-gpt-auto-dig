@@ -1,0 +1,18 @@
+{
+  "counts": {
+    "analysis": 1,
+    "event": 1,
+    "investigation-target": 1,
+    "relation": 1,
+    "research-pass": 1
+  },
+  "dataset": "wef-palantir-participant-resolution-depth-4-2026-08-12",
+  "files": ["README.md", "starintel-documents.jsonl"],
+  "generated_at": "2026-08-12T14:00:00Z",
+  "schema_version": "0.9.0",
+  "total": 5,
+  "validation": {
+    "schema_review": "matched against repository-local v0.9.0 dtype schemas",
+    "full_merge_gate": "pending CI"
+  }
+}
