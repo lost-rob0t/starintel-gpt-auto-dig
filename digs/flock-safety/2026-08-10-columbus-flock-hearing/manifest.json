@@ -8,10 +8,10 @@
     "sources.md",
     "starintel-documents.jsonl"
   ],
-  "generated_at": "2026-08-11T17:50:00-04:00",
+  "generated_at": "2026-08-12T09:36:00-04:00",
   "hash_algorithm": "sha256",
   "schema_version": "0.9.0",
-  "starintel_documents_sha256": "0ea26a37666baca13ca83f1ebebe954d8144300108c85ba1cf39c9df5d6b1d1a",
+  "starintel_documents_sha256": "2e3fb8d56e1e0020607c883312c6f3f7465c13f9e0fae2b36247fe1403da51e9",
   "total": 1,
   "validation": {
     "local_merge_gate": "not-run: repository checkout unavailable in this session",
