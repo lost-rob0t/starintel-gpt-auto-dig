@@ -1,0 +1,161 @@
+OPEN QUESTIONS / AUTODIG RECURSIVE TARGETS
+Prepared: 2026-08-12
+Publication status: AUTHORIZED FOR AUTO-DIG PUBLICATION 2026-08-12
+
+PRIORITY 1 — IMMIGRATION / CENTURY INITIATIVE / ACEG
+1. Obtain the complete “CI-McKinsey Achieving Better Integration Outcomes” report.
+   - authors
+   - McKinsey team
+   - CI team
+   - data/model assumptions
+   - recommended policy changes
+   - distribution list
+   - government recipients
+   - citations to ACEG / Conference Board / RBC / IRCC.
+
+2. Century Initiative organizational history, 2015–2026.
+   - founding incorporation/charity records
+   - every historical director/officer
+   - donor/funder disclosures if public
+   - every partner organization
+   - current claim of “more than 40 organizations” in its network
+   - reconcile current board with 2024 Mark Wiseman/Tareq Hadhad record.
+
+3. Century Initiative current network enumeration.
+   - Goldy Hyder → Business Council of Canada
+   - Ratna Omidvar → Senate / immigration organizations
+   - Anna Triandafyllidou → Toronto Metropolitan University migration/integration research
+   - expert panel ↔ federal grants / advisory committees / WEF / McKinsey / Deloitte / banks / foundations
+   - Council of Champions roster.
+
+4. ACEG research production.
+   - full McKinsey secretariat personnel list
+   - drafts, memos, source datasets, slide decks
+   - emails between Pickersgill/Barton/Morneau/Finance officials
+   - compare language with Century Initiative papers
+   - quantify adoption rate of ACEG recommendations.
+
+5. Immigration policy chronology.
+   - annual immigration levels 2015–2026
+   - ACEG targets vs actual federal plans
+   - Express Entry changes
+   - Global Skills Strategy
+   - international-student PR pathways
+   - accreditation policy
+   - provincial nominee growth
+   - temporary resident policy
+   - post-pandemic changes
+   - official rationales and who authored them.
+
+PRIORITY 1 — IRCC / MCKINSEY
+6. Ingest all 2018–2021 IRCC McKinsey task authorizations.
+7. Acquire each deliverable / transformation deck / roadmap.
+8. Map every name in IRCC’s published McKinsey meeting list.
+9. Identify “Team Pangolin,” McKinsey Core Team, settlement-sector touchpoint participants, and minister-brief authors.
+10. Trace which McKinsey recommendations survived after the contract ended.
+11. Trace Phase 3 digital-platform business case authorship and downstream vendor awards.
+12. Distinguish work by McKinsey vs Accenture vs Deloitte.
+
+PRIORITY 1 — MCKINSEY / WEF
+13. Build exhaustive McKinsey ↔ WEF personnel roster from:
+   - YGL annual lists 2004–2026
+   - Global Leaders for Tomorrow predecessor lists
+   - Global Agenda Councils
+   - Global Future Councils
+   - WEF Centre councils/boards
+   - Davos participant lists
+   - regional meeting co-chairs
+   - WEF Board of Trustees / Managing Board
+   - WEF contributor database.
+
+14. Build exhaustive joint-project list:
+   - Global Lighthouse Network
+   - Resilience Consortium
+   - Global Cooperation Barometer
+   - Women’s Health / McKinsey Health Institute
+   - critical minerals / energy transition
+   - climate/nature finance
+   - future of work / skills
+   - public-sector transformation
+   - AI / technology governance.
+
+15. For every joint WEF-McKinsey publication:
+   - list authors
+   - steering/advisory board
+   - funders
+   - data providers
+   - participating governments
+   - recommendations
+   - later government adoption references.
+
+PRIORITY 1 — CURRENT MCKINSEY GOVERNANCE
+16. For every 2026 Shareholders Council member, enumerate:
+   - WEF roles
+   - government advisory roles
+   - NGO boards
+   - think-tank memberships
+   - university boards
+   - corporate boards
+   - policy councils
+   - foundations
+   - international organizations
+   - Canada-specific work.
+17. Resolve WEF non-hits for Pooneh Baghai, Noshir Kaka, Robert Linden, Scott Rutherford, Virginia Simmons, Yael Taqqu through WEF PDFs/archived participant lists.
+
+PRIORITY 1 — CANADA INFRASTRUCTURE BANK
+18. Ingest the entire House TRAN report and testimony.
+19. Enumerate ACEG → CIB recommendation chain.
+20. Enumerate all CIB McKinsey contracts, task outputs, and staff/board contacts.
+21. Retrieve Pickersgill’s 2018 candidate-name email in full.
+22. Trace later careers of CIB leaders and former McKinsey personnel.
+23. Distinguish allegations in committee testimony from committee findings and rebuttals.
+
+PRIORITY 2 — CANADA / WEF
+24. Enumerate every federal WEF grant/contribution and amendment.
+25. Enumerate Canadian ministers, deputy ministers, senior officials, and agencies in WEF bodies since 2000.
+26. Map Mark Carney and Chrystia Freeland WEF trustee tenures against Canadian public/private roles, without inferring causation from overlap alone.
+27. Ingest KTDI documents, contracts, pilots, privacy assessments, technical partners, and whether the project was completed/abandoned/renamed.
+28. Enumerate Canadian participation in WEF Global Future Councils and Centres.
+
+PRIORITY 2 — PRC/CCP FOREIGN INTERFERENCE
+29. Parse Foreign Interference Commission final report into canonical entities and incidents.
+30. Enumerate specifically named United Front organizations, diplomatic actors, proxies, community organizations, and political-process incidents.
+31. Ingest Foreign Influence Transparency Registry filings as they become available.
+32. Cross-reference official PRC influence nodes against lobbying, corporate, university, media, and political records.
+33. Keep China professional/business ties separate from substantiated foreign-interference designations.
+
+PRIORITY 2 — DOMINIC BARTON / TRANSNATIONAL BRIDGE
+34. Full Barton timeline:
+   - McKinsey Korea
+   - McKinsey Asia chair
+   - McKinsey global leadership
+   - WEF events/co-chair roles
+   - Century Initiative
+   - ACEG
+   - FCLTGlobal
+   - Tsinghua
+   - Singapore EDB
+   - Canadian ambassador to China
+   - Rio Tinto.
+35. Enumerate Chinese SOE advisory relationships from parliamentary testimony and primary corporate/public records.
+
+PRIORITY 2 — ANDREW PICKERSGILL
+36. Full Pickersgill timeline:
+   - McKinsey Canada management
+   - Century Initiative founding/board
+   - ACEG pro-bono team
+   - CIB interactions
+   - current McKinsey board chair
+   - global Public Sector Practice
+   - WEF contributor activity.
+37. Search federal procurement records for Pickersgill-linked McKinsey work across departments.
+
+PUBLICATION STANDARD
+Before merging or recursively publishing new claims:
+- every high-impact edge gets at least one primary source;
+- distinguish fact / testimony / allegation / inference;
+- no ethnicity-based inference;
+- no guilt-by-association;
+- no “controls” predicate unless actual legal/organizational authority is documented;
+- preserve dates and historical role changes;
+- keep counter-evidence attached to contested claims.
