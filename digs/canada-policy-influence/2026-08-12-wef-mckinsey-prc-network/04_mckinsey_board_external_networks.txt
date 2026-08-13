@@ -1,0 +1,170 @@
+MCKINSEY CURRENT BOARD / SHAREHOLDERS COUNCIL + EXTERNAL NETWORKS
+Research date: 2026-08-12
+
+McKinsey states that its Shareholders Council is the board of directors of parent McKinsey & Company, Inc. It consists of 12 elected Senior Partners plus Global Managing Partner Bob Sternfels, and is led by Chair Andrew Pickersgill. [A/HIGH]
+
+CURRENT ROSTER
+1. Andrew Pickersgill — Chair
+2. Gassan Al-Kibsi
+3. Pooneh Baghai
+4. Fabian Billing
+5. Liz Hilton Segel
+6. Noshir Kaka
+7. Acha Leke
+8. Robert Linden
+9. Scott Rutherford
+10. Virginia Simmons
+11. Bob Sternfels — Global Managing Partner
+12. Kurt Strovink
+13. Yael Taqqu
+
+SURFACED EXTERNAL / WEF CROSSLINKS
+
+1. Andrew Pickersgill
+WEF:
+- Agenda Contributor.
+- WEF bio: global leader of McKinsey Public Sector Practice, including governments and state-owned/linked enterprises worldwide.
+Canada:
+- former managing partner, McKinsey Canadian offices.
+- historical Century Initiative founder/board director.
+- led/coordinated McKinsey pro-bono support to federal ACEG.
+- appeared in parliamentary evidence on McKinsey/CIB.
+Significance: unusually dense direct bridge among McKinsey governance, government consulting, federal advisory research, Century Initiative, and WEF.
+
+2. Gassan Al-Kibsi
+WEF:
+- WEF person profile.
+- WEF Young Global Leader recognition.
+McKinsey:
+- senior partner / regional leadership; current board.
+Significance: explicit WEF leadership-network credential + current McKinsey governance.
+
+3. Pooneh Baghai
+McKinsey:
+- current board; Toronto presence surfaced on McKinsey’s Canada/Toronto page.
+WEF:
+- no direct WEF profile/YGL/council result surfaced in this pass.
+Status: unresolved, not “none.”
+
+4. Fabian Billing
+WEF:
+- Agenda Contributor.
+- WEF publication footprint around workforce/reskilling.
+McKinsey:
+- current board.
+
+5. Liz Hilton Segel
+WEF:
+- Agenda Contributor; Davos-related publications.
+External organizations listed by WEF:
+- Board of Trustees, The Conference Board.
+- Council on Foreign Relations member.
+McKinsey:
+- current board.
+Significance: McKinsey governance ↔ WEF content network ↔ major U.S. policy/business institutions.
+
+6. Noshir Kaka
+McKinsey:
+- current board.
+WEF:
+- no direct profile/YGL/council result surfaced in this pass.
+Status: unresolved.
+
+7. Acha Leke
+WEF:
+- Agenda Contributor.
+- member, WEF Global Agenda Council on Africa (historical WEF record).
+External:
+- co-founder / board member, African Leadership Academy.
+McKinsey:
+- current board; senior Africa leadership / MGI Council.
+
+8. Robert Linden
+McKinsey:
+- current board.
+WEF:
+- no direct profile/YGL/council result surfaced in this pass.
+Status: unresolved.
+
+9. Scott Rutherford
+McKinsey:
+- current board.
+WEF:
+- no direct person/YGL/council result surfaced in this pass.
+Note: do not confuse with unrelated McKinsey authors or WEF pages.
+
+10. Virginia Simmons
+McKinsey:
+- current board.
+WEF:
+- no direct person/YGL/council result surfaced in this pass.
+Status: unresolved.
+
+11. Bob Sternfels
+WEF:
+- Agenda Contributor.
+- repeated joint WEF-McKinsey reports, roundtables, and Resilience Consortium work.
+- WEF 2026 Global Cooperation Barometer content with WEF President/CEO Børge Brende.
+External organizations listed by WEF bio:
+- Center for Strategic and International Studies (CSIS)
+- Stanford University
+- Rhodes Trust
+- U.S.-China Business Council
+- FCLTGlobal
+- With Honor Advisory Board
+- International Advisory Council for the Economic Renewal of Ukraine
+- Business Roundtable
+- Asia Business Council
+- International Advisory Council of Singapore Economic Development Board
+- Tsinghua SEM Advisory Board
+- Partnership for San Francisco
+Significance: extremely dense cross-institutional network node. These roles are edges, not evidence that all organizations share one agenda.
+
+12. Kurt Strovink
+WEF:
+- Agenda Contributor surfaced in prior pass.
+McKinsey:
+- current board.
+
+13. Yael Taqqu
+McKinsey:
+- current board.
+WEF:
+- no direct WEF person/YGL/council result surfaced in this pass.
+Status: unresolved.
+
+OTHER WEF-LISTED MCKINSEY LEADERS WORTH GRAPHING
+- Daniel Pacthod — WEF Agenda Contributor; WEF bio says he chairs McKinsey’s Technology and Capabilities Committee on the board.
+- Shelley Stewart — WEF YGL Class 2023; senior partner; WEF-listed McKinsey contributor.
+- Raju Narisetti — YGL alumnus; McKinsey partner / global publishing leader; WEF leadership content.
+- Solveigh Hieronimus — WEF YGL; WEF bio additionally lists Trilateral Commission membership and European Commission high-level expert panel for Future of Work.
+- Megan Greenfield — WEF YGL Class 2021; McKinsey partner; Museum of Science trustee.
+
+EXISTING NAMED-ENTITY CROSSLINKS FROM THIS INVESTIGATION
+- Century Initiative
+- Advisory Council on Economic Growth
+- Immigration, Refugees and Citizenship Canada
+- Canada Infrastructure Bank
+- World Economic Forum
+- Conference Board
+- Council on Foreign Relations
+- Center for Strategic and International Studies
+- Stanford University
+- Rhodes Trust
+- U.S.-China Business Council
+- FCLTGlobal
+- Business Roundtable
+- Asia Business Council
+- Singapore Economic Development Board
+- Tsinghua University / Tsinghua SEM
+- African Leadership Academy
+- Trilateral Commission
+- European Commission
+- RBC
+- Business Council of Canada
+- Globe and Mail
+- Business + Higher Education Roundtable
+- Government of Canada / Finance Canada / Global Affairs Canada / Transport Canada
+
+RESEARCH WARNING
+The external-network lists above are not evidence that the named institutions collectively coordinate policy. They are candidates for graph analysis, temporal overlap, co-membership analysis, and document-level follow-up.
