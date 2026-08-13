@@ -1,0 +1,59 @@
+PRC/CCP FOREIGN INTERFERENCE IN CANADA + MCKINSEY CHINA CROSSLINKS
+Research date: 2026-08-12
+
+I. PRC FOREIGN INTERFERENCE — OFFICIAL CANADIAN BASELINE
+
+Canadian official/intelligence/inquiry records describe the People’s Republic of China as the most active foreign-interference actor in Canada. [A/HIGH]
+
+Documented threat descriptions include:
+- targeting all levels of government;
+- targeting civil society, communities, media entities, and academia;
+- influencing political decision-making;
+- cultivating relationships over time;
+- exploiting or influencing political processes;
+- leveraging community organizations and proxies;
+- disinformation/information operations;
+- cyber/espionage activity;
+- efforts tied to trade, business, research advantages, and regime legitimacy.
+
+Foreign Interference Commission / CSIS material emphasizes that PRC activity is pragmatic and may support whichever party or person is perceived as friendliest to PRC interests rather than being rigidly partisan. [A/HIGH]
+
+II. WHAT THE OFFICIAL RECORD DOES NOT SUPPORT
+
+- It does not establish that the PRC controls the Canadian government.
+- The inquiry upheld the overall integrity of recent federal-election outcomes while documenting significant interference attempts.
+- Intelligence reporting contains uncertainty and must not automatically be treated as proven criminal fact.
+
+III. MCKINSEY ↔ CHINA / PRC NETWORK EDGES
+
+Dominic Barton
+- WEF bio: 33 years with McKinsey; led Korea office; Asia Chairman 2004–2009; Global Managing Partner 2009–2018.
+- WEF bio lists Adjunct Professor, Tsinghua University, Beijing.
+- Later served as Canadian ambassador to China (historical public fact; re-verify exact dates before publication if used).
+- Parliamentary testimony from prior research indicated substantial McKinsey work with Chinese state-owned enterprises during his career; retrieve the exact transcript and enumerate entities before publication.
+
+Bob Sternfels
+WEF bio lists:
+- board role, U.S.-China Business Council;
+- member, Tsinghua SEM Advisory Board;
+- member, Asia Business Council;
+- International Advisory Council of Singapore Economic Development Board.
+These are strong transnational business/academic-network edges but NOT evidence of CCP direction. [A/HIGH for affiliations]
+
+McKinsey Greater China
+- McKinsey has a major long-term Greater China practice serving private, multinational, state-owned, and public-sector clients. Before Auto-Dig publication, ingest McKinsey’s own Greater China pages and identify named public-sector/SOE engagements that are publicly documented.
+
+IV. RESEARCH FIREWALL
+
+For StarIntel graphing:
+- Create “AFFILIATED_WITH,” “SERVED_ON_BOARD_OF,” “ADVISED,” “EMPLOYED_BY,” and “PARTICIPATED_IN” edges.
+- Do NOT generate “CCP_AGENT,” “FOREIGN_INTERFERENCE_ACTOR,” or equivalent predicates for a person solely because they worked in China, served a Chinese client, studied/taught at Tsinghua, or sat on a business council.
+- Require Canadian intelligence, court records, foreign-agent/foreign-influence registry filings, sanctions, credible investigative evidence, or similarly strong sources for such claims.
+
+V. HIGH-VALUE PRC AUTODIG LEADS
+
+1. Parse the Foreign Interference Commission final report into entity/relationship/action nodes.
+2. Enumerate explicitly named United Front organizations, diplomats, proxies, and political-process incidents.
+3. Ingest Canada’s Foreign Influence Transparency Registry filings as they become available; use canonical foreign-principal / intermediary / activity edges.
+4. Cross-reference PRC-linked organizations with Canadian political donations where legally/publicly available, lobbying records, parliamentary committees, universities/research funding, and media ownership/influence records.
+5. Keep this track analytically separate from WEF/McKinsey elite-network analysis unless a direct documented edge appears.
