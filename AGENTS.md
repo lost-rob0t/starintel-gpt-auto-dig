@@ -73,21 +73,21 @@ A completed research pass updates at least one canonical machine-readable surfac
 
 ## Canonical dataset roots
 
-Every research subject or dataset has exactly one top-level root under `digs/`. Dataset siblings and aliases are forbidden repo-wide.
+Every research subject or dataset has exactly one top-level root under `digs/`. Dataset siblings and aliases are forbidden repo-wide. `config/dataset-roots.json` is the machine-readable registry of the allowed canonical roots and retired aliases, and the top-level `digs/` directory must match that registry exactly.
 
-Before creating any top-level directory under `digs/`, inspect the existing roots. If the subject is already represented, extend that canonical root. Geography, products, subsidiaries, project names, aliases, spelling variants, research phases, and later naming preferences belong inside packet/run names or document metadata; they do not justify another top-level dataset root.
+Before creating any top-level directory under `digs/`, inspect the existing roots and `config/dataset-roots.json`. If the subject is already represented, extend that canonical root. Geography, products, subsidiaries, project names, aliases, spelling variants, research phases, and later naming preferences belong inside packet/run names or document metadata; they do not justify another top-level dataset root.
 
 Rules:
 
 1. reuse an existing canonical root whenever the new work is part of that subject;
 2. never create `digs/<canonical>-*` when `digs/<canonical>/` exists;
 3. never create sibling roots such as `-new`, `-old`, `-v2`, `-final`, geography-qualified variants, product-qualified variants, or company-name aliases;
-4. create a new top-level root only for a genuinely distinct subject that is not an alias, subset, geography, product, or continuation of an existing root;
+4. create a new top-level root only for a genuinely distinct subject that is not an alias, subset, geography, product, or continuation of an existing root, and add it to `config/dataset-roots.json` in the same change;
 5. top-level roots use lowercase kebab-case;
-6. when a duplicate root is discovered, consolidate its packet trees into the established canonical root without rewriting evidence identities, then record the retired alias in `config/dataset-root-aliases.json`;
+6. when a duplicate root is discovered, consolidate its packet trees into the established canonical root without rewriting evidence identities, then record the retired alias in `config/dataset-roots.json`;
 7. a retired alias must never reappear.
 
-The CI invariant rejects any top-level root whose name is a hyphen-qualified sibling of an existing root. For example, if `digs/foo/` exists, `digs/foo-bar/` is invalid and its packets must be placed under `digs/foo/` instead.
+CI enforces three layers: the filesystem root set must exactly match the canonical registry, no top-level root may be a hyphen-qualified sibling of another root, and retired aliases may not reappear. For example, if `digs/foo/` exists, `digs/foo-bar/` is invalid and its packets must be placed under `digs/foo/` instead.
 
 Current canonicalizations include:
 
@@ -96,7 +96,7 @@ digs/flock/    # includes all Flock Safety work
 digs/wef/      # includes WEF Columbus work
 ```
 
-`digs/flock-safety/` and `digs/wef-columbus/` are retired aliases and are forbidden by `config/dataset-root-aliases.json`.
+`digs/flock-safety/` and `digs/wef-columbus/` are retired aliases and are forbidden by `config/dataset-roots.json`.
 
 Directory canonicalization does not rename evidence identities. Stable StarIntel `_id` values, dataset identifiers inside records, source text, URLs, and historical migration provenance retain their evidence-backed values unless a separate identity migration explicitly requires a change.
 
