@@ -10,6 +10,7 @@ on:
       - "scripts/starintel_legacy.nim"
       - "scripts/starintel_transport.nim"
       - "scripts/starintel_validate.nim"
+      - "tests/test_canonical_dataset_roots.py"
       - "tests/test_starintel_legacy.nim"
       - "tests/test_starintel_transport.nim"
       - ".github/workflows/validate-db.yml"
@@ -21,13 +22,9 @@ on:
       - "scripts/starintel_legacy.nim"
       - "scripts/starintel_transport.nim"
       - "scripts/starintel_validate.nim"
+      - "tests/test_canonical_dataset_roots.py"
       - "tests/test_starintel_legacy.nim"
       - "tests/test_starintel_transport.nim"
-      - ".github/workflows/validate-db.yml"
-  pull_request:
-    paths:
-      - "db/**"
-      - "digs/**"
       - ".github/workflows/validate-db.yml"
   workflow_dispatch:
 
@@ -74,6 +71,9 @@ jobs:
             --path:.starintel-doc-nim/src \
             --out:bin/starintel-validate \
             scripts/starintel_validate.nim
+
+      - name: Test canonical dataset roots
+        run: python -m unittest tests.test_canonical_dataset_roots
 
       - name: Test Nim validator compatibility
         run: |
