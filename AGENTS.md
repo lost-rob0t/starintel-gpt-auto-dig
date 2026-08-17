@@ -71,6 +71,20 @@ A completed research pass updates at least one canonical machine-readable surfac
 - `digs/<target>/<YYYY-MM-DD>-<slug>/starintel-documents.jsonl`; or
 - `db/<dtype>/<_id>.ndjson`.
 
+## Canonical dataset roots
+
+Extend an existing dataset root. Do not create a second root because a company, project, product, alias, or spelling variant has another reasonable name.
+
+Flock Safety research has exactly one canonical packet root:
+
+```text
+digs/flock/
+```
+
+All new Flock packets must be written beneath `digs/flock/<YYYY-MM-DD>-<slug>/`. Never create `digs/flock-safety/` or any other `digs/flock-*` sibling root. Before creating a new top-level directory under `digs/`, inspect existing roots and reuse the canonical subject root when one exists.
+
+Directory canonicalization does not rename evidence identities. Stable StarIntel IDs such as `starintel:org:flock-safety`, dataset identifiers, source text, URLs, and historical migration provenance retain their evidence-backed values unless a separate identity migration explicitly requires a change.
+
 ## Email ingestion invariant
 
 Every imported email artifact must produce the complete typed record set in the same research transaction:

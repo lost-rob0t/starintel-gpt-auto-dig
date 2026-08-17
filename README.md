@@ -43,6 +43,18 @@ digs/<target>/<run>/starintel-documents.jsonl
 manifests/                        Corpus and migration manifests
 ```
 
+## Canonical dataset roots
+
+Research for one subject belongs under one top-level `digs/<target>/` root. Extend an existing root instead of creating aliases based on company names, product names, spelling variants, or later naming preferences.
+
+For Flock Safety, the canonical packet root is:
+
+```text
+digs/flock/
+```
+
+All Flock research packets belong under `digs/flock/<YYYY-MM-DD>-<slug>/`. Do not create `digs/flock-safety/` or another `digs/flock-*` sibling. Existing stable StarIntel IDs such as `starintel:org:flock-safety`, dataset identifiers, source text, URLs, and historical migration provenance are evidence identities and are not renamed merely to match the directory name.
+
 ## Required document creation
 
 Agents and automation must not hand-write files under `db/`.
