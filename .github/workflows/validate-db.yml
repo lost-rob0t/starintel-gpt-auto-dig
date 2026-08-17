@@ -4,6 +4,7 @@ on:
   push:
     branches-ignore: [main]
     paths:
+      - "config/dataset-root-aliases.json"
       - "db/**"
       - "digs/**"
       - "schemas/**"
@@ -16,6 +17,7 @@ on:
       - ".github/workflows/validate-db.yml"
   pull_request:
     paths:
+      - "config/dataset-root-aliases.json"
       - "db/**"
       - "digs/**"
       - "schemas/**"
@@ -72,7 +74,7 @@ jobs:
             --out:bin/starintel-validate \
             scripts/starintel_validate.nim
 
-      - name: Test canonical dataset roots
+      - name: Test canonical dataset root invariants
         run: python -m unittest tests.test_canonical_dataset_roots
 
       - name: Test Nim validator compatibility
