@@ -1,0 +1,79 @@
+name: Palantir SEC principal-office AutoDig materialization
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - research/thiel-wef-crossmatch-depth-3-2026-08-12
+    paths:
+      - .github/workflows/palantir-sec-principal-offices-one-shot.yml
+      - scripts/sec_principal_office_history.py
+      - scripts/seed_palantir_sec_principal_offices.py
+      - tests/test_sec_principal_office_history.py
+
+permissions:
+  contents: write
+
+env:
+  TARGET_BRANCH: research/thiel-wef-crossmatch-depth-3-2026-08-12
+  PACKET_DIR: digs/wef/2026-08-17-palantir-sec-principal-office-history
+  NIM_VERSION: 2.2.4
+  STARINTEL_NIM_REF: b55316bae294a146523cd2f977b81096e538c86a
+  SEC_USER_AGENT: StarIntel-Auto-Dig/0.9.0 (+https://github.com/lost-rob0t/starintel-gpt-auto-dig)
+
+jobs:
+  materialize:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+          ref: ${{ env.TARGET_BRANCH }}
+
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+
+      - name: Run SEC principal-office regression tests
+        run: python3 -m unittest tests.test_sec_principal_office_history -v
+
+      - name: Materialize SEC principal-office packet and normalized records
+        run: python3 scripts/seed_palantir_sec_principal_offices.py
+
+      - name: Checkout canonical StarIntel Nim runtime
+        uses: actions/checkout@v6
+        with:
+          repository: lost-rob0t/starintel-doc.nim
+          ref: ${{ env.STARINTEL_NIM_REF }}
+          path: .starintel-doc-nim
+
+      - name: Set up Nim
+        uses: jiro4989/setup-nim-action@v2
+        with:
+          nim-version: ${{ env.NIM_VERSION }}
+
+      - name: Build canonical Nim merge gate
+        run: nimble buildFast -y
+
+      - name: Run mandatory AutoDig merge/site gate
+        shell: bash
+        run: |
+          set -o pipefail
+          bin/validate-for-merge --site 2>&1 | tee /tmp/palantir-sec-office-gate.log
+
+      - name: Commit validated HQ research transaction
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add "${PACKET_DIR}" db
+          if git diff --cached --quiet; then
+            echo 'Packet and normalized documents are unchanged.'
+            exit 0
+          fi
+          git commit -m 'Materialize Palantir SEC principal-office history'
+          git pull --rebase origin "${TARGET_BRANCH}"
+          git push origin HEAD:"${TARGET_BRANCH}"
