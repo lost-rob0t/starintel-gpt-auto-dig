@@ -2,21 +2,10 @@ name: Palantir HQ and current-news AutoDig materialization
 
 on:
   workflow_dispatch:
-  pull_request:
-    branches:
-      - main
-    paths:
-      - .github/workflows/palantir-sec-principal-offices-one-shot.yml
-      - scripts/sec_principal_office_history.py
-      - scripts/seed_palantir_sec_principal_offices.py
-      - scripts/seed_palantir_current_news_pass.py
-      - tests/test_sec_principal_office_history.py
-      - tests/test_sec_principal_office_real_cover_shapes.py
   push:
     branches:
       - research/thiel-wef-crossmatch-depth-3-2026-08-12
     paths:
-      - .github/workflows/palantir-sec-principal-offices-one-shot.yml
       - scripts/sec_principal_office_history.py
       - scripts/seed_palantir_sec_principal_offices.py
       - scripts/seed_palantir_current_news_pass.py
@@ -27,7 +16,7 @@ permissions:
   contents: write
 
 concurrency:
-  group: ${{ github.workflow }}-${{ github.event.pull_request.head.ref || github.ref_name }}
+  group: ${{ github.workflow }}-${{ github.ref_name }}
   cancel-in-progress: true
 
 env:
@@ -40,6 +29,7 @@ env:
 
 jobs:
   materialize:
+    if: github.actor != 'github-actions[bot]'
     runs-on: ubuntu-latest
     timeout-minutes: 120
     steps:
