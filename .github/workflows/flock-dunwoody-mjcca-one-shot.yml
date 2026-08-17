@@ -35,7 +35,23 @@ jobs:
         run: python3 scripts/seed_flock_dunwoody_mjcca_camera_access.py
 
       - name: Validate complete AutoDig repository
-        run: python3 scripts/validate-for-merge.py --site
+        shell: bash
+        run: |
+          set -o pipefail
+          set +e
+          python3 scripts/validate-for-merge.py --site 2>&1 | tee /tmp/flock-merge-gate.log
+          status=${PIPESTATUS[0]}
+          set -e
+          if [ "$status" -ne 0 ]; then
+            python3 - <<'PY'
+          from pathlib import Path
+          text = Path('/tmp/flock-merge-gate.log').read_text(encoding='utf-8', errors='replace')
+          tail = text[-12000:]
+          escaped = tail.replace('%', '%25').replace('\r', '%0D').replace('\n', '%0A')
+          print(f'::error file=scripts/validate-for-merge.py,line=1,title=AutoDig merge gate failed::{escaped}')
+          PY
+            exit "$status"
+          fi
 
       - name: Commit validated research transaction
         shell: bash
