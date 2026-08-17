@@ -15,6 +15,8 @@ permissions:
 env:
   TARGET_BRANCH: agent/flock-dunwoody-mjcca-autodig
   PACKET_DIR: digs/flock/2026-08-17-dunwoody-mjcca-camera-access
+  NIM_VERSION: 2.2.4
+  STARINTEL_NIM_REF: b55316bae294a146523cd2f977b81096e538c86a
 
 jobs:
   materialize:
@@ -22,56 +24,50 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 120
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
         with:
           fetch-depth: 0
           ref: ${{ env.TARGET_BRANCH }}
 
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@v6
         with:
           python-version: '3.12'
 
-      - name: Install repository test dependencies
-        run: |
-          python3 -m pip install --disable-pip-version-check \
-            -r requirements/violent-offender-scrapers.txt \
-            'requests>=2.32,<3'
+      - name: Checkout canonical StarIntel Nim runtime
+        uses: actions/checkout@v6
+        with:
+          repository: lost-rob0t/starintel-doc.nim
+          ref: ${{ env.STARINTEL_NIM_REF }}
+          path: .starintel-doc-nim
+
+      - name: Set up Nim
+        uses: jiro4989/setup-nim-action@v2
+        with:
+          nim-version: ${{ env.NIM_VERSION }}
 
       - name: Generate canonical StarIntel documents and import normalized DB records
         run: python3 scripts/seed_flock_dunwoody_mjcca_camera_access.py
 
-      - name: Validate complete AutoDig repository
+      - name: Build canonical Nim validation and site binaries
+        run: nimble buildFast -y
+
+      - name: Run mandatory AutoDig merge/site gate
         shell: bash
         run: |
           set -o pipefail
           set +e
-          python3 scripts/validate-for-merge.py --site 2>&1 | tee /tmp/flock-merge-gate.log
+          bin/validate-for-merge --site 2>&1 | tee /tmp/flock-merge-gate.log
           status=${PIPESTATUS[0]}
           set -e
           if [ "$status" -ne 0 ]; then
             python3 - <<'PY'
           from pathlib import Path
-          import re
-
-          lines = Path('/tmp/flock-merge-gate.log').read_text(
-              encoding='utf-8', errors='replace'
-          ).splitlines()
-          patterns = re.compile(
-              r'(FAIL|ERROR|Traceback|ModuleNotFoundError|ImportError|AssertionError|'
-              r'ValueError|RuntimeError|FAILED|validation failed|unresolved relation|'
-              r'dangling|duplicate)',
-              re.IGNORECASE,
-          )
-          indexes = [i for i, line in enumerate(lines) if patterns.search(line)]
-          selected = set()
-          for index in indexes[-20:]:
-              selected.update(range(max(0, index - 3), min(len(lines), index + 8)))
-          selected.update(range(max(0, len(lines) - 60), len(lines)))
-          summary = '\n'.join(lines[i] for i in sorted(selected))[-7000:]
+          text = Path('/tmp/flock-merge-gate.log').read_text(encoding='utf-8', errors='replace')
+          summary = '\n'.join(text.splitlines()[-100:])[-7000:]
           escaped = summary.replace('%', '%25').replace('\r', '%0D').replace('\n', '%0A')
           print(
-              '::error file=scripts/validate-for-merge.py,line=1,'
-              f'title=AutoDig merge gate failed::{escaped}'
+              '::error file=scripts/validate_for_merge.nim,line=1,'
+              f'title=Canonical AutoDig Nim gate failed::{escaped}'
           )
           PY
             exit "$status"
