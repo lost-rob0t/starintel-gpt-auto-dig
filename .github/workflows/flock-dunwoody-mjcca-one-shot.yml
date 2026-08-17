@@ -31,6 +31,9 @@ jobs:
         with:
           python-version: '3.12'
 
+      - name: Install repository test dependencies
+        run: python3 -m pip install --disable-pip-version-check 'beautifulsoup4>=4.12,<5'
+
       - name: Generate canonical StarIntel documents and import normalized DB records
         run: python3 scripts/seed_flock_dunwoody_mjcca_camera_access.py
 
