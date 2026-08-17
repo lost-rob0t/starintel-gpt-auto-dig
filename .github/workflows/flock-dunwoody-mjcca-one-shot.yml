@@ -84,6 +84,6 @@ jobs:
             echo 'Packet and normalized documents are unchanged.'
             exit 0
           fi
-          git commit -m 'Materialize Flock Dunwoody MJCCA AutoDig packet [skip ci]'
+          git commit -m 'Materialize Flock Dunwoody MJCCA AutoDig packet'
           git pull --rebase origin "${TARGET_BRANCH}"
           git push origin HEAD:"${TARGET_BRANCH}"
