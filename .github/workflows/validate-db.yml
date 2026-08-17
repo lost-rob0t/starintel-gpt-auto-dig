@@ -4,7 +4,7 @@ on:
   push:
     branches-ignore: [main]
     paths:
-      - "config/dataset-root-aliases.json"
+      - "config/dataset-roots.json"
       - "db/**"
       - "digs/**"
       - "schemas/**"
@@ -17,7 +17,7 @@ on:
       - ".github/workflows/validate-db.yml"
   pull_request:
     paths:
-      - "config/dataset-root-aliases.json"
+      - "config/dataset-roots.json"
       - "db/**"
       - "digs/**"
       - "schemas/**"
