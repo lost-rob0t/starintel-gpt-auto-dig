@@ -1,0 +1,35 @@
+{
+  "version": 1,
+  "canonical_roots": [
+    "canada-policy-influence",
+    "cia",
+    "cloarida",
+    "dark-academia",
+    "devil-corp",
+    "dnc",
+    "drunk-drivers",
+    "fed",
+    "flock",
+    "free-range",
+    "gop",
+    "graphika",
+    "greater-israel",
+    "hunter-biden",
+    "larry-fink",
+    "lexisnexis-risk-state-surveillance",
+    "occrp-aleph",
+    "offshore-leaks",
+    "palantir",
+    "tech-bro",
+    "trump-netanyahu",
+    "trump-thiel-circle",
+    "us-israel-military-integration",
+    "usaid-doge-mortality-accountability",
+    "violent-offenders",
+    "wef"
+  ],
+  "retired_aliases": {
+    "flock-safety": "flock",
+    "wef-columbus": "wef"
+  }
+}
