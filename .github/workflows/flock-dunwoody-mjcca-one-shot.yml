@@ -1,0 +1,53 @@
+name: Flock Dunwoody MJCCA AutoDig materialization
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - agent/flock-dunwoody-mjcca-autodig
+    paths:
+      - .github/workflows/flock-dunwoody-mjcca-one-shot.yml
+      - scripts/seed_flock_dunwoody_mjcca_camera_access.py
+
+permissions:
+  contents: write
+
+env:
+  TARGET_BRANCH: agent/flock-dunwoody-mjcca-autodig
+  PACKET_DIR: digs/flock/2026-08-17-dunwoody-mjcca-camera-access
+
+jobs:
+  materialize:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: ${{ env.TARGET_BRANCH }}
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Generate canonical StarIntel documents and import normalized DB records
+        run: python3 scripts/seed_flock_dunwoody_mjcca_camera_access.py
+
+      - name: Validate complete AutoDig repository
+        run: python3 scripts/validate-for-merge.py --site
+
+      - name: Commit validated research transaction
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add "${PACKET_DIR}" db
+          if git diff --cached --quiet; then
+            echo 'Packet and normalized documents are unchanged.'
+            exit 0
+          fi
+          git commit -m 'Materialize Flock Dunwoody MJCCA AutoDig packet [skip ci]'
+          git pull --rebase origin "${TARGET_BRANCH}"
+          git push origin HEAD:"${TARGET_BRANCH}"
