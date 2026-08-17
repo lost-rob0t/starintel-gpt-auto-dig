@@ -24,6 +24,10 @@ on:
 permissions:
   contents: write
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
 env:
   TARGET_BRANCH: research/thiel-wef-crossmatch-depth-3-2026-08-12
   PACKET_DIR: digs/wef/2026-08-17-palantir-sec-principal-office-history
@@ -88,6 +92,6 @@ jobs:
             echo 'Packet and normalized documents are unchanged.'
             exit 0
           fi
-          git commit -m 'Materialize Palantir SEC principal-office history'
+          git commit -m 'Materialize Palantir principal-office enrichment'
           git pull --rebase origin "${TARGET_BRANCH}"
           git push origin HEAD:"${TARGET_BRANCH}"
