@@ -1,4 +1,4 @@
-# Palantir SEC principal-executive-office history
+# Palantir principal-executive-office enrichment
 
 This hourly HQ/location slice uses existing Palantir and WEF corpus records. It does not create a new dataset.
 
@@ -11,21 +11,28 @@ This hourly HQ/location slice uses existing Palantir and WEF corpus records. It 
 
 ## Source semantics
 
-Only SEC filing cover-page text explicitly labeled **Address of principal executive offices** is promoted into the office-history graph. SEC business/mailing address metadata is not silently reclassified as headquarters.
+The materialized current-office edge uses Palantir Investor Relations' explicit **principal executive office address** change notice. The notice says the Aventura address is effective February 17, 2026. Palantir's 2025 Form 10-K, filed the same day, independently lists the same address as the address of principal executive offices.
 
-Filing dates are observation boundaries. They are not assumed physical move dates.
+Generic SEC business/mailing metadata, incorporation jurisdiction, employee location, and private-address inference are not promoted into this relation.
 
-No geocoding is performed in this slice because exact public street addresses are already supplied by the primary filings and precise coordinates would not add evidentiary value.
+The SEC cover-page extractor remains covered by deterministic tests, including former-address separation and real-world combined-cell layouts. GitHub-hosted runners received HTTP 403 from SEC Archives during live materialization, so the one-shot materializer uses the authoritative company IR notice as its live source. If the company page itself is transiently unavailable, it may fall back to the exact reviewed primary-source notice captured during this run; the generated observation records which capture path was used.
 
-## Primary filings
+## Geographic precision
 
-- 2025-11-03 Form 8-K: 1200 17th Street, Floor 15, Denver, Colorado 80202
-- 2026-02-02 Form 8-K: 518 17th Street, Suite 1015, Denver, Colorado 80202; the filing separately identifies the 1200 17th Street address as former
-- 2026-02-17 Form 10-K: 19505 Biscayne Blvd., Suite 2350, Aventura, Florida 33180; the filing separately identifies 518 17th Street as former
-- 2026-06-09 Form 8-K: confirms the Aventura principal-executive-office address
+The source supplies a full public organizational street address:
+
+`19505 Biscayne Boulevard, Suite 2350, Aventura, Florida 33180`
+
+No geocoding is performed. Exact coordinates would not add evidentiary value to this slice, and the system does not manufacture coordinates from address text.
 
 ## Materialization
 
-`scripts/seed_palantir_sec_principal_offices.py` fetches the primary filings through the SEC connector, extracts the explicit cover-page office address, validates typed StarIntel documents, writes the dig packet, and imports normalized records through `scripts/starintel.py import --replace`.
+`scripts/seed_palantir_sec_principal_offices.py`:
 
-The materialized graph uses separate `address`, `observation`, and `relation` records and intentionally carries forward an entity-resolution target for the existing duplicate Palantir organization IDs.
+1. attempts live retrieval of the authoritative Palantir Investor Relations notice;
+2. extracts the explicit effective date and principal-office address;
+3. validates typed StarIntel `address`, `observation`, `relation`, `analysis`, `investigation-target`, `research-pass`, and versioned `org` documents;
+4. writes the dig packet outside `db/`;
+5. imports normalized records through `scripts/starintel.py import --replace` because the existing Palantir organization is intentionally version-updated.
+
+The follow-up target preserves the unresolved duplicate Palantir organization IDs before any cross-dataset location propagation into the WEF-facing alias.
