@@ -40,16 +40,17 @@ scripts/import_gop_fec_deidentified_receipts.nim
 starintel_auto_dig.nimble         Nim build/validate/site tasks
 db/<dtype>/<_id>.ndjson           One compact document per file
 digs/<target>/<run>/starintel-documents.jsonl
+config/dataset-roots.json         Canonical dig-root registry and retired aliases
 manifests/                        Corpus and migration manifests
 ```
 
 ## Canonical dataset roots
 
-Each research subject or dataset has exactly one top-level `digs/<target>/` root. **Dataset siblings and alias roots are not allowed.** Existing roots are extended rather than split by geography, product, subsidiary, project phase, spelling variant, company alias, or later naming preference.
+Each research subject or dataset has exactly one top-level `digs/<target>/` root. **Dataset siblings and alias roots are not allowed.** `config/dataset-roots.json` is the canonical registry, and the actual top-level `digs/` roots must match it exactly.
 
-Before adding a new top-level directory under `digs/`, check the existing roots. If the work belongs to an existing subject, place the packet under that root as `digs/<canonical>/<YYYY-MM-DD>-<slug>/`. A new top-level root is reserved for a genuinely distinct subject, not a narrower slice of one already present.
+Existing roots are extended rather than split by geography, product, subsidiary, project phase, spelling variant, company alias, or later naming preference. Before adding a new top-level directory under `digs/`, check the registry and existing roots. If the work belongs to an existing subject, place the packet under that root as `digs/<canonical>/<YYYY-MM-DD>-<slug>/`. A new top-level root is reserved for a genuinely distinct subject and must be registered explicitly in the same change.
 
-CI enforces the structural rule repo-wide: if `digs/foo/` exists, a hyphen-qualified sibling such as `digs/foo-bar/` is invalid. Retired aliases are also recorded in `config/dataset-root-aliases.json` and may not reappear.
+CI enforces the policy repo-wide in three ways: the filesystem root set must exactly match the registry, a root cannot have a hyphen-qualified sibling, and retired aliases cannot reappear. If `digs/foo/` exists, `digs/foo-bar/` is invalid unless `foo-bar` is genuinely distinct and the canonical model is changed deliberately rather than created as a sibling by accident.
 
 Current canonicalizations include:
 
@@ -58,7 +59,7 @@ digs/flock/    # includes all Flock Safety research
 digs/wef/      # includes WEF Columbus research
 ```
 
-The former `digs/flock-safety/` and `digs/wef-columbus/` roots are retired. Stable StarIntel `_id` values, record-level dataset identifiers, source text, URLs, and historical migration provenance are evidence identities and are not renamed merely because packet directories were canonicalized.
+The former `digs/flock-safety/` and `digs/wef-columbus/` roots are retired aliases recorded in `config/dataset-roots.json`. Stable StarIntel `_id` values, record-level dataset identifiers, source text, URLs, and historical migration provenance are evidence identities and are not renamed merely because packet directories were canonicalized.
 
 ## Required document creation
 
