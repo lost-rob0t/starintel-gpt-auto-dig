@@ -18,6 +18,15 @@ DEFAULT_USER_AGENT = os.environ.get(
     "StarIntel-Auto-Dig/0.9.0 (+https://github.com/lost-rob0t/starintel-gpt-auto-dig)",
 )
 RETRYABLE_HTTP = {429, 500, 502, 503, 504}
+STREET_BOUNDARY = re.compile(
+    r"^(?P<street>.+?(?:"
+    r"(?:Suite|Ste\.?|Floor|Fl\.?|Unit)\s*[A-Za-z0-9#.-]+|"
+    r"(?:Street|St\.?|Avenue|Ave\.?|Boulevard|Blvd\.?|Road|Rd\.?|Drive|Dr\.?|"
+    r"Lane|Ln\.?|Way|Parkway|Pkwy\.?|Highway|Hwy\.?|Court|Ct\.?|Circle|Cir\.?|"
+    r"Plaza|Place|Pl\.?|Trail|Trl\.?)"
+    r"))\s+(?P<city>[A-Za-z][A-Za-z .'-]*)$",
+    re.IGNORECASE,
+)
 
 
 class _TextBlocks(HTMLParser):
@@ -76,6 +85,24 @@ def _parse_city_region(value: str) -> tuple[str, str] | None:
     return match.group("city").strip(), match.group("region").strip()
 
 
+def _parse_combined_street_city_region(value: str) -> tuple[str, str, str] | None:
+    """Parse SEC cover cells that collapse street + city/state into one text block.
+
+    SEC inline-XBRL tables sometimes render the principal-office address as one cell
+    like ``19505 Biscayne Blvd., Suite 2350 Aventura, Florida`` and the ZIP as the
+    next cell.  We only split at a recognizable street/unit boundary, avoiding a
+    generic guess based on whitespace alone.
+    """
+    city_region = _parse_city_region(value)
+    if not city_region:
+        return None
+    left, region = city_region
+    match = STREET_BOUNDARY.fullmatch(left.strip())
+    if not match:
+        return None
+    return match.group("street").strip(), match.group("city").strip(), region
+
+
 def _plausible_street(value: str) -> bool:
     lowered = value.casefold()
     if "address of principal executive offices" in lowered:
@@ -103,19 +130,31 @@ def extract_principal_executive_office(raw_html: str) -> dict[str, str]:
     if window and re.fullmatch(r"\d{5}(?:-\d{4})?", window[-1]):
         postal = window[-1]
         if len(window) >= 2:
-            city_region = _parse_city_region(window[-2])
-            if city_region:
-                city, region = city_region
-                for candidate in reversed(window[:-2]):
-                    if _plausible_street(candidate):
-                        street = candidate
-                        break
+            combined = _parse_combined_street_city_region(window[-2])
+            if combined:
+                street, city, region = combined
+            else:
+                city_region = _parse_city_region(window[-2])
+                if city_region:
+                    city, region = city_region
+                    for candidate in reversed(window[:-2]):
+                        if _plausible_street(candidate):
+                            street = candidate
+                            break
     else:
         for index in range(len(window) - 1, -1, -1):
             parsed = _parse_city_region_postal(window[index])
             if not parsed:
                 continue
-            city, region, postal = parsed
+            city_candidate, region_candidate, postal_candidate = parsed
+            combined = _parse_combined_street_city_region(
+                f"{city_candidate}, {region_candidate}"
+            )
+            if combined:
+                street, city, region = combined
+                postal = postal_candidate
+                break
+            city, region, postal = city_candidate, region_candidate, postal_candidate
             for candidate in reversed(window[:index]):
                 if _plausible_street(candidate):
                     street = candidate
