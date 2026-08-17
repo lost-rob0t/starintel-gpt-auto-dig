@@ -10,6 +10,7 @@ on:
       - scripts/sec_principal_office_history.py
       - scripts/seed_palantir_sec_principal_offices.py
       - tests/test_sec_principal_office_history.py
+      - tests/test_sec_principal_office_real_cover_shapes.py
 
 permissions:
   contents: write
@@ -37,7 +38,11 @@ jobs:
           python-version: '3.12'
 
       - name: Run SEC principal-office regression tests
-        run: python3 -m unittest tests.test_sec_principal_office_history -v
+        run: >-
+          python3 -m unittest
+          tests.test_sec_principal_office_history
+          tests.test_sec_principal_office_real_cover_shapes
+          -v
 
       - name: Materialize SEC principal-office packet and normalized records
         run: python3 scripts/seed_palantir_sec_principal_offices.py
