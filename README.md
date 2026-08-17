@@ -45,15 +45,20 @@ manifests/                        Corpus and migration manifests
 
 ## Canonical dataset roots
 
-Research for one subject belongs under one top-level `digs/<target>/` root. Extend an existing root instead of creating aliases based on company names, product names, spelling variants, or later naming preferences.
+Each research subject or dataset has exactly one top-level `digs/<target>/` root. **Dataset siblings and alias roots are not allowed.** Existing roots are extended rather than split by geography, product, subsidiary, project phase, spelling variant, company alias, or later naming preference.
 
-For Flock Safety, the canonical packet root is:
+Before adding a new top-level directory under `digs/`, check the existing roots. If the work belongs to an existing subject, place the packet under that root as `digs/<canonical>/<YYYY-MM-DD>-<slug>/`. A new top-level root is reserved for a genuinely distinct subject, not a narrower slice of one already present.
+
+CI enforces the structural rule repo-wide: if `digs/foo/` exists, a hyphen-qualified sibling such as `digs/foo-bar/` is invalid. Retired aliases are also recorded in `config/dataset-root-aliases.json` and may not reappear.
+
+Current canonicalizations include:
 
 ```text
-digs/flock/
+digs/flock/    # includes all Flock Safety research
+digs/wef/      # includes WEF Columbus research
 ```
 
-All Flock research packets belong under `digs/flock/<YYYY-MM-DD>-<slug>/`. Do not create `digs/flock-safety/` or another `digs/flock-*` sibling. Existing stable StarIntel IDs such as `starintel:org:flock-safety`, dataset identifiers, source text, URLs, and historical migration provenance are evidence identities and are not renamed merely to match the directory name.
+The former `digs/flock-safety/` and `digs/wef-columbus/` roots are retired. Stable StarIntel `_id` values, record-level dataset identifiers, source text, URLs, and historical migration provenance are evidence identities and are not renamed merely because packet directories were canonicalized.
 
 ## Required document creation
 
