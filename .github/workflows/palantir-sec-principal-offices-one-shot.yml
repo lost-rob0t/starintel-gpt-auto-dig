@@ -2,6 +2,15 @@ name: Palantir SEC principal-office AutoDig materialization
 
 on:
   workflow_dispatch:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - .github/workflows/palantir-sec-principal-offices-one-shot.yml
+      - scripts/sec_principal_office_history.py
+      - scripts/seed_palantir_sec_principal_offices.py
+      - tests/test_sec_principal_office_history.py
+      - tests/test_sec_principal_office_real_cover_shapes.py
   push:
     branches:
       - research/thiel-wef-crossmatch-depth-3-2026-08-12
