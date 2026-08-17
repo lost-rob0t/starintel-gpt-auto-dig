@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import argparse
+from datetime import datetime
 import html
 from html.parser import HTMLParser
 import json
@@ -25,6 +26,11 @@ STREET_BOUNDARY = re.compile(
     r"Lane|Ln\.?|Way|Parkway|Pkwy\.?|Highway|Hwy\.?|Court|Ct\.?|Circle|Cir\.?|"
     r"Plaza|Place|Pl\.?|Trail|Trl\.?)"
     r"))\s+(?P<city>[A-Za-z][A-Za-z .'-]*)$",
+    re.IGNORECASE,
+)
+NOTICE_PATTERN = re.compile(
+    r"Effective\s+(?P<date>[A-Za-z]+\s+\d{1,2},\s+\d{4}),\s+the\s+principal\s+executive\s+office\s+address\s+of\s+.+?\s+is\s+"
+    r"(?P<street>.+),\s+(?P<city>[^,]+),\s+(?P<region>[A-Za-z][A-Za-z .'-]*?)\s+(?P<postal>\d{5}(?:-\d{4})?)\.?",
     re.IGNORECASE,
 )
 
@@ -86,13 +92,7 @@ def _parse_city_region(value: str) -> tuple[str, str] | None:
 
 
 def _parse_combined_street_city_region(value: str) -> tuple[str, str, str] | None:
-    """Parse SEC cover cells that collapse street + city/state into one text block.
-
-    SEC inline-XBRL tables sometimes render the principal-office address as one cell
-    like ``19505 Biscayne Blvd., Suite 2350 Aventura, Florida`` and the ZIP as the
-    next cell.  We only split at a recognizable street/unit boundary, avoiding a
-    generic guess based on whitespace alone.
-    """
+    """Parse SEC cover cells that collapse street + city/state into one text block."""
     city_region = _parse_city_region(value)
     if not city_region:
         return None
@@ -147,9 +147,7 @@ def extract_principal_executive_office(raw_html: str) -> dict[str, str]:
             if not parsed:
                 continue
             city_candidate, region_candidate, postal_candidate = parsed
-            combined = _parse_combined_street_city_region(
-                f"{city_candidate}, {region_candidate}"
-            )
+            combined = _parse_combined_street_city_region(f"{city_candidate}, {region_candidate}")
             if combined:
                 street, city, region = combined
                 postal = postal_candidate
@@ -173,6 +171,28 @@ def extract_principal_executive_office(raw_html: str) -> dict[str, str]:
         "region": region,
         "postal": postal,
         "country": "United States",
+    }
+
+
+def extract_principal_office_notice(raw_html: str) -> dict[str, str]:
+    """Extract an explicit effective-date principal-office change from company IR HTML."""
+    text = " ".join(html_blocks(raw_html))
+    match = NOTICE_PATTERN.search(text)
+    if not match:
+        raise ValueError("company notice does not expose an effective principal executive office address")
+    effective_date = datetime.strptime(match.group("date"), "%B %d, %Y").date().isoformat()
+    street = match.group("street").strip()
+    city = match.group("city").strip()
+    region = match.group("region").strip()
+    postal = match.group("postal")
+    return {
+        "address": f"{street}, {city}, {region} {postal}",
+        "street": street,
+        "city": city,
+        "region": region,
+        "postal": postal,
+        "country": "United States",
+        "effective_date": effective_date,
     }
 
 
