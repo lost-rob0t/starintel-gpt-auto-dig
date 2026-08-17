@@ -1,0 +1,89 @@
+name: Flock Dunwoody MJCCA AutoDig materialization
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - agent/flock-dunwoody-mjcca-autodig
+    paths:
+      - .github/workflows/flock-dunwoody-mjcca-one-shot.yml
+      - scripts/seed_flock_dunwoody_mjcca_camera_access.py
+
+permissions:
+  contents: write
+
+env:
+  TARGET_BRANCH: agent/flock-dunwoody-mjcca-autodig
+  PACKET_DIR: digs/flock/2026-08-17-dunwoody-mjcca-camera-access
+  NIM_VERSION: 2.2.4
+  STARINTEL_NIM_REF: b55316bae294a146523cd2f977b81096e538c86a
+
+jobs:
+  materialize:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+          ref: ${{ env.TARGET_BRANCH }}
+
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+
+      - name: Checkout canonical StarIntel Nim runtime
+        uses: actions/checkout@v6
+        with:
+          repository: lost-rob0t/starintel-doc.nim
+          ref: ${{ env.STARINTEL_NIM_REF }}
+          path: .starintel-doc-nim
+
+      - name: Set up Nim
+        uses: jiro4989/setup-nim-action@v2
+        with:
+          nim-version: ${{ env.NIM_VERSION }}
+
+      - name: Generate canonical StarIntel documents and import normalized DB records
+        run: python3 scripts/seed_flock_dunwoody_mjcca_camera_access.py
+
+      - name: Build canonical Nim validation and site binaries
+        run: nimble buildFast -y
+
+      - name: Run mandatory AutoDig merge/site gate
+        shell: bash
+        run: |
+          set -o pipefail
+          set +e
+          bin/validate-for-merge --site 2>&1 | tee /tmp/flock-merge-gate.log
+          status=${PIPESTATUS[0]}
+          set -e
+          if [ "$status" -ne 0 ]; then
+            python3 - <<'PY'
+          from pathlib import Path
+          text = Path('/tmp/flock-merge-gate.log').read_text(encoding='utf-8', errors='replace')
+          summary = '\n'.join(text.splitlines()[-100:])[-7000:]
+          escaped = summary.replace('%', '%25').replace('\r', '%0D').replace('\n', '%0A')
+          print(
+              '::error file=scripts/validate_for_merge.nim,line=1,'
+              f'title=Canonical AutoDig Nim gate failed::{escaped}'
+          )
+          PY
+            exit "$status"
+          fi
+
+      - name: Commit validated research transaction
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add "${PACKET_DIR}" db
+          if git diff --cached --quiet; then
+            echo 'Packet and normalized documents are unchanged.'
+            exit 0
+          fi
+          git commit -m 'Materialize Flock Dunwoody MJCCA AutoDig packet'
+          git pull --rebase origin "${TARGET_BRANCH}"
+          git push origin HEAD:"${TARGET_BRANCH}"
