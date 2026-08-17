@@ -51,10 +51,28 @@ jobs:
           if [ "$status" -ne 0 ]; then
             python3 - <<'PY'
           from pathlib import Path
-          text = Path('/tmp/flock-merge-gate.log').read_text(encoding='utf-8', errors='replace')
-          tail = text[-12000:]
-          escaped = tail.replace('%', '%25').replace('\r', '%0D').replace('\n', '%0A')
-          print(f'::error file=scripts/validate-for-merge.py,line=1,title=AutoDig merge gate failed::{escaped}')
+          import re
+
+          lines = Path('/tmp/flock-merge-gate.log').read_text(
+              encoding='utf-8', errors='replace'
+          ).splitlines()
+          patterns = re.compile(
+              r'(FAIL|ERROR|Traceback|ModuleNotFoundError|ImportError|AssertionError|'
+              r'ValueError|RuntimeError|FAILED|validation failed|unresolved relation|'
+              r'dangling|duplicate)',
+              re.IGNORECASE,
+          )
+          indexes = [i for i, line in enumerate(lines) if patterns.search(line)]
+          selected = set()
+          for index in indexes[-20:]:
+              selected.update(range(max(0, index - 3), min(len(lines), index + 8)))
+          selected.update(range(max(0, len(lines) - 60), len(lines)))
+          summary = '\n'.join(lines[i] for i in sorted(selected))[-7000:]
+          escaped = summary.replace('%', '%25').replace('\r', '%0D').replace('\n', '%0A')
+          print(
+              '::error file=scripts/validate-for-merge.py,line=1,'
+              f'title=AutoDig merge gate failed::{escaped}'
+          )
           PY
             exit "$status"
           fi
