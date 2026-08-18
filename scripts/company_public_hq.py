@@ -8,7 +8,7 @@ from typing import Any
 
 
 HQ_LOCALITY_PATTERN = re.compile(
-    r"\b(?:located|based)\s+in\s+(?:[^,.]+\s+)?(?P<city>[A-Z][A-Za-z .'-]+),\s*"
+    r"\b(?:located|based)\s+in\s+(?:sunny\s+)?(?P<city>[A-Z][A-Za-z .'-]+),\s*"
     r"(?P<region>[A-Z][A-Za-z .'-]+),\s*(?:[^.]{0,160}\b)?HQ\b",
     re.IGNORECASE,
 )
