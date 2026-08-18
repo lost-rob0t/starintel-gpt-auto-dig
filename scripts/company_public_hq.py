@@ -12,13 +12,21 @@ HQ_LOCALITY_PATTERN = re.compile(
     r"(?P<region>[A-Z][A-Za-z .'-]+),\s*(?:[^.]{0,160}\b)?HQ\b",
     re.IGNORECASE,
 )
-CONTACT_ADDRESS_PATTERN = re.compile(
+LABELED_CONTACT_ADDRESS_PATTERN = re.compile(
     r"\bAddress:\s*(?P<street>[^,\n]+),\s*(?P<city>[^,\n]+),\s*"
     r"(?P<region>[A-Z]{2}|[A-Za-z .'-]+)\s+(?P<postal>\d{5}(?:-\d{4})?)\b",
     re.IGNORECASE,
 )
+ORGANIZATIONAL_CONTACT_ADDRESS_PATTERN = re.compile(
+    r"\b(?:let['’]s\s+talk\s+business|contact\s+us)\b.{0,160}?"
+    r"(?P<street>\d{1,6}\s+[A-Za-z0-9 .#'-]+?)\s+"
+    r"(?P<city>[A-Z][A-Za-z .'-]+),\s*"
+    r"(?P<region>[A-Z]{2})\s+(?P<postal>\d{5}(?:-\d{4})?)\b",
+    re.IGNORECASE,
+)
 REGION_NAMES = {
     "CA": "California",
+    "OH": "Ohio",
 }
 
 
@@ -60,12 +68,12 @@ def extract_hq_locality(raw: str) -> dict[str, Any]:
     }
 
 
-def extract_public_contact_address(raw: str) -> dict[str, Any]:
-    text = visible_text(raw)
-    match = CONTACT_ADDRESS_PATTERN.search(text)
-    if match is None:
-        raise ValueError("source does not expose an explicit public contact address")
-
+def _address_result(
+    match: re.Match[str],
+    *,
+    location_type: str,
+    source_semantics: str,
+) -> dict[str, Any]:
     street = " ".join(match.group("street").split()).strip()
     city = " ".join(match.group("city").split()).strip()
     region = _region_name(match.group("region"))
@@ -79,6 +87,27 @@ def extract_public_contact_address(raw: str) -> dict[str, Any]:
         "postal": postal,
         "country": "United States",
         "country_code": "US",
-        "location_type": "public_legal_contact_address",
-        "source_semantics": "explicit public contact address",
+        "location_type": location_type,
+        "source_semantics": source_semantics,
     }
+
+
+def extract_public_contact_address(raw: str) -> dict[str, Any]:
+    text = visible_text(raw)
+    labeled = LABELED_CONTACT_ADDRESS_PATTERN.search(text)
+    if labeled is not None:
+        return _address_result(
+            labeled,
+            location_type="public_legal_contact_address",
+            source_semantics="explicit public contact address",
+        )
+
+    organizational = ORGANIZATIONAL_CONTACT_ADDRESS_PATTERN.search(text)
+    if organizational is not None:
+        return _address_result(
+            organizational,
+            location_type="public_organizational_contact_address",
+            source_semantics="explicit public organizational contact address",
+        )
+
+    raise ValueError("source does not expose an explicit public contact address")
