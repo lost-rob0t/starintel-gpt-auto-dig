@@ -24,6 +24,14 @@ ORGANIZATIONAL_CONTACT_ADDRESS_PATTERN = re.compile(
     r"(?P<region>[A-Z]{2})\s+(?P<postal>\d{5}(?:-\d{4})?)\b",
     re.IGNORECASE,
 )
+PUBLIC_AGENCY_FOOTER_ADDRESS_PATTERN = re.compile(
+    r"\b(?:department|office|agency|authority|commission)\b.{0,120}?•\s*"
+    r"(?P<street>\d{1,6}\s+[A-Za-z0-9 .'-]+?)\s*•\s*"
+    r"(?P<floor>\d{1,3}(?:st|nd|rd|th)\s+Floor)\s*•\s*"
+    r"(?P<city>[A-Z][A-Za-z .'-]+),\s*"
+    r"(?P<region>[A-Z]{2}|[A-Za-z .'-]+)\s+(?P<postal>\d{5}(?:-\d{4})?)\b",
+    re.IGNORECASE,
+)
 REGION_NAMES = {
     "CA": "California",
     "OH": "Ohio",
@@ -73,8 +81,11 @@ def _address_result(
     *,
     location_type: str,
     source_semantics: str,
+    floor: str | None = None,
 ) -> dict[str, Any]:
     street = " ".join(match.group("street").split()).strip()
+    if floor:
+        street = f"{street}, {' '.join(floor.split()).strip()}"
     city = " ".join(match.group("city").split()).strip()
     region = _region_name(match.group("region"))
     postal = match.group("postal")
@@ -108,6 +119,15 @@ def extract_public_contact_address(raw: str) -> dict[str, Any]:
             organizational,
             location_type="public_organizational_contact_address",
             source_semantics="explicit public organizational contact address",
+        )
+
+    agency_footer = PUBLIC_AGENCY_FOOTER_ADDRESS_PATTERN.search(text)
+    if agency_footer is not None:
+        return _address_result(
+            agency_footer,
+            floor=agency_footer.group("floor"),
+            location_type="public_organizational_contact_address",
+            source_semantics="explicit public agency footer address",
         )
 
     raise ValueError("source does not expose an explicit public contact address")

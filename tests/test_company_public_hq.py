@@ -68,6 +68,25 @@ class CompanyPublicHqTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             extract_hq_locality(raw)
 
+    def test_extracts_public_agency_footer_address_without_promoting_it_to_hq(self) -> None:
+        raw = """
+        <footer>
+          The Ohio Department of Development • 77 South High Street • 29th Floor •
+          Columbus, Ohio 43215 • 614-466-2609
+        </footer>
+        """
+
+        result = extract_public_contact_address(raw)
+
+        self.assertEqual(result["street"], "77 South High Street, 29th Floor")
+        self.assertEqual(result["city"], "Columbus")
+        self.assertEqual(result["region"], "Ohio")
+        self.assertEqual(result["postal"], "43215")
+        self.assertEqual(result["location_type"], "public_organizational_contact_address")
+        self.assertEqual(result["source_semantics"], "explicit public agency footer address")
+        with self.assertRaises(ValueError):
+            extract_hq_locality(raw)
+
     def test_contact_address_is_not_promoted_to_hq(self) -> None:
         raw = "Address: 1400 Anduril, Costa Mesa, CA 92626"
 
