@@ -29,6 +29,29 @@ class CompanyPublicHqTests(unittest.TestCase):
         self.assertNotIn("street", result)
         self.assertNotIn("postal", result)
 
+    def test_extracts_labeled_headquarters_locality(self) -> None:
+        raw = """
+        <dl>
+          <dt>Headquarters</dt>
+          <dd>Washington, DC</dd>
+        </dl>
+        """
+
+        result = extract_hq_locality(raw)
+
+        self.assertEqual(
+            result,
+            {
+                "city": "Washington",
+                "region": "District of Columbia",
+                "country": "United States",
+                "location_type": "headquarters_locality",
+                "source_semantics": "explicit headquarters locality",
+            },
+        )
+        self.assertNotIn("street", result)
+        self.assertNotIn("postal", result)
+
     def test_extracts_explicit_public_contact_address_separately(self) -> None:
         raw = """
         Contact information
@@ -46,6 +69,27 @@ class CompanyPublicHqTests(unittest.TestCase):
         self.assertEqual(result["country"], "United States")
         self.assertEqual(result["location_type"], "public_legal_contact_address")
         self.assertEqual(result["source_semantics"], "explicit public contact address")
+
+    def test_extracts_labeled_office_address_without_promoting_it_to_hq(self) -> None:
+        raw = """
+        <section>
+          <h3>Washington, DC</h3>
+          <p>1250 Eye Street, NW, Ste. 330<br>Washington, DC 20005</p>
+          <h3>California</h3>
+          <p>660 Howard St--2nd floor<br>San Francisco, CA 94105</p>
+        </section>
+        """
+
+        result = extract_public_contact_address(raw)
+
+        self.assertEqual(result["street"], "1250 Eye Street, NW, Ste. 330")
+        self.assertEqual(result["city"], "Washington")
+        self.assertEqual(result["region"], "District of Columbia")
+        self.assertEqual(result["postal"], "20005")
+        self.assertEqual(result["location_type"], "public_organizational_office_address")
+        self.assertEqual(result["source_semantics"], "explicit public office address")
+        with self.assertRaises(ValueError):
+            extract_hq_locality(raw)
 
     def test_extracts_jobsohio_contact_footer_without_promoting_it_to_hq(self) -> None:
         raw = """
