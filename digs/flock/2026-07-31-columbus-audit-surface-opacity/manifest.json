@@ -1,0 +1,18 @@
+{
+  "dataset": "flock-safety-columbus-audit-surface-opacity-2026-07-31",
+  "files": [
+    "README.md",
+    "sources.md",
+    "manifest.json"
+  ],
+  "generated_at": "2026-07-31T02:40:00-04:00",
+  "schema_version": "0.9.0",
+  "status": "deferred-schema-rewrite",
+  "transport": "unindexed",
+  "validation": {
+    "repository_merge_gate": "excluded-until-readable-jsonl-rewrite",
+    "schema_validation": "research-pass-normalization-required",
+    "source_urls": "reviewed"
+  },
+  "note": "The narrative and source files are retained, but the packet transport is intentionally unindexed after strict v0.9 validation rejected undeclared research-pass fields. The packet must be regenerated as readable canonical JSONL before re-enabling it."
+}
