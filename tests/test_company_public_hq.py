@@ -47,6 +47,27 @@ class CompanyPublicHqTests(unittest.TestCase):
         self.assertEqual(result["location_type"], "public_legal_contact_address")
         self.assertEqual(result["source_semantics"], "explicit public contact address")
 
+    def test_extracts_jobsohio_contact_footer_without_promoting_it_to_hq(self) -> None:
+        raw = """
+        <footer>
+          <h2>ready to make great happen?</h2>
+          <p>Let's talk business</p>
+          <p>41 S High St #1500<br>Columbus, OH 43215</p>
+          <p>(614) 224-6446</p>
+        </footer>
+        """
+
+        result = extract_public_contact_address(raw)
+
+        self.assertEqual(result["street"], "41 S High St #1500")
+        self.assertEqual(result["city"], "Columbus")
+        self.assertEqual(result["region"], "Ohio")
+        self.assertEqual(result["postal"], "43215")
+        self.assertEqual(result["location_type"], "public_organizational_contact_address")
+        self.assertEqual(result["source_semantics"], "explicit public organizational contact address")
+        with self.assertRaises(ValueError):
+            extract_hq_locality(raw)
+
     def test_contact_address_is_not_promoted_to_hq(self) -> None:
         raw = "Address: 1400 Anduril, Costa Mesa, CA 92626"
 
@@ -59,7 +80,7 @@ class CompanyPublicHqTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             extract_hq_locality(raw)
 
-    def test_contact_address_requires_explicit_address_marker(self) -> None:
+    def test_contact_address_requires_explicit_address_marker_or_contact_context(self) -> None:
         raw = "Ship returns to 1400 Anduril, Costa Mesa, CA 92626."
 
         with self.assertRaises(ValueError):
