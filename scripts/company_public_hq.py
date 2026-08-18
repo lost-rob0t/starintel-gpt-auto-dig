@@ -12,6 +12,11 @@ HQ_LOCALITY_PATTERN = re.compile(
     r"(?P<region>[A-Z][A-Za-z .'-]+),\s*(?:[^.]{0,160}\b)?HQ\b",
     re.IGNORECASE,
 )
+LABELED_HQ_LOCALITY_PATTERN = re.compile(
+    r"\bHeadquarters\s+(?P<city>[A-Z][A-Za-z .'-]+),\s*"
+    r"(?P<region>[A-Z]{2}|[A-Za-z .'-]+)\b",
+    re.IGNORECASE,
+)
 LABELED_CONTACT_ADDRESS_PATTERN = re.compile(
     r"\bAddress:\s*(?P<street>[^,\n]+),\s*(?P<city>[^,\n]+),\s*"
     r"(?P<region>[A-Z]{2}|[A-Za-z .'-]+)\s+(?P<postal>\d{5}(?:-\d{4})?)\b",
@@ -24,6 +29,13 @@ ORGANIZATIONAL_CONTACT_ADDRESS_PATTERN = re.compile(
     r"(?P<region>[A-Z]{2})\s+(?P<postal>\d{5}(?:-\d{4})?)\b",
     re.IGNORECASE,
 )
+LABELED_OFFICE_ADDRESS_PATTERN = re.compile(
+    r"\b(?P<label_city>[A-Z][A-Za-z .'-]+),\s*(?P<label_region>[A-Z]{2})\s+"
+    r"(?P<street>\d{1,6}\s+[A-Za-z0-9 .,#'–—-]+?)\s+"
+    r"(?P=label_city),\s*(?P<region>[A-Z]{2})\s+"
+    r"(?P<postal>\d{5}(?:-\d{4})?)\b",
+    re.IGNORECASE,
+)
 PUBLIC_AGENCY_FOOTER_ADDRESS_PATTERN = re.compile(
     r"\b(?:department|office|agency|authority|commission)\b.{0,120}?•\s*"
     r"(?P<street>\d{1,6}\s+[A-Za-z0-9 .'-]+?)\s*•\s*"
@@ -34,6 +46,7 @@ PUBLIC_AGENCY_FOOTER_ADDRESS_PATTERN = re.compile(
 )
 REGION_NAMES = {
     "CA": "California",
+    "DC": "District of Columbia",
     "OH": "Ohio",
 }
 
@@ -65,6 +78,8 @@ def extract_hq_locality(raw: str) -> dict[str, Any]:
     text = visible_text(raw)
     match = HQ_LOCALITY_PATTERN.search(text)
     if match is None:
+        match = LABELED_HQ_LOCALITY_PATTERN.search(text)
+    if match is None:
         raise ValueError("source does not expose an explicit headquarters locality")
 
     return {
@@ -82,11 +97,12 @@ def _address_result(
     location_type: str,
     source_semantics: str,
     floor: str | None = None,
+    city_group: str = "city",
 ) -> dict[str, Any]:
     street = " ".join(match.group("street").split()).strip()
     if floor:
         street = f"{street}, {' '.join(floor.split()).strip()}"
-    city = " ".join(match.group("city").split()).strip()
+    city = " ".join(match.group(city_group).split()).strip()
     region = _region_name(match.group("region"))
     postal = match.group("postal")
     return {
@@ -119,6 +135,15 @@ def extract_public_contact_address(raw: str) -> dict[str, Any]:
             organizational,
             location_type="public_organizational_contact_address",
             source_semantics="explicit public organizational contact address",
+        )
+
+    office = LABELED_OFFICE_ADDRESS_PATTERN.search(text)
+    if office is not None:
+        return _address_result(
+            office,
+            city_group="label_city",
+            location_type="public_organizational_office_address",
+            source_semantics="explicit public office address",
         )
 
     agency_footer = PUBLIC_AGENCY_FOOTER_ADDRESS_PATTERN.search(text)
