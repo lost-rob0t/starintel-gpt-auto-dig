@@ -28,19 +28,41 @@ concurrency:
   group: auto-dig-request-queue-${{ github.ref }}
   cancel-in-progress: true
 
+env:
+  NIM_VERSION: 2.2.4
+  STARINTEL_NIM_REF: b55316bae294a146523cd2f977b81096e538c86a
+
 jobs:
   test:
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 30
     steps:
       - uses: actions/checkout@v4
+
+      - name: Checkout canonical StarIntel Nim runtime
+        uses: actions/checkout@v4
+        with:
+          repository: lost-rob0t/starintel-doc.nim
+          ref: ${{ env.STARINTEL_NIM_REF }}
+          path: .starintel-doc-nim
 
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
+
+      - name: Set up Nim
+        uses: jiro4989/setup-nim-action@v2
+        with:
+          nim-version: ${{ env.NIM_VERSION }}
 
       - name: Compile request helper
         run: python3 -m py_compile scripts/auto_dig_request.py tests/test_auto_dig_request.py
 
       - name: Run request queue tests
         run: python3 -m unittest tests.test_auto_dig_request -v
+
+      - name: Build fast validator and site tools
+        run: nimble buildFast
+
+      - name: Run canonical merge gate
+        run: bin/validate-for-merge --site
