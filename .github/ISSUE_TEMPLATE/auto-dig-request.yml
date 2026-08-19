@@ -1,0 +1,78 @@
+name: Auto-Dig research request
+description: Queue a research dig for the hourly GPT Auto-Dig runner
+title: "[Auto-Dig request] "
+labels:
+  - investigation-target
+body:
+  - type: input
+    id: subject
+    attributes:
+      label: Subject
+      description: The person, organization, event, system, claim, dataset, or relationship to investigate.
+      placeholder: Flock Safety VP incident
+    validations:
+      required: true
+
+  - type: textarea
+    id: goal
+    attributes:
+      label: Goal
+      description: State the concrete question or result the dig should answer.
+      placeholder: Establish the timeline, people, organizations, primary evidence, contradictions, and unresolved gaps.
+    validations:
+      required: true
+
+  - type: textarea
+    id: scope
+    attributes:
+      label: Scope
+      description: Define required surfaces, jurisdictions, date ranges, entities, or exclusions.
+      placeholder: Public records and open sources; recurse through directly evidenced relationships.
+    validations:
+      required: true
+
+  - type: textarea
+    id: seed_sources
+    attributes:
+      label: Seed sources
+      description: Optional URLs, filings, document IDs, names, claims, or existing StarIntel records that should seed the dig.
+
+  - type: textarea
+    id: constraints
+    attributes:
+      label: Constraints
+      description: Optional research, publication, privacy, or evidence constraints beyond repository policy.
+
+  - type: dropdown
+    id: priority
+    attributes:
+      label: Priority
+      options:
+        - urgent
+        - high
+        - normal
+        - low
+      default: 2
+    validations:
+      required: true
+
+  - type: textarea
+    id: completion
+    attributes:
+      label: Completion criteria
+      description: Define what must exist before GPT may close this request.
+      value: Publish validated findings to the canonical Auto-Dig data surfaces, merge the research commits, and reply here with a findings summary plus links to the commits and relevant auto-dig.starintel.actor data.
+    validations:
+      required: true
+
+  - type: input
+    id: dedupe_key
+    attributes:
+      label: Stable dedupe key
+      description: Optional. Reuse the same short key when differently worded requests are intentionally the same dig. Leave blank for automatic fingerprinting.
+      placeholder: flock-vp-incident
+
+  - type: markdown
+    attributes:
+      value: |
+        The hourly GPT runner treats open `investigation-target` issues as its request queue. It drains eligible requests before autonomous research and processes as many as the run can safely validate and publish.
