@@ -1,0 +1,46 @@
+name: Auto-Dig request queue checks
+
+on:
+  push:
+    branches-ignore:
+      - main
+    paths:
+      - scripts/auto_dig_request.py
+      - tests/test_auto_dig_request.py
+      - .github/ISSUE_TEMPLATE/auto-dig-request.yml
+      - .github/workflows/auto-dig-request.yml
+      - .github/workflows/auto-dig-request-check.yml
+      - docs/auto-dig-requests.md
+  pull_request:
+    paths:
+      - scripts/auto_dig_request.py
+      - tests/test_auto_dig_request.py
+      - .github/ISSUE_TEMPLATE/auto-dig-request.yml
+      - .github/workflows/auto-dig-request.yml
+      - .github/workflows/auto-dig-request-check.yml
+      - docs/auto-dig-requests.md
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: auto-dig-request-queue-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Compile request helper
+        run: python3 -m py_compile scripts/auto_dig_request.py tests/test_auto_dig_request.py
+
+      - name: Run request queue tests
+        run: python3 -m unittest tests.test_auto_dig_request -v
