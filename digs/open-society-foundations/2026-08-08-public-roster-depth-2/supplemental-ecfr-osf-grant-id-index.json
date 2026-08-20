@@ -1,0 +1,41 @@
+{
+  "run":"2026-08-08",
+  "status":"source-recovery-staging-not-canonical-ledger",
+  "subject":"European Council on Foreign Relations historical Open Society grant references",
+  "warning":"These are historical award/reference records. Do not interpret display year as annual cash payment, do not derive dates from OR-prefix year, and do not double-count awards with IRS-reported installment payments.",
+  "entries":[
+    {"display_year":2023,"amount_usd":17732000,"purpose":"general support","grant_id":"OR2023-88176"},
+    {"display_year":2023,"amount_usd":250000,"purpose":"general support","grant_id":"OR2022-87658"},
+    {"display_year":2022,"amount_usd":2132355,"purpose":"Unlock Europe's Majority","grant_id":"OR2022-85024"},
+    {"display_year":2022,"amount_usd":5000000,"purpose":"general support","grant_id":"OR2021-83857"},
+    {"display_year":2021,"amount_usd":999774,"purpose":"nonpartisan Unlock Europe's Majority activities","grant_id":"OR2021-80195"},
+    {"display_year":2020,"amount_usd":2500000,"purpose":"general support","grant_id":"OR2020-76192"},
+    {"display_year":2020,"amount_usd":1000261,"purpose":"Unlock Europe's Majority","grant_id":"OR2020-70385"},
+    {"display_year":2019,"amount_usd":585000,"purpose":"Unlocking Europe's Hidden Internationalist Majority","grant_id":"OR2019-50856"},
+    {"display_year":2019,"amount_usd":136304,"purpose":"final phase of ECFR Unlocking Europe project","grant_id":"OR2019-64873"},
+    {"display_year":2019,"amount_usd":3000000,"purpose":"general support","grant_id":"OR2019-62721"},
+    {"display_year":2019,"amount_usd":792821,"purpose":"Unlocking Europe's Hidden Internationalist Majority","grant_id":"OR2019-62725"},
+    {"display_year":2018,"amount_usd":500000,"purpose":"general support","grant_id":"OR2018-45803"},
+    {"display_year":2017,"amount_usd":3000000,"purpose":"general support","grant_id":"OR2017-34725"},
+    {"display_year":2016,"amount_usd":95000,"purpose":"analytical framework relating to Palestinian rights","grant_id":"OR2016-27844"},
+    {"display_year":2016,"amount_usd":74334,"purpose":"EU military action and non-state armed groups research","grant_id":"OR2015-25954"}
+  ],
+  "known_reconciliations":[
+    {
+      "grant_id":"OR2021-83857",
+      "award_amount_usd":5000000,
+      "irs_legal_payer":"Open Society Institute",
+      "irs_payment_series":{"2022_inferred_usd":2500000,"2023_direct_usd":2500000},
+      "interpretation":"award/commitment versus installment payments; do not sum"
+    }
+  ],
+  "legal_payer_leads_pending_direct_row":[
+    {"grant_id":"OR2023-88176","legal_payer_lead":"Foundation to Promote Open Society","verification_needed":"direct filer payment row"},
+    {"grant_id":"OR2020-70385","legal_payer_lead":"Fund For Policy Reform Inc","recipient_entity_lead":"ECFR Deutschland GmbH","verification_needed":"Schedule F row"},
+    {"grant_id":"OR2021-80195","legal_payer_lead":"Fund For Policy Reform Inc","recipient_entity_lead":"ECFR Deutschland GmbH","verification_needed":"Schedule F row"},
+    {"grant_id":"OR2022-85024","legal_payer_lead":"Fund For Policy Reform Inc","recipient_entity_lead":"ECFR Deutschland GmbH","verification_needed":"Schedule F row"}
+  ],
+  "historical_url_pattern":"https://www.opensocietyfoundations.org/grants/past?grant_id=<GRANT_ID>",
+  "preservation_source":"https://www.wikidata.org/wiki/Q1376496",
+  "preservation_retrieved":"2025-01-21"
+}

@@ -1,0 +1,94 @@
+{
+  "run": "2026-08-08",
+  "parent_target_id": "starintel:target:wef:open-society-foundations-public-rosters-and-cross-ties",
+  "subject": "Ivan Krastev",
+  "status": "research-staging-not-canonical",
+  "handling": "public-source-only",
+  "verified_current_roles": [
+    {
+      "organization": "Open Society Foundations",
+      "role": "Board Member",
+      "verification": "OSF current board roster"
+    },
+    {
+      "organization": "European Council on Foreign Relations",
+      "role": "Founding Board Member / member of ECFR public website Board of Trustees",
+      "role_scope": "organization-level public governance surface; not the same as UK charity 1143536 statutory trustee register",
+      "verification": "ECFR current governance page and profile; legal-scope guard from Charity Commission current trustee register",
+      "existing_starintel_id": "starintel:org:european-council-on-foreign-relations"
+    },
+    {
+      "organization": "Centre for Liberal Strategies",
+      "role": "Founder and Chairman of the Board; Global Affairs Programme Director",
+      "verification": "CLS current management board and profile"
+    },
+    {
+      "organization": "Institute for Human Sciences (IWM Vienna)",
+      "role": "Rector ad Interim; Albert Hirschman Permanent Fellow",
+      "verification": "IWM current profile and academic staff"
+    },
+    {
+      "organization": "GLOBSEC",
+      "role": "Board of Directors",
+      "verification": "GLOBSEC current board page and 2026 Forum profile"
+    },
+    {
+      "organization": "EIB Global Advisory Council",
+      "role": "Member",
+      "verification": "European Investment Bank current council page and creation announcement"
+    }
+  ],
+  "ecfr_legal_governance_guard": {
+    "uk_charity_number": "1143536",
+    "current_statutory_trustees": ["Lykke Friis", "Adam Thomas Lury", "Ian Clarkson"],
+    "rule": "Do not convert Ivan Krastev's ECFR public website board role into a UK charity trustee/director predicate. Resolve the ECFR group/legal entity governed by the broader website board first."
+  },
+  "strong_cross_corroboration_needing_institution_side_resolution": [
+    {
+      "organization": "International Crisis Group",
+      "roles_reported": ["Board of Trustees", "Advisory Board"],
+      "supporting_publishers": [
+        "Institute for Human Sciences",
+        "European Council on Foreign Relations",
+        "GLOBSEC",
+        "Centre for Liberal Strategies"
+      ],
+      "status": "relationship strongly corroborated; exact current governance-body title unresolved"
+    }
+  ],
+  "secondary_cross_tie": {
+    "organization": "EIB Global Advisory Council",
+    "other_member": "Mark Leonard",
+    "other_member_role": "Co-founder and Director, European Council on Foreign Relations",
+    "significance": "additional ECFR-adjacent overlap one recursion step beyond Krastev"
+  },
+  "wef_surface": {
+    "person_profile_exists": true,
+    "organization_profile_for_cls_exists": true,
+    "inference_guard": "WEF profile existence does not prove membership, partnership, funding, or formal affiliation."
+  },
+  "depth_4_targets": [
+    "Centre for Liberal Strategies management board, donors, partners and annual report",
+    "EIB Global Advisory Council full current roster cross-resolution",
+    "GLOBSEC Board of Directors full current roster cross-resolution",
+    "International Crisis Group institution-side governance resolution",
+    "IWM governance, partners and public funding disclosures",
+    "Mark Leonard public institutional interlocks",
+    "ECFR group legal-entity governance resolution"
+  ],
+  "sources": [
+    "https://ecfr.eu/about/",
+    "https://ecfr.eu/profile/ivan-krastev/",
+    "Charity Commission current trustees for ECFR charity 1143536",
+    "https://cls-sofia.org/about",
+    "https://cls-sofia.org/ivan-krastev-en",
+    "https://www.iwm.at/fellow/ivan-krastev",
+    "https://www.iwm.at/about/academic-staff",
+    "https://www.globsec.org/board-directors",
+    "https://www.globsec.org/who-we-are/our-people/ivan-krastev",
+    "https://www.eib.org/en/projects/topics/global/global-advisory-council.htm",
+    "https://www.eib.org/press/all/2025-476-eib-group-creates-advisory-council-to-strengthen-its-global-impact",
+    "https://www.weforum.org/people/ivan-krastev/",
+    "https://www.weforum.org/organizations/centre-for-liberal-strategies/"
+  ]
+}

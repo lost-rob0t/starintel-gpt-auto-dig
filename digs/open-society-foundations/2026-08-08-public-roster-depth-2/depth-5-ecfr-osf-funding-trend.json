@@ -1,0 +1,57 @@
+{
+  "run": "2026-08-08",
+  "root_target_id": "starintel:target:wef:open-society-foundations-public-rosters-and-cross-ties",
+  "depth": 5,
+  "configured_max_depth": 5,
+  "subject": "ECFR / Open Society audited core-funding trend",
+  "status": "research-staging-not-canonical",
+  "audited_core_funding": [
+    {
+      "year": 2023,
+      "funder_label_as_reported": "Open Society Foundation",
+      "core_funds_eur": 2233798,
+      "ecfr_total_income_eur": 7694227,
+      "share_of_total_income_percent_approx": 29.0
+    },
+    {
+      "year": 2024,
+      "funder_label_as_reported": "Open Society Foundation",
+      "core_funds_eur": 2497698,
+      "ecfr_total_income_eur": 8703244,
+      "share_of_total_income_percent_approx": 28.7
+    }
+  ],
+  "year_over_year_core_funding_change_percent_approx": 11.8,
+  "additional_2024_claim": {
+    "type": "unrestricted grant",
+    "amount_eur_rounded": 3700000,
+    "source": "ECFR 2024 Directors' Report",
+    "warning": "Do not add to €2,497,698 core funds without reconciliation; the core-funds figure may be part of the broader unrestricted grant."
+  },
+  "legal_funder_resolution": {
+    "status": "unresolved",
+    "audited_label": "Open Society Foundation",
+    "guard": "Do not assume a specific OSF legal entity. OSF's grant database distinguishes legal funders, and indexed search did not surface an ECFR grant record during this pass. Absence from indexed search is not evidence of absence from the database."
+  },
+  "established": [
+    "material Open Society core support in both 2023 and 2024",
+    "11.8% year-over-year increase in precise disclosed core funds",
+    "core-funds share remained near 29% of ECFR total income",
+    "OSF says it supported creation of ECFR in 2006",
+    "ECFR currently lists OSF as a donor"
+  ],
+  "not_established": [
+    "exact OSF legal entity behind audited label",
+    "whether core funds are wholly contained inside rounded €3.7m unrestricted grant",
+    "donor control over ECFR editorial decisions, programs, research or governance",
+    "OSF-specific portion of collectively described restricted donations over €300k",
+    "complete consolidated finances of every ECFR legal entity"
+  ],
+  "follow_up_queue_beyond_max_depth": [
+    "deterministic OSF grant database extraction and entity resolution",
+    "ECFR 2020-2023 audited filing extraction for longer time series",
+    "German ECFR e.V. registry/accounts and exact legal-entity map",
+    "source-backed ECFR inter-entity regrant tracing",
+    "exact Open Society legal funder resolution"
+  ]
+}
