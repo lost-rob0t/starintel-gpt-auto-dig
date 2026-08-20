@@ -1,0 +1,160 @@
+name: Validate Auto-Dig site UI
+
+on:
+  pull_request:
+    paths:
+      - "db/**"
+      - "digs/**"
+      - "scripts/starintel_site/**"
+      - "scripts/starintel_site.nim"
+      - "scripts/starintel_validate.nim"
+      - "scripts/starintel_transport.nim"
+      - "scripts/validate_for_merge.nim"
+      - "scripts/externalize_search_indexes.py"
+      - "scripts/prepare_pages_data.py"
+      - "scripts/package_bulk_release.py"
+      - "scripts/validate-for-merge.py"
+      - "scripts/build-auto-dig-quasar.py"
+      - "scripts/scrape_dark_academia_memberships.py"
+      - "scripts/dark_academia_memberships_core.py"
+      - "starintel_auto_dig.nimble"
+      - "starintel_doc/integrity_site.py"
+      - "site-assets/**"
+      - "tests/test_adar_dashboard.py"
+      - "tests/test_dashboard_graph.py"
+      - "tests/test_auto_dig_quasar.py"
+      - "tests/test_prepare_pages_data.py"
+      - "tests/test_nim_site_scaling.py"
+      - "tests/test_dark_academia_bilderberg.py"
+      - "tests/fixtures/bilderberg_participants_split.html"
+      - "docs/quasar-integration.md"
+      - "docs/pages-site-size-architecture.md"
+      - "quasar-fork.lock.json"
+      - ".github/workflows/validate-site-ui.yml"
+  push:
+    branches-ignore: [main]
+    paths:
+      - "db/**"
+      - "digs/**"
+      - "scripts/starintel_site/**"
+      - "scripts/starintel_site.nim"
+      - "scripts/starintel_validate.nim"
+      - "scripts/starintel_transport.nim"
+      - "scripts/validate_for_merge.nim"
+      - "scripts/externalize_search_indexes.py"
+      - "scripts/prepare_pages_data.py"
+      - "scripts/package_bulk_release.py"
+      - "scripts/validate-for-merge.py"
+      - "scripts/build-auto-dig-quasar.py"
+      - "scripts/scrape_dark_academia_memberships.py"
+      - "scripts/dark_academia_memberships_core.py"
+      - "starintel_auto_dig.nimble"
+      - "starintel_doc/integrity_site.py"
+      - "site-assets/**"
+      - "tests/test_adar_dashboard.py"
+      - "tests/test_dashboard_graph.py"
+      - "tests/test_auto_dig_quasar.py"
+      - "tests/test_prepare_pages_data.py"
+      - "tests/test_nim_site_scaling.py"
+      - "tests/test_dark_academia_bilderberg.py"
+      - "tests/fixtures/bilderberg_participants_split.html"
+      - "docs/quasar-integration.md"
+      - "docs/pages-site-size-architecture.md"
+      - "quasar-fork.lock.json"
+      - ".github/workflows/validate-site-ui.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: site-ui-validation-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  NIM_VERSION: 2.2.4
+  STARINTEL_NIM_REF: b55316bae294a146523cd2f977b81096e538c86a
+
+jobs:
+  validate-site-ui:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v6
+
+      - name: Check out canonical StarIntel Nim runtime
+        uses: actions/checkout@v6
+        with:
+          repository: lost-rob0t/starintel-doc.nim
+          ref: ${{ env.STARINTEL_NIM_REF }}
+          path: .starintel-doc-nim
+
+      - name: Set up Nim
+        uses: jiro4989/setup-nim-action@v2
+        with:
+          nim-version: ${{ env.NIM_VERSION }}
+
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.13"
+
+      - name: Install scraper parsing dependencies
+        run: python3 -m pip install --disable-pip-version-check requests beautifulsoup4 lxml
+
+      - name: Read pinned Quasar runtime
+        id: quasar-pin
+        run: |
+          test -s quasar-fork.lock.json
+          echo "quasar=$(python3 -c 'import json; print(json.load(open("quasar-fork.lock.json"))["quasar_commit"])')" >> "$GITHUB_OUTPUT"
+          echo "ui=$(python3 -c 'import json; print(json.load(open("quasar-fork.lock.json"))["quasar_ui_commit"])')" >> "$GITHUB_OUTPUT"
+          echo "auto_dig=$(python3 -c 'import json; print(json.load(open("quasar-fork.lock.json"))["auto_dig_version"])')" >> "$GITHUB_OUTPUT"
+          echo "schema=$(python3 -c 'import json; print(json.load(open("quasar-fork.lock.json"))["starintel_schema_version"])')" >> "$GITHUB_OUTPUT"
+
+      - name: Check out pinned Quasar runtime
+        uses: actions/checkout@v6
+        with:
+          repository: lost-rob0t/quasar
+          ref: ${{ steps.quasar-pin.outputs.quasar }}
+          path: .quasar
+          submodules: recursive
+
+      - name: Verify pinned Quasar frontend
+        run: |
+          test "$(git -C .quasar rev-parse HEAD)" = "${{ steps.quasar-pin.outputs.quasar }}"
+          test "$(git -C .quasar/frontend rev-parse HEAD)" = "${{ steps.quasar-pin.outputs.ui }}"
+
+      - name: Set up Node
+        uses: actions/setup-node@v6
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: .quasar/frontend/package-lock.json
+
+      - name: Validate pinned Quasar frontend
+        env:
+          VITE_BASE_PATH: /quasar/app/
+          VITE_AUTODIG_CORRECTION_REPO: lost-rob0t/starintel-gpt-auto-dig
+          VITE_QUASAR_COMMIT: ${{ steps.quasar-pin.outputs.quasar }}
+          VITE_QUASAR_UI_COMMIT: ${{ steps.quasar-pin.outputs.ui }}
+          VITE_AUTODIG_VERSION: ${{ steps.quasar-pin.outputs.auto_dig }}
+          VITE_STARINTEL_SCHEMA_VERSION: ${{ steps.quasar-pin.outputs.schema }}
+        run: |
+          npm --prefix .quasar/frontend ci
+          bash .quasar/scripts/prepare-frontend.sh
+          npm --prefix .quasar/frontend run check
+          npm --prefix .quasar/frontend test
+          npm --prefix .quasar/frontend run build
+
+      - name: Run dashboard, Quasar, and scraper regression tests
+        run: python3 -m unittest tests.test_adar_dashboard tests.test_dashboard_graph tests.test_auto_dig_quasar tests.test_prepare_pages_data tests.test_dark_academia_bilderberg
+
+      - name: Build canonical Nim merge gate
+        run: nimble buildFast
+
+      - name: Test Pages deduplication invariants
+        run: python3 -m unittest tests.test_nim_site_scaling
+
+      - name: Run complete StarIntel merge and ADAR surface gate
+        run: bin/validate-for-merge --site

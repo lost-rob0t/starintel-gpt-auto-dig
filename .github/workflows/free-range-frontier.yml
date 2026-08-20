@@ -1,0 +1,114 @@
+name: Free-Range Frontier
+
+on:
+  # Assistant-operated manual entry point.
+  workflow_dispatch:
+    inputs:
+      query:
+        description: Optional corpus query
+        required: false
+        default: ""
+      dataset:
+        description: Optional dataset filter
+        required: false
+        default: ""
+      limit:
+        description: Mission count
+        required: true
+        default: "20"
+      batch_size:
+        description: Parallel mission lanes per batch
+        required: true
+        default: "5"
+      include_blocked:
+        description: Include blocked targets
+        required: true
+        type: boolean
+        default: false
+      queue_only:
+        description: Use only existing queued targets
+        required: true
+        type: boolean
+        default: false
+  pull_request:
+    paths:
+      - ".github/workflows/free-range-frontier.yml"
+      - "FREE_RANGE.md"
+      - "scripts/free-range.py"
+      - "starintel_doc/free_range.py"
+      - "starintel_doc/frontier_state.py"
+      - "tests/test_free_range.py"
+      - "tests/test_free_range_state.py"
+      - "digs/free-range/**"
+  push:
+    branches:
+      - main
+    paths:
+      - ".github/workflows/free-range-frontier.yml"
+      - "FREE_RANGE.md"
+      - "scripts/free-range.py"
+      - "starintel_doc/free_range.py"
+      - "starintel_doc/frontier_state.py"
+      - "tests/test_free_range.py"
+      - "tests/test_free_range_state.py"
+      - "digs/free-range/**"
+
+permissions:
+  contents: read
+
+jobs:
+  plan:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Test planner
+        run: python3 -m unittest tests.test_free_range tests.test_free_range_state -v
+
+      - name: Generate frontier
+        env:
+          FREE_RANGE_QUERY: ${{ inputs.query }}
+          FREE_RANGE_DATASET: ${{ inputs.dataset }}
+          FREE_RANGE_LIMIT: ${{ inputs.limit || '20' }}
+          FREE_RANGE_BATCH_SIZE: ${{ inputs.batch_size || '5' }}
+          FREE_RANGE_INCLUDE_BLOCKED: ${{ inputs.include_blocked || 'false' }}
+          FREE_RANGE_QUEUE_ONLY: ${{ inputs.queue_only || 'false' }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p artifacts
+          args=(
+            --limit "$FREE_RANGE_LIMIT"
+            --batch-size "$FREE_RANGE_BATCH_SIZE"
+            --max-per-dataset 3
+            --max-per-type 5
+          )
+          if [[ -n "$FREE_RANGE_QUERY" ]]; then
+            args+=(--query "$FREE_RANGE_QUERY")
+          fi
+          if [[ -n "$FREE_RANGE_DATASET" ]]; then
+            args+=(--dataset "$FREE_RANGE_DATASET")
+          fi
+          if [[ "$FREE_RANGE_INCLUDE_BLOCKED" == "true" ]]; then
+            args+=(--include-blocked)
+          fi
+          if [[ "$FREE_RANGE_QUEUE_ONLY" == "true" ]]; then
+            args+=(--queue-only)
+          fi
+          python3 scripts/free-range.py "${args[@]}" \
+            --format markdown \
+            --output artifacts/free-range-frontier.md
+          python3 scripts/free-range.py "${args[@]}" \
+            --format jsonl \
+            --output artifacts/free-range-frontier.jsonl
+          cat artifacts/free-range-frontier.md >> "$GITHUB_STEP_SUMMARY"
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: free-range-frontier
+          path: artifacts/free-range-frontier.*
+          if-no-files-found: error

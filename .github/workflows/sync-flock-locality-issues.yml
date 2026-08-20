@@ -1,0 +1,65 @@
+name: Sync Flock locality issues
+
+on:
+  workflow_dispatch:
+    inputs:
+      granularity:
+        description: County trackers or individual locality issues
+        required: true
+        type: choice
+        default: county
+        options:
+          - county
+          - locality
+      county:
+        description: Optional exact county name; blank means statewide
+        required: false
+        type: string
+      offset:
+        description: Row offset for bounded locality batches
+        required: false
+        type: number
+        default: 0
+      limit:
+        description: Maximum rows; 0 means all selected rows
+        required: false
+        type: number
+        default: 0
+  schedule:
+    - cron: "17 9 * * 1"
+
+permissions:
+  contents: read
+  issues: write
+
+concurrency:
+  group: flock-locality-issues-new-york
+  cancel-in-progress: false
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.13"
+      - name: Synchronize locality trackers
+        env:
+          GH_TOKEN: ${{ github.token }}
+          COUNTY: ${{ inputs.county || '' }}
+          GRANULARITY: ${{ inputs.granularity || 'county' }}
+          OFFSET: ${{ inputs.offset || 0 }}
+          LIMIT: ${{ inputs.limit || 0 }}
+        run: |
+          args=(
+            --repo "$GITHUB_REPOSITORY"
+            --granularity "$GRANULARITY"
+            --offset "$OFFSET"
+            --limit "$LIMIT"
+            --apply
+          )
+          if [[ -n "$COUNTY" ]]; then
+            args+=(--county "$COUNTY")
+          fi
+          python scripts/sync_flock_locality_issues.py "${args[@]}"

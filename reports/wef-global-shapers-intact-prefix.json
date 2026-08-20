@@ -1,0 +1,44 @@
+{
+  "dataset": "wef",
+  "missing_suffix_status": "requires-live-and-archive-reconstruction",
+  "packet": {
+    "base64_parts": [
+      "starintel-documents.jsonl.gz.b64.part-000",
+      "starintel-documents.jsonl.gz.b64.part-001"
+    ],
+    "counts_by_dtype": {
+      "org": 1,
+      "person": 2736,
+      "relation": 5472
+    },
+    "documents": 8209,
+    "gzip_sha256": "74ea52f893a42edfb71dbd4c8863d35ac29ac46f81b1536b2c9e904588552acd",
+    "output_sha256": "0589735d353f868c5a97b82e9ad043aee14a8873c36d8318a6ce7572b4f09b17"
+  },
+  "packet_path": "digs/wef/global-shapers-legacy-intact-prefix",
+  "prefix": {
+    "first_rejected_record": {
+      "byte_offset": 492185,
+      "error": "Extra data: line 1 column 70 (char 69)",
+      "kind": "invalid-json",
+      "physical_line": 2737
+    },
+    "people": 2736,
+    "rejected_suffix_bytes": 6220,
+    "unique_ids": 2736,
+    "valid_jsonl_bytes": 492185
+  },
+  "run": "global-shapers-legacy-intact-prefix",
+  "source_encoded_sha256": "6b68da79a4d04f2f9becdf23671182557d7395aed661aaf800f2984001c4928c",
+  "status": "partial-intact-prefix",
+  "transport": {
+    "compressed_bytes": 180040,
+    "compressed_bytes_consumed": 113999,
+    "decompressed_bytes_before_error": 498405,
+    "encoded_characters": 240055,
+    "encoded_data_characters": 240053,
+    "valid_jsonl_bytes": 492185,
+    "xz_eof": false,
+    "xz_error": "LZMAError: Corrupt input data"
+  }
+}

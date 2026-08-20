@@ -1,0 +1,98 @@
+name: Palantir HQ and current-news AutoDig materialization
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - research/thiel-wef-crossmatch-depth-3-2026-08-12
+    paths:
+      - scripts/sec_principal_office_history.py
+      - scripts/seed_palantir_sec_principal_offices.py
+      - scripts/seed_palantir_current_news_pass.py
+      - tests/test_sec_principal_office_history.py
+      - tests/test_sec_principal_office_real_cover_shapes.py
+
+permissions:
+  contents: write
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref_name }}
+  cancel-in-progress: true
+
+env:
+  TARGET_BRANCH: research/thiel-wef-crossmatch-depth-3-2026-08-12
+  HQ_PACKET_DIR: digs/wef/2026-08-17-palantir-sec-principal-office-history
+  NEWS_PACKET_DIR: digs/wef/2026-08-17-palantir-current-news-pass
+  NIM_VERSION: 2.2.4
+  STARINTEL_NIM_REF: b55316bae294a146523cd2f977b81096e538c86a
+  SEC_USER_AGENT: StarIntel-Auto-Dig/0.9.0 (+https://github.com/lost-rob0t/starintel-gpt-auto-dig)
+
+jobs:
+  materialize:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+          ref: ${{ env.TARGET_BRANCH }}
+
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+
+      - name: Run principal-office regression tests
+        run: >-
+          python3 -m unittest
+          tests.test_sec_principal_office_history
+          tests.test_sec_principal_office_real_cover_shapes
+          -v
+
+      - name: Materialize HQ/location packet and normalized records
+        run: python3 scripts/seed_palantir_sec_principal_offices.py
+
+      - name: Checkout canonical StarIntel Nim runtime
+        uses: actions/checkout@v6
+        with:
+          repository: lost-rob0t/starintel-doc.nim
+          ref: ${{ env.STARINTEL_NIM_REF }}
+          path: .starintel-doc-nim
+
+      - name: Set up Nim
+        uses: jiro4989/setup-nim-action@v2
+        with:
+          nim-version: ${{ env.NIM_VERSION }}
+
+      - name: Build canonical Nim merge gate
+        run: nimble buildFast -y
+
+      - name: Validate HQ/location phase before news
+        shell: bash
+        run: |
+          set -o pipefail
+          bin/validate-for-merge --site 2>&1 | tee /tmp/palantir-hq-gate.log
+
+      - name: Materialize post-HQ current-news materiality pass
+        run: python3 scripts/seed_palantir_current_news_pass.py
+
+      - name: Run final AutoDig merge/site gate after news pass
+        shell: bash
+        run: |
+          set -o pipefail
+          bin/validate-for-merge --site 2>&1 | tee /tmp/palantir-news-gate.log
+
+      - name: Commit validated hourly research transaction
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add "${HQ_PACKET_DIR}" "${NEWS_PACKET_DIR}" db
+          if git diff --cached --quiet; then
+            echo 'HQ/news packets and normalized documents are unchanged.'
+            exit 0
+          fi
+          git commit -m 'Materialize Palantir HQ and current-news pass'
+          git pull --rebase origin "${TARGET_BRANCH}"
+          git push origin HEAD:"${TARGET_BRANCH}"

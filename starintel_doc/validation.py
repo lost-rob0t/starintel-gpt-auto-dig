@@ -113,9 +113,30 @@ def validate_value(value: Any, schema: dict[str, Any], path: str = "$") -> None:
                 validate_value(item, additional, f"{path}.{key}")
 
 
+def normalize_legacy_document(document: dict[str, Any]) -> dict[str, Any]:
+    """Normalize narrowly scoped legacy aliases before strict v0.9 validation."""
+
+    dtype = DTYPE_ALIASES.get(str(document.get("dtype", "")), str(document.get("dtype", "")))
+    data = document.get("data")
+    if dtype == "source" and isinstance(data, dict) and "file_format" in data:
+        legacy_value = data["file_format"]
+        canonical_value = data.get("medium")
+        if canonical_value is not None and canonical_value != legacy_value:
+            raise ValidationError(
+                "$.data: conflicting legacy 'file_format' and canonical 'medium' values"
+            )
+        data["medium"] = legacy_value
+        del data["file_format"]
+        document.setdefault("lineage", {}).setdefault(
+            "migration_notes", []
+        ).append("normalized legacy source data.file_format to data.medium")
+    return document
+
+
 def validate_document(document: dict[str, Any]) -> dict[str, Any]:
     if not isinstance(document, dict):
         raise ValidationError("$: expected object")
+    normalize_legacy_document(document)
     dtype = str(document.get("dtype", ""))
     dtype = DTYPE_ALIASES.get(dtype, dtype)
     if dtype not in TYPE_FIELDS:

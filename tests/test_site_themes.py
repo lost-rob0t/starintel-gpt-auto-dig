@@ -25,17 +25,32 @@ class SiteThemeTests(unittest.TestCase):
         ):
             self.assertIn(f'id: "{theme}"', script)
 
+    def test_black_gold_is_the_canonical_default(self) -> None:
+        script = (ASSETS / "theme.js").read_text(encoding="utf-8")
+        self.assertIn('const DEFAULT_THEME = "black-gold";', script)
+        self.assertNotIn('const DEFAULT_THEME = "midnight";', script)
+
+    def test_theme_change_forces_runtime_redraw(self) -> None:
+        script = (ASSETS / "theme.js").read_text(encoding="utf-8")
+        self.assertIn('new CustomEvent("starintel:themechange"', script)
+        self.assertIn('requestAnimationFrame(() => window.dispatchEvent(new Event("resize")))', script)
+
     def test_synthwave_uses_dotfile_palette(self) -> None:
         script = (ASSETS / "theme.js").read_text(encoding="utf-8").lower()
         for color in ("#170c32", "#202146", "#92406e", "#fba922", "#2de2e6", "#f3f4f5", "#f6019d", "#62ff00", "#dd546e", "#9700cc"):
             self.assertIn(color, script)
 
-    def test_builder_publishes_theme_runtime_on_every_page(self) -> None:
+    def test_builder_publishes_theme_and_adar_runtime_on_every_page(self) -> None:
         source = BUILDER.read_text(encoding="utf-8")
-        self.assertIn('shutil.copy2(assets / "theme.js", asset_output / "theme.js")', source)
+        self.assertIn('"theme.js",', source)
+        self.assertIn('"adar-dashboard.css",', source)
+        self.assertIn('"adar-shell.js",', source)
+        self.assertIn('"corpus-dashboard.js",', source)
         self.assertIn('theme_script = f\'<script src="{prefix}assets/theme.js"></script>\'', source)
+        self.assertIn('shell_script = f\'<script defer src="{prefix}assets/adar-shell.js"></script>\'', source)
         self.assertIn('themed(node(doc, target, known), "../../")', source)
-        self.assertIn('themed(page(config.get("site_title", "StarIntel GPT Auto Dig"), body), "")', source)
+        self.assertIn('themed(root_dashboard_page(projection, site_title), "")', source)
+        self.assertIn('themed(datasets_page(catalog, site_title), "")', source)
 
     def test_graph_colors_are_theme_tokens(self) -> None:
         core = (ASSETS / "graph-core.mjs").read_text(encoding="utf-8")

@@ -1,0 +1,142 @@
+name: Auto-Dig request
+
+on:
+  workflow_dispatch:
+    inputs:
+      subject:
+        description: Subject to investigate
+        required: true
+        type: string
+      goal:
+        description: Concrete research goal
+        required: true
+        type: string
+      scope:
+        description: Required surfaces, jurisdictions, date ranges, or exclusions
+        required: true
+        type: string
+      seed_sources:
+        description: Optional source URLs, record IDs, names, or claims
+        required: false
+        type: string
+      constraints:
+        description: Optional additional constraints
+        required: false
+        type: string
+      completion:
+        description: Completion criteria
+        required: true
+        default: Publish validated findings, merge the research commits, and reply on the issue with findings plus commit and auto-dig.starintel.actor data links.
+        type: string
+      priority:
+        description: Queue priority
+        required: true
+        default: normal
+        type: choice
+        options:
+          - urgent
+          - high
+          - normal
+          - low
+      dedupe_key:
+        description: Optional stable key for intentionally equivalent requests
+        required: false
+        type: string
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  enqueue:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Render canonical request
+        id: request
+        env:
+          SUBJECT: ${{ inputs.subject }}
+          GOAL: ${{ inputs.goal }}
+          SCOPE: ${{ inputs.scope }}
+          SEED_SOURCES: ${{ inputs.seed_sources }}
+          CONSTRAINTS: ${{ inputs.constraints }}
+          COMPLETION: ${{ inputs.completion }}
+          PRIORITY: ${{ inputs.priority }}
+          DEDUPE_KEY: ${{ inputs.dedupe_key }}
+        run: |
+          python3 scripts/auto_dig_request.py \
+            --subject "$SUBJECT" \
+            --goal "$GOAL" \
+            --scope "$SCOPE" \
+            --seed-sources "$SEED_SOURCES" \
+            --constraints "$CONSTRAINTS" \
+            --completion "$COMPLETION" \
+            --priority "$PRIORITY" \
+            --dedupe-key "$DEDUPE_KEY" \
+            --output "$RUNNER_TEMP/auto-dig-request.md" \
+            --github-output "$GITHUB_OUTPUT"
+
+      - name: Find an existing equivalent request
+        id: existing
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REQUEST_KEY: ${{ steps.request.outputs.key }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          issue_json="$(gh issue list \
+            --repo "$GITHUB_REPOSITORY" \
+            --state all \
+            --search "auto-dig:${REQUEST_KEY} in:body" \
+            --limit 1 \
+            --json number,url,state)"
+          issue_url="$(jq -r '.[0].url // empty' <<<"$issue_json")"
+          issue_number="$(jq -r '.[0].number // empty' <<<"$issue_json")"
+          echo "issue_url=$issue_url" >> "$GITHUB_OUTPUT"
+          echo "issue_number=$issue_number" >> "$GITHUB_OUTPUT"
+
+      - name: Create request when no equivalent issue exists
+        id: create
+        if: steps.existing.outputs.issue_url == ''
+        env:
+          GH_TOKEN: ${{ github.token }}
+          SUBJECT: ${{ inputs.subject }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          issue_url="$(gh issue create \
+            --repo "$GITHUB_REPOSITORY" \
+            --title "[Auto-Dig request] $SUBJECT" \
+            --body-file "$RUNNER_TEMP/auto-dig-request.md" \
+            --label investigation-target)"
+          echo "issue_url=$issue_url" >> "$GITHUB_OUTPUT"
+
+      - name: Report queue result
+        env:
+          EXISTING_URL: ${{ steps.existing.outputs.issue_url }}
+          CREATED_URL: ${{ steps.create.outputs.issue_url }}
+          REQUEST_KEY: ${{ steps.request.outputs.key }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          issue_url="${EXISTING_URL:-${CREATED_URL:-}}"
+          if [ -z "$issue_url" ]; then
+            echo 'No request issue URL was produced.' >&2
+            exit 1
+          fi
+          {
+            echo '## Auto-Dig request queue'
+            echo
+            echo "- Request key: \`auto-dig:${REQUEST_KEY}\`"
+            echo "- Issue: ${issue_url}"
+            if [ -n "$EXISTING_URL" ]; then
+              echo '- Result: equivalent request already exists; no duplicate issue created.'
+            else
+              echo '- Result: queued as a new investigation target.'
+            fi
+          } >> "$GITHUB_STEP_SUMMARY"

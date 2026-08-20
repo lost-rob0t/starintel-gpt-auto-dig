@@ -1,0 +1,229 @@
+{
+  "bulk_url": "https://www.fec.gov/files/bulk-downloads/2026/cm26.zip",
+  "counts": {
+    "investigation-target": 23820,
+    "org": 3865,
+    "person": 3400,
+    "relation": 9141,
+    "source": 1
+  },
+  "dataset": "gop",
+  "description_url": "https://www.fec.gov/campaign-finance-data/committee-master-file-description/",
+  "document_stream_sha256": "937fa3c7c72ae6acb746aeff8607b36db1211fd80c8f0ff4c534fdb963b697d2",
+  "generated_at": "2026-08-08T21:55:00Z",
+  "inventory_sha256": "8f7dfd1f7e7eba8a72096ad1c318c6d54d91ead2362a9812caee726fe3852bca",
+  "matching_committees": 3404,
+  "partitions": [
+    {
+      "documents": 1226,
+      "part": 0,
+      "sha256": "c43b572d0617af36a571d9ad396ff34f46c113489ec9d172dbd2a5312621a898",
+      "size": 3011718
+    },
+    {
+      "documents": 1241,
+      "part": 1,
+      "sha256": "d874d9f1ae69bfc3aedb41a5a9837e3309b5584b51618979f95589e1129c725b",
+      "size": 3082636
+    },
+    {
+      "documents": 1275,
+      "part": 2,
+      "sha256": "e8bd99aa2f86e7097c1351c70b01b6ac482874ae29694cfec49ac97a55339a8d",
+      "size": 3113823
+    },
+    {
+      "documents": 1204,
+      "part": 3,
+      "sha256": "b2866ba5dbf8ebc9c0ce5cf9b469b9b6da058b0185d26665103dea555209eae3",
+      "size": 2878702
+    },
+    {
+      "documents": 1255,
+      "part": 4,
+      "sha256": "848b28e47ad09e2a9f382f4495b889067c338b818f5f10a6b4fd271a9fea5a7b",
+      "size": 3083776
+    },
+    {
+      "documents": 1224,
+      "part": 5,
+      "sha256": "0c46a2675b562f80a469f821ac8c117cf89e9cc42afb1326919d54355a1f0118",
+      "size": 2964557
+    },
+    {
+      "documents": 1317,
+      "part": 6,
+      "sha256": "04b742188a320d6f403d06df49a0dcf64af24c975ff554df26ea2c90d34e2a20",
+      "size": 3236990
+    },
+    {
+      "documents": 1252,
+      "part": 7,
+      "sha256": "17915416d459a3de0cd6857148fc5e96b243b52b6835ea95faf1bd83cc5d8519",
+      "size": 2949302
+    },
+    {
+      "documents": 1275,
+      "part": 8,
+      "sha256": "44a3c9d39ac10473827c03b8d1bcde511797606b79bb611fe65cb8e9d6dc1f3e",
+      "size": 3049766
+    },
+    {
+      "documents": 1271,
+      "part": 9,
+      "sha256": "427b1f92bc3add29b5c6097e05a37f75584eb7db1778d97acaa43b9c2e40bd15",
+      "size": 3074052
+    },
+    {
+      "documents": 1307,
+      "part": 10,
+      "sha256": "a9d48bd0a161ae1ebb25f1937a0811f3597e3454c6ba22c104043fe084ee4b00",
+      "size": 3185635
+    },
+    {
+      "documents": 1328,
+      "part": 11,
+      "sha256": "cf0aa5d53943167ca4fce90067db1201b9c4323c2f68eb94a5976d3cb31e144e",
+      "size": 3213065
+    },
+    {
+      "documents": 1274,
+      "part": 12,
+      "sha256": "3967fdd97514dd997048eead8c9567770767b122893b9ece57f70bdd318c4fed",
+      "size": 3095631
+    },
+    {
+      "documents": 1264,
+      "part": 13,
+      "sha256": "bd359c3f8f7c9396be566fec8bc36cba0bb58b22487e8f41b5d368ac601d9e0c",
+      "size": 3066547
+    },
+    {
+      "documents": 1164,
+      "part": 14,
+      "sha256": "50c5d7741eb6b831d72344d08de0e1831660bbd66aa755ae6f6b13cc71ed12c3",
+      "size": 2791922
+    },
+    {
+      "documents": 1220,
+      "part": 15,
+      "sha256": "31268e4cd3210b421eb05cd5c0920f7aad5ce82b6a5a83ed7f2ab0f31ff202e8",
+      "size": 2928857
+    },
+    {
+      "documents": 1228,
+      "part": 16,
+      "sha256": "f1d906f56d0b287d8db85af5c7ae4aea3b16d96b05793977b69c4d9684bd6e22",
+      "size": 2952220
+    },
+    {
+      "documents": 1199,
+      "part": 17,
+      "sha256": "a5a5cb6ff75ed555b163c090286207d44dfb470d5a112b3fda065c882a268c66",
+      "size": 2969842
+    },
+    {
+      "documents": 1303,
+      "part": 18,
+      "sha256": "a16fbb3e96bcc84f670b13eaffe86c04e9ea67412a03a1b18dd88ba610c501e4",
+      "size": 3180146
+    },
+    {
+      "documents": 1241,
+      "part": 19,
+      "sha256": "4236446db6b5a5c7bca72d52b4a03b32fd05eeb851a05a49a0abaf0446a1c167",
+      "size": 3016376
+    },
+    {
+      "documents": 1291,
+      "part": 20,
+      "sha256": "c0d394b7c9831b6f1623ea6fed6c5d8da7e821767f31188897ee04ec193c1860",
+      "size": 3166090
+    },
+    {
+      "documents": 1270,
+      "part": 21,
+      "sha256": "7b5d7a82da34abd96d5ac4c44fc90752f40110cb7380d954ff09b6190e1add28",
+      "size": 3120245
+    },
+    {
+      "documents": 1269,
+      "part": 22,
+      "sha256": "edac24b368d1d78900b32b6cca49a3d9a5e07d74593d47d40f1933e57fa33dd8",
+      "size": 3111169
+    },
+    {
+      "documents": 1244,
+      "part": 23,
+      "sha256": "9af17d0a06ecbed3206552d9257c23a7100b0b44464735735d5b44bd52dcc645",
+      "size": 2982974
+    },
+    {
+      "documents": 1288,
+      "part": 24,
+      "sha256": "748e68117527ca959d59d1d3550bd5850727235a8969556207615b77ef816d92",
+      "size": 3060035
+    },
+    {
+      "documents": 1283,
+      "part": 25,
+      "sha256": "4c6757018da290b3e65d731a26b0842bf40f4c0581b0070968ce4ba985751a30",
+      "size": 3057027
+    },
+    {
+      "documents": 1213,
+      "part": 26,
+      "sha256": "57c05e20b4ab3b4a2901f5599d9c147545c56e0584fb5253a6bd4f04e5d2f5ff",
+      "size": 2904240
+    },
+    {
+      "documents": 1297,
+      "part": 27,
+      "sha256": "5b102287918944dda4f238fcd8b2c0ae9b4e28a7c8b9cbe7bceb4141597cfe85",
+      "size": 3129941
+    },
+    {
+      "documents": 1313,
+      "part": 28,
+      "sha256": "6062762e1ac40d6bbe1f26b4719bc79e38a3d4d9cfd8509d02017c08c414ac70",
+      "size": 3163536
+    },
+    {
+      "documents": 1202,
+      "part": 29,
+      "sha256": "69b9854b66a0395ebdb527d71304e1a84d9797f07b4c468d277ab5203faab195",
+      "size": 2869950
+    },
+    {
+      "documents": 1287,
+      "part": 30,
+      "sha256": "069af555fe52cc65d2089c702b80372805dbc07f7735cb7483e04dc69d3e2cc0",
+      "size": 3093802
+    },
+    {
+      "documents": 1201,
+      "part": 31,
+      "sha256": "5d5285f1b7a86f839de0d97991efa2e6f7e5f1f101eae376d997ae081b761cf3",
+      "size": 2972736
+    }
+  ],
+  "party_codes": [
+    "REP"
+  ],
+  "party_codes_url": "https://www.fec.gov/campaign-finance-data/party-code-descriptions/",
+  "raw_archive_member": "cm.txt",
+  "raw_archive_sha256": "3e7751c2895e9c55351aeee480287c8a380c3eaa3a5b917f7f99796f873d5b33",
+  "raw_committee_master_rows": 20360,
+  "schema_version": "0.9.0",
+  "target_counts": {
+    "fec_committee_candidate_linkage": 3404,
+    "fec_committee_connected_organizations": 3404,
+    "fec_committee_leadership_registration": 3404,
+    "fec_committee_money_network": 3404,
+    "fec_committee_staff_vendors": 3404,
+    "fec_treasurer_cross_ties": 3400,
+    "fec_treasurer_identity_role": 3400
+  },
+  "total_documents": 40227,
+  "total_targets": 23820
+}
