@@ -1,0 +1,46 @@
+{
+  "dataset": "flock-safety-new-york-governance-sharing-private-depth-2-2026-07-31",
+  "schema_version": "0.9.0",
+  "generated_at": "2026-07-31T10:00:00-04:00",
+  "total": 144,
+  "counts": {
+    "org": 22,
+    "person": 17,
+    "claim": 28,
+    "relation": 32,
+    "investigation-target": 45
+  },
+  "files": [
+    "README.md",
+    "sources.md",
+    "starintel-documents.part-001.jsonl",
+    "starintel-documents.part-002.jsonl",
+    "starintel-documents.part-003.jsonl",
+    "starintel-documents.part-004.jsonl",
+    "starintel-documents.part-005.jsonl",
+    "starintel-documents.part-006.jsonl",
+    "starintel-documents.part-007.jsonl",
+    "starintel-documents.part-008.jsonl",
+    "starintel-documents.part-009.jsonl",
+    "starintel-documents.part-010.jsonl",
+    "starintel-documents.part-011.jsonl",
+    "starintel-documents.part-012.jsonl",
+    "starintel-documents.part-013.jsonl",
+    "starintel-documents.part-014.jsonl",
+    "starintel-documents.part-015.jsonl",
+    "starintel-documents.part-016.jsonl"
+  ],
+  "transport": "readable-jsonl-shards",
+  "shard_count": 16,
+  "starintel_documents_sha256": "46d2d4b294e5a3db058f134f60087617c3083a751011dbb9615d96f1a1a15ba2",
+  "hash_algorithm": "sha256",
+  "source_lineage": "Claims embed compact source identifiers and URLs; full source titles and publishers are preserved in sources.md.",
+  "validation": {
+    "jsonl_parse": "passed",
+    "unique_ids": "passed",
+    "relation_endpoint_references": "passed",
+    "target_seed_references": "passed",
+    "source_urls": "reviewed",
+    "schema_validation": "pending-github-actions"
+  }
+}

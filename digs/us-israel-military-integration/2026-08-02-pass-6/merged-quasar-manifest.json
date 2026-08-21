@@ -1,0 +1,67 @@
+{
+  "_id": "starintel:dataset-manifest:us-israel-military-integration:merged-through-pass-6",
+  "dataset": "us-israel-military-integration",
+  "dtype": "dataset-manifest",
+  "schema_version": "0.9.0",
+  "version": 1,
+  "date_added": "2026-08-02T08:36:00-04:00",
+  "date_updated": "2026-08-02T08:36:00-04:00",
+  "title": "Merged Quasar manifest — U.S.–Israel Military Integration through Pass 6",
+  "summary": "Ordered logical merge of the verified baseline and passes 2–6 into one graph import plan.",
+  "status": "complete",
+  "language": "en",
+  "tags": ["quasar", "merged", "multi-file", "us-israel", "military-integration", "pass-6"],
+  "sources": [],
+  "evidence": [],
+  "assessment": {
+    "confidence": 1.0,
+    "caveats": [
+      "This is an ordered multi-file logical merge.",
+      "Pass 6 intentionally replaces the earlier Lockheed PAC organization record with a richer FEC-grounded record."
+    ]
+  },
+  "verification": {
+    "status": "verified",
+    "verified": true,
+    "methods": ["parent-manifest-hash-reuse", "record-count-sum", "known-duplicate-accounting", "ordered-file-plan"]
+  },
+  "handling": {"visibility": "public", "classification": "unclassified", "pii": false, "sensitive": false},
+  "data": {
+    "manifest_type": "merged-quasar-import",
+    "name": "U.S.–Israel Military Integration — merged through Pass 6",
+    "actor": "auto-dig",
+    "consumer_path": "/import",
+    "import_order": "listed",
+    "dedupe_key": "_id",
+    "duplicate_policy": "last-write-wins",
+    "record_count_before_deduplication": 799,
+    "known_duplicate_count": 1,
+    "known_duplicate_ids": ["starintel:org:lockheed-martin-employees-pac"],
+    "expected_record_count": 798,
+    "files": [
+      {"path": "../2026-07-26/starintel-documents.jsonl.gz.b64", "record_count": 52, "decoded_content_hash": "1fe129d9c7ea77183601a4b7282bd6121888b3c5023bd536594f884b0b284470", "role": "documents-transport", "media_type": "text/plain", "encoding": "base64", "compression": "gzip", "decoded_media_type": "application/x-ndjson"},
+      {"path": "../2026-07-31/starintel-documents.jsonl.gz.b64", "record_count": 50, "decoded_content_hash": "5d22b16ee986db9906147090cf9b0f9ca965c58839054e939a969f2ff4a03626", "role": "documents-transport", "media_type": "text/plain", "encoding": "base64", "compression": "gzip", "decoded_media_type": "application/x-ndjson"},
+      {"path": "../2026-07-31-pass-3/starintel-documents.jsonl.gz.b64", "record_count": 72, "decoded_content_hash": "1d0606d2478b75eda508f7b5e48f8c48a1f112e077513317fdc36ac2ac44423b", "role": "documents-transport", "media_type": "text/plain", "encoding": "base64", "compression": "gzip", "decoded_media_type": "application/x-ndjson"},
+      {"path": "../2026-07-31-pass-4/targets-organizations.jsonl.gz.b64", "record_count": 59, "decoded_content_hash": "9d760d09ea30a0916448a178c90e976902c171e1f3468b94f72eacbd971afd20", "role": "documents-transport", "media_type": "text/plain", "encoding": "base64", "compression": "gzip", "decoded_media_type": "application/x-ndjson"},
+      {"path": "../2026-07-31-pass-4/targets-people-a.jsonl.gz.b64", "record_count": 67, "decoded_content_hash": "57220533a3ab8c87f74589ba86b4408a9bd70754ddd95155bffa64f4f644eea8", "role": "documents-transport", "media_type": "text/plain", "encoding": "base64", "compression": "gzip", "decoded_media_type": "application/x-ndjson"},
+      {"path": "../2026-07-31-pass-4/targets-people-b.jsonl.gz.b64", "record_count": 67, "decoded_content_hash": "e27bf661cd981007d5859227d2ed734874c2f3de296d77cffa6fbbe4924c93de", "role": "documents-transport", "media_type": "text/plain", "encoding": "base64", "compression": "gzip", "decoded_media_type": "application/x-ndjson"},
+      {"path": "../2026-07-31-pass-4/targets-clusters.jsonl.gz.b64", "record_count": 24, "decoded_content_hash": "9a52a2e6d94d05a0e2ee44ba4946969761e78310174694388afbef65e6a9fbb8", "role": "documents-transport", "media_type": "text/plain", "encoding": "base64", "compression": "gzip", "decoded_media_type": "application/x-ndjson"},
+      {"path": "../2026-08-01-pass-5/starintel-documents.jsonl.gz.b64", "record_count": 252, "decoded_content_hash": "52af5421a36212ef650f9c84002e315c1a01de20b36f393bef0acfe54856bf9c", "role": "documents-transport", "media_type": "text/plain", "encoding": "base64", "compression": "gzip", "decoded_media_type": "application/x-ndjson"},
+      {"path": "starintel-documents.jsonl.gz.b64", "record_count": 156, "decoded_content_hash": "c501f3f68c04b17b18af10aa4175ba6b17a9050ad4c8bedf9b5a44a763122c57", "role": "documents-transport", "media_type": "text/plain", "encoding": "base64", "compression": "gzip", "decoded_media_type": "application/x-ndjson"}
+    ],
+    "aggregate_hash_algorithm": "sha256",
+    "aggregate_manifest_hash": "fe817e6ce44c8e6db959209d939772a2bb165462506ae008ed744b3122bdc5d6",
+    "generated_at": "2026-08-02T08:36:00-04:00",
+    "target_options": [{"action": "save-and-open-graph", "graph_name": "U.S.–Israel Military Integration", "review_status": "all"}]
+  },
+  "extensions": {
+    "quasar": {
+      "import_mode": "multi-file-bulk-manifest",
+      "open_graph_after_import": true,
+      "graph_name": "U.S.–Israel Military Integration",
+      "reveal_unreviewed": true,
+      "deduplicate_by": "_id",
+      "duplicate_policy": "last-write-wins"
+    }
+  }
+}

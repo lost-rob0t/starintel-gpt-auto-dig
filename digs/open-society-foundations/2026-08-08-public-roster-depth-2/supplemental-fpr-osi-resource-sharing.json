@@ -1,0 +1,53 @@
+{
+  "run":"2026-08-08",
+  "status":"research-staging-not-canonical",
+  "subject":"Fund For Policy Reform Inc and Open Society Institute resource-sharing agreement",
+  "source":{
+    "filer":"Fund For Policy Reform Inc",
+    "ein":"26-4351242",
+    "fiscal_year":2022,
+    "form":"Form 990 Schedule J",
+    "filing_object_id":"202303199349322205",
+    "source_type":"IRS-derived e-file reconstruction"
+  },
+  "counterparty":{
+    "name":"Open Society Institute",
+    "ein":"13-7029285"
+  },
+  "verified_relations":[
+    {
+      "subject":"Fund For Policy Reform Inc",
+      "predicate":"resource_sharing_agreement_with",
+      "object":"Open Society Institute",
+      "qualification":"written agreement reported in FY2022 Schedule J"
+    },
+    {
+      "subject":"Open Society Institute",
+      "predicate":"provided_employee_functions_to",
+      "object":"Fund For Policy Reform Inc",
+      "qualification":"certain OSI employees performed functions and activities necessary for FPR Inc's exempt mission"
+    },
+    {
+      "subject":"Fund For Policy Reform Inc",
+      "predicate":"reimbursed_allocated_costs_to",
+      "object":"Open Society Institute",
+      "amount":"not disclosed in captured Schedule J text"
+    },
+    {
+      "subject":"Fund For Policy Reform Inc",
+      "predicate":"advanced_funds_for_allocable_costs_to",
+      "object":"Open Society Institute",
+      "amount":"not disclosed in captured Schedule J text"
+    }
+  ],
+  "compensation_note":"The filing states employee compensation was determined by Open Society Institute and documented in OSI records.",
+  "guardrails":[
+    "Do not merge OSI and FPR Inc; they remain distinct legal entities.",
+    "Do not infer an aggregate resource-sharing dollar value that the captured filing text does not provide.",
+    "Operational integration is not evidence of misconduct."
+  ],
+  "sources":[
+    "https://projects.propublica.org/nonprofits/organizations/264351242",
+    "https://pp-990-rendered.s3.us-east-1.amazonaws.com/202303199349322205_IRS990ScheduleJ_0.html"
+  ]
+}

@@ -1,0 +1,242 @@
+{
+  "administrative_fine_metadata_url": "https://www.fec.gov/legal-resources/enforcement/administrative-fines/administrative-fines-file-metadata/",
+  "administrative_fine_program_url": "https://www.fec.gov/legal-resources/enforcement/administrative-fines/",
+  "administrative_fine_url": "https://cg-519a459a-0ea3-42c2-b7bc-fa1143481f74.s3-us-gov-west-1.amazonaws.com/bulk-downloads/data.fec.gov/admin_fine.csv",
+  "classification_counts": {
+    "explicit_republican_name_lead_pending_party_resolution": 25,
+    "official_current_committee_master_party_code": 284
+  },
+  "committee_master_archive_member": "cm.txt",
+  "committee_master_description_url": "https://www.fec.gov/campaign-finance-data/committee-master-file-description/",
+  "committee_master_url": "https://www.fec.gov/files/bulk-downloads/2026/cm26.zip",
+  "counts": {
+    "event": 309,
+    "financial-observation": 309,
+    "investigation-target": 927,
+    "org": 164,
+    "relation": 309,
+    "source": 3
+  },
+  "dataset": "gop",
+  "document_stream_sha256": "4ad04ec039ce97daa4c53952cde04e5fb6b3ff868c41d5d79eca6538ade91cc7",
+  "generated_at": "2026-08-08T21:55:00Z",
+  "inventory_sha256": "d14c22f28d204169f5cbd493808715f60cf9243a8613a647076315c10912b283",
+  "matching_cases": 309,
+  "partition_count": 32,
+  "partitions": [
+    {
+      "documents": 56,
+      "part": 0,
+      "sha256": "ab0781d817305084feb93d3c4263f866d55300c043f78278f6ffc6b35e48d855",
+      "size": 142176
+    },
+    {
+      "documents": 54,
+      "part": 1,
+      "sha256": "d840c3e37625af8103da500d26d7628da569a71388bee1f5d35b55c69ee97155",
+      "size": 140126
+    },
+    {
+      "documents": 73,
+      "part": 2,
+      "sha256": "bfe2a7476e560d6651827d69a3fab757b431cd3ece6275e905fc9393bc5dced1",
+      "size": 211109
+    },
+    {
+      "documents": 61,
+      "part": 3,
+      "sha256": "ec22e72458aacc92a607225d70a33f74e289b22d8c81fe9781bb94b1dc58be3b",
+      "size": 160876
+    },
+    {
+      "documents": 64,
+      "part": 4,
+      "sha256": "9ef837a7ed699878dfdbe6a138f7edcaba46ac150f93ebce205c3444f15455a8",
+      "size": 184402
+    },
+    {
+      "documents": 62,
+      "part": 5,
+      "sha256": "c398c1a831e66bed6ae349721f2b6cf468795745aa5209a3a71c0d17e40d5c37",
+      "size": 167735
+    },
+    {
+      "documents": 66,
+      "part": 6,
+      "sha256": "8705db72d18e683360b137eda1200a51815daf8d48368023efbf09f463fdf394",
+      "size": 182961
+    },
+    {
+      "documents": 63,
+      "part": 7,
+      "sha256": "a15ec8ee181e012ca2208d20d990b32cd1fb87e0b1286ae61a785cff72de6883",
+      "size": 154805
+    },
+    {
+      "documents": 54,
+      "part": 8,
+      "sha256": "bafa39d188b27ad0c5697c4a693a1e11b0398efdb786d07b5c3c3dd641f4cc94",
+      "size": 153713
+    },
+    {
+      "documents": 62,
+      "part": 9,
+      "sha256": "88e92d9211ea2a697d97cece48724b11588b16cf730f7aeda2d7b61a3fe87749",
+      "size": 171058
+    },
+    {
+      "documents": 64,
+      "part": 10,
+      "sha256": "9962423f030cf1555833ce721e28448490d7773b94f14f4654936a41e9176d30",
+      "size": 173391
+    },
+    {
+      "documents": 66,
+      "part": 11,
+      "sha256": "773f2cfca0560cab3b6a4fd279ef5ce603f0ac15331c5ef5e30e3a924b2dc809",
+      "size": 174311
+    },
+    {
+      "documents": 53,
+      "part": 12,
+      "sha256": "647f04f8c4308531c9223e54ff2dbd5ec680da4278f014a015557acf19c63a72",
+      "size": 143024
+    },
+    {
+      "documents": 65,
+      "part": 13,
+      "sha256": "8f639fade8497cf8e1d3f2071dc436884f9b20623d9398209cb12dd54ca4855b",
+      "size": 176834
+    },
+    {
+      "documents": 64,
+      "part": 14,
+      "sha256": "ab2eb5b8f015168e25956a67a28042947dc20fd024d3797b3a029c8070c05502",
+      "size": 156174
+    },
+    {
+      "documents": 69,
+      "part": 15,
+      "sha256": "dcc64f7bcc04fc7ad6b2a9e8f5a1461c21b30968cd78017c3227ea63dd32c131",
+      "size": 176023
+    },
+    {
+      "documents": 87,
+      "part": 16,
+      "sha256": "2f21c7ec4d64f2fe61f0b06b10d70b4640d1eed97757d62260f5a67cfbe91847",
+      "size": 236458
+    },
+    {
+      "documents": 56,
+      "part": 17,
+      "sha256": "460cc6c8e8540a237620cdeccf4f58a22db67b7e53701589e006bb985aba4b16",
+      "size": 148291
+    },
+    {
+      "documents": 54,
+      "part": 18,
+      "sha256": "b2f0ee5708f8ac67741c4688e7b6bca4b276dd531d4b88c8fe2055624b94d1d3",
+      "size": 142890
+    },
+    {
+      "documents": 75,
+      "part": 19,
+      "sha256": "afa036c77078708e564c784cac8d8aa1143ef78c1256debd916a653d064006c9",
+      "size": 201710
+    },
+    {
+      "documents": 57,
+      "part": 20,
+      "sha256": "06191f53d8170f4e6fb177b30e0c67a067f4a5f7ad827cc253984fca630573e3",
+      "size": 170851
+    },
+    {
+      "documents": 49,
+      "part": 21,
+      "sha256": "feea40c5044cde1084650d8c40f9e7eb544e14791749c1b65032a86b7911f36b",
+      "size": 111923
+    },
+    {
+      "documents": 58,
+      "part": 22,
+      "sha256": "f4c50c76c154827c07134a8bfc8099684d544e6f1570d17327cb433d037feaeb",
+      "size": 170250
+    },
+    {
+      "documents": 62,
+      "part": 23,
+      "sha256": "ecdff063995f2a29f186a4d6b7109cd0489ffce87f9974a513cab76a8a9bfe26",
+      "size": 164200
+    },
+    {
+      "documents": 77,
+      "part": 24,
+      "sha256": "35889b35d99e96540e0c0989cde6ef7e5b3bde711f86cb2339d3649b44c02b59",
+      "size": 201778
+    },
+    {
+      "documents": 67,
+      "part": 25,
+      "sha256": "dac107d25516eed0534dafab23ffc0ba9d0a9afc7b68e6a4d97d1876eb7ebe0e",
+      "size": 171863
+    },
+    {
+      "documents": 79,
+      "part": 26,
+      "sha256": "976e4afa35da8f9e81ed2dabb097d0225363d30238db79b512e5f34f869cf1d4",
+      "size": 227039
+    },
+    {
+      "documents": 56,
+      "part": 27,
+      "sha256": "4508a0d2cd8700ad8189d38d54ddb3832ee3dffc3d1f70d2125cc614970d2472",
+      "size": 127113
+    },
+    {
+      "documents": 63,
+      "part": 28,
+      "sha256": "13dbdc576aa63146533e57b8bfbeabc3cf4894d8de3335783a4ae448b9c7ed78",
+      "size": 174509
+    },
+    {
+      "documents": 52,
+      "part": 29,
+      "sha256": "72a222686e9429370b2af95f1116d169eecd677791efa5a7c8ebb5f6516ae9e5",
+      "size": 138839
+    },
+    {
+      "documents": 72,
+      "part": 30,
+      "sha256": "59c8893917ad15f4a79570c2c2164cbbaf687f673704cbd6ae3a27430da367d1",
+      "size": 187130
+    },
+    {
+      "documents": 58,
+      "part": 31,
+      "sha256": "7ed8a9a56fc278fac5e9f95cd1f184b0590a5520e2e30b19a5fdba35be428278",
+      "size": 152463
+    }
+  ],
+  "party_codes": [
+    "REP"
+  ],
+  "party_codes_url": "https://www.fec.gov/campaign-finance-data/party-code-descriptions/",
+  "payment_status_counts": {
+    "N": 90,
+    "P": 9,
+    "Y": 210
+  },
+  "raw_administrative_fine_rows": 4301,
+  "raw_administrative_fine_sha256": "fb01f72ae08b1b30cc141472ff8161b7d263c0d848e76ea36d70c2ddbc9d1def",
+  "raw_committee_master_rows": 20360,
+  "raw_committee_master_sha256": "3e7751c2895e9c55351aeee480287c8a380c3eaa3a5b917f7f99796f873d5b33",
+  "schema_version": "0.9.0",
+  "target_counts": {
+    "fec_administrative_fine_complete_case_record": 309,
+    "fec_administrative_fine_leadership_compliance": 309,
+    "fec_administrative_fine_report_audit": 309
+  },
+  "total_documents": 2021,
+  "total_final_approved_fines": "1629284.0",
+  "total_targets": 927
+}

@@ -1,0 +1,25 @@
+{
+  "counts": {
+    "analysis": 1,
+    "claim": 1,
+    "org": 3,
+    "person": 3
+  },
+  "dataset": "flock-safety-x-aerodome-conflict-lead-2026-08-07",
+  "files": [
+    "README.md",
+    "sources.md",
+    "starintel-documents.jsonl"
+  ],
+  "generated_at": "2026-08-07T20:33:00-04:00",
+  "hash_algorithm": "sha256",
+  "schema_version": "0.9.0",
+  "starintel_documents_sha256": "f872e848f04b9104bb2766088ea57c0e8a29b46a4e8fd8220121b4fed79378b3",
+  "total": 8,
+  "validation": {
+    "related_id_references": "checked",
+    "relation_endpoints": "not-applicable",
+    "starintel_doc_validate_document": "not-run",
+    "unique_ids": "checked"
+  }
+}

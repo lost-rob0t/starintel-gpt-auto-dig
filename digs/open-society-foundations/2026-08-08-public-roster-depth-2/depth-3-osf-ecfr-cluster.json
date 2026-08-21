@@ -1,0 +1,111 @@
+{
+  "run": "2026-08-08",
+  "parent_target_id": "starintel:target:wef:open-society-foundations-public-rosters-and-cross-ties",
+  "subject": "Open Society Foundations ↔ European Council on Foreign Relations",
+  "status": "research-staging-not-canonical",
+  "institution_relations": [
+    {
+      "source": "Open Society Foundations",
+      "target": "European Council on Foreign Relations",
+      "relation": "supported_creation_of",
+      "time": "2006",
+      "verification": "OSF current institutional history"
+    },
+    {
+      "source": "Open Society Foundations",
+      "target": "European Council on Foreign Relations",
+      "relation": "donor_to",
+      "time": "current donor page observed 2026-08-08",
+      "amount": null,
+      "verification": "ECFR current funding page; quantified separately in 2024 audited funding packet"
+    }
+  ],
+  "verified_current_person_relations": [
+    {
+      "person": "Ivan Krastev",
+      "osf_role": "Board Member",
+      "ecfr_role": "Member of ECFR public website Board of Trustees / founding board member",
+      "ecfr_role_scope": "organization-level public governance; not UK charity 1143536 statutory trustee role"
+    },
+    {
+      "person": "Alex Soros",
+      "osf_role": "Chair",
+      "ecfr_role": "Council Member"
+    },
+    {
+      "person": "George Soros",
+      "osf_role": "Founder",
+      "ecfr_role": "Council Member"
+    },
+    {
+      "person": "Daniel Sachs",
+      "osf_role": "Vice Chair",
+      "ecfr_role": "Council Member"
+    },
+    {
+      "person": "James C. O'Brien",
+      "osf_role": "Board Member",
+      "ecfr_role": "Distinguished Visiting Fellow",
+      "ecfr_display_name": "Jim O'Brien",
+      "entity_resolution_note": "Resolve aliases before canonical person creation."
+    },
+    {
+      "person": "Mark Malloch-Brown",
+      "osf_role": "Former President of the Board of Directors",
+      "ecfr_role": "Council Member"
+    }
+  ],
+  "ecfr_legal_governance_guard": {
+    "uk_charity_number": "1143536",
+    "current_statutory_trustees": ["Lykke Friis", "Adam Thomas Lury", "Ian Clarkson"],
+    "source": "Charity Commission current trustee register",
+    "rule": "Do not treat members of ECFR's broader public website Board of Trustees as UK charity statutory trustees/directors without matching registry evidence. The 2024 audited report describes a multi-entity ECFR group under common/unified management involving German ECFR e.V."
+  },
+  "temporal_or_source_discrepancies": [
+    {
+      "person": "Alex Soros",
+      "osf_claim": "Board member of ECFR",
+      "ecfr_current_evidence": "Council Member; absent from current public website Board of Trustees list",
+      "canonicalization": "use current Council relation; preserve board claim as attributed/unresolved"
+    },
+    {
+      "person": "Sandra Breka",
+      "ecfr_current_directory_label": "Vice President and COO, Open Society Foundations",
+      "osf_current_leadership": "not listed; Leela Ramdhani is current COO",
+      "canonicalization": "preserve ECFR Council membership but do not treat displayed external job title as current without dating"
+    }
+  ],
+  "audited_2024_funding_summary": {
+    "ecfr_total_income_eur": 8703244,
+    "osf_unrestricted_grant_eur_rounded": 3700000,
+    "osf_unrestricted_grant_share_of_income_percent_approx": 42.5,
+    "osf_core_funds_eur": 2497698,
+    "osf_core_funds_share_of_income_percent_approx": 28.7,
+    "warning": "The €2.497698m core-funds figure may be a component of the rounded €3.7m unrestricted grant. Do not add them without reconciliation. Audited filing labels funder singularly as 'Open Society Foundation'; exact legal OSF funding entity unresolved."
+  },
+  "next_targets": [
+    "resolve exact OSF legal funder behind 2024 ECFR audited label",
+    "reconcile €3.7m unrestricted grant with €2.497698m core funds",
+    "map five non-UK ECFR legal entities and German ECFR e.V. governance",
+    "build audited OSF/ECFR donor history across successive years",
+    "OSF grant directory records naming ECFR",
+    "James C. O'Brien alias and institutional resolution",
+    "Sandra Breka temporal employment history",
+    "ECFR Board and EIB Global Advisory Council overlap",
+    "full ECFR Council cross-resolution against StarIntel"
+  ],
+  "sources": [
+    "https://www.opensocietyfoundations.org/who-we-are/our-history",
+    "https://www.opensocietyfoundations.org/who-we-are/board-of-directors",
+    "https://www.opensocietyfoundations.org/who-we-are/leadership?search=1",
+    "https://www.opensocietyfoundations.org/who-we-are/board-of-directors/alex-soros",
+    "https://ecfr.eu/donors/funding/",
+    "https://ecfr.eu/council/members/",
+    "https://ecfr.eu/about/",
+    "https://ecfr.eu/profile/jim-obrien/",
+    "https://ecfr.eu/profile/ivan-krastev/",
+    "https://www.eib.org/en/projects/topics/global/global-advisory-council.htm",
+    "Charity Commission ECFR 1143536 2024 audited accounts",
+    "Charity Commission current trustees for ECFR 1143536"
+  ]
+}

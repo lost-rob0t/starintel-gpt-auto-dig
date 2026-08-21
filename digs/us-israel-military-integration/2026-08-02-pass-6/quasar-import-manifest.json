@@ -1,0 +1,105 @@
+{
+  "_id": "starintel:dataset-manifest:us-israel-military-integration:2026-08-02-pass-6:quasar",
+  "dataset": "us-israel-military-integration",
+  "dtype": "dataset-manifest",
+  "schema_version": "0.9.0",
+  "version": 1,
+  "date_added": "2026-08-02T08:36:00-04:00",
+  "date_updated": "2026-08-02T08:36:00-04:00",
+  "title": "Quasar import manifest — U.S.–Israel Military Integration Pass 6",
+  "summary": "Incremental PAC, AIA governance, corporate political-oversight and FARA personnel packet.",
+  "status": "complete",
+  "language": "en",
+  "tags": ["quasar", "auto-dig", "military-integration", "us-israel", "recursive-pass-6", "pac", "trade-association", "fara"],
+  "sources": [],
+  "evidence": [],
+  "assessment": {
+    "confidence": 1.0,
+    "caveats": [
+      "FEC totals cover January 1, 2025 through June 30, 2026 and can update after filing processing.",
+      "AIA reports more than 300 members; this pass captures high-signal governance members, not the complete membership.",
+      "FARA short-form filing names are not identity-disambiguated beyond the public filing."
+    ]
+  },
+  "verification": {
+    "status": "verified",
+    "verified": true,
+    "methods": ["json-parse", "unique-id-check", "gzip", "base64", "sha256", "record-count", "relation-endpoint-shape-check"]
+  },
+  "handling": {"visibility": "public", "classification": "unclassified", "pii": false, "sensitive": false},
+  "data": {
+    "manifest_type": "quasar-import",
+    "name": "U.S.–Israel Military Integration — Pass 6",
+    "actor": "auto-dig",
+    "consumer_path": "/import",
+    "incremental": true,
+    "parent_packets": [
+      "digs/us-israel-military-integration/2026-07-26",
+      "digs/us-israel-military-integration/2026-07-31",
+      "digs/us-israel-military-integration/2026-07-31-pass-3",
+      "digs/us-israel-military-integration/2026-07-31-pass-4",
+      "digs/us-israel-military-integration/2026-08-01-pass-5"
+    ],
+    "root_target_id": "starintel:investigation-target:us-israel-military-integration-pass-6",
+    "counts_by_dtype": {
+      "analysis": 1,
+      "campaign-finance": 10,
+      "claim": 3,
+      "investigation-target": 13,
+      "org": 22,
+      "person": 28,
+      "relation": 78,
+      "research-pass": 1
+    },
+    "record_count": 156,
+    "cumulative_record_count_before_deduplication": 799,
+    "expected_merged_record_count": 798,
+    "known_override_ids": ["starintel:org:lockheed-martin-employees-pac"],
+    "pac_receipts_total_usd": 13599906.73,
+    "pac_disbursements_total_usd": 15168758.27,
+    "hash_algorithm": "sha256",
+    "content_hash": "c501f3f68c04b17b18af10aa4175ba6b17a9050ad4c8bedf9b5a44a763122c57",
+    "files": [
+      {
+        "path": "starintel-documents.jsonl.gz.b64",
+        "name": "starintel-documents.jsonl.gz.b64",
+        "role": "documents-transport",
+        "media_type": "text/plain",
+        "encoding": "base64",
+        "compression": "gzip",
+        "decoded_name": "starintel-documents.jsonl",
+        "decoded_media_type": "application/x-ndjson",
+        "record_count": 156,
+        "hash_algorithm": "sha256",
+        "decoded_content_hash": "c501f3f68c04b17b18af10aa4175ba6b17a9050ad4c8bedf9b5a44a763122c57",
+        "gzip_content_hash": "72b51c7bba986f19b7e11bc72b6717f56c8803d87bc75365239df73e274e4b8f",
+        "transport_hash_algorithm": "sha256",
+        "transport_content_hash": "20397963b612496909e578433b424569c9b4e549a71ac7fa747ba5dd6c6e5651"
+      },
+      {
+        "path": "pac-aia-fara-relations.csv",
+        "name": "pac-aia-fara-relations.csv",
+        "role": "relation-index",
+        "media_type": "text/csv",
+        "record_count": 78,
+        "hash_algorithm": "sha256",
+        "content_hash": "608aeb04acdc97f115d8bb11305fb1d28fe6871827133272f79d0049bddbce3b"
+      }
+    ],
+    "schema_versions": ["0.9.0"],
+    "generated_at": "2026-08-02T08:36:00-04:00",
+    "target_options": [{"action": "save-and-open-graph", "graph_name": "U.S.–Israel Military Integration", "review_status": "all"}],
+    "document_id_index_count": 156,
+    "document_id_index_hash_algorithm": "sha256",
+    "document_id_index_hash": "e05e0a218a25f867d13bcc3bacef8ffa86100cbe23237ffa034a1d9dccfc2fa5"
+  },
+  "extensions": {
+    "quasar": {
+      "import_mode": "bulk-manifest",
+      "preferred_file": "starintel-documents.jsonl",
+      "open_graph_after_import": true,
+      "graph_name": "U.S.–Israel Military Integration",
+      "reveal_unreviewed": true
+    }
+  }
+}

@@ -1,0 +1,43 @@
+{
+  "committee_id": "C00003418",
+  "contributor_employment_emitted": false,
+  "contributor_identity_emitted": false,
+  "contributor_location_emitted": false,
+  "counts": {
+    "campaign-finance": 894254,
+    "source": 1
+  },
+  "cycle": 2026,
+  "dataset": "gop",
+  "document_part_count": 2,
+  "document_sha256": "fada297d1f064d34f961da25f32c0bcb2224c5f2cc3f78cc22798150d6280bb7",
+  "duplicate_sub_id_rows": 894254,
+  "generated_at": "2026-08-08T21:50:00Z",
+  "privacy_transform": "deidentified-fec-receipt-ledger-v2-streaming",
+  "raw_matching_rows": 1788508,
+  "raw_source_members": [
+    "by_date/itcont_2026_20000901_20250227.txt",
+    "by_date/itcont_2026_20250228_20250410.txt",
+    "by_date/itcont_2026_20250411_20250522.txt",
+    "by_date/itcont_2026_20250523_20250629.txt",
+    "by_date/itcont_2026_20250630_20250730.txt",
+    "by_date/itcont_2026_20250731_20250828.txt",
+    "by_date/itcont_2026_20250829_20250925.txt",
+    "by_date/itcont_2026_20250926_20251021.txt",
+    "by_date/itcont_2026_20251022_20251116.txt",
+    "by_date/itcont_2026_20251117_20251212.txt",
+    "by_date/itcont_2026_20251213_20260118.txt",
+    "by_date/itcont_2026_20260119_20260306.txt",
+    "by_date/itcont_2026_20260306_20260414.txt",
+    "by_date/itcont_2026_20260415_20260521.txt",
+    "by_date/itcont_2026_20260522_33120101.txt",
+    "by_date/itcont_2026_invalid_dates.txt",
+    "itcont.txt"
+  ],
+  "raw_source_rows_embedded": false,
+  "raw_source_zip_sha256": "1a0d3f85adbd6f9006c8f504d48603150254c4684b8dcac2cb5296733d25ab5a",
+  "reconciliation": "duplicate SUB_ID rows skipped; amendment and memo rows with distinct SUB_IDs preserved",
+  "schema_version": "0.9.0",
+  "total_documents": 894255,
+  "unique_fec_sub_ids": 894254
+}

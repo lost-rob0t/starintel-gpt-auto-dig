@@ -7,13 +7,29 @@ description: Run the mandatory StarIntel merge gate and prohibit merging invalid
 
 ## Required command
 
-Run this before marking a pull request ready, approving it, enabling auto-merge, or merging:
+Run this before marking a pull request ready, approving it, enabling auto-merge, or merging when the current runtime has an executable repository checkout and toolchain:
 
 ```bash
 python3 scripts/validate-for-merge.py --site
 ```
 
 Do not substitute a partial check.
+
+## Connector-only execution
+
+A missing local worktree, `nimble`, Nim runtime, or other repository dependency does **not** block authoring a transaction when authenticated GitHub write access is available.
+
+If the current runtime cannot execute the full local gate:
+
+1. create the feature branch and coherent repository transaction through GitHub;
+2. open a draft pull request;
+3. let the repository's required GitHub Actions execute the full gate on the exact published head commit;
+4. inspect those required checks before changing readiness or merging;
+5. fix the branch and rerun CI if any required check fails.
+
+Do not refuse to open the branch or draft PR merely because local validation is unavailable. Do not post "no repository transaction was opened" for that reason. The unavailable local toolchain changes where validation runs, not whether the work may be authored.
+
+If a local gate was run and failed, that failure remains blocking. CI may not be used to wave away a known local failure.
 
 ## What the gate verifies
 
@@ -32,7 +48,7 @@ Do not substitute a partial check.
 
 A StarIntel document PR is mergeable only when:
 
-1. `python3 scripts/validate-for-merge.py --site` exits with status 0;
+1. the full local gate exits with status 0 when local execution is available, or the equivalent required GitHub Actions gate succeeds when local execution is unavailable;
 2. every required GitHub check on the current head commit succeeds;
 3. no check is pending, skipped, cancelled, unavailable, stale, or inconclusive;
 4. the pull request head has not changed since validation.
@@ -45,7 +61,7 @@ When the gate fails:
 
 1. identify the exact file, record, schema path, relation endpoint, or generated artifact reported by the validator;
 2. fix or remove the invalid change;
-3. rerun the complete gate from the repository root;
+3. rerun the complete gate locally when available and always rerun/confirm GitHub checks on the new head;
 4. confirm GitHub checks against the new head commit;
 5. merge only after everything is green.
 
@@ -56,4 +72,5 @@ Never:
 - weaken schema constraints merely to admit bad data;
 - hide ordinary typed metadata in `extensions` to evade a dtype schema;
 - treat a skipped or unavailable check as success;
-- merge based on validation from an older commit.
+- merge based on validation from an older commit;
+- treat the absence of a local checkout or `nimble` as a reason not to create a draft PR when GitHub CI can run the gate.

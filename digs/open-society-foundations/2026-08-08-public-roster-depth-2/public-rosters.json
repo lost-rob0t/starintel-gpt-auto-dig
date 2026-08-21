@@ -1,0 +1,202 @@
+{
+  "run": "2026-08-08",
+  "root_target_id": "starintel:target:wef:open-society-foundations-public-rosters-and-cross-ties",
+  "status": "research-staging-not-canonical",
+  "scope": "public-source-only",
+  "leadership": [
+    {"name": "George Soros", "role": "Founder"},
+    {"name": "Alex Soros", "role": "Chair"},
+    {"name": "Binaifer Nowrojee", "role": "President"},
+    {"name": "Pedro Abramovay", "role": "Vice President, Programs"},
+    {"name": "Leonard Benardo", "role": "Vice President"},
+    {"name": "Debbie Fine", "role": "General Counsel and Board Secretary"},
+    {"name": "Leela Ramdhani", "role": "Chief Operating Officer"},
+    {"name": "Laura Silber", "role": "Vice President, External Affairs and Office of the Chair"}
+  ],
+  "board": [
+    {"name": "Alex Soros", "role": "Chair"},
+    {"name": "Daniel Sachs", "role": "Vice Chair"},
+    {"name": "Maria Cattaui", "role": "Board Member"},
+    {"name": "Andrea E. Soros", "role": "Board Member"},
+    {"name": "Chrystia Freeland", "role": "Board Member"},
+    {"name": "Ivan Krastev", "role": "Board Member"},
+    {"name": "Svante Myrick", "role": "Board Member"},
+    {"name": "James C. O'Brien", "role": "Board Member"},
+    {"name": "Tamiko Bolton Soros", "role": "Board Member"}
+  ],
+  "public_2025_fellows": {
+    "selected_total_stated_by_osf": 31,
+    "publicly_listed_total": 21,
+    "confidentiality_note": "OSF explicitly states that some fellows are not listed due to confidentiality concerns; do not infer or identify them.",
+    "fellows": [
+      {"name": "Amita Arudpragasam", "city": "Colombo"},
+      {"name": "Andrea Giunta", "city": "Buenos Aires"},
+      {"name": "Anwuli Ojogwu", "city": "Lagos"},
+      {"name": "Budi Hernawan", "city": "Jakarta"},
+      {"name": "Camille Ammoun", "city": "Beirut"},
+      {"name": "Carla Yumatle", "city": "Buenos Aires"},
+      {"name": "Ermiza Tegal", "city": "Colombo"},
+      {"name": "Ika Idris", "city": "Jakarta"},
+      {"name": "Lamtiar Simorangkir", "city": "Jakarta"},
+      {"name": "Lila Caimari", "city": "Buenos Aires"},
+      {"name": "Madonna Adib", "city": "Beirut"},
+      {"name": "Margareth Suhartin Aritonang", "city": "Jakarta"},
+      {"name": "Mona Fawaz", "city": "Beirut"},
+      {"name": "Moses Parlindungan Ompusunggu", "city": "Jakarta"},
+      {"name": "Ossama Halal", "city": "Beirut"},
+      {"name": "Sa'eed Husaini", "city": "Lagos"},
+      {"name": "Tomás Pérez Vizzón", "city": "Buenos Aires"},
+      {"name": "Tosin Oshinowo", "city": "Lagos"},
+      {"name": "Uthpala Wijesuriya", "city": "Colombo"},
+      {"name": "Victor Ehikhamenor", "city": "Lagos"},
+      {"name": "Yudhanjaya Wijeratne", "city": "Colombo"}
+    ]
+  },
+  "named_network_entities": [
+    {"name": "Open Society Foundation for Albania", "city": "Tirana", "country": "Albania"},
+    {"name": "Open Society Fund–Bosnia and Herzegovina", "city": "Sarajevo", "country": "Bosnia and Herzegovina"},
+    {"name": "OSF Services Berlin GmbH", "city": "Berlin", "country": "Germany"},
+    {"name": "Kosovo Foundation for Open Society", "city": "Pristina", "country": "Kosovo"},
+    {"name": "Soros Foundation–Moldova", "city": "Chisinau", "country": "Moldova"},
+    {"name": "Foundation Open Society–Macedonia", "city": "Skopje", "country": "North Macedonia"},
+    {"name": "Open Society Foundation Serbia", "city": "Belgrade", "country": "Serbia"},
+    {"name": "International Renaissance Foundation", "city": "Kyiv", "country": "Ukraine"},
+    {"name": "Open Society Foundation London", "city": "London", "country": "United Kingdom", "registration_scheme": "UK Companies House", "registration_number": "10187396"},
+    {"name": "Open Society Action Fund", "city": "Washington, D.C.", "country": "United States", "entity_type_note": "501(c)(4) per OSF"}
+  ],
+  "uk_governance": {
+    "entity": "Open Society Foundation London",
+    "company_number": "10187396",
+    "current_public_roles": [
+      {"name": "Alex Soros", "role": "Director", "appointed": "2016-10-05"},
+      {"name": "Michael Vachon", "role": "Director", "appointed": "2024-01-03"},
+      {"name": "Debbie Fine", "role": "Secretary", "appointed": "2025-12-08"},
+      {"name": "Alex Soros", "role": "Person with significant control", "control": "voting rights >25% and <=50%", "notified_on": "2024-03-31"},
+      {"name": "Laura Silber", "role": "Person with significant control", "control": "voting rights >25% and <=50%", "notified_on": "2024-12-19"}
+    ]
+  },
+  "verified_cross_institution_interlocks": [
+    {
+      "person": "Alex Soros",
+      "organization": "European Council on Foreign Relations",
+      "role": "Council Member",
+      "verification": "ECFR current Council directory",
+      "existing_starintel_id": "starintel:org:european-council-on-foreign-relations"
+    },
+    {
+      "person": "George Soros",
+      "organization": "European Council on Foreign Relations",
+      "role": "Council Member",
+      "verification": "ECFR current Council directory",
+      "existing_starintel_id": "starintel:org:european-council-on-foreign-relations"
+    },
+    {
+      "person": "Daniel Sachs",
+      "organization": "European Council on Foreign Relations",
+      "role": "Council Member",
+      "verification": "ECFR current Council directory",
+      "existing_starintel_id": "starintel:org:european-council-on-foreign-relations"
+    },
+    {
+      "person": "Ivan Krastev",
+      "organization": "European Council on Foreign Relations",
+      "role": "Board of Trustees",
+      "verification": "ECFR current governance page",
+      "existing_starintel_id": "starintel:org:european-council-on-foreign-relations",
+      "osf_role": "Board Member"
+    },
+    {
+      "person": "Mark Malloch-Brown",
+      "organization": "European Council on Foreign Relations",
+      "role": "Council Member",
+      "verification": "ECFR current Council directory",
+      "osf_role": "Former President"
+    },
+    {
+      "person": "Alex Soros",
+      "organization": "The International Crisis Group",
+      "role": "Director",
+      "appointed": "2018-10-04",
+      "verification": "UK Companies House officer appointments"
+    }
+  ],
+  "conflicting_or_unresolved_affiliations": [
+    {
+      "person": "Alex Soros",
+      "organization": "European Council on Foreign Relations",
+      "osf_claim": "Board Member",
+      "institution_side_current_evidence": "Council Member; not listed on current ECFR Board of Trustees",
+      "status": "current board claim unresolved; current Council membership verified"
+    },
+    {
+      "person": "Alex Soros",
+      "organization": "Bard College",
+      "osf_claim": "Board Member",
+      "institution_side_current_evidence": "Not listed on current Bard College Board of Trustees",
+      "status": "current board claim unsupported by current Bard roster; investigate historical term"
+    },
+    {
+      "person": "Alex Soros",
+      "organization": "Central European University",
+      "osf_claim": "Board Member",
+      "status": "institution-side current roster verification pending"
+    },
+    {
+      "person": "Alex Soros",
+      "organization": "Center for Jewish History",
+      "osf_claim": "Board Member",
+      "status": "institution-side current roster verification pending"
+    },
+    {
+      "person": "Alex Soros",
+      "organization": "Bend the Arc Jewish Action",
+      "osf_claim": "Founding Chair",
+      "status": "institution-side current verification pending"
+    }
+  ],
+  "bard_funding_relationship": {
+    "organization": "Bard College",
+    "commitment_year": 2021,
+    "open_society_commitment_usd": 500000000,
+    "matching_goal_usd": 500000000,
+    "completed_endowment_total_usd": 1000000000,
+    "completed_year": 2026,
+    "note": "Funding relationship is independently documented by Bard and is distinct from any trustee claim."
+  },
+  "financial_snapshot": {
+    "year": 2024,
+    "total_expenditures_usd_millions": 1190.1,
+    "categories_usd_millions": {
+      "Global": 631.9,
+      "United States": 242.0,
+      "Latin America and the Caribbean": 117.1,
+      "Europe and Central Asia": 83.7,
+      "Africa": 69.9,
+      "Asia Pacific": 26.0,
+      "Middle East and North Africa": 19.4
+    }
+  },
+  "grant_database": {
+    "public_records_found": 20566,
+    "year_start": 2016,
+    "year_end": 2024,
+    "completeness_note": "OSF states that some grants/descriptions and some national or regional foundation grants may be omitted, and amount awarded may differ from amount paid."
+  },
+  "sources": [
+    "https://www.opensocietyfoundations.org/who-we-are/leadership?search=1",
+    "https://www.opensocietyfoundations.org/who-we-are/board-of-directors/alex-soros",
+    "https://www.opensocietyfoundations.org/who-we-are/offices-foundations",
+    "https://www.opensocietyfoundations.org/who-we-are/financials?lv=true",
+    "https://www.opensocietyfoundations.org/grants/past",
+    "https://www.opensocietyfoundations.org/grants/open-society-fellowship",
+    "https://ecfr.eu/council/members/",
+    "https://ecfr.eu/about/",
+    "https://ecfr.eu/profile/ivan-krastev/",
+    "https://www.bard.edu/about/trustees/",
+    "https://www.bard.edu/news/bard-college-completes-its-landmark-endowment-challenge-2026-01-21",
+    "https://find-and-update.company-information.service.gov.uk/company/10187396",
+    "https://find-and-update.company-information.service.gov.uk/company/10187396/officers",
+    "https://find-and-update.company-information.service.gov.uk/company/10187396/persons-with-significant-control",
+    "https://find-and-update.company-information.service.gov.uk/officers/kMzq3acSmBpiIvVvqLLZjmj61ck/appointments"
+  ]
+}

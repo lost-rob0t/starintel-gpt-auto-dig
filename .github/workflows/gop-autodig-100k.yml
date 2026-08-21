@@ -1,0 +1,191 @@
+name: GOP AutoDig 100k+ materialization
+
+on:
+  workflow_dispatch:
+    inputs:
+      materialize:
+        description: Run the expensive FEC download/materialization jobs
+        required: false
+        default: false
+        type: boolean
+  push:
+    branches:
+      - agent/gop-dataset-100k-expansion
+    paths:
+      - .github/workflows/gop-autodig-100k.yml
+      - scripts/*.nim
+      - tests/*.nim
+      - starintel_auto_dig.nimble
+      - schemas/**
+      - digs/gop/**
+  pull_request:
+    branches:
+      - main
+    paths:
+      - .github/workflows/gop-autodig-100k.yml
+      - scripts/*.nim
+      - tests/*.nim
+      - starintel_auto_dig.nimble
+      - schemas/**
+      - digs/gop/**
+
+concurrency:
+  group: gop-autodig-100k-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: write
+  statuses: write
+
+env:
+  TARGET_BRANCH: agent/gop-dataset-100k-expansion
+  NIM_VERSION: 2.2.4
+  STARINTEL_NIM_REF: b55316bae294a146523cd2f977b81096e538c86a
+
+jobs:
+  preflight:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Checkout canonical StarIntel Nim runtime
+        uses: actions/checkout@v4
+        with:
+          repository: lost-rob0t/starintel-doc.nim
+          ref: ${{ env.STARINTEL_NIM_REF }}
+          path: .starintel-doc-nim
+
+      - name: Set up Nim
+        uses: jiro4989/setup-nim-action@v2
+        with:
+          nim-version: ${{ env.NIM_VERSION }}
+
+      - name: Install streaming transport tools
+        run: |
+          sudo apt-get update
+          sudo apt-get install --yes gzip unzip coreutils curl
+
+      - name: Build speed-critical Nim tools
+        run: nimble buildFast
+
+      - name: Run Nim regression and privacy tests
+        run: |
+          nim c -r -d:release --opt:speed --mm:orc \
+            --path:scripts \
+            tests/test_starintel_legacy.nim
+          nim c -r -d:release --opt:speed --mm:orc \
+            --path:scripts \
+            tests/test_starintel_transport.nim
+          nim c -r -d:release --opt:speed --mm:orc \
+            tests/test_gop_receipt_privacy.nim
+
+      - name: Smoke-test Nim CLIs
+        run: |
+          bin/starintel-site --help
+          bin/validate-for-merge --help
+          test -x bin/import-gop-receipts
+
+  generate-receipts:
+    if: ${{ github.event_name == 'workflow_dispatch' && inputs.materialize == true }}
+    needs: preflight
+    runs-on: ubuntu-latest
+    timeout-minutes: 540
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ env.TARGET_BRANCH }}
+          fetch-depth: 1
+
+      - name: Set up Nim
+        uses: jiro4989/setup-nim-action@v2
+        with:
+          nim-version: ${{ env.NIM_VERSION }}
+
+      - name: Install bulk-data tools
+        run: |
+          sudo apt-get update
+          sudo apt-get install --yes gzip unzip coreutils curl
+
+      - name: Build RNC receipt importer
+        run: |
+          mkdir -p bin
+          nim c -d:release --opt:speed --mm:orc \
+            --out:bin/import-gop-receipts \
+            scripts/import_gop_fec_receipts.nim
+
+      - name: Generate de-identified RNC receipts
+        run: |
+          bin/import-gop-receipts \
+            --output digs/gop/2026-08-08-fec-individual-contributions-2026
+
+      - name: Enforce GitHub-safe generated files
+        run: |
+          find digs/gop/2026-08-08-fec-individual-contributions-2026 -type f -size +95M -print -quit | \
+            grep -q . && { echo 'generated file exceeds 95 MB' >&2; exit 1; } || true
+          test -s digs/gop/2026-08-08-fec-individual-contributions-2026/manifest.json
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: gop-lane-fec-deidentified-receipts
+          path: digs/gop/2026-08-08-fec-individual-contributions-2026
+          if-no-files-found: error
+          retention-days: 3
+          compression-level: 0
+
+  materialize:
+    if: ${{ github.event_name == 'workflow_dispatch' && inputs.materialize == true }}
+    needs: generate-receipts
+    runs-on: ubuntu-latest
+    timeout-minutes: 540
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ env.TARGET_BRANCH }}
+          fetch-depth: 0
+
+      - name: Checkout canonical StarIntel Nim runtime
+        uses: actions/checkout@v4
+        with:
+          repository: lost-rob0t/starintel-doc.nim
+          ref: ${{ env.STARINTEL_NIM_REF }}
+          path: .starintel-doc-nim
+
+      - name: Set up Nim
+        uses: jiro4989/setup-nim-action@v2
+        with:
+          nim-version: ${{ env.NIM_VERSION }}
+
+      - name: Install streaming transport tools
+        run: |
+          sudo apt-get update
+          sudo apt-get install --yes gzip unzip coreutils curl
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: gop-lane-fec-deidentified-receipts
+          path: digs/gop/2026-08-08-fec-individual-contributions-2026
+
+      - name: Build Nim merge gate
+        run: nimble buildFast
+
+      - name: Run complete Nim merge gate and GOP minimum
+        run: |
+          bin/validate-for-merge \
+            --site \
+            --topic-minimum gop=100000 \
+            --skip-git-diff-check
+          test -f unverifed
+
+      - name: Commit generated GOP corpus atomically
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add digs/gop/2026-08-08-fec-individual-contributions-2026 unverifed
+          if git diff --cached --quiet; then
+            echo 'Generated GOP corpus is unchanged.'
+            exit 0
+          fi
+          git commit -m 'Materialize GOP FEC corpus with Nim [skip ci]'
+          git pull --rebase origin "${TARGET_BRANCH}"
+          git push origin HEAD:${TARGET_BRANCH}

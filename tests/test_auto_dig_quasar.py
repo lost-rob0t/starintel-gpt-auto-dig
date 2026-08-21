@@ -29,7 +29,11 @@ class AutoDigQuasarBuildTest(unittest.TestCase):
         )
 
         self.assertIn('id="quasar-frame"', rendered)
-        self.assertIn('src="app/index.html?host=auto-dig"', rendered)
+        self.assertIn('data-src="app/?host=auto-dig"', rendered)
+        self.assertNotIn(
+            '<iframe id="quasar-frame" title="Quasar graph editor" src=',
+            rendered,
+        )
         self.assertIn("host.js", rendered)
         self.assertIn("sandbox=", rendered)
         self.assertNotIn("allow-top-navigation", rendered)
@@ -101,20 +105,24 @@ class AutoDigQuasarBuildTest(unittest.TestCase):
             self.assertIn("../quasar/index.html?dataset=example", redirect)
             self.assertNotIn("old graph UI", redirect)
 
-    def test_host_seeds_quasar_and_navigates_after_runtime_subscription(self):
+    def test_host_uses_generated_same_origin_working_sets(self):
         host = (Path(__file__).parents[1] / "scripts" / "auto_dig_quasar_host.js").read_text(
             encoding="utf-8"
         )
 
         self.assertIn('const GRAPH_ROUTE = "/graph"', host)
+        self.assertIn('frame.dataset.src || "app/?host=auto-dig"', host)
+        self.assertIn('frameUrl.searchParams.set("dataset", datasetId);', host)
+        self.assertIn("frame.src = frameUrl.href;", host)
         self.assertIn("navigateToGraphAfterDatasetLoad();", host)
         self.assertIn("const dataset = await loadDataset(id);", host)
         handshake = host.split("handshake: async", 1)[1].split(
             "getActiveDatasetId", 1
         )[0]
         self.assertNotIn('notify("navigate"', handshake)
-        self.assertIn("starintel-complete-corpus.jsonl", host)
-        self.assertIn("starintel-documents.jsonl", host)
+        self.assertIn("quasar-documents.json", host)
+        self.assertNotIn("starintel-complete-corpus.jsonl", host)
+        self.assertNotIn("starintel-documents.jsonl", host)
         self.assertNotIn("indexedDB.open", host)
         self.assertNotIn("data-quasar-route", host)
 
