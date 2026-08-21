@@ -107,6 +107,26 @@ jobs:
             --glob 'reports/dark-academia-membership-recursion*.json' \
             --report reports/membership-list-candidates-wave-3.json
 
+      - name: Diagnose roster-list candidate fan-out
+        if: always()
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+
+          path = Path("reports/membership-list-candidates-wave-3.json")
+          if not path.is_file():
+              raise SystemExit("candidate report missing")
+          value = json.loads(path.read_text(encoding="utf-8"))
+          candidates = value.get("candidates", [])
+          if not isinstance(candidates, list):
+              raise SystemExit("candidate report has no candidates list")
+          print(json.dumps({
+              "candidate_count": len(candidates),
+              "first_urls": [item.get("url") for item in candidates[:10] if isinstance(item, dict)],
+          }, indent=2))
+          PY
+
       - name: Synchronize roster-list issues
         if: always()
         env:
@@ -117,6 +137,19 @@ jobs:
             --cleanup \
             --candidates reports/membership-list-candidates-wave-3.json \
             --report reports/membership-list-issues-wave-3.json
+
+      - name: Preserve issue-sync diagnostics
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: dark-academia-wave3-issue-sync-diagnostics
+          path: |
+            reports/membership-list-candidates-wave-3.json
+            reports/membership-list-issues-wave-3.json
+            reports/membership-list-cleanup-wave-3.json
+            reports/membership-url-observations-wave-3.jsonl
+          if-no-files-found: warn
+          retention-days: 7
 
       - name: Remove bootstrap before corpus validation
         run: |
