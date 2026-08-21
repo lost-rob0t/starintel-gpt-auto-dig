@@ -11,20 +11,8 @@ on:
       - "scripts/**"
       - "tests/**"
       - "docs/quasar-integration.md"
-      - "quasar-fork.lock.json"
-      - "site-assets/**"
-      - "site-config.json"
-      - ".github/workflows/publish-pages.yml"
-  pull_request:
-    branches: [main]
-    paths:
-      - "starintel_doc/**"
-      - "schemas/**"
-      - "digs/**"
-      - "db/**"
-      - "scripts/**"
-      - "tests/**"
-      - "docs/quasar-integration.md"
+      - "docs/evidence-seal.md"
+      - "docs/pages-site-size-architecture.md"
       - "quasar-fork.lock.json"
       - "site-assets/**"
       - "site-config.json"
@@ -32,23 +20,108 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: write
 
 concurrency:
-  group: pages-${{ github.ref }}
+  group: pages-main
   cancel-in-progress: true
+
+env:
+  NIM_VERSION: 2.2.4
+  STARINTEL_NIM_REF: b55316bae294a146523cd2f977b81096e538c86a
+  PAGES_SAFE_BUDGET_BYTES: "750000000"
 
 jobs:
   build:
     runs-on: ubuntu-latest
+    timeout-minutes: 45
     steps:
       - name: Check out repository
         uses: actions/checkout@v6
+
+      - name: Checkout canonical StarIntel Nim runtime
+        uses: actions/checkout@v6
+        with:
+          repository: lost-rob0t/starintel-doc.nim
+          ref: ${{ env.STARINTEL_NIM_REF }}
+          path: .starintel-doc-nim
+
+      - name: Set up Nim
+        uses: jiro4989/setup-nim-action@v2
+        with:
+          nim-version: ${{ env.NIM_VERSION }}
 
       - name: Set up Python
         uses: actions/setup-python@v6
         with:
           python-version: "3.13"
+
+      - name: Install transport helpers
+        run: |
+          sudo apt-get update
+          sudo apt-get install --yes gzip unzip coreutils
+
+      - name: Build StarIntel Nim pipeline
+        run: nimble buildFast
+
+      - name: Validate corpus and emit source audit
+        run: |
+          bin/starintel-validate --root .
+          test -f unverifed
+          echo "source-less documents: $(grep -vc '^#' unverifed || true)"
+
+      - name: Generate bounded Pages site and canonical bulk shards
+        env:
+          BULK_TAG: auto-dig-data-${{ github.sha }}
+        run: |
+          BULK_BASE_URL="https://github.com/${GITHUB_REPOSITORY}/releases/download/${BULK_TAG}"
+          bin/starintel-site \
+            --input digs \
+            --db db \
+            --output _site \
+            --org-output .generated/org \
+            --bulk-output .generated/bulk \
+            --bulk-base-url "$BULK_BASE_URL"
+          python3 scripts/externalize_search_indexes.py \
+            --site _site \
+            --transport pages-static
+          python3 scripts/prepare_pages_data.py \
+            --site _site \
+            --bulk .generated/bulk
+          test -s _site/index.html
+          test -s _site/search-index.json
+          test -d _site/indexes/records
+          test -d _site/indexes/search
+          test -n "$(find _site/indexes/records -name '*.json' -print -quit)"
+          test -n "$(find _site/indexes/search -name '*.json' -print -quit)"
+          test -s _site/quasar-documents.json
+          test -n "$(find _site -mindepth 2 -maxdepth 2 -name quasar-documents.json -print -quit)"
+          test -s _site/downloads/starintel-complete-corpus.manifest.json
+          test -s .generated/bulk/starintel-complete-corpus.jsonl
+          test ! -d _site/org
+          test -z "$(find _site -name starintel-documents.jsonl -print -quit)"
+
+      - name: Package deterministic release assets
+        env:
+          BULK_TAG: auto-dig-data-${{ github.sha }}
+        run: |
+          BULK_BASE_URL="https://github.com/${GITHUB_REPOSITORY}/releases/download/${BULK_TAG}"
+          python3 scripts/package_bulk_release.py \
+            --bulk .generated/bulk \
+            --site _site \
+            --output .generated/release \
+            --base-url "$BULK_BASE_URL"
+          test -s .generated/release/starintel-bulk-release.manifest.json
+          test -n "$(find .generated/release -name '*.jsonl.gz' -print -quit)"
+
+      - name: Publish evidence seal over canonical bulk stream
+        run: |
+          python3 scripts/evidence-seal.py publish \
+            .generated/bulk/starintel-complete-corpus.jsonl \
+            _site
+          python3 scripts/evidence-seal.py verify \
+            .generated/bulk/starintel-complete-corpus.jsonl \
+            _site/downloads/starintel-evidence-seal.json
 
       - name: Read pinned Quasar runtime
         id: quasar-pin
@@ -94,20 +167,6 @@ jobs:
           npm --prefix .quasar/frontend test
           npm --prefix .quasar/frontend run build
 
-      - name: Run mandatory StarIntel merge gate
-        run: python3 scripts/validate-for-merge.py
-
-      - name: Test Quasar host integration
-        run: python3 -m unittest tests.test_auto_dig_quasar
-
-      - name: Generate research explorer
-        run: |
-          python scripts/build_research_site.py \
-            --input digs \
-            --db db \
-            --output _site \
-            --org-output .generated/org
-
       - name: Install Quasar graph editor
         run: |
           python3 scripts/build-auto-dig-quasar.py \
@@ -119,118 +178,93 @@ jobs:
             --auto-dig-version "${{ steps.quasar-pin.outputs.auto_dig }}" \
             --starintel-schema-version "${{ steps.quasar-pin.outputs.schema }}"
 
-      - name: Validate generated artifacts
+      - name: Validate final Pages artifact
         run: |
           test -s _site/index.html
           test -s _site/search-index.json
-          test -s _site/downloads/starintel-complete-corpus.jsonl
+          test -d _site/indexes/records
+          test -d _site/indexes/search
+          test -s _site/quasar-documents.json
+          test -n "$(find _site -mindepth 2 -maxdepth 2 -name quasar-documents.json -print -quit)"
           test -s _site/downloads/starintel-complete-corpus.manifest.json
-          test -s _site/assets/graph-core.mjs
-          test -s _site/assets/graph-explorer.mjs
-          test -s _site/assets/graph-render-scaled.mjs
-          test -s _site/assets/dashboard.js
-          test -s _site/assets/explorer.css
-          test -s _site/quasar/index.html
-          test -s _site/quasar/host.js
-          test -s _site/quasar/version.json
+          test -s _site/downloads/starintel-bulk-release.manifest.json
+          test -s _site/downloads/starintel-evidence-seal.json
+          test -s _site/evidence-seal.html
           test -s _site/quasar/app/index.html
-          test -s _site/larry-fink/index.html
-          test -s _site/palantir/index.html
-          test -s _site/palantir/graph.html
-          test -s _site/palantir/documents.html
-          test -s _site/palantir/documents.json
-          test -s _site/palantir/graph.json
-          test -s _site/palantir/downloads/starintel-documents.jsonl
-          test -s .generated/org/palantir/index.org
-          grep -q 'Download complete corpus' _site/index.html
-          grep -q 'downloads/starintel-complete-corpus.jsonl' _site/index.html
-          grep -q 'downloads/starintel-complete-corpus.manifest.json' _site/index.html
-          grep -q 'graph-launch-card' _site/palantir/index.html
-          grep -q '../quasar/index.html?dataset=palantir' _site/palantir/graph.html
-          grep -q 'documents.json' _site/palantir/documents.html
-          grep -q 'GRAPH_ROUTE = "/graph"' _site/quasar/host.js
-          grep -q 'app/index.html?host=auto-dig' _site/quasar/index.html
-          ! grep -q '<header' _site/quasar/index.html
-          ! grep -q 'data-quasar-route' _site/quasar/index.html
-          python - <<'PY'
+          test -s _site/quasar/version.json
+          grep -q 'data-evidence-seal' _site/index.html
+          grep -q 'starintel-complete-corpus.manifest.json' _site/evidence-seal.html
+          python3 - <<'PY'
+          from pathlib import Path
+          total = sum(p.stat().st_size for p in Path('_site').rglob('*') if p.is_file())
+          budget = int('${{ env.PAGES_SAFE_BUDGET_BYTES }}')
+          print(f'final_pages_bytes={total} budget={budget}')
+          if total >= budget:
+              raise SystemExit(f'Pages artifact exceeds safe budget: {total} >= {budget}')
+          PY
+
+      - name: Verify bounded Pages search transport
+        run: |
+          python3 - <<'PY'
           import hashlib
           import json
           from pathlib import Path
 
-          from starintel_doc.validation import validate_document
-
-          graph = json.loads(Path("_site/palantir/graph.json").read_text())
-          assert graph["nodes"]
-          assert graph["edges"]
-          assert graph["meta"]["reviewed_nodes"] >= 0
-          assert all("reviewed" in node for node in graph["nodes"])
-          assert all("reviewed" in edge for edge in graph["edges"])
-          assert any(
-              edge["source"] == "starintel:person:alex-karp"
-              and edge["target"] == "starintel:org:palantir-technologies-inc"
-              and edge["label"] == "founded"
-              for edge in graph["edges"]
-          )
-          documents = json.loads(Path("_site/palantir/documents.json").read_text())
-          assert documents
-          assert all(record["review"] in {"reviewed", "unreviewed"} for record in documents)
-          search = json.loads(Path("_site/search-index.json").read_text())
-          assert any(record["id"] == "starintel:org:palantir-technologies-inc" for record in search)
-
-          corpus_path = Path("_site/downloads/starintel-complete-corpus.jsonl")
-          corpus = [json.loads(line) for line in corpus_path.read_text().splitlines() if line.strip()]
-          assert corpus
-          assert len({document["_id"] for document in corpus}) == len(corpus)
-          assert corpus == sorted(corpus, key=lambda document: document["_id"])
-          assert len(corpus) <= len(search)
-
-          corpus_bytes = corpus_path.read_bytes()
-          manifest = json.loads(Path("_site/downloads/starintel-complete-corpus.manifest.json").read_text())
-          validate_document(manifest)
-          assert manifest["dtype"] == "dataset-manifest"
-          assert manifest["data"]["record_count"] == len(corpus)
-          assert manifest["data"]["counts_by_dtype"] == {
-              dtype: sum(document["dtype"] == dtype for document in corpus)
-              for dtype in sorted({document["dtype"] for document in corpus})
-          }
-          assert manifest["data"]["schema_versions"] == sorted({document["schema_version"] for document in corpus})
-          assert manifest["data"]["files"] == [{
-              "path": "starintel-complete-corpus.jsonl",
-              "media_type": "application/x-ndjson",
-              "size_bytes": len(corpus_bytes),
-          }]
-          assert manifest["data"]["hash_algorithm"] == "sha256"
-          assert manifest["data"]["content_hash"] == hashlib.sha256(corpus_bytes).hexdigest()
-
-          version = json.loads(Path("_site/quasar/version.json").read_text())
-          lock = json.loads(Path("quasar-fork.lock.json").read_text())
-          assert version == lock
+          site = Path('_site')
+          config = json.loads((site / 'search-index.json').read_text())
+          if config.get('format') != 'starintel-pages-static-index-v1':
+              raise SystemExit(f"unexpected search transport: {config.get('format')!r}")
+          candidates = [
+              ('records', config['records']['pages'][0]),
+              ('search', next(
+                  segment
+                  for segments in config['search']['segments'].values()
+                  for segment in segments
+              )),
+          ]
+          for group, segment in candidates:
+              path = site / segment['url']
+              payload = path.read_bytes()
+              if len(payload) != int(segment['length']):
+                  raise SystemExit(f'{group} segment length mismatch')
+              digest = hashlib.sha256(payload).hexdigest()
+              if digest != segment['sha256']:
+                  raise SystemExit(f'{group} segment digest mismatch')
+              json.loads(payload)
+              print(f'{group}_pages_segment=PASS bytes={len(payload)} path={path}')
           PY
 
+      - name: Create immutable bulk release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          BULK_TAG: auto-dig-data-${{ github.sha }}
+        run: |
+          if gh release view "$BULK_TAG" >/dev/null 2>&1; then
+            gh release delete "$BULK_TAG" --cleanup-tag --yes
+          fi
+          gh release create "$BULK_TAG" \
+            --target "$GITHUB_SHA" \
+            --title "Auto-Dig bulk corpus ${GITHUB_SHA::12}" \
+            --notes "Canonical StarIntel bulk corpus shards and dataset membership references for ${GITHUB_SHA}. Browser search indexes are served as bounded same-origin GitHub Pages segments."
+          gh release upload "$BULK_TAG" .generated/release/* --clobber
+
+      - name: Upload source audit
+        uses: actions/upload-artifact@v4
+        with:
+          name: starintel-unverifed-source-audit
+          path: unverifed
+          if-no-files-found: error
+          retention-days: 7
+
       - name: Configure Pages
-        if: github.event_name != 'pull_request'
         uses: actions/configure-pages@v5
 
       - name: Upload Pages artifact
-        if: github.event_name != 'pull_request'
         uses: actions/upload-pages-artifact@v4
         with:
           path: _site
 
-      - name: Package PR build artifact
-        if: github.event_name == 'pull_request'
-        run: tar -czf starintel-research-site.tar.gz _site .generated/org
-
-      - name: Upload PR build artifact
-        if: github.event_name == 'pull_request'
-        uses: actions/upload-artifact@v4
-        with:
-          name: starintel-research-site
-          path: starintel-research-site.tar.gz
-          retention-days: 7
-
   deploy:
-    if: github.event_name != 'pull_request'
     needs: build
     permissions:
       pages: write

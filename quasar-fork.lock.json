@@ -1,6 +1,6 @@
 {
-  "auto_dig_version": "0.9.0",
-  "quasar_commit": "46a9b077f81b9b25ddec38aecc6310956f801a49",
-  "quasar_ui_commit": "a7971ed84f2836bca1256463de6ff76f0c819712",
+  "auto_dig_version": "0.9.1",
+  "quasar_commit": "6844d59219b6ac8d8af812d100786ffdc951af95",
+  "quasar_ui_commit": "ad5a25ac71715bca403adb6dc6225059242ac306",
   "starintel_schema_version": "0.9.0"
 }

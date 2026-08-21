@@ -1,0 +1,33 @@
+{
+  "state": "New York",
+  "state_code": "NY",
+  "stable_key_format": "ny:<swis_code>",
+  "locality_source": {
+    "name": "New York State Locality Hierarchy with Websites",
+    "dataset_id": "55k6-h6qq",
+    "url": "https://data.ny.gov/api/v3/views/55k6-h6qq/query.json?accessType=DOWNLOAD",
+    "publisher": "NYS Office of Information Technology Services",
+    "reported_rows": 1605,
+    "metadata_updated": "2026-04-14"
+  },
+  "agency_crosswalk_sources": [
+    {
+      "name": "Directory of Criminal Justice Agencies",
+      "dataset_id": "gugp-n5ip",
+      "url": "https://data.ny.gov/api/v3/views/gugp-n5ip/query.json?accessType=DOWNLOAD"
+    },
+    {
+      "name": "Law Enforcement Personnel by Agency: Beginning 2007",
+      "dataset_id": "khn9-hhpq",
+      "url": "https://data.ny.gov/api/v3/views/khn9-hhpq/query.json?accessType=DOWNLOAD"
+    }
+  ],
+  "issue_hierarchy": [
+    "state index",
+    "county or borough tracker containing every official locality",
+    "individual locality issue when active or evidence-backed",
+    "recursive agency, private-operator, contract, sharing-edge, audit, and personnel targets"
+  ],
+  "default_granularity": "county",
+  "individual_locality_issues": "materialize on demand or by bounded workflow batch"
+}

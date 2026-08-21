@@ -1,0 +1,54 @@
+name: Flock locality investigation
+about: Start or update a locality-specific Flock/ALPR investigation
+labels: flock-locality, investigation-target
+title: "[Flock locality][STATE][TYPE] Locality — County"
+body:
+  - type: input
+    id: locality_key
+    attributes:
+      label: Stable locality key
+      description: Use the state prefix and official identifier, for example ny:381700.
+      placeholder: ny:000000
+    validations:
+      required: true
+  - type: input
+    id: jurisdiction
+    attributes:
+      label: Jurisdiction
+      placeholder: Troy, Rensselaer County, New York
+    validations:
+      required: true
+  - type: dropdown
+    id: status
+    attributes:
+      label: Current deployment status
+      options:
+        - Unknown
+        - Active Flock deployment
+        - Former Flock deployment
+        - Proposed or under consideration
+        - Rejected or cancelled
+        - Non-Flock ALPR deployment
+        - No evidence found
+    validations:
+      required: true
+  - type: textarea
+    id: sources
+    attributes:
+      label: Sources and evidence
+      description: Include exact dates, source URLs, quotations, record identifiers, and hashes.
+    validations:
+      required: true
+  - type: checkboxes
+    id: scope
+    attributes:
+      label: Required research surfaces
+      options:
+        - label: Contracts, procurement, grants, renewals, cancellations, and litigation
+        - label: Camera inventory, locations, versions, installation and removal dates
+        - label: Directed inbound and outbound sharing edges with effective dates
+        - label: Organization and Network Audit exports, search IDs, users, roles, and administrators
+        - label: Retention, deletion, hotlist, alert, immigration, and misuse policies
+        - label: Private networks, campuses, airports, hospitals, retailers, HOAs, and security operators
+        - label: FOIL requests and native productions with evidence lineage
+        - label: StarIntel v0.9 records and recursive targets

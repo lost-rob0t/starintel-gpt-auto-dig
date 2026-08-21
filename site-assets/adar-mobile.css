@@ -1,0 +1,297 @@
+/* ADAR mobile hardening: compact shell, readable charts, touch-friendly controls. */
+
+@media (max-width: 760px) {
+  header {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: .45rem;
+    align-items: center;
+    padding: .62rem .82rem;
+  }
+
+  header .brand {
+    max-width: 100%;
+    overflow: hidden;
+    font-size: .95rem;
+    line-height: 1.2;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  header nav {
+    width: 100%;
+    display: flex;
+    flex-wrap: nowrap !important;
+    justify-content: flex-start;
+    gap: .3rem;
+    overflow-x: auto;
+    padding: .1rem 0 .18rem;
+    overscroll-behavior-inline: contain;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  header nav::-webkit-scrollbar {
+    display: none;
+  }
+
+  header nav > a {
+    flex: 0 0 auto;
+    min-height: 2.35rem;
+    padding: .42rem .55rem;
+    font-size: .78rem;
+    white-space: nowrap;
+  }
+
+  .theme-picker {
+    flex: 0 0 auto;
+  }
+
+  .theme-picker span {
+    display: none;
+  }
+
+  .theme-picker select {
+    min-width: 7.75rem;
+    max-width: 9.5rem;
+    min-height: 2.35rem;
+    padding: .38rem 1.55rem .38rem .55rem;
+    font-size: .78rem;
+  }
+
+  main:has(.corpus-dashboard),
+  main:has(.dataset-browser) {
+    width: 100%;
+    max-width: none;
+    padding: 1rem .85rem 3rem;
+  }
+
+  .corpus-dashboard::before {
+    inset: -1rem -.85rem auto;
+    height: 17rem;
+    background-size: 40px 40px;
+  }
+
+  .corpus-hero,
+  .dataset-hero {
+    gap: 1rem;
+    padding: 1.15rem 0 1rem;
+  }
+
+  .corpus-hero h1,
+  .dataset-hero h1 {
+    max-width: 12ch;
+    margin: .45rem 0 .8rem;
+    font-size: clamp(2.35rem, 12.8vw, 3.55rem);
+    line-height: .98;
+    letter-spacing: -.045em;
+  }
+
+  .corpus-hero .lede,
+  .dataset-hero .lede {
+    margin: 0;
+    font-size: .98rem;
+    line-height: 1.5;
+  }
+
+  .corpus-status,
+  .dataset-totals {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: .15rem .75rem;
+    align-items: baseline;
+    margin: 0 0 .45rem;
+    padding: .85rem 0 0;
+    border-top: 2px solid var(--accent);
+    border-left: 0;
+  }
+
+  .corpus-status strong,
+  .dataset-totals strong {
+    margin: 0;
+    font-size: 1.35rem;
+  }
+
+  .corpus-status a,
+  .dataset-totals small {
+    grid-column: 1 / -1;
+    margin-top: .2rem;
+  }
+
+  .corpus-metrics {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    border-top: 1px solid var(--line);
+  }
+
+  .corpus-metric,
+  .corpus-metric + .corpus-metric {
+    padding: .9rem .7rem;
+    border-right: 1px solid var(--line);
+    border-bottom: 1px solid var(--line);
+  }
+
+  .corpus-metric:nth-child(2n) {
+    border-right: 0;
+  }
+
+  .corpus-metric strong {
+    font-size: 1.25rem;
+  }
+
+  .corpus-metric span {
+    font-size: .64rem;
+  }
+
+  .chart-surface,
+  .dashboard-rank-grid > article,
+  .corpus-sidecar {
+    padding: 1rem .15rem 1.15rem;
+  }
+
+  .chart-surface h2,
+  .dashboard-rank-grid h2,
+  .corpus-sidecar h2 {
+    font-size: 1.45rem;
+  }
+
+  .chart-frame {
+    min-height: 230px;
+    max-width: 100%;
+    overflow-x: auto;
+    overscroll-behavior-inline: contain;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .chart-frame-square {
+    min-height: 270px;
+  }
+
+  .line-chart {
+    min-width: 620px;
+  }
+
+  .range-switch,
+  .segmented {
+    width: 100%;
+  }
+
+  .range-switch button,
+  .segmented button {
+    flex: 1 1 0;
+    min-height: 2.5rem;
+    padding: .45rem .4rem;
+  }
+
+  .donut-chart {
+    width: min(220px, 72vw);
+  }
+
+  .people-rank li {
+    grid-template-columns: 2rem minmax(0, 1fr);
+    gap: .7rem;
+  }
+
+  .people-rank b {
+    grid-column: 2;
+    justify-self: start;
+  }
+
+  .finding-rank li {
+    grid-template-columns: 2rem minmax(0, 1fr);
+    gap: .7rem;
+  }
+
+  .dataset-rank li {
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: .65rem;
+  }
+
+  .activity-rank li {
+    grid-template-columns: 1fr;
+    gap: .2rem;
+  }
+
+  .dataset-toolbar {
+    position: static;
+    grid-template-columns: 1fr;
+    gap: .55rem;
+    margin: 1rem 0;
+    padding: .65rem;
+  }
+
+  .dataset-toolbar input,
+  .dataset-toolbar select {
+    min-height: 2.75rem;
+    font-size: 16px;
+  }
+
+  .dataset-card-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .dataset-card {
+    min-height: 0;
+    padding: 1rem;
+  }
+
+  .dataset-card-actions {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .dataset-card-actions a {
+    min-height: 2.5rem;
+    display: inline-flex;
+    align-items: center;
+  }
+
+  .dataset-table-wrap {
+    max-width: 100%;
+    overflow-x: auto;
+    overscroll-behavior-inline: contain;
+    -webkit-overflow-scrolling: touch;
+  }
+}
+
+@media (max-width: 420px) {
+  header {
+    padding-inline: .7rem;
+  }
+
+  header nav > a {
+    padding-inline: .48rem;
+  }
+
+  header nav > a span {
+    font-size: .74rem;
+  }
+
+  .theme-picker select {
+    min-width: 7.2rem;
+    max-width: 8.2rem;
+  }
+
+  main:has(.corpus-dashboard),
+  main:has(.dataset-browser) {
+    padding-inline: .72rem;
+  }
+
+  .corpus-hero h1,
+  .dataset-hero h1 {
+    font-size: clamp(2.15rem, 12.4vw, 3rem);
+  }
+
+  .eyebrow {
+    font-size: .67rem;
+    letter-spacing: .1em;
+  }
+
+  .corpus-metric,
+  .corpus-metric + .corpus-metric {
+    padding-inline: .58rem;
+  }
+
+  .line-chart {
+    min-width: 560px;
+  }
+}

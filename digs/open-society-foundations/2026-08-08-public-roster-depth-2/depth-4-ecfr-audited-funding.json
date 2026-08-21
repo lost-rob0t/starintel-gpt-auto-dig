@@ -1,0 +1,87 @@
+{
+  "run": "2026-08-08",
+  "parent": "OSF ↔ ECFR institutional cluster",
+  "subject": "ECFR audited 2024 funding and legal-entity structure",
+  "status": "research-staging-not-canonical",
+  "ecfr_uk_entity": {
+    "charity_number": "1143536",
+    "company_number": "07154609",
+    "year_end": "2024-12-31",
+    "accounts_filed": "2025-10-08",
+    "total_income_eur": 8703244,
+    "grant_income_eur": 8529717,
+    "total_expenditure_eur": 9058410,
+    "funds_carried_forward_eur": 2852368
+  },
+  "open_society_funding_claims": [
+    {
+      "source_location": "Directors' Report / Financial Review",
+      "funder_label_as_reported": "Open Society Foundation",
+      "type": "unrestricted grant",
+      "amount_eur_rounded": 3700000,
+      "share_of_total_income_percent_approx": 42.5,
+      "warning": "Narrative amount is rounded; do not substitute the exact total unrestricted-grants line as an exact OSF amount."
+    },
+    {
+      "source_location": "Note 2 — Analysis of income",
+      "funder_label_as_reported": "Open Society Foundation",
+      "type": "core funds",
+      "amount_eur": 2497698,
+      "prior_year_amount_eur": 2233798,
+      "share_of_total_income_percent_approx": 28.7,
+      "warning": "May be a component/characterization of the broader unrestricted grant; do not add the two figures without reconciliation."
+    },
+    {
+      "source_location": "Directors' Report / Financial Review",
+      "funder_label_as_reported": "Open Society Foundation plus Norwegian MFA, Stand Together Trust, Swedish MFA",
+      "type": "restricted donations",
+      "amount": ">€300k collectively as described",
+      "warning": "No OSF-specific restricted amount disclosed; do not attribute the collective threshold to OSF alone."
+    }
+  ],
+  "program_expenditure_eur": {
+    "European Power": 3275543,
+    "Middle East & North Africa": 1179294,
+    "Wider Europe": 560753,
+    "Advocacy & National Offices": 355883,
+    "Africa": 330828,
+    "US": 318296,
+    "Asia & China": 74756,
+    "Regrant": 2963057
+  },
+  "restricted_income_by_program_eur": {
+    "European Power": 2622240,
+    "Middle East & North Africa": 950223,
+    "US": 533418,
+    "Africa": 500644,
+    "Wider Europe": 170439,
+    "Asia & China": 65009
+  },
+  "ecfr_group": {
+    "description": "UK company plus five legal ECFR entities established in Germany, France, Spain and Italy under common control and unified management of the German ECFR e.V. Board of Trustees, per 2024 audited Directors' Report.",
+    "regranted_to_other_ecfr_entities_eur_rounded": 4300000,
+    "received_from_other_ecfr_entities_eur_rounded": 1300000,
+    "group_debtors_eur": 9437182,
+    "group_creditors_eur": 9185066
+  },
+  "current_uk_charity_trustees": [
+    {"name": "Lykke Friis", "role": "Chair", "appointed": "2013-11-22"},
+    {"name": "Adam Thomas Lury", "role": "Trustee", "appointed": "2023-01-01"},
+    {"name": "Ian Clarkson", "role": "Trustee", "appointed": "2017-03-13"}
+  ],
+  "governance_guard": "Current Charity Commission legal trustees of UK charity 1143536 are distinct from ECFR's broader public website 'Board of Trustees'. Do not collapse organization-level board roles into UK statutory trustee/director roles.",
+  "depth_5_targets": [
+    "resolve exact Open Society legal funder behind audited label",
+    "reconcile €3.7m unrestricted grant with €2,497,698 core-funds disclosure",
+    "map all five non-UK ECFR legal entities and registrations",
+    "retrieve German ECFR e.V. governance and financial filings",
+    "trace public 2024 inter-entity regrants",
+    "build audited ECFR/Open Society funding history across successive years"
+  ],
+  "sources": [
+    "Charity Commission ECFR 1143536 accounts and annual returns",
+    "ECFR Report and Financial Statements for year ended 31 December 2024",
+    "Charity Commission current trustees for ECFR 1143536",
+    "ECFR current About / public Board of Trustees"
+  ]
+}

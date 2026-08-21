@@ -1,0 +1,82 @@
+GRAPH-READY EDGES
+Format: SOURCE_ENTITY | RELATION | TARGET_ENTITY | DATE/PERIOD | EVIDENCE_GRADE | CONFIDENCE | SOURCE_URL | NOTES
+
+McKinsey & Company | STRATEGIC_PARTNER_OF | World Economic Forum | current/2026 | A | HIGH | https://www.weforum.org/communities/strategic-partnership-b5337725-fac7-4f8a-9a4f-c89072b96a0d/ | WEF lists McKinsey among Strategic Partners
+World Economic Forum | HAS_ORGANIZATION_PAGE_FOR | McKinsey & Company | current/2026 | A | HIGH | https://www.weforum.org/organizations/mckinsey-company/ | Page lists contributors and publications
+World Economic Forum | CO_FOUNDED_WITH | McKinsey & Company::Global Lighthouse Network | historical/current | A | HIGH | https://www3.weforum.org/docs/WEF_Global_Lighthouse_Network_Adopting_AI_at_Speed_and_Scale_2023.pdf | GLN co-founded with McKinsey
+World Economic Forum | COLLABORATES_WITH | McKinsey & Company::Global Cooperation Barometer | 2024-2026 | A | HIGH | https://www.weforum.org/publications/the-global-cooperation-barometer-2026/in-full/ | Repeated annual collaboration
+World Economic Forum | COLLABORATES_WITH | McKinsey & Company::Resilience Consortium | 2022-current | A | HIGH | https://es.weforum.org/publications/resilience-for-sustainable-inclusive-growth/ | public-private leadership effort
+
+Andrew Pickersgill | CHAIRS | McKinsey Shareholders Council | current/2026 | A | HIGH | https://www.mckinsey.com/about-us/overview/our-leadership/shareholders-council | current chair
+Andrew Pickersgill | AGENDA_CONTRIBUTOR_AT | World Economic Forum | current/historical | A | HIGH | https://www.weforum.org/stories/authors/andrew-pickersgill-andrew-pickersgill/ | WEF profile
+Andrew Pickersgill | LED | McKinsey Public Sector Practice | current/WEF profile | A | HIGH | https://www.weforum.org/stories/authors/andrew-pickersgill-andrew-pickersgill/ | governments and state-owned/linked enterprises
+Andrew Pickersgill | FORMER_MANAGING_PARTNER_OF | McKinsey Canada | historical | A | HIGH | https://www.weforum.org/stories/authors/andrew-pickersgill-andrew-pickersgill/ | Canada office leadership
+Andrew Pickersgill | FOUNDER_BOARD_DIRECTOR_OF | Century Initiative | 2019 record | A | HIGH | https://www.centuryinitiative.ca/news/press-release-new-report-outlines-10-key-actions-to-ensure-long-term-prosperity-for-canada | historical roster
+Andrew Pickersgill | LED_PRO_BONO_SUPPORT_FOR | Advisory Council on Economic Growth | 2016-2017 | A/B | HIGH | https://www.ourcommons.ca/Content/Committee/451/TRAN/WebDoc/WD13582357/tranrp20/tranrp20-e.pdf | coordinated McKinsey research expertise
+
+Gassan Al-Kibsi | BOARD_MEMBER_OF | McKinsey & Company | current/2026 | A | HIGH | https://www.mckinsey.com/about-us/overview/our-leadership/shareholders-council | Shareholders Council
+Gassan Al-Kibsi | YOUNG_GLOBAL_LEADER_OF | World Economic Forum | historical | A | HIGH | https://www.weforum.org/people/gassan-al-kibsi/ | WEF profile
+Fabian Billing | BOARD_MEMBER_OF | McKinsey & Company | current/2026 | A | HIGH | https://www.mckinsey.com/about-us/overview/our-leadership/shareholders-council | Shareholders Council
+Fabian Billing | AGENDA_CONTRIBUTOR_AT | World Economic Forum | historical/current | A | HIGH | https://www.weforum.org/stories/authors/fabian-billing/ | WEF profile
+Liz Hilton Segel | BOARD_MEMBER_OF | McKinsey & Company | current/2026 | A | HIGH | https://www.mckinsey.com/about-us/overview/our-leadership/shareholders-council | Shareholders Council
+Liz Hilton Segel | AGENDA_CONTRIBUTOR_AT | World Economic Forum | historical/current | A | HIGH | https://www.weforum.org/stories/authors/liz-hilton-segel/ | WEF profile
+Liz Hilton Segel | TRUSTEE_OF | The Conference Board | WEF bio current | A | HIGH | https://www.weforum.org/stories/authors/liz-hilton-segel/ | external role
+Liz Hilton Segel | MEMBER_OF | Council on Foreign Relations | WEF bio current | A | HIGH | https://www.weforum.org/stories/authors/liz-hilton-segel/ | external role
+Acha Leke | BOARD_MEMBER_OF | McKinsey & Company | current/2026 | A | HIGH | https://www.mckinsey.com/about-us/overview/our-leadership/shareholders-council | Shareholders Council
+Acha Leke | AGENDA_CONTRIBUTOR_AT | World Economic Forum | historical/current | A | HIGH | https://www.weforum.org/stories/authors/acha-leke/ | WEF profile
+Acha Leke | MEMBER_OF | WEF Global Agenda Council on Africa | historical | A | HIGH | https://www.weforum.org/stories/business/nigeria-boko-haram-economic-prospects/ | explicit WEF article
+Acha Leke | COFOUNDER_BOARD_MEMBER_OF | African Leadership Academy | WEF bio | A | HIGH | https://www.weforum.org/stories/authors/acha-leke/ | external role
+Bob Sternfels | BOARD_MEMBER_GLOBAL_MANAGING_PARTNER_OF | McKinsey & Company | current/2026 | A | HIGH | https://www.mckinsey.com/about-us/overview/our-leadership/shareholders-council | Shareholders Council
+Bob Sternfels | AGENDA_CONTRIBUTOR_AT | World Economic Forum | current | A | HIGH | https://www.weforum.org/stories/authors/bob-sternfels/ | WEF profile
+Bob Sternfels | BOARD_ROLE_AT | U.S.-China Business Council | WEF bio | A | HIGH | https://es.weforum.org/stories/authors/bob-sternfels/ | external role listed by WEF
+Bob Sternfels | MEMBER_OF | Tsinghua SEM Advisory Board | WEF bio | A | HIGH | https://es.weforum.org/stories/authors/bob-sternfels/ | external role listed by WEF
+Bob Sternfels | MEMBER_OF | Business Roundtable | WEF bio | A | HIGH | https://es.weforum.org/stories/authors/bob-sternfels/ | external role
+Bob Sternfels | BOARD_ROLE_AT | FCLTGlobal | WEF bio | A | HIGH | https://es.weforum.org/stories/authors/bob-sternfels/ | external role
+
+Amalia Toro | YOUNG_GLOBAL_LEADER_OF | World Economic Forum | 2026 | A | HIGH | https://www.weforum.org/stories/leadership/meet-the-young-global-leaders-class-of-2026/ | McKinsey partner/Panama managing partner
+Vidhya Ganesan | YOUNG_GLOBAL_LEADER_OF | World Economic Forum | 2024 | A | HIGH | https://www.weforum.org/press/2024/04/from-paralympian-to-water-security-specialist-meet-the-2024-class-of-young-global-leaders-2ce8c032fe/ | McKinsey Malaysia/Sri Lanka managing partner
+Shelley Stewart | YOUNG_GLOBAL_LEADER_OF | World Economic Forum | 2023 | A | HIGH | https://www.weforum.org/press/2023/03/from-ai-researchers-to-tv-producers-discover-the-young-global-leaders-class-of-2023/ | McKinsey senior partner
+Yuito Yamada | YOUNG_GLOBAL_LEADER_OF | World Economic Forum | 2022 | A | HIGH | https://www.weforum.org/press/2022/04/from-entrepreneurs-to-scientists-meet-the-2022-class-of-young-global-leaders/ | McKinsey partner Japan
+Megan Greenfield | YOUNG_GLOBAL_LEADER_OF | World Economic Forum | 2021 | A | HIGH | https://www.weforum.org/people/megan-greenfield/ | McKinsey partner
+Solveigh Hieronimus | YOUNG_GLOBAL_LEADER_OF | World Economic Forum | 2018 | A | HIGH | https://www.weforum.org/people/solveigh-hieronimus/ | McKinsey senior partner
+Solveigh Hieronimus | MEMBER_OF | Trilateral Commission | WEF bio | A | HIGH | https://www.weforum.org/people/solveigh-hieronimus/ | external role
+Raju Narisetti | YGL_ALUMNUS_OF | World Economic Forum | current bio/2024 | A | HIGH | https://www.weforum.org/stories/leadership/leadership-past-future-young-global-leaders/ | McKinsey partner
+
+Dominic Barton | FORMER_GLOBAL_MANAGING_PARTNER_OF | McKinsey & Company | 2009-2018 | A | HIGH | https://www.weforum.org/people/dominic-barton/ | WEF bio
+Dominic Barton | FORMER_ASIA_CHAIR_OF | McKinsey & Company | 2004-2009 | A | HIGH | https://www.weforum.org/people/dominic-barton/ | WEF bio
+Dominic Barton | CHAIRED | Advisory Council on Economic Growth | 2016-2019 approx | A | HIGH | https://www.weforum.org/people/dominic-barton/ | federal advisory role
+Dominic Barton | FOUNDER_BOARD_DIRECTOR_OF | Century Initiative | 2019 record | A | HIGH | https://www.centuryinitiative.ca/news/press-release-new-report-outlines-10-key-actions-to-ensure-long-term-prosperity-for-canada | historical roster
+Dominic Barton | COCHAIR_OF | World Economic Forum on Africa | 2014 | A | HIGH | https://www.weforum.org/press/2014/05/world-economic-forum-and-oecd-launch-development-finance-initiative/ | WEF event
+Dominic Barton | ADJUNCT_PROFESSOR_AT | Tsinghua University | WEF bio | A | HIGH | https://www.weforum.org/people/dominic-barton/ | academic edge
+Dominic Barton | AFFILIATED_WITH | FCLTGlobal | WEF bio | A | HIGH | https://www.weforum.org/people/dominic-barton/ | external network
+
+Century Initiative | CO_PRODUCED_REPORT_WITH | McKinsey & Company | 2019 | A | HIGH | https://www.centuryinitiative.ca/news/century-initiative-report-launch-in-montreal | CI-McKinsey Achieving Better Integration Outcomes
+Century Initiative | PARTNERED_WITH | Royal Bank of Canada | 2019-11-07 | A | HIGH | https://www.centuryinitiative.ca/news/century-initiative-report-launch-in-montreal | immigrant integration roundtable
+Aleema | FORMER_EMPLOYEE_OF | McKinsey & Company | pre-CI | A | HIGH | https://www.mckinsey.com/careers/life-at-mckinsey/our-culture-and-communities/careers-blog/aleema | Toronto BA
+Aleema | STARTED | Century Initiative | approx 2010s | A | HIGH | https://www.mckinsey.com/careers/life-at-mckinsey/our-culture-and-communities/careers-blog/aleema | self-description on McKinsey site
+Aleema | RETURNED_TO | McKinsey & Company | before 2020 | A | HIGH | https://www.mckinsey.com/careers/life-at-mckinsey/our-culture-and-communities/careers-blog/aleema | Calgary engagement manager
+
+Advisory Council on Economic Growth | RECOMMENDED | Canada immigration target 450000/year | 2016 | A | HIGH | https://www.budget.canada.ca/aceg-ccce/pdf/ideas-into-action-eng.pdf | five-year ramp
+McKinsey & Company | PROVIDED_PRO_BONO_SECRETARIAT_TO | Advisory Council on Economic Growth | 2016-2017 | A/B | HIGH | https://www.ourcommons.ca/Content/Committee/451/TRAN/WebDoc/WD13582357/tranrp20/tranrp20-e.pdf | research support, not recommendations per witnesses
+Government of Canada | IMPLEMENTED_RELATED_CHANGE | Express Entry points reforms | 2016-2017 | A | HIGH | https://www.budget.canada.ca/aceg-ccce/pdf/ideas-into-action-eng.pdf | ACEG progress report links change to recommendation
+Government of Canada | IMPLEMENTED | Global Skills Strategy | 2017-06 | A | HIGH | https://www.budget.canada.ca/aceg-ccce/pdf/ideas-into-action-eng.pdf | two-week standard for qualifying cases
+Government of Canada | IMPLEMENTED | Targeted Employment Strategy for Newcomers | by 2017 | A | HIGH | https://www.budget.canada.ca/aceg-ccce/pdf/ideas-into-action-eng.pdf | ACEG progress report
+
+IRCC | CONTRACTED_WITH | McKinsey & Company | 2018-2021 | A | HIGH | https://www.canada.ca/en/immigration-refugees-citizenship/corporate/transparency/committees/oggo-february-15-2023/opening-remarks.html | two contracts, $27.7m
+McKinsey & Company | DEVELOPED | IRCC transformation strategy | 2018-2019 | A | HIGH | https://www.canada.ca/en/immigration-refugees-citizenship/corporate/transparency/committees/oggo-february-15-2023/executive-summary.html | strategy/roadmap/operating models
+IRCC | ESTABLISHED_AFTER_RECOMMENDATIONS | Chief Transformation Officer function | 2019 | A | HIGH | https://www.canada.ca/en/immigration-refugees-citizenship/corporate/transparency/committees/oggo-february-15-2023/executive-summary.html | after considering McKinsey recommendations
+IRCC | HELD_RECURRING_MEETINGS_WITH | McKinsey & Company | 2018-2021 | A | HIGH | https://www.canada.ca/en/immigration-refugees-citizenship/corporate/transparency/committees/oggo-june-05-2023/53-1.html | detailed meeting list
+
+Advisory Council on Economic Growth | RECOMMENDED | Canada Infrastructure Bank | 2016 | A | HIGH | https://www.ourcommons.ca/Content/Committee/451/TRAN/WebDoc/WD13582357/tranrp20/tranrp20-e.pdf | infrastructure bank concept also existed in 2015 Liberal platform
+Canada Infrastructure Bank | CONTRACTED_WITH | McKinsey & Company | 2018 onward | A/B | HIGH | https://www.ourcommons.ca/Content/Committee/451/TRAN/WebDoc/WD13582357/tranrp20/tranrp20-e.pdf | early investment criteria/risk/governance work
+McKinsey & Company | ADVISED_ON | CIB investment criteria | 2018 | A/B | HIGH | https://www.ourcommons.ca/Content/Committee/451/TRAN/WebDoc/WD13582357/tranrp20/tranrp20-e.pdf | $390k contract
+McKinsey & Company | ADVISED_ON | CIB governance and risk policy | 2018 | A/B | HIGH | https://www.ourcommons.ca/Content/Committee/451/TRAN/WebDoc/WD13582357/tranrp20/tranrp20-e.pdf | $550k contract
+Andrew Pickersgill | PROVIDED_CANDIDATE_NAMES_TO | Canada Infrastructure Bank | 2018 | A/B | HIGH | https://www.ourcommons.ca/Content/Committee/451/TRAN/WebDoc/WD13582357/tranrp20/tranrp20-e.pdf | witnesses said no listed candidates hired
+
+Government of Canada | FUNDED | World Economic Forum | 2014-2025+ | A | HIGH | https://search.open.canada.ca/grants/?owner_org=dfatd-maecd&page=1&search_text=%22world+economic+forum%22&sort=score+desc | multiple project grants/contributions
+Government of Canada | COLLABORATED_WITH | World Economic Forum::Known Traveller Digital Identity | 2018 | A | HIGH | https://www.canada.ca/en/transport-canada/news/2018/01/the_government_ofcanadatotestcutting-edgetechnologiestosupportse.html | KTDI prototype
+Chrystia Freeland | TRUSTEE_OF | World Economic Forum | 2021-2022 | A | HIGH | https://www.weforum.org/press/2021/02/world-economic-forum-appoints-new-member-to-board-of-trustees-4c1068e22b/ | WEF board roster
+Mark Carney | TRUSTEE_OF | World Economic Forum | 2021-2022 | A | HIGH | https://www.weforum.org/press/2021/02/world-economic-forum-appoints-new-member-to-board-of-trustees-4c1068e22b/ | WEF board roster
+
+People's Republic of China | IDENTIFIED_AS_MOST_ACTIVE_FOREIGN_INTERFERENCE_ACTOR_IN | Canada | official 2024-2025 findings | A | HIGH | https://foreigninterferencecommission.ca/fileadmin/foreign_interference_commission/Documents/Exhibits_and_Presentations/Exhibits/CAN026649.pdf | Canadian threat assessment
+People's Republic of China | TARGETS | Canadian government at all levels | official findings | A | HIGH | https://foreigninterferencecommission.ca/fileadmin/foreign_interference_commission/Documents/Exhibits_and_Presentations/Exhibits/CAN026649.pdf | plus civil society/media/academia

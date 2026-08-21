@@ -164,6 +164,28 @@
           "C00010603"
         ]
       }
+    },
+    {
+      "id": "gop",
+      "title": "GOP",
+      "subtitle": "Republican National Committee leadership, FEC records, candidates, committees, vendors, expenditures, enforcement matters, and affiliated money flows",
+      "match": {
+        "targets": [
+          "gop",
+          "rnc",
+          "republican-national-committee"
+        ],
+        "datasets": [
+          "gop",
+          "rnc",
+          "republican-national-committee"
+        ],
+        "terms": [
+          "republican national committee",
+          "republican party",
+          "C00003418"
+        ]
+      }
     }
   ]
 }

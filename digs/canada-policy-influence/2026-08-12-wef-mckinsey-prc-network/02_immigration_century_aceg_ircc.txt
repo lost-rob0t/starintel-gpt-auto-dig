@@ -1,0 +1,188 @@
+IMMIGRATION NETWORK — CENTURY INITIATIVE / MCKINSEY / ACEG / IRCC
+Research date: 2026-08-12
+
+I. CENTURY INITIATIVE — HISTORICAL CORE
+
+2016
+- Century Initiative publicly advocated a long-term Canadian population of 100 million by 2100, with higher immigration as a central mechanism. [A/HIGH]
+- A 2016 launch/panel record includes Dominic Barton, Goldy Hyder, Kate Subak, and Mark Wiseman. [A/HIGH]
+
+2019
+- Century Initiative stated that it was led by founders and board directors:
+  * Mark Wiseman
+  * Dominic Barton
+  * Willa Black
+  * Goldy Hyder
+  * Andrew Pickersgill
+- Its “Bigger, Bolder Canada” work called for immediate increases in immigration as part of a larger population-growth strategy. [A/HIGH]
+
+2018 / networking event
+- Century Initiative’s “Path to 100 Million” event placed Dominic Barton on a panel with then-Immigration Minister Ahmed Hussen, Goldy Hyder, and Sevaun Palvetzian, with special remarks by Mark Wiseman. [A/HIGH for event/network edge]
+- This proves contact/convening, not policy causation.
+
+2019 immigrant-integration collaboration
+- Century Initiative held an immigrant-integration expert roundtable in Montreal in partnership with RBC.
+- Around 50 attendees came from academia, business, think tanks, and nonprofits.
+- The event featured a presentation of the “CI-McKinsey Achieving Better Integration Outcomes” report.
+- This is a direct Century Initiative ↔ McKinsey organizational collaboration on immigration integration. [A/HIGH]
+
+McKinsey-origin personnel link
+- McKinsey’s own career profile for “Aleema” says she originally joined McKinsey as a Toronto Business Analyst, took roughly five years away “to start a Canadian non-profit called the Century Initiative,” attended Harvard Law School, and later returned to McKinsey as an engagement manager. [A/HIGH]
+- This is one of the strongest direct personnel links found between McKinsey and Century Initiative.
+
+II. CENTURY INITIATIVE — CURRENT 2026 PUBLIC ROSTER
+
+Century Initiative current “Who We Are” page lists:
+Executive
+- Lisa Lalande — Chief Executive Officer
+
+Board / leadership shown publicly
+- Goldy Hyder — Treasurer
+- Ebad Rahman — Vice Chair
+- Melissa Arbour — Board Member
+- The Honourable Ratna Omidvar — Board Member
+- Muraly Srinarayanathas — Board Member
+- Stuart Szabo — Board Member
+- Adam Janikowski — Chair, Council of Champions
+
+Expert Panel
+- Anna Triandafyllidou
+- Jonathan Dewar
+- Agapi Gessesse
+- Andrea Doucet
+- Andrew Parkin
+- Mary Rowe
+- Martha Friendly
+- Matthew Mendelsohn
+- Naomi Alboim
+- Kareem El-Assal
+- Sara Austin
+- Noel Baldwin
+
+The current page says:
+- positions/priorities are informed by experts from business, academic, and charitable sectors;
+- the organization uses a “network-based approach”;
+- it has built a network of more than 40 organizations that “inform, shape, and amplify” its work;
+- its Expert Panel contributes to annual agenda-setting and informs policy/practice-change efforts. [A/HIGH]
+
+Historical/current roster discrepancy
+- A May 2024 Century Initiative announcement called Mark Wiseman Chair of its Board and announced Tareq Hadhad as a new director.
+- The current 2026 Who We Are page does not show Wiseman or Hadhad in the displayed board roster.
+- Do NOT infer impropriety. Treat as a timeline/organizational-change lead to resolve through annual reports, charity filings, archived pages, and board minutes. [A/HIGH discrepancy; significance unknown]
+
+III. ADVISORY COUNCIL ON ECONOMIC GROWTH (ACEG)
+
+Formation
+- Federal Finance Minister established ACEG in 2016 as an external advisory council for concrete policy actions to improve Canadian economic growth. [A/HIGH]
+- Dominic Barton chaired the Council.
+
+McKinsey support
+- House of Commons committee evidence and report document that McKinsey provided a pro-bono secretariat/research team.
+- Andrew Pickersgill said the Council approached McKinsey and he helped lead the team and coordinate expertise from around the world.
+- Witnesses Barton, Pickersgill, and Michael Sabia described the McKinsey team as primarily research support and testified that McKinsey employees did not make the Council’s recommendations.
+- The team was paid by McKinsey, at no charge to the Council. [A/B/HIGH]
+
+Immigration recommendations
+ACEG recommended:
+1. Gradually increase annual permanent immigration to 450,000 over five years.
+2. Facilitate entry for senior/specialized talent.
+3. Qualify more international students for permanent residence.
+4. Improve national accreditation standards for skilled immigrants.
+
+The detailed ramp proposed:
+- 2017: 315,000
+- 2018: 330,000
+- 2019: 360,000
+- 2020: 405,000
+- 2021: 450,000
+
+The proposal sought a net increase rather than offsetting the increase through reductions in family/refugee/humanitarian streams. [A/HIGH]
+
+ACEG-to-implementation evidence
+ACEG’s December 2017 “Ideas into Action” report says it:
+- worked iteratively with stakeholders and the public sector;
+- worked interactively with Finance Canada and other departments to build support and prepare the ground for implementation.
+
+It then stated that the government had taken action on specific immigration recommendations:
+- Express Entry points reforms;
+- Global Skills Strategy, launched June 2017, with a two-week standard for certain visas/work permits;
+- Targeted Employment Strategy for Newcomers.
+
+The same report said the 2018–2020 government immigration plan, rising to 340,000 by 2020, was below ACEG’s 450,000 recommendation but a “step in the right direction.” [A/HIGH]
+
+Causality limit
+- This is direct evidence of an advisory body identifying its own recommendations and subsequent policy implementation.
+- It does NOT establish that McKinsey as a corporation ordered or secretly chose immigration levels.
+- The strongest safe statement is: McKinsey supplied research/secretariat support to an advisory council chaired by a McKinsey leader; the council recommended major immigration changes; the council’s own report later attributed several government actions to its recommendations.
+
+IV. DIRECT IRCC ↔ MCKINSEY ADMINISTRATIVE TRANSFORMATION
+
+IRCC official record says:
+- two competitive McKinsey contracts between 2018 and 2020/2021;
+- combined contract value: $27.7 million;
+- first: $2.9 million after amendments;
+- second: $24.8 million.
+
+First contract work
+McKinsey:
+- performed diagnostic assessment;
+- conducted site visits;
+- interviewed department leaders;
+- analyzed service delivery and transformation plans;
+- developed a service-transformation strategy;
+- produced a step-by-step roadmap;
+- produced two operating models: one for process efficiency and another for digital service delivery.
+
+IRCC then:
+- established transformation teams;
+- established a Chief Transformation Officer function;
+- pursued process improvement and digital-first/user-centered operating models.
+
+Second contract work included guidance/input on:
+- Delhi-office transformation pilot;
+- new operating models for faster user-centric technology delivery;
+- digital services/tools for visas, study permits, citizenship, and some permanent-residence classes;
+- recruiting practices for digital talent;
+- transformation office / digital strategy / roadmap work.
+
+IRCC explicitly says the work contributed to its ability to achieve unprecedented permanent-residence processing levels, although that does not mean McKinsey set the policy quotas. [A/HIGH]
+
+V. IRCC MEETING FOOTPRINT
+
+IRCC published a meeting list covering 2011–Jan 2023. Examples include:
+- “Domestic Network Processes” — multiple meetings
+- “Team Pangolin Daily Stand-Up” — recurring in 2018
+- “Transformation Strat/RM Touchpoint - McKinsey Core Team” — recurring twice weekly in 2018
+- “Client Experience Advisory Committee” — included McKinsey plus external organizations
+- “McKinsey/Settlement Sector Touchpoint” — recurring
+- “Call with McKinsey - Meeting with Minister Jan 28”
+- “Go over the draft deck to brief minister”
+- “Briefing with McKinsey following Minister's meeting”
+- “ADM Pre-brief with McKinsey: Weekly Transformation Meeting with DMA”
+- recurring “Weekly Transformation meeting”
+- preparation for an Executive Committee retreat.
+
+This record is useful for Auto-Dig because each meeting creates a date-stamped people/organization edge and can be cross-referenced against policy milestones and deliverables. [A/HIGH]
+
+VI. OFFICIAL COUNTER-EVIDENCE / LIMITS
+
+- IRCC officials stated that, to their knowledge, McKinsey did not advise IRCC on immigration thresholds.
+- Minister Sean Fraser rejected the claim that McKinsey made federal immigration-level policy decisions; he characterized McKinsey’s IRCC work as service/digital transformation.
+- Some McKinsey work touched processing systems, operating models, digital transformation, and a Phase 3 business case; those are implementation/administration edges, not proof of quota-setting authority.
+
+VII. OPEN IMMIGRATION LEADS
+
+1. Acquire the full “CI-McKinsey Achieving Better Integration Outcomes” report; identify authors, data sources, recommendations, and recipients.
+2. Identify Aleema’s full public name from primary records before creating a canonical person node.
+3. Enumerate the >40 organizations Century Initiative says currently inform/shape/amplify its work.
+4. Build a historical Century Initiative board timeline from 2016–2026 and reconcile Mark Wiseman/Tareq Hadhad/current roster changes.
+5. Map every ACEG immigration recommendation to:
+   - department;
+   - regulation/ministerial instruction/legislation;
+   - implementation date;
+   - responsible officials;
+   - measurable policy outcome.
+6. Retrieve all ACEG secretariat personnel names, McKinsey work products, emails, draft decks, and research memos.
+7. Retrieve all IRCC McKinsey task authorizations and deliverables; map document authors and meeting participants.
+8. Compare Century Initiative and ACEG population/immigration models, assumptions, sources, and language for textual overlap.
+9. Map RBC, Business Council of Canada, Globe and Mail, Business + Higher Education Roundtable, Conference Board, universities, immigration think tanks, and expert-panel members into the same graph.

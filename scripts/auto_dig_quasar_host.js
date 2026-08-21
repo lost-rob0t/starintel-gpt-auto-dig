@@ -14,7 +14,7 @@
   let childOrigin = location.origin;
 
   const frameUrl = new URL(
-    frame.dataset.src || "app/index.html?host=auto-dig",
+    frame.dataset.src || "app/?host=auto-dig",
     location.href
   );
   frameUrl.searchParams.set("dataset", datasetId);
@@ -36,29 +36,30 @@
 
   function datasetUrl(id) {
     if (id === "complete-corpus") {
-      return "../downloads/starintel-complete-corpus.jsonl";
+      return "../quasar-documents.json";
     }
     const safe = id.replace(/[^a-zA-Z0-9._-]/g, "");
     if (!safe || safe !== id) throw new Error("Invalid dataset identifier");
-    return `../${safe}/downloads/starintel-documents.jsonl`;
+    return `../${safe}/quasar-documents.json`;
   }
 
-  async function loadJsonl(url) {
+  async function loadJson(url) {
     const result = await fetch(url, { credentials: "same-origin" });
     if (!result.ok) throw new Error(`Dataset load failed: ${result.status}`);
-    const text = await result.text();
-    return text
-      .split(/\r?\n/)
-      .filter((line) => line.trim())
-      .map((line) => JSON.parse(line));
+    const documents = await result.json();
+    if (!Array.isArray(documents)) {
+      throw new Error("Dataset load failed: working set is not an array");
+    }
+    return documents;
   }
 
   async function loadDataset(id) {
     return {
       id,
       runId,
-      documents: await loadJsonl(datasetUrl(id)),
-      graph: null
+      documents: await loadJson(datasetUrl(id)),
+      graph: null,
+      projection: "bounded-pages-working-set"
     };
   }
 

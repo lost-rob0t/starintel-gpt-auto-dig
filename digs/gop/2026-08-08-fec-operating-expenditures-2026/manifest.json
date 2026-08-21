@@ -1,0 +1,21 @@
+{
+  "committee_id": "C00003418",
+  "counts": {
+    "financial-observation": 15687,
+    "org": 2143,
+    "person": 399,
+    "relation": 15687,
+    "source": 1
+  },
+  "cycle": 2026,
+  "dataset": "gop",
+  "document_sha256": "4ea2acdf3cd9313b841bf9e5dc768d01826534ba2ac08ec481e68cba0721f008",
+  "generated_at": "2026-08-08T21:55:00Z",
+  "raw_matching_rows": 15687,
+  "raw_source_member": "oppexp.txt",
+  "raw_source_psv_sha256": "0a68ed5ad3c82f3c6f0544025c163144f093e90dbb024c78767ef5294caaa343",
+  "raw_source_zip_sha256": "520edab818d4b42d797948db3df57826617da0bd729fb2598bdfe250f4545d05",
+  "reconciliation": "none; all raw amendment and memo rows preserved",
+  "schema_version": "0.9.0",
+  "total_documents": 33917
+}

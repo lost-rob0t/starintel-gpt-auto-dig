@@ -1,0 +1,93 @@
+MASTER FINDINGS — CANADA / MCKINSEY / WEF / IMMIGRATION / PRC
+Research date: 2026-08-12
+
+EXECUTIVE FINDINGS
+
+1. McKinsey is formally listed by the World Economic Forum as a Strategic Partner. WEF states that the Strategic Partners community consists of roughly 100 leading companies that work closely with the Forum to help shape industry, regional, and global agendas. McKinsey also has a WEF organization page containing a large set of named McKinsey contributors and joint publications. [A/HIGH]
+
+2. The current McKinsey Shareholders Council is the board of directors of McKinsey & Company, Inc. The public roster contains 13 people: Andrew Pickersgill (Chair), Gassan Al-Kibsi, Pooneh Baghai, Fabian Billing, Liz Hilton Segel, Noshir Kaka, Acha Leke, Robert Linden, Scott Rutherford, Virginia Simmons, Bob Sternfels, Kurt Strovink, and Yael Taqqu. [A/HIGH]
+
+3. In this research pass, explicit WEF footprints were surfaced for at least seven of those 13 current McKinsey board members: Andrew Pickersgill, Gassan Al-Kibsi, Fabian Billing, Liz Hilton Segel, Acha Leke, Bob Sternfels, and Kurt Strovink. These footprints include WEF Agenda Contributor/person profiles, a Young Global Leader designation, and a WEF Global Agenda Council role. This is not the same as proving all seven are formal WEF “members.” [A/HIGH for the individual pages; MEDIUM for network significance]
+
+4. McKinsey personnel repeatedly appear in the WEF Young Global Leaders network. Official WEF material surfaced Amalia Toro (2026), Vidhya Ganesan (2024), Shelley Stewart (2023), Yuito Yamada (2022), Megan Greenfield (2021), Solveigh Hieronimus (2018), Gassan Al-Kibsi (historical YGL), and Raju Narisetti (YGL alumnus), among others. [A/HIGH]
+
+5. McKinsey and WEF have co-built or co-developed recurring programs and research products, including the Global Lighthouse Network, Resilience Consortium work, and the Global Cooperation Barometer. WEF describes the Global Lighthouse Network as co-founded with McKinsey. [A/HIGH]
+
+6. Canada’s own Global Affairs briefing materials describe the WEF as a multi-layered ecosystem in which Canada funds initiatives, participates in WEF bodies, collaborates on reports and initiatives, attends annual/regional meetings, and seeks to shape the Forum’s agenda. [A/HIGH]
+
+7. Canada directly collaborated with WEF on the Known Traveller Digital Identity prototype, involving biometrics, cryptography, distributed-ledger technologies, and identity/data sharing among travelers, governments, and travel providers. The underlying consultation also involved Accenture, Google, Visa, INTERPOL, ICAO, the U.S. Department of Homeland Security, and others. [A/HIGH]
+
+8. Century Initiative’s 2019 public record named founders/board directors Mark Wiseman, Dominic Barton, Willa Black, Goldy Hyder, and Andrew Pickersgill. Its policy goal centered on a Canadian population of 100 million by 2100, with increased immigration as a central lever. [A/HIGH]
+
+9. Two unusually direct McKinsey ↔ Century Initiative links were verified:
+   a. Century Initiative publicly presented a “CI-McKinsey Achieving Better Integration Outcomes” report at a 2019 immigrant-integration roundtable. [A/HIGH]
+   b. McKinsey’s own careers site profiles a former Toronto business analyst, Aleema, who said she took roughly five years away from McKinsey to start Century Initiative and later returned to McKinsey. [A/HIGH]
+
+10. Dominic Barton, a former McKinsey Global Managing Partner, chaired the federal Advisory Council on Economic Growth (ACEG). McKinsey provided the Council a pro-bono secretariat/research team. Andrew Pickersgill said he helped lead that team and coordinate McKinsey expertise from around the world. Barton, Pickersgill, and Michael Sabia testified that the McKinsey secretariat’s role was primarily research and that McKinsey employees were not responsible for the Council recommendations. [A/B/HIGH]
+
+11. ACEG recommended increasing annual permanent immigration to 450,000 over five years, alongside faster entry for specialized talent, more favorable pathways for international students, and improved accreditation. ACEG’s own later progress report states that it worked interactively with Finance Canada and other departments to “build support and prepare the ground for implementation,” and states that the government implemented related changes including Express Entry reforms, the Global Skills Strategy with a two-week standard for certain visas/work permits, and a Targeted Employment Strategy for Newcomers. [A/HIGH]
+
+12. That evidence supports a documented advisory/research-to-policy pathway. It does not prove McKinsey secretly set Canada’s immigration quotas. Canadian officials later stated that, to their knowledge, McKinsey did not advise IRCC on immigration thresholds, and the responsible minister rejected claims that McKinsey made immigration-level decisions. [A/B/HIGH]
+
+13. McKinsey nevertheless had major direct administrative influence inside IRCC through two transformation contracts valued at $27.7 million. IRCC says McKinsey diagnosed service delivery, produced a transformation strategy, step-by-step roadmap, and new operating models. IRCC then created transformation teams and a Chief Transformation Officer function and used McKinsey support for digital services, operating models, processing improvements, and digital-talent recruitment. [A/HIGH]
+
+14. IRCC later published a detailed list of meetings with McKinsey. It includes repeated core-team/weekly transformation meetings, a Client Experience Advisory Committee, settlement-sector touchpoints, preparation of briefing decks for the minister, minister-related meetings, and executive transformation meetings. [A/HIGH]
+
+15. McKinsey also appears in the creation/beginnings of the Canada Infrastructure Bank (CIB). A 2024 House of Commons committee report documents the McKinsey pro-bono ACEG secretariat, the Council’s infrastructure-bank recommendation, subsequent CIB contracts with McKinsey, McKinsey advice on investment criteria and governance/risk systems, and a McKinsey email providing possible names to the CIB. Witnesses disputed that these facts proved an improper causal connection or conflict. [A/B/HIGH]
+
+16. The Auditor General found 97 federal/Crown-corporation contracts awarded to McKinsey from 2011–2023, worth $209 million, with about $200 million spent. About 70% of the 97 contracts, approximately $118 million in maximum value, were noncompetitive. The audit found repeated procurement-policy failures and four competitive procurements whose strategies appeared designed and implemented to suit McKinsey. [A/HIGH]
+
+17. Current Century Initiative public materials in 2026 describe a “network-based approach” using more than 40 organizations across sectors and regions to inform, shape, and amplify its work. The public current roster lists board/leadership and expert-panel members, while historical pages show a different roster including Mark Wiseman and a 2024 announcement for Tareq Hadhad. The discrepancy is a research lead, not proof of wrongdoing. [A/HIGH]
+
+18. Canada’s PRC/CCP influence problem is in a different evidentiary category. Canadian intelligence and the Foreign Interference Commission describe the PRC as the most active foreign-interference actor in Canada, targeting all levels of government and civil society through political influence, proxies, community organizations, media/academia targeting, disinformation, cyber/intelligence activity, and other mechanisms. [A/HIGH]
+
+19. That same official record does not establish that the PRC “controls Canada.” The Foreign Interference Commission maintained the integrity of the overall federal election outcomes and warned about over-reading intelligence. [A/HIGH]
+
+20. McKinsey-China links should be treated as graph edges, not foreign-interference proof. Dominic Barton spent years leading McKinsey in Asia and has a WEF profile noting his Asia leadership and Tsinghua affiliation. Bob Sternfels’ WEF profile lists external roles including the U.S.-China Business Council and Tsinghua SEM Advisory Board. These are valid network links but do not, by themselves, establish CCP direction. [A/HIGH for links; LOW/unsupported for CCP direction]
+
+MOST IMPORTANT NEW CROSS-LINKS
+
+A. McKinsey ↔ WEF ↔ McKinsey board
+- McKinsey = WEF Strategic Partner.
+- Multiple current board members = WEF contributors / YGL / council participants.
+- Bob Sternfels co-authors or fronts repeated WEF-McKinsey work with WEF leadership.
+- WEF’s public McKinsey page enumerates dozens of McKinsey contributors.
+
+B. McKinsey ↔ Century Initiative ↔ Immigration
+- Barton and Pickersgill: McKinsey leadership + Century Initiative founding/board roles.
+- Aleema: McKinsey BA → says she started Century Initiative → returned to McKinsey.
+- CI and McKinsey jointly produced/presented an immigrant-integration report.
+
+C. McKinsey ↔ ACEG ↔ Government implementation
+- Barton chairs ACEG.
+- McKinsey pro-bono secretariat supplies research.
+- Pickersgill coordinates McKinsey expertise.
+- ACEG recommends 450k/year immigration trajectory and other reforms.
+- ACEG later documents concrete federal implementation of several associated recommendations.
+
+D. McKinsey ↔ IRCC administration
+- $27.7m transformation work.
+- Strategy, roadmap, operating models.
+- Chief Transformation Officer function and transformation teams created after recommendations.
+- Repeated meetings and minister-brief preparation documented.
+
+E. McKinsey ↔ ACEG ↔ CIB
+- ACEG recommends infrastructure bank.
+- McKinsey supplies research secretariat.
+- CIB later hires McKinsey for early investment criteria and risk/governance work.
+- Committee report records possible-hire names supplied by Pickersgill; no one on the list was ultimately hired, according to witnesses.
+
+F. WEF ↔ Government of Canada
+- Canada’s own documents explicitly characterize WEF as an ecosystem for shaping agendas.
+- Canada funds WEF projects and participates in WEF bodies.
+- KTDI is a direct government-WEF technical collaboration.
+- Historical WEF governance rosters include Chrystia Freeland and Mark Carney as WEF trustees in 2021/2022.
+
+CONCLUSION
+The documentary record is strong enough for an Auto-Dig investigation focused on POLICY NETWORKS and TRANSMISSION PATHWAYS rather than a pre-decided “control” conclusion. The strongest areas for recursive investigation are:
+  - Century Initiative ↔ McKinsey ↔ ACEG ↔ immigration implementation;
+  - McKinsey ↔ WEF governance/programs/personnel;
+  - McKinsey ↔ IRCC internal transformation records;
+  - ACEG ↔ CIB ↔ later McKinsey contracts;
+  - Canadian WEF funding/collaboration over time;
+  - PRC influence operations as a separate, state-directed interference track.
