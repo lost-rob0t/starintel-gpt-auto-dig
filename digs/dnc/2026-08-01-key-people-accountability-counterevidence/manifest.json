@@ -1,0 +1,19 @@
+{
+  "counts": {
+    "event": 4,
+    "person": 1,
+    "relation": 4,
+    "source": 4
+  },
+  "dataset": "dnc",
+  "dispositions": {
+    "fec_mur_7448_kamala_harris_for_senate": "no_reason_to_believe",
+    "fec_mur_7582_kamala_harris": "no_reason_to_believe",
+    "fec_mur_7863_dnc_virginia_mcgregor_harris_and_pete_linked_committees": "no_reason_to_believe",
+    "house_report_114_381_jared_polis": "dismissed_no_violation_no_further_action"
+  },
+  "evidence_rule": "Complaint or respondent status does not imply wrongdoing. The final official disposition is represented explicitly and receives equal or greater prominence.",
+  "generated_at": "2026-08-02T03:36:00Z",
+  "schema_version": "0.9.0",
+  "total_documents": 13
+}

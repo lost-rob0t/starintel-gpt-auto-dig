@@ -1,0 +1,37 @@
+{
+  "counts": {
+    "event": 2,
+    "org": 1,
+    "person": 4,
+    "relation": 7,
+    "source": 7
+  },
+  "current_dnc_officers_exact_wef_domain_sweep": {
+    "names_checked": 11,
+    "result": "no_direct_exact-name_result_found_in_initial_official-domain_search",
+    "warning": "This is search metadata, not proof that no direct or indirect WEF relationship exists. Variant names, archived pages, event materials, YGL, Global Shapers, employers, boards and institutional paths remain queued."
+  },
+  "dataset": "dnc",
+  "generated_at": "2026-08-02T03:08:00Z",
+  "official_disposition_records": {
+    "joyce_beatty_house_ethics_2021": "closed_no_further_action",
+    "ken_martin_fec_2024": "rulemaking_petition_not_enforcement"
+  },
+  "schema_version": "0.9.0",
+  "total_documents": 21,
+  "verified_wef_links": {
+    "gavin_newsom": [
+      "official_people_profile",
+      "young_global_leader_alumnus"
+    ],
+    "pete_buttigieg": [
+      "official_people_profile"
+    ],
+    "gretchen_whitmer": [
+      "annual_meeting_2026_participant_and_public_session_speaker"
+    ],
+    "chris_coons": [
+      "annual_meeting_2026_participant"
+    ]
+  }
+}
