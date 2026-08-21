@@ -24,6 +24,10 @@ concurrency:
   group: dnc-key-people-wef-accountability-${{ github.event.pull_request.number || github.ref_name }}
   cancel-in-progress: true
 
+env:
+  NIM_VERSION: 2.2.4
+  STARINTEL_NIM_REF: b55316bae294a146523cd2f977b81096e538c86a
+
 jobs:
   generate:
     if: github.actor != 'github-actions[bot]'
@@ -33,14 +37,28 @@ jobs:
       PYTHONPATH: .
       TARGET_BRANCH: ${{ github.head_ref || github.ref_name }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
         with:
           fetch-depth: 0
           ref: ${{ env.TARGET_BRANCH }}
 
-      - uses: actions/setup-python@v5
+      - name: Check out canonical StarIntel Nim runtime
+        uses: actions/checkout@v6
         with:
-          python-version: '3.12'
+          repository: lost-rob0t/starintel-doc.nim
+          ref: ${{ env.STARINTEL_NIM_REF }}
+          path: .starintel-doc-nim
+
+      - uses: jiro4989/setup-nim-action@v2
+        with:
+          nim-version: ${{ env.NIM_VERSION }}
+
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.13'
+
+      - name: Install repository test dependencies
+        run: python3 -m pip install --disable-pip-version-check requests beautifulsoup4 lxml httpx
 
       - name: Generate universal WEF and key-person accountability queues
         run: python3 scripts/generate_dnc_key_people_wef_accountability.py --all-people
@@ -61,8 +79,11 @@ jobs:
           print({'files': len(files), 'largest': largest})
           PY
 
+      - name: Build current canonical merge gate
+        run: nimble buildFast
+
       - name: Validate complete repository
-        run: python3 scripts/validate-for-merge.py
+        run: bin/validate-for-merge
 
       - name: Commit generated queues
         if: github.event_name == 'pull_request'
