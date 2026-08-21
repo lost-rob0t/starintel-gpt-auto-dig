@@ -93,6 +93,22 @@ The mandatory merge gate is:
 python3 scripts/validate-for-merge.py --site
 ```
 
+### Connector-only and remote agent runtimes
+
+Absence of a local checkout, `nimble`, Nim, or another executable repository dependency is **not** a reason to refuse to create a research transaction or draft pull request when the runtime has authenticated GitHub write access.
+
+When a runtime cannot execute the full local gate:
+
+1. create the feature branch and coherent repository transaction through the available GitHub transport;
+2. open the pull request as a draft;
+3. rely on the repository's required GitHub Actions to execute the full validation gate on the exact published head commit;
+4. inspect the required check results for that exact head before changing readiness or merging;
+5. repair the branch and let CI rerun if any required check fails.
+
+A locally executable gate is still required when the runtime actually has a usable worktree and toolchain. A failed local gate may never be ignored in favor of CI. Conversely, an unavailable local toolchain may never be treated as a blocker to authoring the transaction when GitHub Actions provides the executable gate.
+
+The absence of local execution changes **where validation runs**, not whether work may be authored. Do not post or repeat "no repository transaction was opened" merely because the current agent runtime lacks a worktree or `nimble`.
+
 ## Absolute merge prohibition
 
 Never mark a PR ready, approve it, enable auto-merge, or merge it when the merge gate or any required GitHub check is failing, pending, skipped, cancelled, unavailable, stale, or inconclusive.
