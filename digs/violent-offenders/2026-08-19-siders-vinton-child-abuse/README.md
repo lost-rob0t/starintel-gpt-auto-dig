@@ -97,3 +97,4 @@ Charges, allegations, investigative descriptions, defense positions, and adjudic
 - `starintel-documents-001.jsonl`
 - `starintel-documents-002.jsonl`
 - `starintel-documents-003.jsonl`
+- `starintel-documents-004.jsonl`
