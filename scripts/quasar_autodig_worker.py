@@ -24,6 +24,10 @@ class LifecycleSuspended(LifecycleConflict):
     """The run was paused or stopped at a safe worker checkpoint."""
 
 
+class LifecycleWaiting(LifecycleConflict):
+    """Research is delegated to the canonical issue queue and is still running."""
+
+
 class QuasarControlError(RuntimeError):
     """Stable Quasar control-plane failure without raw envelope leakage."""
 
