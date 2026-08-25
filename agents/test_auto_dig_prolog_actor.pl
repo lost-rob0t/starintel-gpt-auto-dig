@@ -18,6 +18,13 @@ state(Last, State) :-
         last_success_at:null
     }.
 
+test(json_dict_tags_are_grounded_recursively) :-
+    Raw = _{outer:_{items:[_{value:1}, _{value:2}]}, enabled:true},
+    assertion(\+ ground(Raw)),
+    auto_dig_prolog_actor:ground_json_value(Raw, Ground),
+    assertion(ground(Ground)),
+    assertion(Ground.outer.items = [json{value:1}, json{value:2}]).
+
 test(high_priority_may_repeat_when_uniquely_highest) :-
     issue(10, high, High),
     issue(11, normal, Normal),
