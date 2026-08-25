@@ -11,7 +11,7 @@ permissions:
   contents: read
 
 env:
-  PROLOG_RLM_REF: a5e0a28b47fada46a15fe439d58bf2940ec224e7
+  PROLOG_RLM_REF: 30c620bae7ef6d4c21a98ffdf17bb969b2686638
 
 jobs:
   check:
