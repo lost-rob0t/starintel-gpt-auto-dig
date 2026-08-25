@@ -1,0 +1,135 @@
+{
+  "dataset": "seattle",
+  "output": "digs/seattle/2026-08-25-request-2106-harvest/starintel-documents.jsonl",
+  "documents": [
+    {
+      "dtype": "analysis",
+      "id": "starintel:analysis:seattle-request-2106-harvest-rtcc-access-oversight-2026-08-25",
+      "title": "Seattle request #2106 harvest: RTCC/FUSUS access and oversight",
+      "summary": "Harvests mature primary-source findings accumulated after the August 20 Seattle control-chain packet into the canonical corpus, separating authorized access, agency control claims, retention policy, oversight publication state, and unresolved operation-level accountability evidence.",
+      "metadata": {
+        "date_added": "2026-08-25T03:24:00Z",
+        "date_updated": "2026-08-25T03:24:00Z",
+        "status": "recorded",
+        "language": "en",
+        "tags": ["seattle", "request-2106", "harvest", "rtcc", "fusus", "police-accountability", "surveillance-oversight"],
+        "sources": [
+          {"kind": "primary_government_source", "title": "Public Space Cameras (CCTV) / RTCC safeguards", "publisher": "Seattle Police Department", "url": "https://seattle.gov/police/community-policing/community-programs/cctv", "retrieved_at": "2026-08-25T03:24:00Z", "credibility": 0.99},
+          {"kind": "primary_government_source", "title": "2026 Work Plan", "publisher": "Seattle Office of Inspector General", "url": "https://www.seattle.gov/documents/Departments/OIG/Annual/OIG_%202026%20Work%20Plan.pdf", "retrieved_at": "2026-08-25T03:24:00Z", "credibility": 0.99},
+          {"kind": "primary_government_source", "title": "OIG Reports", "publisher": "Seattle Office of Inspector General", "url": "https://seattle.gov/inspector-general/reports", "retrieved_at": "2026-08-25T03:24:00Z", "credibility": 0.99},
+          {"kind": "primary_government_source", "title": "RTCC Barnes Memo", "publisher": "Seattle Police Department", "url": "https://www.seattle.gov/documents/Departments/Police/PDF/CCTV/RTCC%20Barnes%20Memo.pdf", "retrieved_at": "2026-08-25T03:24:00Z", "credibility": 0.99},
+          {"kind": "primary_government_source", "title": "Mayor Wilson Announces Next Steps on Surveillance Pilot Project", "publisher": "Office of the Mayor, City of Seattle", "url": "https://wilson.seattle.gov/2026/03/19/mayor-wilson-announces-next-steps-on-surveillance-pilot-project/", "retrieved_at": "2026-08-25T03:24:00Z", "credibility": 0.99}
+        ],
+        "assessment": {
+          "confidence": 0.98,
+          "gaps": [
+            "The actual FUSUS account roster, role-effective dates, and approval/change log remain unresolved.",
+            "Operation-level RTCC/FUSUS event logs, case/justification fields, sharing recipients, and supervisor approvals for the 12th & Jackson/K3/DAT work remain unresolved.",
+            "The planned individual 2026 RTCC, CCTV, and ALPR surveillance reviews are not present on the public OIG report index reviewed through August 20, 2026; publication or completion status beyond that public index remains unresolved.",
+            "No reviewed primary evidence establishes corruption, selective enforcement, improper political influence, or political motive by a named employee."
+          ]
+        },
+        "verification": {
+          "status": "source-backed",
+          "verified": true,
+          "verified_at": "2026-08-25T03:24:00Z",
+          "last_reviewed_at": "2026-08-25T03:24:00Z",
+          "methods": ["request #2106 harvest review", "existing packet deduplication", "primary Seattle source reconciliation", "evidence-state review"]
+        },
+        "handling": {"visibility": "public", "pii": false, "sensitive": false},
+        "provenance": {
+          "collector": "OpenAI GPT-5.6 Sol",
+          "collector_type": "research-agent",
+          "method": "Auto-Dig request #2106 harvest-first materialization",
+          "pipeline": "starintel-auto-dig",
+          "run_id": "request-2106-harvest-2026-08-25",
+          "metadata": {"request_issue": 2106, "request_identity": "seattle-police-integrity-motive-2105", "prior_packet": "digs/seattle/2026-08-20-request-2106-rtcc-narcotics-control/"}
+        },
+        "related_ids": [
+          "starintel:analysis:seattle-request-2106-rtcc-narcotics-control-2026-08-20",
+          "starintel:investigation-target:seattle-2106-operation-orders-command-chain-depth-1",
+          "starintel:investigation-target:seattle-2106-incident-2026-25701-native-records-depth-2"
+        ]
+      },
+      "data": {
+        "question": "Which mature Seattle request #2106 RTCC/FUSUS access and oversight findings accumulated after the August 20 packet are ready for canonical materialization?",
+        "method": "Harvested mature request comments, reconciled them against the existing August 20 RTCC/narcotics packet, and retained bounded first-party findings without inferring misconduct from access or missing public reports.",
+        "framework": "Authorized access, configured role, logged activity, case justification, supervisory approval, oversight review, policy conflict, and misconduct are separate predicates.",
+        "scope": "Seattle RTCC/FUSUS authorized-access population, account/audit controls, CCTV retention, incident-triggered access, external-sharing safeguards, and OIG surveillance-review publication state.",
+        "input_ids": ["starintel:analysis:seattle-request-2106-rtcc-narcotics-control-2026-08-20"],
+        "finding_ids": [],
+        "findings": [
+          "Seattle Police currently states that 29 people have FUSUS access: four Seattle IT Department employees, 23 RTCC analysts/video specialists/administrative-support staff, and two sworn SPD managers, the Captain and Lieutenant managing RTCC.",
+          "SPD states that each RTCC/FUSUS user has an individual role-limited account and that system activity is logged and auditable; authorized access therefore identifies an evidence universe but does not establish a particular person's use or misuse.",
+          "The September 2025 Barnes memo described 28 FUSUS users, including one sworn manager, while the current surface describes 29 and two sworn managers; the effective date, approval record, and account-change history for that access-population change remain unresolved.",
+          "SPD states that public-space camera access is ordinarily incident-triggered rather than passive continuous monitoring and that it does not participate in third-party ALPR aggregators; operation-level logs are still required to test those controls in a particular case.",
+          "Seattle permits up to 30 days of CCTV retention under the governing framework, while SPD's current stated local-storage practice is five days with case-related clips transferred to Evidence.com; this policy/practice boundary does not prove the retention history of any specific incident without native records.",
+          "Mayor Wilson's March 19, 2026 statement says RTCC coverage includes Chinatown-ID through 12th & Jackson, identifies RTCC operators as civilian SPD employees, and states restrictions on sharing RTCC information for immigration, reproductive-rights, or gender-affirming-care enforcement absent a court order or judicial warrant.",
+          "OIG's 2026 Work Plan schedules individual annual surveillance reviews for RTCC, CCTV, and ALPR, including data security, sharing, equity, and civil-liberties considerations.",
+          "The public OIG Reports index reviewed through August 20, 2026 does not list those individual 2026 RTCC/CCTV/ALPR surveillance reviews; this is a publication-state finding, not evidence of suppression, nonperformance, or misconduct."
+        ],
+        "conclusions": [
+          "Request #2106 now has a bounded public RTCC/FUSUS access population and explicit agency auditability claims that can be joined to operation-level account/event evidence when native records are recovered.",
+          "The public oversight record provides a defined annual review requirement, but absence from the reviewed public report index cannot support a misconduct inference.",
+          "No mature evidence in this harvest supports labeling a named Seattle employee corrupt, selectively enforcing policy, or acting from improper political motive."
+        ],
+        "recommendations": [
+          "Recover the FUSUS account roster, account-change history, role-effective dates, and approval for the second sworn-manager slot.",
+          "Recover account-level RTCC/FUSUS event logs for the 12th & Jackson/K3/DAT operations, including triggering incident/case, justification, sharing recipient, and supervisor.",
+          "Track publication of the individual OIG RTCC/CCTV/ALPR surveillance reviews and join their findings to the native event/account evidence.",
+          "Keep access authorization, actual use, policy compliance, oversight finding, and misconduct conclusions as separate evidence states."
+        ],
+        "counterarguments": [
+          "A 29-person access population does not mean all 29 accessed a particular incident or shared data externally.",
+          "An unpublished or not-yet-indexed oversight report does not establish that the review was not performed or that anyone suppressed it.",
+          "Agency-stated safeguards are control claims that require event-level evidence to test actual compliance."
+        ],
+        "limitations": [
+          "This harvest intentionally avoids identifying low-level civilian operators without an operation-specific public record.",
+          "It materializes mature public control and oversight evidence rather than claiming the broader personnel/integrity investigation is complete."
+        ],
+        "unresolved": [
+          "Which 29 accounts correspond to which authorized public roles and when did each permission become effective?",
+          "What account/event records correspond to the relevant 12th & Jackson, K3, DAT, or narcotics operations?",
+          "Which supervisor approved each relevant operation, access event, sharing action, and any overtime assignment?",
+          "When will the individual 2026 RTCC, CCTV, and ALPR surveillance reviews be published, and what do they find?"
+        ],
+        "confidence": 0.98
+      }
+    },
+    {
+      "dtype": "research-pass",
+      "id": "starintel:research-pass:request-2106-harvest-2026-08-25",
+      "title": "Auto-Dig request #2106 mature-evidence harvest",
+      "summary": "Harvest-first pass converts mature Seattle RTCC/FUSUS access, retention, safeguard, and OIG oversight findings that had accumulated in request comments into a typed canonical packet while preserving operation-level accountability gaps.",
+      "metadata": {
+        "date_added": "2026-08-25T03:24:00Z",
+        "date_updated": "2026-08-25T03:24:00Z",
+        "status": "completed",
+        "language": "en",
+        "tags": ["research-pass", "auto-dig-request", "seattle", "request-2106", "harvest", "high-priority", "rtcc", "fusus"],
+        "sources": [
+          {"kind": "primary_government_source", "title": "Public Space Cameras (CCTV) / RTCC safeguards", "publisher": "Seattle Police Department", "url": "https://seattle.gov/police/community-policing/community-programs/cctv", "retrieved_at": "2026-08-25T03:24:00Z", "credibility": 0.99},
+          {"kind": "primary_government_source", "title": "2026 Work Plan", "publisher": "Seattle Office of Inspector General", "url": "https://www.seattle.gov/documents/Departments/OIG/Annual/OIG_%202026%20Work%20Plan.pdf", "retrieved_at": "2026-08-25T03:24:00Z", "credibility": 0.99},
+          {"kind": "primary_government_source", "title": "OIG Reports", "publisher": "Seattle Office of Inspector General", "url": "https://seattle.gov/inspector-general/reports", "retrieved_at": "2026-08-25T03:24:00Z", "credibility": 0.99}
+        ],
+        "assessment": {"confidence": 0.98},
+        "verification": {"status": "source-backed", "verified": true, "verified_at": "2026-08-25T03:24:00Z", "last_reviewed_at": "2026-08-25T03:24:00Z", "methods": ["complete request harvest review", "existing packet deduplication", "primary-source reconciliation"]},
+        "handling": {"visibility": "public", "pii": false, "sensitive": false},
+        "provenance": {"collector": "OpenAI GPT-5.6 Sol", "collector_type": "research-agent", "method": "queue-first harvest review and canonical materialization", "pipeline": "starintel-auto-dig", "run_id": "request-2106-harvest-2026-08-25", "metadata": {"request_issue": 2106, "request_identity": "seattle-police-integrity-motive-2105", "packet_path": "digs/seattle/2026-08-25-request-2106-harvest/", "prior_packet": "digs/seattle/2026-08-20-request-2106-rtcc-narcotics-control/"}},
+        "related_ids": ["starintel:analysis:seattle-request-2106-harvest-rtcc-access-oversight-2026-08-25", "starintel:analysis:seattle-request-2106-rtcc-narcotics-control-2026-08-20", "starintel:investigation-target:seattle-2106-operation-orders-command-chain-depth-1", "starintel:investigation-target:seattle-2106-incident-2026-25701-native-records-depth-2"]
+      },
+      "data": {
+        "research_question": "Which mature post-August-20 Seattle request #2106 findings are ready to leave issue-comment staging and enter the canonical corpus?",
+        "method": "Reviewed the existing RTCC/narcotics packet and accumulated request comments, deduplicated already-landed operation evidence, and harvested mature access/oversight evidence into one bounded analysis record.",
+        "classification_rules": ["Issue comments are staging, not completion.", "Authorized access is not evidence of actual access or misuse.", "Agency safeguards are claims to test against event-level logs.", "Missing public oversight publication is not evidence of suppression or misconduct.", "Named-person misconduct or political motive requires direct or strongly corroborated evidence."],
+        "finding_ids": ["starintel:analysis:seattle-request-2106-harvest-rtcc-access-oversight-2026-08-25"],
+        "findings": [
+          {"finding": "The current FUSUS access population and individual-account/auditability controls are now canonicalized without assigning operation-specific conduct to authorized users."},
+          {"finding": "The current CCTV retention/access safeguards are canonicalized as agency policy/practice claims requiring native incident evidence for compliance testing."},
+          {"finding": "The OIG annual RTCC/CCTV/ALPR review requirement and August 20 public-index state are canonicalized without inferring suppression or misconduct."}
+        ]
+      }
+    }
+  ]
+}
