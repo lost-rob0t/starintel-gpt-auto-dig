@@ -21,8 +21,8 @@ value.
 */
 
 :- use_module(library(lists)).
-:- use_module(rlm_mcp_policy, []).
-:- use_module(rlm_mcp_server, []).
+:- use_module(library(rlm_mcp_policy), []).
+:- use_module(library(rlm_mcp_server), []).
 
 :- multifile rlm_mcp_policy:mcp_stdio_profile/2.
 :- multifile rlm_mcp_policy:mcp_config_value/2.
