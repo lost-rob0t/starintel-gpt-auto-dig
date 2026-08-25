@@ -1,7 +1,8 @@
 from __future__ import annotations
 
+import os
 from dataclasses import dataclass, field
-from typing import Mapping
+from typing import Callable, Mapping
 
 from scripts.quasar_autodig_worker import (
     AutoDigLifecycleWorker,
@@ -80,3 +81,22 @@ def build_runtime(
         worker_id=config.worker_id,
     )
     return AutoDigRuntime(worker=lifecycle_worker, workspace_id=config.workspace_id)
+
+
+def run_from_mapping(
+    values: Mapping[str, str],
+    *,
+    builder: Callable[[RuntimeConfig], AutoDigRuntime] = build_runtime,
+) -> int:
+    config = RuntimeConfig.from_mapping(values)
+    return builder(config).run_once()
+
+
+def main() -> int:
+    processed = run_from_mapping(os.environ)
+    print(f"processed={processed}")
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())
