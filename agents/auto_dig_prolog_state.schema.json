@@ -1,0 +1,40 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://starintel.actor/schemas/auto-dig-prolog-state.v1.json",
+  "title": "Auto-Dig Prolog actor state",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "last_issue",
+    "last_priority",
+    "last_branch",
+    "last_run_id",
+    "last_success_at"
+  ],
+  "properties": {
+    "schema": {
+      "const": "auto-dig-prolog-state.v1"
+    },
+    "last_issue": {
+      "type": ["integer", "null"],
+      "minimum": 1
+    },
+    "last_priority": {
+      "type": ["string", "null"],
+      "enum": ["urgent", "high", "normal", "low", null]
+    },
+    "last_branch": {
+      "type": ["string", "null"],
+      "minLength": 1
+    },
+    "last_run_id": {
+      "type": ["string", "null"],
+      "minLength": 1
+    },
+    "last_success_at": {
+      "type": ["string", "null"],
+      "format": "date-time"
+    }
+  }
+}
