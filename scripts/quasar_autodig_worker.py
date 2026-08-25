@@ -371,6 +371,12 @@ class AutoDigLifecycleWorker:
                     raise LifecycleConflict("worker ownership changed")
                 if current.get("leaseId") != lease_id:
                     raise LifecycleConflict("worker lease changed")
+                self.control.heartbeat(
+                    workspace_id,
+                    run_id,
+                    self.worker_id,
+                    lease_id,
+                )
 
             try:
                 self.control.heartbeat(
