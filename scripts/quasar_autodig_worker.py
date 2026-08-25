@@ -339,7 +339,7 @@ class AutoDigLifecycleWorker:
 
         processed = 0
         for candidate in self.control.list_runs(workspace_id, limit=self.list_limit):
-            if candidate.get("status") != "queued":
+            if candidate.get("status") not in {"queued", "active"}:
                 continue
 
             run_id = str(candidate.get("runId") or "")
