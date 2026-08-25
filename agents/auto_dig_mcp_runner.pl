@@ -26,13 +26,19 @@ tools and planner-visible schemas through the same list.
 :- use_module(library(rlm_mcp_tool)).
 :- use_module(library(rlm_tool)).
 
-client_info(_{name:"starintel-auto-dig", version:"1.0"}).
-client_capabilities(_{}).
+:- meta_predicate lifecycle_phase(+, 0).
+
+% Named tags keep the host handshake terms fully ground. Anonymous-tag dicts
+% are convenient JSON values but are the wrong representation at an authority
+% or async boundary where ground/1 is part of the contract.
+client_info(mcp_client_info{name:"starintel-auto-dig", version:"1.0"}).
+client_capabilities(mcp_client_capabilities{}).
 
 auto_dig_mcp_session_open(Servers, AuthorityContext, Session) :-
     require_server_list(Servers),
     require_authority_context(AuthorityContext),
-    tool_registry_create(Registry),
+    lifecycle_phase(registry_create,
+                    tool_registry_create(Registry)),
     catch(open_session(Servers,
                        AuthorityContext,
                        Registry,
@@ -44,10 +50,15 @@ auto_dig_mcp_session_open(Servers, AuthorityContext, Session) :-
           )).
 
 open_session(Servers, AuthorityContext, Registry, Session) :-
-    rlm_set_authority(AuthorityContext, allow_session, AuthorityOutcome),
+    lifecycle_phase(authority_setup,
+                    rlm_set_authority(AuthorityContext,
+                                      allow_session,
+                                      AuthorityOutcome)),
     require_ok(authority_setup, AuthorityOutcome, _),
     open_servers(Servers, AuthorityContext, Registry, ServerStates),
-    auto_dig_mcp_read_capabilities(Servers, Capabilities),
+    lifecycle_phase(capability_projection,
+                    auto_dig_mcp_read_capabilities(Servers,
+                                                   Capabilities)),
     Session = auto_dig_mcp_session{
                   authority_context:AuthorityContext,
                   registry:Registry,
@@ -66,9 +77,11 @@ open_servers([Server|Servers], AuthorityContext, Registry,
           )).
 
 open_server(Server, AuthorityContext, Registry, State) :-
-    rlm_run_mcp_server(Server,
-                       [authority_context(AuthorityContext)],
-                       RunOutcome),
+    lifecycle_phase(mcp_run(Server),
+                    rlm_run_mcp_server(
+                        Server,
+                        [authority_context(AuthorityContext)],
+                        RunOutcome)),
     require_ok(mcp_run(Server), RunOutcome, Handle),
     catch(connect_and_import(Server, Registry, Handle, State),
           Exception,
@@ -79,11 +92,12 @@ open_server(Server, AuthorityContext, Registry, State) :-
 connect_and_import(Server, Registry, Handle, State) :-
     client_info(ClientInfo),
     client_capabilities(ClientCapabilities),
-    rlm_connect_mcp_server(Handle,
-                           ClientInfo,
-                           ClientCapabilities,
-                           [],
-                           ConnectOutcome),
+    lifecycle_phase(mcp_connect(Server),
+                    rlm_connect_mcp_server(Handle,
+                                           ClientInfo,
+                                           ClientCapabilities,
+                                           [],
+                                           ConnectOutcome)),
     require_ok(mcp_connect(Server), ConnectOutcome, Client),
     catch(import_server_tools(Server,
                               Registry,
@@ -103,11 +117,12 @@ import_server_tools(Server, Registry, Handle, Client, State) :-
                         server:Server,
                         kind:missing_import_policy}, _))
     ),
-    mcp_import_tools(Registry,
-                     Server,
-                     Client,
-                     ImportOptions,
-                     ImportOutcome),
+    lifecycle_phase(mcp_import(Server),
+                    mcp_import_tools(Registry,
+                                     Server,
+                                     Client,
+                                     ImportOptions,
+                                     ImportOutcome)),
     require_ok(mcp_import(Server), ImportOutcome, Import),
     State = auto_dig_mcp_server_state{
                 server:Server,
@@ -155,6 +170,13 @@ safe_registry_destroy(Registry) :-
 safe_authority_clear(Context) :-
     catch(rlm_authority_clear(Context), _, true).
 
+lifecycle_phase(Phase, Goal) :-
+    catch(call(Goal),
+          Exception,
+          throw(error(auto_dig_mcp_runner_error{
+                          phase:Phase,
+                          exception:Exception}, _))).
+
 require_ok(_, ok(Value), Value) :- !.
 require_ok(Phase, error(Error), _) :-
     throw(error(auto_dig_mcp_runner_error{
@@ -179,8 +201,10 @@ require_server_list(Servers) :-
 require_authority_context(Context) :-
     ground(Context),
     !.
-require_authority_context(Context) :-
-    throw(error(instantiation_error(Context), _)).
+require_authority_context(_) :-
+    throw(error(instantiation_error,
+                context(auto_dig_mcp_runner,
+                        'authority context must be ground'))).
 
 require_session(Session) :-
     is_dict(Session, auto_dig_mcp_session),
