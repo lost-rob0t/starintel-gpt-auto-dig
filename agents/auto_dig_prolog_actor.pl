@@ -11,6 +11,13 @@
 :- initialization(main, main).
 
 main(Argv) :-
+    catch(main_run(Argv),
+          Exception,
+          ( print_message(error, Exception),
+            fail
+          )).
+
+main_run(Argv) :-
     parse_args(Argv, Options),
     option(queue(QueuePath), Options),
     option(state(StatePath), Options),
@@ -23,8 +30,7 @@ main(Argv) :-
             [ max_agents(4),
               mailbox_size(8),
               worker_count(1),
-              worker_backlog(1),
-              worker_handler(auto_dig_prolog_actor:worker_handler)
+              worker_backlog(1)
             ],
             Runtime),
         run_actor(Runtime, Queue, State, Decision, Trace),
@@ -33,7 +39,6 @@ main(Argv) :-
     maybe_write_trace(TracePath, Trace).
 
 run_actor(Runtime, Queue, State, Decision, Trace) :-
-    Runtime = agent_runtime(RunId),
     agent_spawn(Runtime,
                 none,
                 agent_spec{
@@ -42,17 +47,16 @@ run_actor(Runtime, Queue, State, Decision, Trace) :-
                     metadata:agent_metadata{kind:"auto-dig", version:1}
                 },
                 [],
-                ok(Actor)),
-    agent_send(Runtime,
-               Actor,
-               request(RunId, select_queue, work(select, Queue, State)),
-               [],
-               ok(_)),
-    agent_pump(Runtime, Actor, [], Dispatch),
-    require_ok(dispatch, Dispatch),
-    pump_until_message(Runtime, Actor, 100),
-    agent_status(Runtime, Actor, ok(Status)),
-    require_actor_result(Status, Decision),
+                SpawnOutcome),
+    require_ok(spawn, SpawnOutcome),
+    SpawnOutcome = ok(Actor),
+    agent_supervised_call(Runtime,
+                          Actor,
+                          auto_dig_prolog_actor:worker_handler,
+                          work(select, Queue, State),
+                          [timeout(5.0)],
+                          CallOutcome),
+    require_decision(CallOutcome, Decision),
     agent_trace(Runtime, Trace).
 
 worker_handler(work(select, Queue, State), Decision) :-
@@ -203,29 +207,14 @@ normalize_line(Line, Normalized) :-
     normalize_space(string(Spaced), Line),
     string_lower(Spaced, Normalized).
 
-pump_until_message(_, _, Attempts) :-
-    Attempts =< 0,
+require_decision(ok(Decision0), Decision) :-
+    is_dict(Decision0),
     !,
-    throw(error(auto_dig_actor_timeout,
+    Decision = Decision0.
+require_decision(Outcome, _) :-
+    throw(error(auto_dig_actor_stage_failed(supervised_call, Outcome),
                 context(auto_dig_prolog_actor,
-                        'agent result did not return through the mailbox'))).
-pump_until_message(Runtime, Actor, Attempts) :-
-    agent_pump(Runtime, Actor, [timeout(0.1)], Outcome),
-    (   Outcome = ok(Pump),
-        Pump.status \== idle
-    ->  true
-    ;   Next is Attempts - 1,
-        pump_until_message(Runtime, Actor, Next)
-    ).
-
-require_actor_result(Status, Decision) :-
-    (   get_dict(last_result, Status, ok(Decision0)),
-        is_dict(Decision0)
-    ->  Decision = Decision0
-    ;   throw(error(auto_dig_actor_missing_result(Status),
-                    context(auto_dig_prolog_actor,
-                            'actor completed without a decision dict')))
-    ).
+                        'supervised actor did not return a decision dict'))).
 
 require_ok(_, ok(_)) :- !.
 require_ok(Stage, Outcome) :-
