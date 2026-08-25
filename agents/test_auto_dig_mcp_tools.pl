@@ -20,11 +20,13 @@ test(brave_definition_is_inert_fixed_and_secret_by_reference) :-
     assertion(\+ sub_string(Text, _, _, _, "{env:")),
     assertion(\+ sub_string(Text, _, _, _, "sk-")) .
 
-test(fetch_definition_is_inert_and_fixed) :-
+test(fetch_definition_is_inert_fixed_and_configured_by_reference) :-
     mcp_server_definition(fetch, ok(Spec)),
     assertion(Spec.transport == stdio(profile(auto_dig_fetch_npx))),
     assertion(Spec.install == none),
-    assertion(Spec.environment == []),
+    assertion(Spec.environment ==
+              [env('DEFAULT_LIMIT',
+                   config_ref(auto_dig_fetch_default_limit))]),
     assertion(Spec.working_directory == inherit),
     assertion(Spec.version == '1.1.2'),
     assertion(Spec.capabilities == [tools]).
