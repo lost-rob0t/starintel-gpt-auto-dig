@@ -4,7 +4,7 @@ import json
 import uuid
 from dataclasses import dataclass
 from typing import Any, Callable, Mapping, Protocol
-from urllib.parse import parse_qsl, urlencode, urlsplit, urlunsplit
+from urllib.parse import parse_qsl, quote, urlencode, urlsplit, urlunsplit
 
 
 PROTOCOL_VERSION = "quasar.control.v1"
@@ -130,8 +130,9 @@ def _session_url(endpoint: str, session_token: str) -> str:
     query = parse_qsl(parts.query, keep_blank_values=True)
     query = [(key, value) for key, value in query if key != "session"]
     query.append(("session", session_token))
+    encoded_query = urlencode(query, quote_via=quote)
     return urlunsplit(
-        (parts.scheme, parts.netloc, parts.path, urlencode(query), parts.fragment)
+        (parts.scheme, parts.netloc, parts.path, encoded_query, parts.fragment)
     )
 
 
