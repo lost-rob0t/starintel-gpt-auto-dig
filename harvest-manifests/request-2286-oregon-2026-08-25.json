@@ -1,0 +1,90 @@
+{
+  "dataset": "violent-offenders",
+  "output": "digs/violent-offenders/2026-08-25-request-2286-wire-oregon/starintel-documents.jsonl",
+  "documents": [
+    {
+      "dtype": "analysis",
+      "id": "starintel:analysis:wire-2026-08-24-oregon-quintuple-homicide-verification",
+      "title": "The Wire August 24: Washington County Oregon quintuple-homicide verification",
+      "summary": "Verifies the Washington County, Oregon five-death scene and Benjamin Charles Parker/Enumclaw chain against Washington County Sheriff's Office releases while preserving unresolved cause, sequence, motive, and body-movement questions.",
+      "metadata": {
+        "date_added": "2026-08-25T03:15:00Z",
+        "date_updated": "2026-08-25T03:15:00Z",
+        "status": "recorded",
+        "language": "en",
+        "tags": ["violent-offenders", "request-2286", "the-wire", "oregon", "washington-county", "quintuple-homicide", "verification"],
+        "sources": [
+          {"kind": "primary_law_enforcement_release", "title": "Detectives Investigating Homicide After Five Found Dead", "publisher": "Washington County Sheriff's Office", "url": "https://www.washingtoncountyor.gov/sheriff/news/2026/08/23/detectives-investigating-homicide-after-five-found-dead", "published_at": "2026-08-23T00:00:00Z", "retrieved_at": "2026-08-25T03:15:00Z", "credibility": 0.99},
+          {"kind": "primary_law_enforcement_release", "title": "Update: Suspect in Quintuple Homicide Located Deceased", "publisher": "Washington County Sheriff's Office", "url": "https://www.washingtoncountyor.gov/sheriff/news/2026/08/23/update-suspect-quintuple-homicide-located-deceased", "published_at": "2026-08-23T00:00:00Z", "retrieved_at": "2026-08-25T03:15:00Z", "credibility": 0.99},
+          {"kind": "seed_bulletin", "title": "The Wire - August 24, 2026", "publisher": "YouTube source supplied with request #2286", "url": "https://www.youtube.com/watch?v=IMSI7SMz70o", "retrieved_at": "2026-08-25T03:15:00Z", "credibility": 0.55}
+        ],
+        "assessment": {"confidence": 0.98, "gaps": ["Final medical-examiner cause and manner for each victim are not established in the recovered primary releases.", "Motive and exact sequence of deaths remain unresolved.", "The recovered primary record does not establish that remains were transported to or dumped at the property after death.", "Parker's final medical-examiner cause/manner remains subject to official final findings beyond the Sheriff's belief that he died by suicide."]},
+        "verification": {"status": "source-backed", "verified": true, "verified_at": "2026-08-25T03:15:00Z", "last_reviewed_at": "2026-08-25T03:15:00Z", "methods": ["request #2286 claim-ledger review", "Washington County Sheriff primary-release verification", "transcript proper-noun reconciliation"]},
+        "handling": {"visibility": "public", "pii": false, "sensitive": false},
+        "provenance": {"collector": "OpenAI GPT-5.6 Sol", "collector_type": "research-agent", "method": "Auto-Dig request #2286 harvest-first claim verification", "pipeline": "starintel-auto-dig", "run_id": "request-2286-wire-oregon-harvest-2026-08-25", "metadata": {"request_issue": 2286, "request_identity": "the-wire-2026-08-24-2300z-imsi7smz70o", "cluster": "oregon-washington-county"}},
+        "related_ids": []
+      },
+      "data": {
+        "question": "Was The Wire's August 24, 2026 report about five bodies at a Washington County, Oregon fire scene and suspect Benjamin Charles Parker being found dead in Enumclaw substantially accurate at the bulletin cutoff?",
+        "method": "Compared the supplied bulletin/transcript claims against Washington County Sheriff's Office primary releases and preserved unresolved investigative facts separately from verified public statements.",
+        "framework": "Transcript claim, corrected proper nouns, primary law-enforcement statement, evidence state, later update, and unresolved investigative questions are separate fields of analysis.",
+        "scope": "Washington County Oregon scene, public incident location/time, deceased count, animal count, suspect identification, Enumclaw recovery, case reference, and official characterization.",
+        "input_ids": [],
+        "finding_ids": [],
+        "findings": [
+          "Washington County Sheriff's Office says deputies responded to 47350 NW Otis Lane in unincorporated Washington County outside Forest Grove after a 911 report of a vehicle fire at 5:27 a.m. on August 22, 2026; Forest Grove Fire personnel discovered human remains and requested law enforcement.",
+          "The Sheriff's Office reported five people deceased at the scene together with domestic animals and later publicly identified the five victims after next-of-kin notification.",
+          "The Sheriff's Office reported two cats and two dogs dead at the property and said another injured cat was later euthanized.",
+          "Washington County investigators identified 36-year-old Benjamin Charles Parker as the suspect and said Stella Kimsey lived at the property with Parker, her boyfriend.",
+          "Investigators believed Parker was in Enumclaw, Washington; Enumclaw Police located his vehicle and found him deceased inside, and the Sheriff's Office said it was believed he died by suicide.",
+          "Washington County identifies the investigation as case 50-26-11866 and describes it as a quintuple-homicide investigation that was not a random act.",
+          "The recovered official record does not establish that the property was a body-dump site or that remains were transported there after death."
+        ],
+        "conclusions": ["The Wire's core Washington County/Enumclaw chain is substantially verified by primary law-enforcement releases.", "The bulletin should not be normalized into a verified body-dump claim, and final cause/manner, motive, sequence, and transport-of-remains questions remain open."],
+        "recommendations": ["Recover final Oregon medical-examiner findings and any later Washington County investigative release.", "Recover Enumclaw/King County medical-examiner confirmation of Parker's final cause and manner of death if publicly released.", "Maintain the active-investigation privacy boundary and do not infer motive or victim sequence without official evidence."],
+        "counterarguments": ["A scene containing multiple deceased people does not itself prove bodies were transported there; investigators had not established that in the recovered primary releases.", "A law-enforcement statement that Parker was believed to have died by suicide is not a substitute for final medical-examiner findings."],
+        "limitations": ["This record verifies the public claim cluster from official releases and does not reproduce unreleased crime-scene details.", "The supplied YouTube bulletin is treated as discovery evidence rather than authority."],
+        "unresolved": ["Final cause and manner for each victim", "Motive", "Exact sequence and timing of deaths", "Whether any remains were transported to the property", "Final medical-examiner determination for Parker"],
+        "confidence": 0.98
+      }
+    },
+    {
+      "dtype": "research-pass",
+      "id": "starintel:research-pass:request-2286-wire-oregon-2026-08-25",
+      "title": "Auto-Dig request #2286 Oregon claim-cluster harvest",
+      "summary": "Harvests the first mature The Wire claim cluster into the existing violent-offenders family, with the bulletin treated as a lead and Washington County Sheriff's Office releases as the authority.",
+      "metadata": {
+        "date_added": "2026-08-25T03:15:00Z",
+        "date_updated": "2026-08-25T03:15:00Z",
+        "status": "completed",
+        "language": "en",
+        "tags": ["research-pass", "request-2286", "the-wire", "violent-offenders", "oregon", "high-priority"],
+        "sources": [
+          {"kind": "primary_law_enforcement_release", "title": "Detectives Investigating Homicide After Five Found Dead", "publisher": "Washington County Sheriff's Office", "url": "https://www.washingtoncountyor.gov/sheriff/news/2026/08/23/detectives-investigating-homicide-after-five-found-dead", "retrieved_at": "2026-08-25T03:15:00Z", "credibility": 0.99},
+          {"kind": "primary_law_enforcement_release", "title": "Update: Suspect in Quintuple Homicide Located Deceased", "publisher": "Washington County Sheriff's Office", "url": "https://www.washingtoncountyor.gov/sheriff/news/2026/08/23/update-suspect-quintuple-homicide-located-deceased", "retrieved_at": "2026-08-25T03:15:00Z", "credibility": 0.99}
+        ],
+        "assessment": {"confidence": 0.98},
+        "verification": {"status": "source-backed", "verified": true, "verified_at": "2026-08-25T03:15:00Z", "last_reviewed_at": "2026-08-25T03:15:00Z", "methods": ["primary-source claim verification", "canonical dataset routing review"]},
+        "handling": {"visibility": "public", "pii": false, "sensitive": false},
+        "provenance": {"collector": "OpenAI GPT-5.6 Sol", "collector_type": "research-agent", "method": "queue-first harvest review and verification", "pipeline": "starintel-auto-dig", "run_id": "request-2286-wire-oregon-harvest-2026-08-25", "metadata": {"request_issue": 2286, "request_identity": "the-wire-2026-08-24-2300z-imsi7smz70o", "packet_path": "digs/violent-offenders/2026-08-25-request-2286-wire-oregon/"}},
+        "related_ids": ["starintel:analysis:wire-2026-08-24-oregon-quintuple-homicide-verification"]
+      },
+      "data": {
+        "research_question": "Which portion of request #2286 is mature enough to publish immediately without waiting for the remaining multi-domain Wire clusters?",
+        "method": "Verified the Oregon/Enumclaw cluster against Washington County Sheriff's Office releases, routed it to the existing violent-offenders family, and kept other Wire clusters out of this packet.",
+        "classification_rules": ["The Wire transcript is discovery evidence, not authority.", "Official released identities may be recorded only after public next-of-kin release.", "Active investigation uncertainty is preserved.", "Body-dump terminology is not promoted without investigative evidence."],
+        "finding_ids": ["starintel:analysis:wire-2026-08-24-oregon-quintuple-homicide-verification"],
+        "findings": [{"finding": "The Oregon/Enumclaw cluster is substantially verified and can be published independently of the remaining six Wire clusters."}],
+        "supporting_record_ids": ["starintel:analysis:wire-2026-08-24-oregon-quintuple-homicide-verification"],
+        "counterevidence_ids": [],
+        "unresolved_target_ids": [],
+        "source_ids": ["https://www.washingtoncountyor.gov/sheriff/news/2026/08/23/detectives-investigating-homicide-after-five-found-dead", "https://www.washingtoncountyor.gov/sheriff/news/2026/08/23/update-suspect-quintuple-homicide-located-deceased"],
+        "agent_identity": "OpenAI GPT-5.6 Sol",
+        "narrative_role": "The Wire claim-by-claim verification harvest",
+        "started_at": "2026-08-25T03:12:00Z",
+        "completed_at": "2026-08-25T03:15:00Z",
+        "iteration": 1
+      }
+    }
+  ]
+}
