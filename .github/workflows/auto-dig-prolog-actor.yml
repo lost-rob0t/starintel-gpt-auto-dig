@@ -1,0 +1,371 @@
+name: Auto-Dig Prolog actor
+
+on:
+  workflow_dispatch:
+    inputs:
+      force_issue:
+        description: Optional investigation-target issue number to force for this run
+        required: false
+        type: string
+  schedule:
+    - cron: '17 * * * *'
+
+permissions:
+  contents: write
+  issues: write
+
+concurrency:
+  group: auto-dig-prolog-actor
+  cancel-in-progress: false
+
+env:
+  PROLOG_RLM_REF: 982bad23c59dba0dd9157c1904e7723950889717
+
+jobs:
+  actor:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - name: Check out Auto-Dig
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Check out pinned Prolog-RLM
+        uses: actions/checkout@v4
+        with:
+          repository: lost-rob0t/prolog-rlm
+          ref: ${{ env.PROLOG_RLM_REF }}
+          path: .prolog-rlm
+
+      - name: Install SWI-Prolog
+        shell: bash
+        run: |
+          set -euo pipefail
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends swi-prolog-nox
+          swipl --version
+
+      - name: Smoke pinned Prolog-RLM runtime
+        shell: bash
+        run: |
+          set -euo pipefail
+          (
+            cd .prolog-rlm
+            swipl -q -s test/check_runtime.pl
+            swipl -q -s test/load_all.pl
+          ) 2>&1 | tee "$RUNNER_TEMP/prolog-rlm-smoke.log"
+
+      - name: Test Auto-Dig actor policy on real runtime
+        shell: bash
+        run: |
+          set -euo pipefail
+          swipl \
+            -q \
+            -p "library=$GITHUB_WORKSPACE/.prolog-rlm/prolog" \
+            -s agents/test_auto_dig_prolog_actor.pl \
+            -g 'run_tests,halt' \
+            2>&1 | tee "$RUNNER_TEMP/auto-dig-actor-tests.log"
+
+      - name: Snapshot investigation queue
+        env:
+          GH_TOKEN: ${{ github.token }}
+          FORCE_ISSUE: ${{ inputs.force_issue }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [[ -n "${FORCE_ISSUE:-}" ]]; then
+            gh issue view "$FORCE_ISSUE" \
+              --repo "$GITHUB_REPOSITORY" \
+              --json number,title,body,url,createdAt,updatedAt,labels \
+              | jq '[.]' > "$RUNNER_TEMP/queue.json"
+          else
+            gh issue list \
+              --repo "$GITHUB_REPOSITORY" \
+              --state open \
+              --label investigation-target \
+              --limit 1000 \
+              --json number,title,body,url,createdAt,updatedAt,labels \
+              > "$RUNNER_TEMP/queue.json"
+          fi
+          jq 'length' "$RUNNER_TEMP/queue.json"
+
+      - name: Load durable actor state
+        id: state
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          state_json="$(gh issue list \
+            --repo "$GITHUB_REPOSITORY" \
+            --state open \
+            --search '"[actor-state] auto-dig-prolog" in:title' \
+            --limit 1 \
+            --json number,body)"
+
+          state_issue="$(jq -r '.[0].number // empty' <<<"$state_json")"
+
+          if [[ -z "$state_issue" ]]; then
+            cat > "$RUNNER_TEMP/state.json" <<'JSON'
+          {
+            "schema": "auto-dig-prolog-state.v1",
+            "last_issue": null,
+            "last_priority": null,
+            "last_branch": null,
+            "last_run_id": null,
+            "last_success_at": null
+          }
+          JSON
+            state_url="$(gh issue create \
+              --repo "$GITHUB_REPOSITORY" \
+              --title '[actor-state] auto-dig-prolog' \
+              --body-file "$RUNNER_TEMP/state.json")"
+            state_issue="${state_url##*/}"
+          else
+            jq -r '.[0].body' <<<"$state_json" > "$RUNNER_TEMP/state.json"
+            jq -e '.schema == "auto-dig-prolog-state.v1"' "$RUNNER_TEMP/state.json" >/dev/null
+          fi
+
+          echo "issue=$state_issue" >> "$GITHUB_OUTPUT"
+
+      - name: Let the supervised Prolog actor select work
+        id: target
+        shell: bash
+        run: |
+          set -euo pipefail
+          swipl \
+            -q \
+            -p "library=$GITHUB_WORKSPACE/.prolog-rlm/prolog" \
+            -s agents/auto_dig_prolog_actor.pl \
+            -- \
+            --queue "$RUNNER_TEMP/queue.json" \
+            --state "$RUNNER_TEMP/state.json" \
+            --output "$RUNNER_TEMP/decision.json" \
+            --trace "$RUNNER_TEMP/actor.trace"
+
+          jq . "$RUNNER_TEMP/decision.json"
+          action="$(jq -r '.action' "$RUNNER_TEMP/decision.json")"
+          echo "action=$action" >> "$GITHUB_OUTPUT"
+
+          if [[ "$action" == run ]]; then
+            echo "issue=$(jq -r '.issue_number' "$RUNNER_TEMP/decision.json")" >> "$GITHUB_OUTPUT"
+            echo "url=$(jq -r '.issue_url' "$RUNNER_TEMP/decision.json")" >> "$GITHUB_OUTPUT"
+            echo "priority=$(jq -r '.priority' "$RUNNER_TEMP/decision.json")" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Report idle actor
+        if: steps.target.outputs.action == 'idle'
+        shell: bash
+        run: |
+          {
+            echo '## Auto-Dig Prolog actor'
+            echo
+            echo 'No eligible target was selected.'
+            echo
+            echo 'The actor did not advance durable state.'
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Prepare isolated run branch and context
+        if: steps.target.outputs.action == 'run'
+        id: run
+        shell: bash
+        run: |
+          set -euo pipefail
+          date_utc="$(date -u +%F)"
+          run_id="${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
+          branch="auto-dig-prolog/${date_utc}-${run_id}"
+          run_dir="agent-runs/auto-dig-prolog/${date_utc}-${run_id}"
+          mkdir -p "$run_dir"
+
+          cp "$RUNNER_TEMP/decision.json" "$run_dir/decision.json"
+          cp "$RUNNER_TEMP/actor.trace" "$run_dir/actor.trace"
+          jq '.selected_issue' "$RUNNER_TEMP/decision.json" > "$run_dir/issue.json"
+          jq -r '
+            "# Auto-Dig request\n\n" +
+            "Title: " + .selected_issue.title + "\n" +
+            "URL: " + .selected_issue.url + "\n\n" +
+            .selected_issue.body
+          ' "$RUNNER_TEMP/decision.json" > "$run_dir/request.md"
+
+          jq -n \
+            --arg schema 'auto-dig-prolog-run.v1' \
+            --arg agent 'auto-dig-prolog' \
+            --arg run_id "$run_id" \
+            --arg branch "$branch" \
+            --arg prolog_rlm_ref "$PROLOG_RLM_REF" \
+            --arg issue "${{ steps.target.outputs.issue }}" \
+            '{
+              schema:$schema,
+              agent:$agent,
+              run_id:$run_id,
+              branch:$branch,
+              prolog_rlm_ref:$prolog_rlm_ref,
+              issue_number:($issue|tonumber),
+              status:"selected"
+            }' > "$run_dir/run.json"
+
+          echo "branch=$branch" >> "$GITHUB_OUTPUT"
+          echo "run_id=$run_id" >> "$GITHUB_OUTPUT"
+          echo "run_dir=$run_dir" >> "$GITHUB_OUTPUT"
+          echo "request=$run_dir/request.md" >> "$GITHUB_OUTPUT"
+
+      - name: Run a bounded live Prolog-RLM reasoning pass
+        if: steps.target.outputs.action == 'run'
+        env:
+          OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+          AUTO_DIG_RLM_MODEL: ${{ vars.AUTO_DIG_RLM_MODEL }}
+          RUN_DIR: ${{ steps.run.outputs.run_dir }}
+          REQUEST_FILE: ${{ steps.run.outputs.request }}
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          if [[ -z "${OPENROUTER_API_KEY:-}" ]]; then
+            echo 'OPENROUTER_API_KEY repository secret is required for the live Prolog-RLM lane.' >&2
+            exit 1
+          fi
+
+          model="${AUTO_DIG_RLM_MODEL:-openrouter/free}"
+          query="$(cat <<'EOF'
+          You are the Auto-Dig Prolog actor. Read the selected investigation request as opaque external context.
+          Produce the next bounded research slice that moves the request toward completion.
+          Use the facts in the request rather than inventing facts. When the context is too large or uncertain,
+          use RLM recursion to inspect the relevant subcontext. Explicitly identify unresolved facts, primary-source
+          targets, and what evidence would falsify the current hypothesis. Do not claim research was performed when
+          it was not. Return a concrete execution plan suitable for the next tool-enabled actor stage.
+          EOF
+          )"
+
+          set +e
+          swipl -q -s .prolog-rlm/bin/prolog-rlm.pl -- rlm \
+            "$query" \
+            --context-file "$REQUEST_FILE" \
+            --model "$model" \
+            --max-tokens 2048 \
+            --max-cost 0.10 \
+            --time-limit 90 \
+            --json \
+            --trace "$RUN_DIR/rlm-trace.json" \
+            > "$RUN_DIR/rlm-result.json" \
+            2> "$RUN_DIR/rlm-stderr.log"
+          status=$?
+          set -e
+
+          jq --argjson status "$status" '.status = (if $status == 0 then "reasoned" else "rlm_failed" end)' \
+            "$RUN_DIR/run.json" > "$RUN_DIR/run.next.json"
+          mv "$RUN_DIR/run.next.json" "$RUN_DIR/run.json"
+
+          if [[ "$status" -ne 0 ]]; then
+            cat "$RUN_DIR/rlm-stderr.log" >&2
+            exit "$status"
+          fi
+
+      - name: Push successful actor run branch
+        if: steps.target.outputs.action == 'run'
+        env:
+          BRANCH: ${{ steps.run.outputs.branch }}
+          RUN_DIR: ${{ steps.run.outputs.run_dir }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'auto-dig-prolog[bot]'
+          git config user.email 'auto-dig-prolog@users.noreply.github.com'
+          git switch -c "$BRANCH"
+          git add "$RUN_DIR"
+          git commit -m "agent(auto-dig-prolog): run ${{ steps.run.outputs.run_id }}"
+          git push origin "$BRANCH"
+
+      - name: Advance durable state only after push
+        if: steps.target.outputs.action == 'run'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          STATE_ISSUE: ${{ steps.state.outputs.issue }}
+          BRANCH: ${{ steps.run.outputs.branch }}
+          RUN_ID: ${{ steps.run.outputs.run_id }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          jq \
+            --arg branch "$BRANCH" \
+            --arg run_id "$RUN_ID" \
+            --arg now "$(date -u +%FT%TZ)" \
+            '.next_state + {
+              schema:"auto-dig-prolog-state.v1",
+              last_branch:$branch,
+              last_run_id:$run_id,
+              last_success_at:$now
+            }' \
+            "$RUNNER_TEMP/decision.json" > "$RUNNER_TEMP/state.next.json"
+
+          jq -e . "$RUNNER_TEMP/state.next.json" >/dev/null
+          gh issue edit "$STATE_ISSUE" \
+            --repo "$GITHUB_REPOSITORY" \
+            --body-file "$RUNNER_TEMP/state.next.json"
+
+      - name: Post run receipt on investigation target
+        if: steps.target.outputs.action == 'run'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          ISSUE: ${{ steps.target.outputs.issue }}
+          BRANCH: ${{ steps.run.outputs.branch }}
+          RUN_ID: ${{ steps.run.outputs.run_id }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          run_url="${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}"
+          branch_url="${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/tree/${BRANCH}"
+          gh issue comment "$ISSUE" \
+            --repo "$GITHUB_REPOSITORY" \
+            --body "Auto-Dig Prolog actor completed bounded run \`${RUN_ID}\`.\n\n- Branch: ${branch_url}\n- Prolog-RLM: \`${PROLOG_RLM_REF}\`\n- Action log: ${run_url}\n- Stage: queue selection + supervised actor runtime + depth-1 RLM reasoning.\n\nThis receipt does **not** mark the investigation complete; tool-enabled research and canonical StarIntel writes remain separate gates."
+
+      - name: Upload actor diagnostics
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: auto-dig-prolog-${{ github.run_id }}-${{ github.run_attempt }}
+          if-no-files-found: ignore
+          path: |
+            ${{ runner.temp }}/prolog-rlm-smoke.log
+            ${{ runner.temp }}/auto-dig-actor-tests.log
+            ${{ runner.temp }}/queue.json
+            ${{ runner.temp }}/decision.json
+            ${{ runner.temp }}/actor.trace
+            agent-runs/auto-dig-prolog/**
+
+      - name: File reproducible Prolog-RLM integration failure
+        if: failure()
+        env:
+          BUG_TOKEN: ${{ secrets.PROLOG_RLM_BUG_TOKEN }}
+          ISSUE: ${{ steps.target.outputs.issue }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [[ -z "${BUG_TOKEN:-}" ]]; then
+            echo 'PROLOG_RLM_BUG_TOKEN is not configured; preserving failure in Action artifacts only.'
+            exit 0
+          fi
+
+          run_url="${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}"
+          body="$RUNNER_TEMP/prolog-rlm-bug.md"
+          {
+            echo '## Auto-Dig integration failure'
+            echo
+            echo "- Consumer: \`${GITHUB_REPOSITORY}\`"
+            echo "- Workflow run: ${run_url}"
+            echo "- Prolog-RLM ref: \`${PROLOG_RLM_REF}\`"
+            if [[ -n "${ISSUE:-}" ]]; then
+              echo "- Auto-Dig target: #${ISSUE}"
+            fi
+            echo
+            echo 'The Auto-Dig GitHub Actions actor failed while exercising the pinned production runtime.'
+            echo 'The Action artifacts contain the actor/runtime logs and, when reached, the portable RLM trace.'
+            echo
+            echo 'Reproduce against the pinned ref before triage; do not infer a core runtime bug if the failure is an Auto-Dig integration/configuration error.'
+          } > "$body"
+
+          GH_TOKEN="$BUG_TOKEN" gh issue create \
+            --repo lost-rob0t/prolog-rlm \
+            --title "[integration][auto-dig] actor failure in run ${GITHUB_RUN_ID}" \
+            --body-file "$body"
