@@ -18,7 +18,7 @@ state(Last, State) :-
         last_success_at:null
     }.
 
-test(high_priority_may_repeat) :-
+test(high_priority_may_repeat_when_uniquely_highest) :-
     issue(10, high, High),
     issue(11, normal, Normal),
     state(10, State),
@@ -27,6 +27,16 @@ test(high_priority_may_repeat) :-
     assertion(Decision.issue_number =:= 10),
     assertion(Decision.priority == high),
     assertion(Decision.repeat_allowed == true).
+
+test(high_priority_prefers_same_rank_alternative_before_repeat) :-
+    issue(10, high, First),
+    issue(11, high, Second),
+    issue(12, normal, Normal),
+    state(10, State),
+    select_queue([Normal, First, Second], State, Decision),
+    assertion(Decision.action == "run"),
+    assertion(Decision.issue_number =:= 11),
+    assertion(Decision.priority == high).
 
 test(normal_priority_does_not_repeat_when_alternative_exists) :-
     issue(10, normal, First),
