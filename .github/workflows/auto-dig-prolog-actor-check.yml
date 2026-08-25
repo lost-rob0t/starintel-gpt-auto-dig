@@ -1,0 +1,110 @@
+name: Auto-Dig Prolog actor check
+
+on:
+  pull_request:
+    paths:
+      - 'agents/**'
+      - '.github/workflows/auto-dig-prolog-actor*.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  PROLOG_RLM_REF: 982bad23c59dba0dd9157c1904e7723950889717
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check out pinned Prolog-RLM
+        uses: actions/checkout@v4
+        with:
+          repository: lost-rob0t/prolog-rlm
+          ref: ${{ env.PROLOG_RLM_REF }}
+          path: .prolog-rlm
+
+      - name: Install SWI-Prolog
+        shell: bash
+        run: |
+          set -euo pipefail
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends swi-prolog-nox
+          swipl --version
+
+      - name: Check pinned runtime loads
+        shell: bash
+        run: |
+          set -euo pipefail
+          (
+            cd .prolog-rlm
+            swipl -q -s test/check_runtime.pl
+            swipl -q -s test/load_all.pl
+            swipl -q -s bin/prolog-rlm.pl -- agent --json >/dev/null
+          )
+
+      - name: Run actor policy tests
+        shell: bash
+        run: |
+          set -euo pipefail
+          swipl \
+            -q \
+            -p "library=$GITHUB_WORKSPACE/.prolog-rlm/prolog" \
+            -s agents/test_auto_dig_prolog_actor.pl \
+            -g 'run_tests,halt'
+
+      - name: Exercise actor CLI end to end
+        shell: bash
+        run: |
+          set -euo pipefail
+          cat > "$RUNNER_TEMP/queue.json" <<'JSON'
+          [
+            {
+              "number": 41,
+              "title": "normal target",
+              "url": "https://example.invalid/issues/41",
+              "body": "## Priority\n\nnormal\n"
+            },
+            {
+              "number": 42,
+              "title": "high target",
+              "url": "https://example.invalid/issues/42",
+              "body": "## Priority\n\n**high**\n"
+            }
+          ]
+          JSON
+
+          cat > "$RUNNER_TEMP/state.json" <<'JSON'
+          {
+            "schema": "auto-dig-prolog-state.v1",
+            "last_issue": 41,
+            "last_priority": "normal",
+            "last_branch": null,
+            "last_run_id": null,
+            "last_success_at": null
+          }
+          JSON
+
+          swipl \
+            -q \
+            -p "library=$GITHUB_WORKSPACE/.prolog-rlm/prolog" \
+            -s agents/auto_dig_prolog_actor.pl \
+            -- \
+            --queue "$RUNNER_TEMP/queue.json" \
+            --state "$RUNNER_TEMP/state.json" \
+            --output "$RUNNER_TEMP/decision.json" \
+            --trace "$RUNNER_TEMP/actor.trace"
+
+          jq -e '
+            .action == "run" and
+            .issue_number == 42 and
+            .priority == "high" and
+            .repeat_allowed == true and
+            .next_state.last_issue == 42
+          ' "$RUNNER_TEMP/decision.json" >/dev/null
+
+          test -s "$RUNNER_TEMP/actor.trace"
