@@ -1,0 +1,43 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "mcp": {
+    "servers": {
+      "brave": {
+        "type": "local",
+        "command": [
+          "npx",
+          "-y",
+          "@brave/brave-search-mcp-server",
+          "--transport",
+          "stdio"
+        ],
+        "environment": {
+          "BRAVE_API_KEY": "{env:BRAVE_API_KEY}"
+        },
+        "codemode": false,
+        "timeout": {
+          "startup": 60000,
+          "catalog": 60000,
+          "execution": 600000
+        }
+      },
+      "fetch": {
+        "type": "local",
+        "command": [
+          "npx",
+          "-y",
+          "mcp-fetch-server"
+        ],
+        "environment": {
+          "DEFAULT_LIMIT": "50000"
+        },
+        "codemode": false,
+        "timeout": {
+          "startup": 60000,
+          "catalog": 60000,
+          "execution": 600000
+        }
+      }
+    }
+  }
+}
