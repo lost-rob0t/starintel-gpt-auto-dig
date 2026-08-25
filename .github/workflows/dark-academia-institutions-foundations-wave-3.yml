@@ -107,6 +107,76 @@ jobs:
             --glob 'reports/dark-academia-membership-recursion*.json' \
             --report reports/membership-list-candidates-wave-3.json
 
+      - name: Reject query-addressed profile details
+        if: always()
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          from urllib.parse import parse_qsl, urlsplit
+
+          path = Path("reports/membership-list-candidates-wave-3.json")
+          value = json.loads(path.read_text(encoding="utf-8"))
+          candidates = value.get("candidates", [])
+          if not isinstance(candidates, list):
+              raise SystemExit("candidate report has no candidates list")
+
+          profile_query_roots = {
+              "people", "experts", "members", "fellows", "staff", "team",
+              "advisers", "advisors", "trustees", "participants", "profiles",
+              "profile", "bios", "bio", "biographies", "biography",
+          }
+          kept = []
+          rejected = []
+          for item in candidates:
+              if not isinstance(item, dict):
+                  kept.append(item)
+                  continue
+              url = str(item.get("url") or "")
+              parts = urlsplit(url)
+              segments = [segment.lower() for segment in parts.path.split("/") if segment]
+              query_keys = {key.lower() for key, _ in parse_qsl(parts.query, keep_blank_values=True)}
+              if segments and segments[-1] in profile_query_roots and "id" in query_keys:
+                  rejected.append(url)
+                  continue
+              kept.append(item)
+
+          value["candidates"] = kept
+          value["candidate_count"] = len(kept)
+          value["rejected_profile_query_count"] = len(rejected)
+          value["rejected_profile_query_examples"] = rejected[:20]
+          path.write_text(json.dumps(value, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+          print(json.dumps({
+              "before": len(candidates),
+              "rejected_profile_query_count": len(rejected),
+              "after": len(kept),
+              "examples": rejected[:10],
+          }, indent=2))
+          if len(kept) > 500:
+              raise SystemExit(f"candidate fan-out still exceeds safety ceiling after profile filtering: {len(kept)}")
+          PY
+
+      - name: Diagnose roster-list candidate fan-out
+        if: always()
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+
+          path = Path("reports/membership-list-candidates-wave-3.json")
+          if not path.is_file():
+              raise SystemExit("candidate report missing")
+          value = json.loads(path.read_text(encoding="utf-8"))
+          candidates = value.get("candidates", [])
+          if not isinstance(candidates, list):
+              raise SystemExit("candidate report has no candidates list")
+          print(json.dumps({
+              "candidate_count": len(candidates),
+              "rejected_profile_query_count": value.get("rejected_profile_query_count", 0),
+              "first_urls": [item.get("url") for item in candidates[:10] if isinstance(item, dict)],
+          }, indent=2))
+          PY
+
       - name: Synchronize roster-list issues
         if: always()
         env:
@@ -117,6 +187,19 @@ jobs:
             --cleanup \
             --candidates reports/membership-list-candidates-wave-3.json \
             --report reports/membership-list-issues-wave-3.json
+
+      - name: Preserve issue-sync diagnostics
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: dark-academia-wave3-issue-sync-diagnostics
+          path: |
+            reports/membership-list-candidates-wave-3.json
+            reports/membership-list-issues-wave-3.json
+            reports/membership-list-cleanup-wave-3.json
+            reports/membership-url-observations-wave-3.jsonl
+          if-no-files-found: warn
+          retention-days: 7
 
       - name: Remove bootstrap before corpus validation
         run: |
