@@ -106,12 +106,30 @@ compare_candidates(Order, A, B) :-
 choose_candidate([], _, _) :-
     fail.
 choose_candidate([Candidate|Rest], LastIssue, Selected) :-
-    (   same_issue(Candidate.number, LastIssue),
-        Candidate.rank < 3
-    ->  choose_candidate(Rest, LastIssue, Selected)
+    (   same_issue(Candidate.number, LastIssue)
+    ->  choose_after_repeat(Candidate, Rest, LastIssue, Selected)
     ;   Selected = Candidate
     ),
     !.
+
+choose_after_repeat(Candidate, Rest, LastIssue, Selected) :-
+    (   Candidate.rank < 3
+    ->  choose_candidate(Rest, LastIssue, Selected)
+    ;   same_rank_alternative(Rest, Candidate.rank, LastIssue, Alternative)
+    ->  Selected = Alternative
+    ;   Selected = Candidate
+    ).
+
+same_rank_alternative([Candidate|_], Rank, LastIssue, Candidate) :-
+    Candidate.rank =:= Rank,
+    \+ same_issue(Candidate.number, LastIssue),
+    !.
+same_rank_alternative([Candidate|Rest], Rank, LastIssue, Alternative) :-
+    Candidate.rank =:= Rank,
+    !,
+    same_rank_alternative(Rest, Rank, LastIssue, Alternative).
+same_rank_alternative(_, _, _, _) :-
+    fail.
 
 selected_decision(Candidate, State, QueueSize, Decision) :-
     put_dict(last_issue, State, Candidate.number, NextState0),
