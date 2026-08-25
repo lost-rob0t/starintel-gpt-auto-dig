@@ -13,12 +13,35 @@ GitHub Actions
   -> snapshots queue + durable state
   -> starts pinned prolog-rlm runtime
   -> Prolog actor selects one eligible request
-  -> depth-1 RLM reasons over the selected request
+  -> Prolog expert KB selects model + reasoning effort
+  -> depth-1 RLM reasons over the selected request using that enforced route
   -> successful run is pushed to its own branch
   -> durable state advances only after push
 ```
 
-GitHub Actions owns credentials, checkout, repository mutation, logs, scheduling, and branch push. Prolog owns queue-selection semantics and actor execution. Prolog-RLM owns bounded recursive reasoning and traces.
+GitHub Actions owns credentials, checkout, repository mutation, logs, scheduling, and branch push. Prolog owns queue-selection semantics, actor execution, and model-routing policy. Prolog-RLM owns bounded recursive reasoning, provider requests, reasoning-effort enforcement, and traces.
+
+### Expert model routing
+
+`auto_dig_model_router.pl` is the routing knowledge base. Workflow configuration does not choose the normal research model.
+
+The current policy is deliberately cost-aware:
+
+- bulk classification/extraction/normalization work starts on Luna at `high`;
+- ordinary research, verification, coding, and recursive worker tasks default to Luna at `max`;
+- one failed verification escalates to Terra at `max`;
+- two failed verifications, critical/irreversible work, threat models, security adjudication, publication gates, and final adjudication route to Sol at `max`.
+
+A route contains both the provider model identifier and `reasoning.effort`. The workflow passes both to Prolog-RLM. An explicit host-selected reasoning effort therefore applies to direct requests and nested model steps; model-generated plan options cannot silently downgrade it. A separate trusted planner override remains available in Prolog-RLM when a caller intentionally needs one.
+
+Every live run persists both:
+
+```text
+model-profile.json
+model-route.json
+```
+
+alongside the runtime trace so a routing decision is inspectable after the fact.
 
 ### Branch convention
 
@@ -54,7 +77,7 @@ State is stored in the body of the repository issue titled:
 
 The body is raw JSON following `auto_dig_prolog_state.schema.json`.
 
-State is not advanced when selection, Prolog-RLM execution, commit, or branch push fails. A failed run therefore remains recoverable/retryable instead of being recorded as consumed work.
+State is not advanced when selection, model routing, Prolog-RLM execution, commit, or branch push fails. A failed run therefore remains recoverable/retryable instead of being recorded as consumed work.
 
 ### Current execution stage
 
@@ -63,6 +86,7 @@ The initial workflow intentionally stops after a bounded live RLM reasoning pass
 - selected request snapshot;
 - actor decision;
 - supervised actor trace;
+- model-routing profile and decision;
 - portable Prolog-RLM trace;
 - RLM result;
 - run manifest.
