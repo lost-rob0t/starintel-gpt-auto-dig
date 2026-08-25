@@ -2,6 +2,7 @@
           [ auto_dig_mcp_servers/1,
             auto_dig_mcp_import_options/2,
             auto_dig_mcp_read_capabilities/1,
+            auto_dig_mcp_read_capabilities/2,
             auto_dig_mcp_read_tool/2
           ]).
 
@@ -26,6 +27,12 @@ value.
 :- multifile rlm_mcp_policy:mcp_stdio_profile/2.
 :- multifile rlm_mcp_policy:mcp_config_value/2.
 :- multifile rlm_mcp_server:mcp_server/2.
+
+% These two policy predicates are multifile so trusted host/test modules can
+% contribute additional declared MCP servers without weakening the fixed
+% production server set returned by auto_dig_mcp_servers/1.
+:- multifile auto_dig_mcp_import_options/2.
+:- multifile auto_dig_mcp_read_tool/2.
 
 /* Fixed host execution profiles. Versions intentionally match opencode.jsonc
  * so both research surfaces exercise the same external server builds. */
@@ -112,8 +119,13 @@ auto_dig_mcp_read_tool(fetch, fetch_json).
 auto_dig_mcp_read_tool(fetch, fetch_youtube_transcript).
 
 auto_dig_mcp_read_capabilities(Capabilities) :-
+    auto_dig_mcp_servers(Servers),
+    auto_dig_mcp_read_capabilities(Servers, Capabilities).
+
+auto_dig_mcp_read_capabilities(Servers, Capabilities) :-
     findall(tool(LocalName),
-            ( auto_dig_mcp_read_tool(Server, RemoteName),
+            ( member(Server, Servers),
+              auto_dig_mcp_read_tool(Server, RemoteName),
               format(atom(LocalName), 'mcp.~w.~w', [Server, RemoteName])
             ),
             Capabilities0),
