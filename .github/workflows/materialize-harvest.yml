@@ -37,18 +37,18 @@ jobs:
           for manifest in "${manifests[@]}"; do
             python3 scripts/materialize_harvest.py "$manifest"
           done
-          git diff --check
+          git diff --check -- digs/
 
       - name: Commit generated packet when changed
         shell: bash
         run: |
           set -euo pipefail
-          if git diff --quiet -- digs/; then
+          git add digs/
+          if git diff --cached --quiet -- digs/; then
             echo 'Harvest packets already materialized.'
             exit 0
           fi
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add digs/
           git commit -m 'data: materialize Auto-Dig harvest packets'
           git push
