@@ -30,8 +30,8 @@ auto_dig_mcp_tools:auto_dig_mcp_import_options(
 auto_dig_mcp_tools:auto_dig_mcp_read_tool(auto_dig_fixture,
                                            fixture_search).
 
-server_info(_{name:"auto-dig-fixture", version:"1.0"}).
-server_caps(_{tools:_{listChanged:false}}).
+server_info(mcp_server_info{name:"auto-dig-fixture", version:"1.0"}).
+server_caps(mcp_server_capabilities{tools:_{listChanged:false}}).
 
 fixture_exchange(Wire, Meta, Response) :-
     get_dict(method, Wire, Method),
@@ -94,51 +94,83 @@ fixture_method("tools/call", Wire, _, Response) :-
                    headers:transport_headers{},
                    content_type:'application/json'}.
 
-test(session_imports_remote_catalog_but_grants_only_trusted_read_tool) :-
-    Context = auto_dig_mcp_fixture_session,
+with_fixture_session(Context, Goal) :-
     setup_call_cleanup(
         auto_dig_mcp_session_open([auto_dig_fixture], Context, Session),
-        ( auto_dig_mcp_session_registry(Session, Registry),
-          auto_dig_mcp_session_capabilities(Session, Capabilities),
-          assertion(Capabilities ==
-                    [tool('mcp.auto_dig_fixture.fixture_search')]),
+        call(Goal, Session),
+        auto_dig_mcp_session_close(Session)).
 
-          tool_discover(Registry, Schemas),
-          length(Schemas, 2),
-          assertion((member(AllowedSchema, Schemas),
-                     AllowedSchema.name ==
-                         'mcp.auto_dig_fixture.fixture_search')),
-          assertion((member(DeniedSchema, Schemas),
-                     DeniedSchema.name ==
-                         'mcp.auto_dig_fixture.fixture_admin')),
+check_import_projection(Session) :-
+    auto_dig_mcp_session_registry(Session, Registry),
+    auto_dig_mcp_session_capabilities(Session, Capabilities),
+    assertion(Capabilities ==
+              [tool('mcp.auto_dig_fixture.fixture_search')]),
+    tool_discover(Registry, Schemas),
+    length(Schemas, 2),
+    assertion((member(AllowedSchema, Schemas),
+               AllowedSchema.name ==
+                   'mcp.auto_dig_fixture.fixture_search')),
+    assertion((member(DeniedSchema, Schemas),
+               DeniedSchema.name ==
+                   'mcp.auto_dig_fixture.fixture_admin')),
+    tool_registry_runtime_tools(Registry,
+                                Capabilities,
+                                RuntimeTools),
+    % Runtime adapters retain the captured capability set and enforce it at
+    % invocation. Planner visibility is what Prolog-RLM #191 filters.
+    length(RuntimeTools, 2).
 
-          tool_registry_runtime_tools(Registry,
-                                      Capabilities,
-                                      RuntimeTools),
-          length(RuntimeTools, 1),
+invoke_allowed(Session) :-
+    auto_dig_mcp_session_registry(Session, Registry),
+    auto_dig_mcp_session_capabilities(Session, Capabilities),
+    tool_invoke(Registry,
+                Capabilities,
+                'mcp.auto_dig_fixture.fixture_search',
+                _{query:"needle"},
+                [authority_context(auto_dig_mcp_fixture_allowed)],
+                ok(Execution),
+                Trace),
+    assertion(Trace.authorization == allowed),
+    assertion(nonvar(Execution.value)).
 
-          tool_invoke(Registry,
-                      Capabilities,
-                      'mcp.auto_dig_fixture.fixture_search',
-                      _{query:"needle"},
-                      [authority_context(Context)],
-                      ok(Execution),
-                      AllowedTrace),
-          assertion(Execution.value.structured.answer == "needle"),
-          assertion(AllowedTrace.authorization == allowed),
+invoke_denied(Session) :-
+    auto_dig_mcp_session_registry(Session, Registry),
+    auto_dig_mcp_session_capabilities(Session, Capabilities),
+    tool_invoke(Registry,
+                Capabilities,
+                'mcp.auto_dig_fixture.fixture_admin',
+                _{},
+                [authority_context(auto_dig_mcp_fixture_denied)],
+                error(Denied),
+                Trace),
+    assertion(Denied.kind == capability_denied),
+    assertion(Trace.authorization == denied).
 
-          tool_invoke(Registry,
-                      Capabilities,
-                      'mcp.auto_dig_fixture.fixture_admin',
-                      _{},
-                      [authority_context(Context)],
-                      error(Denied),
-                      DeniedTrace),
-          assertion(Denied.kind == capability_denied),
-          assertion(DeniedTrace.authorization == denied)
-        ),
-        auto_dig_mcp_session_close(Session)),
+test(session_opens_closes_and_clears_authority) :-
+    Context = auto_dig_mcp_fixture_lifecycle,
+    with_fixture_session(Context,
+                         plunit_auto_dig_mcp_runner:check_session_shape),
     rlm_authority(Context, Mode),
     assertion(Mode == approve_diff).
+
+check_session_shape(Session) :-
+    assertion(is_dict(Session, auto_dig_mcp_session)),
+    auto_dig_mcp_session_registry(Session, Registry),
+    assertion(nonvar(Registry)),
+    auto_dig_mcp_session_capabilities(Session, Capabilities),
+    assertion(Capabilities ==
+              [tool('mcp.auto_dig_fixture.fixture_search')]).
+
+test(session_imports_full_catalog_but_projects_only_trusted_capability) :-
+    with_fixture_session(auto_dig_mcp_fixture_projection,
+                         plunit_auto_dig_mcp_runner:check_import_projection).
+
+test(allowed_imported_read_tool_invokes) :-
+    with_fixture_session(auto_dig_mcp_fixture_allowed,
+                         plunit_auto_dig_mcp_runner:invoke_allowed).
+
+test(ungranted_imported_tool_is_rejected_before_remote_call) :-
+    with_fixture_session(auto_dig_mcp_fixture_denied,
+                         plunit_auto_dig_mcp_runner:invoke_denied).
 
 :- end_tests(auto_dig_mcp_runner).
