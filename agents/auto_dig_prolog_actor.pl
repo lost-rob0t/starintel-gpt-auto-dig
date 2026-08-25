@@ -224,16 +224,16 @@ parse_args(Argv, Options) :-
     require_option(output, Options).
 
 parse_args_([], Options, Options).
-parse_args_(["--queue", Path|Rest], Acc, Options) :-
+parse_args_(['--queue', Path|Rest], Acc, Options) :-
     !,
     parse_args_(Rest, [queue(Path)|Acc], Options).
-parse_args_(["--state", Path|Rest], Acc, Options) :-
+parse_args_(['--state', Path|Rest], Acc, Options) :-
     !,
     parse_args_(Rest, [state(Path)|Acc], Options).
-parse_args_(["--output", Path|Rest], Acc, Options) :-
+parse_args_(['--output', Path|Rest], Acc, Options) :-
     !,
     parse_args_(Rest, [output(Path)|Acc], Options).
-parse_args_(["--trace", Path|Rest], Acc, Options) :-
+parse_args_(['--trace', Path|Rest], Acc, Options) :-
     !,
     parse_args_(Rest, [trace(Path)|Acc], Options).
 parse_args_([Unknown|_], _, _) :-
