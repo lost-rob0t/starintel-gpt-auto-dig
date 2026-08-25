@@ -259,8 +259,34 @@ require_option(Name, Options) :-
 read_json_file(Path, Value) :-
     setup_call_cleanup(
         open(Path, read, Stream, [encoding(utf8)]),
-        json_read_dict(Stream, Value),
-        close(Stream)).
+        json_read_dict(Stream, Raw),
+        close(Stream)),
+    ground_json_value(Raw, Value).
+
+/* json_read_dict/2 uses anonymous dict tags. Those tags are variables, which
+ * makes an otherwise concrete JSON tree fail ground/1. Prolog-RLM supervised
+ * work deliberately requires a ground term before it crosses the worker-thread
+ * boundary, so normalize every JSON dict to a stable `json` tag first. */
+ground_json_value(Value0, Value) :-
+    is_dict(Value0),
+    !,
+    dict_pairs(Value0, _, Pairs0),
+    maplist(ground_json_pair, Pairs0, Pairs),
+    dict_pairs(Value, json, Pairs).
+ground_json_value(Values0, Values) :-
+    is_list(Values0),
+    !,
+    maplist(ground_json_value, Values0, Values).
+ground_json_value(Value, Value) :-
+    atomic(Value),
+    !.
+ground_json_value(Value, _) :-
+    throw(error(type_error(json_value, Value),
+                context(auto_dig_prolog_actor,
+                        'unsupported non-ground JSON value'))).
+
+ground_json_pair(Key-Value0, Key-Value) :-
+    ground_json_value(Value0, Value).
 
 write_json_file(Path, Value) :-
     setup_call_cleanup(
