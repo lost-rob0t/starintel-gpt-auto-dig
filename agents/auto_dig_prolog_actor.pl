@@ -1,5 +1,5 @@
 :- module(auto_dig_prolog_actor,
-          [ main/0,
+          [ main/1,
             select_queue/3
           ]).
 
@@ -10,8 +10,7 @@
 
 :- initialization(main, main).
 
-main :-
-    current_prolog_flag(argv, Argv),
+main(Argv) :-
     parse_args(Argv, Options),
     option(queue(QueuePath), Options),
     option(state(StatePath), Options),
@@ -256,7 +255,7 @@ parse_args_(['--trace', Path|Rest], Acc, Options) :-
     parse_args_(Rest, [trace(Path)|Acc], Options).
 parse_args_([Unknown|_], _, _) :-
     throw(error(unknown_argument(Unknown),
-                context(auto_dig_prolog_actor:main/0,
+                context(auto_dig_prolog_actor:main/1,
                         'expected --queue, --state, --output, or --trace'))).
 
 require_option(Name, Options) :-
@@ -264,7 +263,7 @@ require_option(Name, Options) :-
     (   memberchk(Term, Options)
     ->  true
     ;   throw(error(missing_argument(Name),
-                    context(auto_dig_prolog_actor:main/0,
+                    context(auto_dig_prolog_actor:main/1,
                             'required actor argument is missing')))
     ).
 
