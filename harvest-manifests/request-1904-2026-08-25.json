@@ -1,0 +1,127 @@
+{
+  "dataset": "flock",
+  "output": "digs/flock/2026-08-25-request-1904-harvest/starintel-documents.jsonl",
+  "documents": [
+    {
+      "dtype": "analysis",
+      "id": "starintel:analysis:tompkins-request-1904-harvest-termination-mou-2026-08-25",
+      "title": "Tompkins County request #1904 harvest: termination and inter-agency Flock MOU",
+      "summary": "Harvests mature Tompkins County Flock lifecycle and inter-agency access evidence into the canonical Flock corpus, separating county contract termination, MOU authority, independent agency control, and unresolved technical offboarding or query activity.",
+      "metadata": {
+        "date_added": "2026-08-25T04:53:00Z",
+        "date_updated": "2026-08-25T04:53:00Z",
+        "status": "recorded",
+        "language": "en",
+        "tags": ["flock", "tompkins-county", "request-1904", "harvest", "offboarding", "sharing", "mou", "alpr"],
+        "sources": [
+          {"kind": "primary_government_source", "title": "Highlights of the 4/7/26 regular and 4/14/26 special Tompkins County Legislature meetings", "publisher": "Tompkins County", "url": "https://www.tompkinscountyny.gov/News-articles/Highlights-of-the-4726-regular-and-41426-special-Tompkins-County-Legislature-meetings", "retrieved_at": "2026-08-25T04:53:00Z", "credibility": 0.99},
+          {"kind": "primary_government_source", "title": "Flock Safety MOU 2026", "publisher": "Tompkins County Sheriff's Office", "url": "https://www.tompkinscountyny.gov/News-articles/February-27-2026-Flock-Safety-MOU-2026", "retrieved_at": "2026-08-25T04:53:00Z", "credibility": 0.99},
+          {"kind": "primary_legal_document", "title": "Memorandum of Understanding Governing Access to Tompkins County Law Enforcement Flock Safety LPR Systems", "publisher": "Tompkins County Sheriff's Office", "url": "https://www.tompkinscountyny.gov/files/assets/county/v/1/sheriffs-office/documents/flock-mou-2026.pdf", "retrieved_at": "2026-08-25T04:53:00Z", "credibility": 0.99}
+        ],
+        "assessment": {
+          "confidence": 0.99,
+          "gaps": [
+            "The executed termination notice, exact contract-end state, final invoice, and May 28 renewal closeout remain unresolved.",
+            "Native Flock users, credentials, Organization Audit, Network Audit, SharedNetworks, and event/configuration exports around termination remain unresolved.",
+            "Signed MOU participation does not establish that every participant had a live directed sharing edge or performed a query.",
+            "Device disablement/removal, data retention/deletion closeout, and post-termination access changes remain unresolved."
+          ]
+        },
+        "verification": {
+          "status": "source-backed",
+          "verified": true,
+          "verified_at": "2026-08-25T04:53:00Z",
+          "last_reviewed_at": "2026-08-25T04:53:00Z",
+          "methods": ["request #1904 harvest review", "issue-comment provenance reconciliation", "Tompkins County primary-source review", "native MOU evidence-state review"]
+        },
+        "handling": {"visibility": "public", "pii": false, "sensitive": false},
+        "provenance": {
+          "collector": "OpenAI GPT-5.6 Sol",
+          "collector_type": "research-agent",
+          "method": "Auto-Dig request #1904 harvest-first materialization",
+          "pipeline": "starintel-auto-dig",
+          "run_id": "request-1904-harvest-2026-08-25",
+          "metadata": {"request_issue": 1904, "request_identity": "alpr-ny-tompkins-county-network", "prior_packets": ["digs/flock/2026-08-20-request-1899-ithaca-offboarding/", "digs/flock/2026-08-20-request-1900-cornell-campus/"]}
+        },
+        "related_ids": []
+      },
+      "data": {
+        "question": "Which mature Tompkins County Flock lifecycle and access-governance findings in request #1904 are ready for canonical materialization now?",
+        "method": "Harvested mature request comments and the reconciled issue body, retained only first-party county findings, and separated legal authority, contract termination, platform configuration, access, query activity, device state, and data closeout.",
+        "framework": "Termination vote, contract end, platform disablement, credential revocation, sharing removal, hardware removal, deletion, billing closeout, MOU authority, live sharing configuration, and actual query activity are separate predicates.",
+        "scope": "Tompkins County Sheriff's Office Flock contract termination and the February 2026 multi-agency Flock LPR access MOU.",
+        "input_ids": [],
+        "finding_ids": [],
+        "findings": [
+          "Tompkins County says its Legislature voted 12-1 on April 14, 2026 to terminate the County contract with Flock Group, Inc. before the May 28 auto-renewal point.",
+          "The County says the Sheriff, county partners, and Ithaca Police submitted the next GIVE grant application without Flock; this is a funding/program-state fact and does not prove technical offboarding completed.",
+          "Tompkins County's signed February 2026 MOU governs access to participating law-enforcement Flock Safety LPR systems while preserving each participant's administrative control over its own system and data.",
+          "The MOU requires searches to relate to an active legitimate law-enforcement matter, include a traceable case number, and include a specific articulable justification; generic justifications such as Suspicious, Investigation, Check, Information, Intel, or General inquiry are rejected by the agreement.",
+          "The MOU permits participating agencies to audit searches and provides for temporary suspension or permanent revocation of access for noncompliance.",
+          "The visible signed participant set is Tompkins County Sheriff's Office, Cornell University Police Department, Trumansburg Village Police Department, Groton Police Department, Village of Cayuga Heights Police Department, and Ithaca College Office of Public Safety.",
+          "The MOU permits a participating agency to perform a compliant search for an outside agency without its own Flock contract; the participating agency remains responsible for documentation and audit compliance.",
+          "A participant can terminate the MOU without automatically terminating the rights and obligations of the remaining participants, so the County Sheriff's contract termination cannot be projected onto the independent systems of Cornell, Ithaca College, Groton, Trumansburg, or Cayuga Heights.",
+          "The April 14 termination vote and requirement to terminate before May 28 do not establish that May 28 technical, credential, sharing, device, data, or billing offboarding actually completed."
+        ],
+        "conclusions": [
+          "Request #1904 now has a native legal skeleton for cross-agency access plus a separately verified county contract-termination decision.",
+          "The Tompkins County shutdown must be modeled as an offboarding chain rather than one timestamp, and the independent participant systems must remain distinct.",
+          "The next evidence frontier is native platform state: directed sharing relationships, account/query history, access changes, device disposition, retention/deletion, and final billing."
+        ],
+        "recommendations": [
+          "Recover the executed termination notice, exact contract-end state, final invoice, and renewal/non-renewal record around May 28.",
+          "Recover users/admins, credential revocations, SharedNetworks, Organization Audit, Network Audit, event logs, and access-change records around the termination period.",
+          "Crosswalk each MOU participant to actual directed sharing edges, effective dates, account-level searches, case numbers, justifications, audits, and any suspension/revocation event.",
+          "Keep Ithaca municipal, Tompkins County Sheriff, Cornell, Ithaca College, Groton, Trumansburg, and Cayuga Heights systems as separate lifecycle and control surfaces."
+        ],
+        "counterarguments": [
+          "A signed MOU authorizes bounded access but does not prove every possible inter-agency sharing edge existed or that any query occurred.",
+          "A legislative termination vote does not prove the vendor account, credentials, cameras, retained data, or sharing relationships were disabled or removed on the same date."
+        ],
+        "limitations": [
+          "This harvest intentionally excludes inferred live SharedNetworks edges and any unverified post-termination technical state.",
+          "It does not claim the county-wide request is complete; it materializes mature lifecycle and access-governance evidence already accumulated in request #1904."
+        ],
+        "unresolved": [
+          "What exact date did the County's Flock contract and platform access terminate?",
+          "Which MOU participant-to-participant sharing relationships were actually configured and when?",
+          "Which user accounts performed searches under the MOU and were the case-number/justification rules satisfied?",
+          "What credentials, sharing edges, devices, data, and billing state remained after the April vote and May renewal cutoff?"
+        ],
+        "confidence": 0.99
+      }
+    },
+    {
+      "dtype": "research-pass",
+      "id": "starintel:research-pass:request-1904-harvest-2026-08-25",
+      "title": "Auto-Dig request #1904 mature-evidence harvest",
+      "summary": "Harvest-first pass converts mature Tompkins County Flock termination and multi-agency access-MOU findings from issue staging into a typed canonical packet while preserving technical offboarding and query-history gaps.",
+      "metadata": {
+        "date_added": "2026-08-25T04:53:00Z",
+        "date_updated": "2026-08-25T04:53:00Z",
+        "status": "completed",
+        "language": "en",
+        "tags": ["research-pass", "auto-dig-request", "flock", "tompkins-county", "request-1904", "harvest"],
+        "sources": [
+          {"kind": "primary_government_source", "title": "Highlights of the 4/7/26 regular and 4/14/26 special Tompkins County Legislature meetings", "publisher": "Tompkins County", "url": "https://www.tompkinscountyny.gov/News-articles/Highlights-of-the-4726-regular-and-41426-special-Tompkins-County-Legislature-meetings", "retrieved_at": "2026-08-25T04:53:00Z", "credibility": 0.99},
+          {"kind": "primary_legal_document", "title": "Memorandum of Understanding Governing Access to Tompkins County Law Enforcement Flock Safety LPR Systems", "publisher": "Tompkins County Sheriff's Office", "url": "https://www.tompkinscountyny.gov/files/assets/county/v/1/sheriffs-office/documents/flock-mou-2026.pdf", "retrieved_at": "2026-08-25T04:53:00Z", "credibility": 0.99}
+        ],
+        "assessment": {"confidence": 0.99},
+        "verification": {"status": "source-backed", "verified": true, "verified_at": "2026-08-25T04:53:00Z", "last_reviewed_at": "2026-08-25T04:53:00Z", "methods": ["complete request harvest review", "existing issue-state deduplication", "primary-source provenance reconciliation"]},
+        "handling": {"visibility": "public", "pii": false, "sensitive": false},
+        "provenance": {"collector": "OpenAI GPT-5.6 Sol", "collector_type": "research-agent", "method": "queue-first harvest review and canonical materialization", "pipeline": "starintel-auto-dig", "run_id": "request-1904-harvest-2026-08-25", "metadata": {"request_issue": 1904, "request_identity": "alpr-ny-tompkins-county-network", "packet_path": "digs/flock/2026-08-25-request-1904-harvest/"}},
+        "related_ids": ["starintel:analysis:tompkins-request-1904-harvest-termination-mou-2026-08-25"]
+      },
+      "data": {
+        "research_question": "Which mature request #1904 Tompkins County findings are ready to leave issue-comment staging and enter the canonical Flock corpus?",
+        "method": "Reviewed the current request body and accumulated primary-source comments, deduplicated already-landed child-request identities, and harvested county-level contract-termination and MOU access-governance evidence into one bounded analysis record.",
+        "classification_rules": ["Issue comments are staging, not completion.", "Signed MOU participation is not proof of a live directed sharing edge or query activity.", "Termination vote is not proof of technical offboarding.", "Independent municipal/campus/county systems remain separate identities and lifecycles."],
+        "finding_ids": ["starintel:analysis:tompkins-request-1904-harvest-termination-mou-2026-08-25"],
+        "findings": [
+          {"finding": "Tompkins County's April 14 termination decision and May 28 renewal boundary are now canonicalized without claiming backend offboarding completed."},
+          {"finding": "The February 2026 six-participant access MOU and its case-number, justification, audit, suspension, and independent-control rules are now canonicalized without inventing live sharing edges."}
+        ]
+      }
+    }
+  ]
+}
