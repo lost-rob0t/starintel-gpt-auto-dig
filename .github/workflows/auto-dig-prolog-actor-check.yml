@@ -11,7 +11,7 @@ permissions:
   contents: read
 
 env:
-  PROLOG_RLM_REF: 2f2f2da9d38c7241461336b9a651bd320479dd19
+  PROLOG_RLM_REF: a5e0a28b47fada46a15fe439d58bf2940ec224e7
 
 jobs:
   check:
@@ -48,7 +48,7 @@ jobs:
             swipl -q -s test/rlm_cli_test.pl -g 'run_tests,halt'
           )
 
-      - name: Run actor and model-router policy tests
+      - name: Run actor, router, and MCP host-policy tests
         shell: bash
         run: |
           set -euo pipefail
@@ -60,6 +60,11 @@ jobs:
           swipl \
             -q \
             -s agents/test_auto_dig_model_router.pl \
+            -g 'run_tests,halt'
+          swipl \
+            -q \
+            -p "library=$GITHUB_WORKSPACE/.prolog-rlm/prolog" \
+            -s agents/test_auto_dig_mcp_tools.pl \
             -g 'run_tests,halt'
 
       - name: Exercise actor and router CLIs end to end
