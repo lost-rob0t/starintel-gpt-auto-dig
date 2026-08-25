@@ -1,0 +1,152 @@
+{
+  "dataset": "worldcoin",
+  "output": "digs/worldcoin/2026-08-25-request-2095-harvest/starintel-documents.jsonl",
+  "documents": [
+    {
+      "dtype": "analysis",
+      "id": "starintel:analysis:worldcoin-request-2095-harvest-control-money-ampc-2026-08-25",
+      "title": "Worldcoin request #2095 harvest: control, AMPC, and WLD money",
+      "summary": "Harvests mature first-party and regulatory evidence accumulated after the August 20 baseline into the canonical Worldcoin corpus, separating legal control, technical operation, AMPC participation, token allocation, institutional custody, and unresolved key authority.",
+      "metadata": {
+        "date_added": "2026-08-25T02:55:00Z",
+        "date_updated": "2026-08-25T02:55:00Z",
+        "status": "recorded",
+        "language": "en",
+        "tags": ["worldcoin", "world", "request-2095", "harvest", "governance", "ampc", "wld", "technical-control"],
+        "sources": [
+          {"kind": "primary_technical_document", "title": "Introducing AMPC", "publisher": "World", "url": "https://world.org/blog/engineering/introducing-ampc-another-leap-privacy-performance-world-id", "retrieved_at": "2026-08-25T02:55:00Z", "credibility": 0.99},
+          {"kind": "primary_legal_document", "title": "World Foundation Articles of Association", "publisher": "World Foundation", "url": "https://foundation.world.org/files/2025-02-11_AoA_-_World_Foundation.pdf", "retrieved_at": "2026-08-25T02:55:00Z", "credibility": 0.99},
+          {"kind": "primary_organizational_document", "title": "World Foundation About", "publisher": "World Foundation", "url": "https://foundation.world.org/about", "retrieved_at": "2026-08-25T02:55:00Z", "credibility": 0.99},
+          {"kind": "primary_legal_document", "title": "World Foundation Memorandum of Association", "publisher": "World Foundation", "url": "https://foundation.world.org/wfmoa", "retrieved_at": "2026-08-25T02:55:00Z", "credibility": 0.99},
+          {"kind": "primary_technical_document", "title": "World Whitepaper", "publisher": "World", "url": "https://whitepaper.world.org/Whitepaper.pdf", "retrieved_at": "2026-08-25T02:55:00Z", "credibility": 0.99},
+          {"kind": "primary_tokenomics_document", "title": "WLD unlock rate to decrease by 43% in July", "publisher": "World Foundation", "url": "https://world.org/blog/foundational-topics/tokenomics-milestone-wld-unlock-rate-to-decrease-by-43-in-july", "retrieved_at": "2026-08-25T02:55:00Z", "credibility": 0.99},
+          {"kind": "regulatory_filing", "title": "Eightco SEC exhibit — July 8 WLD treasury disclosure", "publisher": "U.S. SEC", "url": "https://www.sec.gov/Archives/edgar/data/1892492/000149315226032609/ex99-1.htm", "retrieved_at": "2026-08-25T02:55:00Z", "credibility": 0.99},
+          {"kind": "regulatory_filing", "title": "Eightco SEC exhibit — July 27 WLD treasury and funding-round disclosure", "publisher": "U.S. SEC", "url": "https://www.sec.gov/Archives/edgar/data/1892492/000149315226034717/ex99-1.htm", "retrieved_at": "2026-08-25T02:55:00Z", "credibility": 0.99}
+        ],
+        "assessment": {
+          "confidence": 0.94,
+          "gaps": [
+            "Current World Foundation supervisor, authorised signatories, treasury signers, and technical admin keys remain unresolved.",
+            "Production AMPC party-to-institution mapping, KMS ownership, certificate rotation, and persistence/deletion authority remain unresolved.",
+            "World Chain sequencer account, signer/key custody, failover, bridge and emergency authority remain unresolved.",
+            "Eightco WLD wallet addresses, acquisition counterparties, lockups, cost basis, and actual disposition authority remain unresolved.",
+            "Historical World/TFH wallet labels require on-chain lifecycle reconciliation rather than inference from their absence in the current wallet table."
+          ]
+        },
+        "verification": {
+          "status": "source-backed",
+          "verified": true,
+          "verified_at": "2026-08-25T02:55:00Z",
+          "last_reviewed_at": "2026-08-25T02:55:00Z",
+          "methods": ["request #2095 harvest review", "issue-comment provenance reconciliation", "primary World source review", "SEC filing reconciliation"]
+        },
+        "handling": {"visibility": "public", "pii": false, "sensitive": false},
+        "provenance": {
+          "collector": "OpenAI GPT-5.6 Sol",
+          "collector_type": "research-agent",
+          "method": "Auto-Dig request #2095 harvest-first materialization",
+          "pipeline": "starintel-auto-dig",
+          "run_id": "request-2095-harvest-2026-08-25",
+          "metadata": {"request_issue": 2095, "request_identity": "worldcoin-eyeball-empire-v1", "prior_packet": "digs/worldcoin/2026-08-20-request-2095-control-biometric-token/"}
+        },
+        "related_ids": [
+          "starintel:analysis:worldcoin-request-2095-control-biometric-token-2026-08-20",
+          "starintel:investigation-target:worldcoin-foundation-control-documents-depth-1",
+          "starintel:investigation-target:worldcoin-orb-smpc-technical-authority-depth-1",
+          "starintel:investigation-target:worldcoin-wld-allocation-wallets-depth-1"
+        ]
+      },
+      "data": {
+        "question": "Which mature Worldcoin control, AMPC, and WLD findings accumulated after the August 20 request #2095 packet are established strongly enough to enter the canonical corpus now?",
+        "method": "Harvested mature request comments, reconciled them against the existing August 20 packet, and retained only bounded findings backed by first-party World material or SEC-filed disclosures.",
+        "framework": "Legal authority, service operation, cryptographic key custody, AMPC party participation, token issuance, beneficial ownership, custody, and sale authority are separate predicates.",
+        "scope": "World Foundation governance and service operation; AMPC operator/governance architecture; WLD issuance/unlock provenance; Eightco institutional WLD exposure and custody leads.",
+        "input_ids": ["starintel:analysis:worldcoin-request-2095-control-biometric-token-2026-08-20"],
+        "finding_ids": [],
+        "findings": [
+          "Current World material names FAU, UC Berkeley RDI, KAIST, University of Tokyo, and Nethermind as AMPC operator institutions and states that neither World Foundation nor Tools for Humanity is an AMPC party.",
+          "World describes the AMPC operator set as mutable, records University of Tokyo joining in the May 8, 2026 update, and describes an external-expert governance board supervising updates and third-party compute-node onboarding.",
+          "Public iris-mpc operational tooling models three parties with separate KMS key inputs and Worldcoin-rooted certificate trust; this describes the software trust model and does not prove current production party-to-institution or key-custody assignments.",
+          "World Foundation constitutional material establishes a supervisor layer appointed and removable by the Board; Leeward Management Limited is identified as registered-office provider and initial secretary, while current supervisor and authorised signatories remain unresolved.",
+          "Current World material says World Foundation operates the uniqueness service and supports operation of a World Chain sequencer that writes World Chain state to Ethereum; exact sequencer accounts and signing authority remain unresolved.",
+          "Foundation governance documents make DAO recommendation consideration conditional on a Board determination that the DAO is operational, creating a legal governance control surface separate from technical smart-contract and infrastructure keys.",
+          "Current World material identifies World Foundation as sole member/director of World Assets Ltd. and sole member/manager of World Chain LLC, while Tools for Humanity remains separately governed; legal control does not establish possession of production signing keys.",
+          "World Foundation says the July 24, 2026 WLD unlock-rate change reduced aggregate daily unlocks by 43%, from about 5.1M to 2.9M WLD per day; Community unlocks fell 50% and TFH Investor plus Team unlocks fell 32%, with unlocking remaining daily rather than a cliff.",
+          "Eightco SEC-filed disclosures report 283,452,700 WLD on July 8 and 301,971,219 WLD on July 26, a gain of 18,518,519 WLD, and separately report participation in a $52.5M World Foundation funding round; the filings do not establish that the WLD increase came from the Foundation round.",
+          "Archived World tokenomics separates issuance responsibility for the 7.5B community allocation through World Assets Ltd. from the 2.5B team, investor, and reserve allocation through Tools for Humanity; issuance responsibility is not current custody or sale authority."
+        ],
+        "conclusions": [
+          "Request #2095 now has enough mature evidence to model World Foundation legal authority, selected operational roles, AMPC independence, and WLD provenance as separate control layers rather than one generic World controller.",
+          "The Eightco branch establishes a large disclosed institutional WLD position and a separate Foundation financing relationship, but no safe wallet or transaction edge between those facts yet.",
+          "The main unresolved control question has narrowed from who runs World to which concrete accounts, multisigs, keys, custodians, and approval records implement each documented legal or operational role."
+        ],
+        "recommendations": [
+          "Resolve current Foundation supervisor, authorised signatories, technical admin accounts, and signer thresholds.",
+          "Map AMPC party IDs, KMS and certificate authority to production institutions and effective dates.",
+          "Trace attributable WLD wallet flows and Eightco custody/acquisition evidence without speculative attribution.",
+          "Reconcile current and archived official wallet tables against on-chain transactions and present custody."
+        ],
+        "counterarguments": [
+          "World describes progressive decentralization and independent AMPC operators; Foundation legal authority or service operation does not imply control of every independent compute party or user wallet.",
+          "A large disclosed WLD treasury position does not establish immediate liquidity, a specific acquisition source, or unrestricted sale authority."
+        ],
+        "limitations": [
+          "This harvest intentionally excludes unresolved signer identities, wallet attribution, and production admin-key claims.",
+          "It materializes mature evidence already accumulated in request #2095 rather than claiming the broader investigation is complete."
+        ],
+        "unresolved": [
+          "Who are the current Foundation supervisor and authorised signatories?",
+          "Which accounts and keys control World ID proxies, World Chain sequencer and bridge emergency paths?",
+          "Which AMPC institution maps to each production party and who controls each KMS/certificate lifecycle?",
+          "Which wallets and custodians hold Eightco's WLD and what restrictions or disposition authority apply?",
+          "How do historically attributed TFH vesting wallets map to current holders and custody?"
+        ],
+        "confidence": 0.94
+      }
+    },
+    {
+      "dtype": "research-pass",
+      "id": "starintel:research-pass:request-2095-harvest-2026-08-25",
+      "title": "Auto-Dig request #2095 mature-evidence harvest",
+      "summary": "Harvest-first pass converts mature Worldcoin control, AMPC, and WLD findings that had accumulated in issue comments into a typed canonical packet while preserving bounded unresolved targets.",
+      "metadata": {
+        "date_added": "2026-08-25T02:55:00Z",
+        "date_updated": "2026-08-25T02:55:00Z",
+        "status": "completed",
+        "language": "en",
+        "tags": ["research-pass", "auto-dig-request", "worldcoin", "request-2095", "harvest", "high-priority"],
+        "sources": [
+          {"kind": "primary_technical_document", "title": "Introducing AMPC", "publisher": "World", "url": "https://world.org/blog/engineering/introducing-ampc-another-leap-privacy-performance-world-id", "retrieved_at": "2026-08-25T02:55:00Z", "credibility": 0.99},
+          {"kind": "primary_organizational_document", "title": "World Foundation About", "publisher": "World Foundation", "url": "https://foundation.world.org/about", "retrieved_at": "2026-08-25T02:55:00Z", "credibility": 0.99},
+          {"kind": "primary_technical_document", "title": "World Whitepaper", "publisher": "World", "url": "https://whitepaper.world.org/Whitepaper.pdf", "retrieved_at": "2026-08-25T02:55:00Z", "credibility": 0.99},
+          {"kind": "regulatory_filing", "title": "Eightco SEC exhibit — July 27 disclosure", "publisher": "U.S. SEC", "url": "https://www.sec.gov/Archives/edgar/data/1892492/000149315226034717/ex99-1.htm", "retrieved_at": "2026-08-25T02:55:00Z", "credibility": 0.99}
+        ],
+        "assessment": {"confidence": 0.94},
+        "verification": {"status": "source-backed", "verified": true, "verified_at": "2026-08-25T02:55:00Z", "last_reviewed_at": "2026-08-25T02:55:00Z", "methods": ["complete request harvest review", "existing packet deduplication", "primary-source provenance reconciliation"]},
+        "handling": {"visibility": "public", "pii": false, "sensitive": false},
+        "provenance": {"collector": "OpenAI GPT-5.6 Sol", "collector_type": "research-agent", "method": "queue-first harvest review and canonical materialization", "pipeline": "starintel-auto-dig", "run_id": "request-2095-harvest-2026-08-25", "metadata": {"request_issue": 2095, "request_identity": "worldcoin-eyeball-empire-v1", "packet_path": "digs/worldcoin/2026-08-25-request-2095-harvest/", "prior_packet": "digs/worldcoin/2026-08-20-request-2095-control-biometric-token/"}},
+        "related_ids": ["starintel:analysis:worldcoin-request-2095-harvest-control-money-ampc-2026-08-25", "starintel:investigation-target:worldcoin-foundation-control-documents-depth-1", "starintel:investigation-target:worldcoin-orb-smpc-technical-authority-depth-1", "starintel:investigation-target:worldcoin-wld-allocation-wallets-depth-1"]
+      },
+      "data": {
+        "research_question": "Which mature request #2095 findings are ready to leave issue-comment staging and enter the canonical Worldcoin corpus?",
+        "method": "Reviewed the existing August 20 packet and accumulated request comments, deduplicated already-landed baseline facts, and harvested mature control, AMPC, and WLD findings into one bounded analysis record.",
+        "classification_rules": ["Issue comments are staging, not completion.", "Legal control, service operation, key custody, token issuance, beneficial ownership, custody, and disposition authority remain separate evidence states.", "Unresolved signer or wallet attribution is never promoted by inference."],
+        "finding_ids": ["starintel:analysis:worldcoin-request-2095-harvest-control-money-ampc-2026-08-25"],
+        "findings": [
+          {"finding": "Mature AMPC operator/governance evidence is now canonicalized without assigning production party keys to institutions without evidence."},
+          {"finding": "Mature Foundation legal and operational-control evidence is canonicalized while keeping current signatories and cryptographic-key custody unresolved."},
+          {"finding": "Mature WLD unlock and Eightco institutional-treasury evidence is canonicalized without conflating Foundation financing with token acquisition."}
+        ],
+        "supporting_record_ids": ["starintel:analysis:worldcoin-request-2095-harvest-control-money-ampc-2026-08-25"],
+        "counterevidence_ids": [],
+        "unresolved_target_ids": ["starintel:investigation-target:worldcoin-foundation-control-documents-depth-1", "starintel:investigation-target:worldcoin-orb-smpc-technical-authority-depth-1", "starintel:investigation-target:worldcoin-wld-allocation-wallets-depth-1"],
+        "source_ids": ["https://world.org/blog/engineering/introducing-ampc-another-leap-privacy-performance-world-id", "https://foundation.world.org/about", "https://whitepaper.world.org/Whitepaper.pdf", "https://www.sec.gov/Archives/edgar/data/1892492/000149315226034717/ex99-1.htm"],
+        "agent_identity": "OpenAI GPT-5.6 Sol",
+        "narrative_role": "Auto-Dig request queue harvest",
+        "started_at": "2026-08-25T02:50:00Z",
+        "completed_at": "2026-08-25T02:55:00Z",
+        "iteration": 2
+      }
+    }
+  ]
+}
