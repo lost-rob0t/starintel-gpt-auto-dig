@@ -36,7 +36,7 @@ jobs:
           sudo apt-get install -y --no-install-recommends swi-prolog-nox
           swipl --version
 
-      - name: Check pinned runtime loads
+      - name: Check pinned runtime loads and CLI contract
         shell: bash
         run: |
           set -euo pipefail
@@ -45,7 +45,7 @@ jobs:
             swipl -q -s test/check_runtime.pl
             swipl -q -s test/load_all.pl
             swipl -q -s bin/prolog-rlm.pl -- agent --json >/dev/null
-            swipl -q -s bin/prolog-rlm.pl -- rlm --help | grep -q -- '--reasoning-effort'
+            swipl -q -s test/rlm_cli_test.pl -g 'run_tests,halt'
           )
 
       - name: Run actor and model-router policy tests
