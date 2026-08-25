@@ -55,7 +55,7 @@ jobs:
             cd .prolog-rlm
             swipl -q -s test/check_runtime.pl
             swipl -q -s test/load_all.pl
-            swipl -q -s bin/prolog-rlm.pl -- rlm --help | grep -q -- '--reasoning-effort'
+            swipl -q -s test/rlm_cli_test.pl -g 'run_tests,halt'
           ) 2>&1 | tee "$RUNNER_TEMP/prolog-rlm-smoke.log"
 
       - name: Test Auto-Dig actor policy on real runtime
