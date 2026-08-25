@@ -1,7 +1,19 @@
 from __future__ import annotations
 
+import json
+import uuid
 from dataclasses import dataclass
 from typing import Any, Callable, Mapping, Protocol
+from urllib.parse import parse_qsl, urlencode, urlsplit, urlunsplit
+
+
+PROTOCOL_VERSION = "quasar.control.v1"
+WORKER_CLIENT_ID = "starintel-gpt-auto-dig-worker"
+_CONFLICT_CODES = {
+    "autodig.claim-conflict",
+    "autodig.run-not-found",
+    "autodig.stale-worker",
+}
 
 
 class LifecycleConflict(RuntimeError):
@@ -10,6 +22,25 @@ class LifecycleConflict(RuntimeError):
 
 class LifecycleSuspended(LifecycleConflict):
     """The run was paused or stopped at a safe worker checkpoint."""
+
+
+class QuasarControlError(RuntimeError):
+    """Stable Quasar control-plane failure without raw envelope leakage."""
+
+    def __init__(self, code: str, message: str) -> None:
+        self.code = str(code or "control-plane.error")
+        super().__init__(str(message or "Quasar control-plane request failed."))
+
+
+class SocketLike(Protocol):
+    def send(self, payload: str) -> Any: ...
+
+    def recv(self) -> Any: ...
+
+    def close(self) -> Any: ...
+
+
+SocketFactory = Callable[[str, float, str | None], SocketLike]
 
 
 class ControlPlane(Protocol):
@@ -72,6 +103,210 @@ class ExecutionResult:
         )
 
 
+def _default_socket_factory(url: str, timeout: float, origin: str | None) -> SocketLike:
+    try:
+        import websocket  # type: ignore[import-not-found]
+    except ImportError as exc:
+        raise RuntimeError(
+            "websocket-client is required for live Quasar worker transport"
+        ) from exc
+
+    options: dict[str, Any] = {"timeout": timeout}
+    if origin is not None:
+        options["origin"] = origin
+    return websocket.create_connection(url, **options)
+
+
+def _session_url(endpoint: str, session_token: str) -> str:
+    if not endpoint.strip():
+        raise ValueError("endpoint must be non-empty")
+    if not session_token.strip():
+        raise ValueError("session_token must be non-empty")
+
+    parts = urlsplit(endpoint)
+    if parts.scheme not in {"ws", "wss"} or not parts.netloc:
+        raise ValueError("endpoint must be an absolute ws:// or wss:// URL")
+
+    query = parse_qsl(parts.query, keep_blank_values=True)
+    query = [(key, value) for key, value in query if key != "session"]
+    query.append(("session", session_token))
+    return urlunsplit(
+        (parts.scheme, parts.netloc, parts.path, urlencode(query), parts.fragment)
+    )
+
+
+class QuasarWebSocketControlPlane:
+    """Least-privilege client for Quasar's worker-only quasar.control.v1 session.
+
+    Quasar remains lifecycle authority. This adapter only translates the Python
+    worker protocol into exact typed command envelopes and never persists run
+    state or worker leases locally.
+    """
+
+    def __init__(
+        self,
+        endpoint: str,
+        *,
+        session_token: str,
+        timeout: float = 10.0,
+        origin: str | None = None,
+        socket_factory: SocketFactory = _default_socket_factory,
+        request_id_factory: Callable[[], str] | None = None,
+    ) -> None:
+        if timeout <= 0:
+            raise ValueError("timeout must be positive")
+        self.url = _session_url(endpoint, session_token)
+        self.timeout = float(timeout)
+        self.origin = origin
+        self.socket_factory = socket_factory
+        self.request_id_factory = request_id_factory or (
+            lambda: f"autodig-worker-{uuid.uuid4().hex}"
+        )
+
+    def _command(self, workspace_id: str, command: str, payload: Mapping[str, Any]) -> Any:
+        if not workspace_id.strip():
+            raise ValueError("workspace_id must be non-empty")
+        request_id = str(self.request_id_factory())
+        if not request_id:
+            raise ValueError("request_id_factory returned an empty id")
+
+        envelope = {
+            "protocol": PROTOCOL_VERSION,
+            "id": request_id,
+            "command": command,
+            "payload": dict(payload),
+            "metadata": {
+                "client": WORKER_CLIENT_ID,
+                "workspace": workspace_id,
+            },
+        }
+
+        socket = self.socket_factory(self.url, self.timeout, self.origin)
+        try:
+            socket.send(json.dumps(envelope, separators=(",", ":")))
+            for _ in range(100):
+                raw = socket.recv()
+                if isinstance(raw, bytes):
+                    raw = raw.decode("utf-8")
+                response = json.loads(str(raw))
+                if response.get("protocol") != PROTOCOL_VERSION:
+                    continue
+                if response.get("id") != request_id:
+                    continue
+                status = response.get("status")
+                if status == "ok":
+                    return response.get("result")
+                if status == "error":
+                    failure = response.get("error") or {}
+                    code = str(failure.get("code") or "control-plane.error")
+                    message = str(
+                        failure.get("message") or "Quasar control-plane request failed."
+                    )
+                    if code in _CONFLICT_CODES:
+                        raise LifecycleConflict(message)
+                    raise QuasarControlError(code, message)
+                raise QuasarControlError(
+                    "protocol.invalid-envelope",
+                    "Quasar returned an invalid response status.",
+                )
+            raise QuasarControlError(
+                "control-plane.unavailable",
+                "Quasar did not return the matching command response.",
+            )
+        finally:
+            socket.close()
+
+    def list_runs(self, workspace_id: str, *, limit: int = 20) -> list[dict]:
+        if limit < 1 or limit > 100:
+            raise ValueError("limit must be between 1 and 100")
+        result = self._command(workspace_id, "autodig.run.list", {"limit": limit})
+        if not isinstance(result, list):
+            raise QuasarControlError(
+                "protocol.invalid-envelope",
+                "Quasar Auto-Dig run list was not an array.",
+            )
+        return [dict(run) for run in result if isinstance(run, dict)]
+
+    def claim_run(self, workspace_id: str, run_id: str, worker_id: str) -> dict:
+        return self._run_command(
+            workspace_id,
+            "autodig.worker.claim",
+            {"runId": run_id, "workerId": worker_id},
+        )
+
+    def get_run(self, workspace_id: str, run_id: str) -> dict:
+        return self._run_command(
+            workspace_id,
+            "autodig.run.get",
+            {"runId": run_id},
+        )
+
+    def heartbeat(
+        self,
+        workspace_id: str,
+        run_id: str,
+        worker_id: str,
+        lease_id: str,
+    ) -> dict:
+        return self._run_command(
+            workspace_id,
+            "autodig.worker.heartbeat",
+            {"runId": run_id, "workerId": worker_id, "leaseId": lease_id},
+        )
+
+    def complete_run(
+        self,
+        workspace_id: str,
+        run_id: str,
+        worker_id: str,
+        lease_id: str,
+        outcome: dict,
+    ) -> dict:
+        return self._run_command(
+            workspace_id,
+            "autodig.worker.complete",
+            {
+                "runId": run_id,
+                "workerId": worker_id,
+                "leaseId": lease_id,
+                "outcome": dict(outcome),
+            },
+        )
+
+    def fail_run(
+        self,
+        workspace_id: str,
+        run_id: str,
+        worker_id: str,
+        lease_id: str,
+        error: dict,
+    ) -> dict:
+        return self._run_command(
+            workspace_id,
+            "autodig.worker.fail",
+            {
+                "runId": run_id,
+                "workerId": worker_id,
+                "leaseId": lease_id,
+                "error": dict(error),
+            },
+        )
+
+    def _run_command(
+        self,
+        workspace_id: str,
+        command: str,
+        payload: Mapping[str, Any],
+    ) -> dict:
+        result = self._command(workspace_id, command, payload)
+        if not isinstance(result, dict):
+            raise QuasarControlError(
+                "protocol.invalid-envelope",
+                "Quasar Auto-Dig run response was not an object.",
+            )
+        return dict(result)
+
+
 class AutoDigLifecycleWorker:
     """Coordinate one scheduled worker iteration through Quasar lifecycle authority.
 
@@ -122,8 +357,6 @@ class AutoDigLifecycleWorker:
             processed += 1
             lease_id = str(claimed.get("leaseId") or "")
             if not lease_id:
-                # A claim without a fencing token is unsafe to execute. Do not
-                # attempt a mutation with a made-up or missing lease.
                 continue
 
             def should_continue() -> None:
@@ -154,9 +387,6 @@ class AutoDigLifecycleWorker:
                     result=result,
                 )
             except (LifecycleConflict, LifecycleSuspended):
-                # A newer user/control-plane decision or worker lease wins. A
-                # stale worker must never convert that state into completed or
-                # failed.
                 continue
 
         return processed
