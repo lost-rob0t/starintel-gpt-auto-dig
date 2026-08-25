@@ -9,7 +9,7 @@ from scripts.quasar_issue_queue import (
     IssueSnapshot,
     parse_completion_receipt,
 )
-from scripts.quasar_autodig_worker import ExecutionResult, LifecycleWaiting
+from scripts.quasar_autodig_worker import LifecycleWaiting
 
 
 class FakeIssues:
@@ -38,7 +38,7 @@ class FakeIssues:
 
 
 class QuasarIssueQueueBridgeTests(unittest.TestCase):
-    def run(self) -> dict:
+    def sample_run(self) -> dict:
         return {
             "runId": "run-42",
             "requestId": "request-42",
@@ -55,7 +55,7 @@ class QuasarIssueQueueBridgeTests(unittest.TestCase):
         checkpoints = []
 
         with self.assertRaises(LifecycleWaiting):
-            executor.execute(self.run(), lambda: checkpoints.append("ok"))
+            executor.execute(self.sample_run(), lambda: checkpoints.append("ok"))
 
         self.assertEqual(checkpoints, ["ok", "ok"])
         self.assertEqual(len(issues.created), 1)
@@ -76,13 +76,13 @@ class QuasarIssueQueueBridgeTests(unittest.TestCase):
 
         for _ in range(2):
             with self.assertRaises(LifecycleWaiting):
-                executor.execute(self.run(), lambda: None)
+                executor.execute(self.sample_run(), lambda: None)
 
         self.assertEqual(len(issues.created), 1)
 
     def test_existing_issue_only_queue_request_with_same_request_key_is_reused(self) -> None:
         issues = FakeIssues()
-        seed = GitHubIssueQueueExecutor(issues).render_issue(self.run())
+        seed = GitHubIssueQueueExecutor(issues).render_issue(self.sample_run())
         issues.issues[7] = IssueSnapshot(
             number=7,
             state="open",
@@ -93,13 +93,13 @@ class QuasarIssueQueueBridgeTests(unittest.TestCase):
         executor = GitHubIssueQueueExecutor(issues)
 
         with self.assertRaises(LifecycleWaiting):
-            executor.execute(self.run(), lambda: None)
+            executor.execute(self.sample_run(), lambda: None)
 
         self.assertEqual(issues.created, [])
 
     def test_closed_issue_without_structured_verified_receipt_does_not_complete(self) -> None:
         issues = FakeIssues()
-        rendered = GitHubIssueQueueExecutor(issues).render_issue(self.run())
+        rendered = GitHubIssueQueueExecutor(issues).render_issue(self.sample_run())
         issues.issues[8] = IssueSnapshot(
             number=8,
             state="closed",
@@ -108,14 +108,14 @@ class QuasarIssueQueueBridgeTests(unittest.TestCase):
             comments=("done! merged something somewhere",),
         )
 
-        result = GitHubIssueQueueExecutor(issues).execute(self.run(), lambda: None)
+        result = GitHubIssueQueueExecutor(issues).execute(self.sample_run(), lambda: None)
 
         self.assertEqual(result.state, "failed")
         self.assertEqual(result.error["code"], "completion_receipt_missing")
 
     def test_verified_completion_receipt_is_required_for_completed_result(self) -> None:
         issues = FakeIssues()
-        rendered = GitHubIssueQueueExecutor(issues).render_issue(self.run())
+        rendered = GitHubIssueQueueExecutor(issues).render_issue(self.sample_run())
         receipt = (
             f"{COMPLETION_MARKER}\n"
             '{"validationPassed":true,"published":true,'
@@ -130,7 +130,7 @@ class QuasarIssueQueueBridgeTests(unittest.TestCase):
             comments=(receipt,),
         )
 
-        result = GitHubIssueQueueExecutor(issues).execute(self.run(), lambda: None)
+        result = GitHubIssueQueueExecutor(issues).execute(self.sample_run(), lambda: None)
 
         self.assertEqual(result.state, "completed")
         self.assertTrue(result.outcome["validationPassed"])
@@ -156,7 +156,7 @@ class QuasarIssueQueueBridgeTests(unittest.TestCase):
         )
 
     def test_rendered_issue_never_contains_control_plane_transport_or_fencing_values(self) -> None:
-        rendered = GitHubIssueQueueExecutor(FakeIssues()).render_issue(self.run())
+        rendered = GitHubIssueQueueExecutor(FakeIssues()).render_issue(self.sample_run())
         lower = rendered.body.lower()
         for forbidden in (
             "quasar.control.v1",
