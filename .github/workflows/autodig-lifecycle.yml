@@ -4,9 +4,11 @@ on:
   pull_request:
     paths:
       - "scripts/quasar_autodig_worker.py"
+      - "scripts/quasar_issue_queue.py"
       - "tests/test_quasar_autodig_worker.py"
       - "tests/test_quasar_autodig_recovery.py"
       - "tests/test_quasar_autodig_heartbeat.py"
+      - "tests/test_quasar_issue_queue_bridge.py"
       - ".github/workflows/autodig-lifecycle.yml"
   workflow_dispatch:
 
@@ -28,3 +30,4 @@ jobs:
           tests.test_quasar_autodig_worker
           tests.test_quasar_autodig_recovery
           tests.test_quasar_autodig_heartbeat
+          tests.test_quasar_issue_queue_bridge
