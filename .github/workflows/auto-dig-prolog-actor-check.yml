@@ -89,6 +89,7 @@ jobs:
           }
           JSON
 
+          set +e
           swipl \
             -q \
             -p "library=$GITHUB_WORKSPACE/.prolog-rlm/prolog" \
@@ -98,6 +99,21 @@ jobs:
             --state "$RUNNER_TEMP/state.json" \
             --output "$RUNNER_TEMP/decision.json" \
             --trace "$RUNNER_TEMP/actor.trace"
+          actor_status=$?
+          set -e
+
+          echo "actor_exit=$actor_status"
+          ls -la "$RUNNER_TEMP/decision.json" "$RUNNER_TEMP/actor.trace" 2>/dev/null || true
+          if [[ -f "$RUNNER_TEMP/decision.json" ]]; then
+            echo '--- decision.json ---'
+            cat "$RUNNER_TEMP/decision.json"
+          fi
+          if [[ -f "$RUNNER_TEMP/actor.trace" ]]; then
+            echo '--- actor.trace ---'
+            head -n 20 "$RUNNER_TEMP/actor.trace"
+          fi
+
+          [[ "$actor_status" -eq 0 ]]
 
           jq -e '
             .action == "run" and
