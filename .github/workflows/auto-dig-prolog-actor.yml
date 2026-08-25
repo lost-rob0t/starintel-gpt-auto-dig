@@ -19,7 +19,7 @@ concurrency:
   cancel-in-progress: false
 
 env:
-  PROLOG_RLM_REF: 982bad23c59dba0dd9157c1904e7723950889717
+  PROLOG_RLM_REF: 2f2f2da9d38c7241461336b9a651bd320479dd19
 
 jobs:
   actor:
@@ -55,6 +55,7 @@ jobs:
             cd .prolog-rlm
             swipl -q -s test/check_runtime.pl
             swipl -q -s test/load_all.pl
+            swipl -q -s bin/prolog-rlm.pl -- rlm --help | grep -q -- '--reasoning-effort'
           ) 2>&1 | tee "$RUNNER_TEMP/prolog-rlm-smoke.log"
 
       - name: Test Auto-Dig actor policy on real runtime
@@ -67,6 +68,11 @@ jobs:
             -s agents/test_auto_dig_prolog_actor.pl \
             -g 'run_tests,halt' \
             2>&1 | tee "$RUNNER_TEMP/auto-dig-actor-tests.log"
+          swipl \
+            -q \
+            -s agents/test_auto_dig_model_router.pl \
+            -g 'run_tests,halt' \
+            2>&1 | tee "$RUNNER_TEMP/auto-dig-model-router-tests.log"
 
       - name: Snapshot investigation queue
         env:
@@ -211,13 +217,69 @@ jobs:
           echo "run_dir=$run_dir" >> "$GITHUB_OUTPUT"
           echo "request=$run_dir/request.md" >> "$GITHUB_OUTPUT"
 
+      - name: Select model route in Prolog
+        if: steps.target.outputs.action == 'run'
+        id: model
+        env:
+          RUN_DIR: ${{ steps.run.outputs.run_dir }}
+          PRIORITY: ${{ steps.target.outputs.priority }}
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          risk=normal
+          if [[ "$PRIORITY" == urgent ]]; then
+            risk=high
+          fi
+
+          jq -n \
+            --arg task research \
+            --arg phase execute \
+            --arg risk "$risk" \
+            '{
+              task:$task,
+              phase:$phase,
+              risk:$risk,
+              irreversible:false,
+              failed_verifications:0
+            }' > "$RUN_DIR/model-profile.json"
+
+          swipl \
+            -q \
+            -s agents/auto_dig_model_router.pl \
+            -- \
+            --profile "$RUN_DIR/model-profile.json" \
+            --output "$RUN_DIR/model-route.json"
+
+          jq -e '
+            .schema == "auto-dig-model-route.v1" and
+            (.model | type == "string") and
+            (.reasoning.effort | type == "string")
+          ' "$RUN_DIR/model-route.json" >/dev/null
+
+          model="$(jq -r '.model' "$RUN_DIR/model-route.json")"
+          effort="$(jq -r '.reasoning.effort' "$RUN_DIR/model-route.json")"
+          tier="$(jq -r '.tier' "$RUN_DIR/model-route.json")"
+
+          echo "model=$model" >> "$GITHUB_OUTPUT"
+          echo "effort=$effort" >> "$GITHUB_OUTPUT"
+          echo "tier=$tier" >> "$GITHUB_OUTPUT"
+
+          jq --slurpfile route "$RUN_DIR/model-route.json" \
+            '. + {model_route:$route[0]}' \
+            "$RUN_DIR/run.json" > "$RUN_DIR/run.next.json"
+          mv "$RUN_DIR/run.next.json" "$RUN_DIR/run.json"
+
+          echo "Selected ${model} with reasoning effort ${effort} (${tier})."
+
       - name: Run a bounded live Prolog-RLM reasoning pass
         if: steps.target.outputs.action == 'run'
         env:
           OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
-          AUTO_DIG_RLM_MODEL: ${{ vars.AUTO_DIG_RLM_MODEL }}
           RUN_DIR: ${{ steps.run.outputs.run_dir }}
           REQUEST_FILE: ${{ steps.run.outputs.request }}
+          MODEL: ${{ steps.model.outputs.model }}
+          REASONING_EFFORT: ${{ steps.model.outputs.effort }}
         shell: bash
         run: |
           set -euo pipefail
@@ -227,7 +289,11 @@ jobs:
             exit 1
           fi
 
-          model="${AUTO_DIG_RLM_MODEL:-openrouter/free}"
+          if [[ -z "${MODEL:-}" || -z "${REASONING_EFFORT:-}" ]]; then
+            echo 'Prolog model router did not produce a complete route.' >&2
+            exit 1
+          fi
+
           query="$(cat <<'EOF'
           You are the Auto-Dig Prolog actor. Read the selected investigation request as opaque external context.
           Produce the next bounded research slice that moves the request toward completion.
@@ -242,7 +308,8 @@ jobs:
           swipl -q -s .prolog-rlm/bin/prolog-rlm.pl -- rlm \
             "$query" \
             --context-file "$REQUEST_FILE" \
-            --model "$model" \
+            --model "$MODEL" \
+            --reasoning-effort "$REASONING_EFFORT" \
             --max-tokens 2048 \
             --max-cost 0.10 \
             --time-limit 90 \
@@ -311,6 +378,8 @@ jobs:
           ISSUE: ${{ steps.target.outputs.issue }}
           BRANCH: ${{ steps.run.outputs.branch }}
           RUN_ID: ${{ steps.run.outputs.run_id }}
+          MODEL: ${{ steps.model.outputs.model }}
+          REASONING_EFFORT: ${{ steps.model.outputs.effort }}
         shell: bash
         run: |
           set -euo pipefail
@@ -318,7 +387,7 @@ jobs:
           branch_url="${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/tree/${BRANCH}"
           gh issue comment "$ISSUE" \
             --repo "$GITHUB_REPOSITORY" \
-            --body "Auto-Dig Prolog actor completed bounded run \`${RUN_ID}\`.\n\n- Branch: ${branch_url}\n- Prolog-RLM: \`${PROLOG_RLM_REF}\`\n- Action log: ${run_url}\n- Stage: queue selection + supervised actor runtime + depth-1 RLM reasoning.\n\nThis receipt does **not** mark the investigation complete; tool-enabled research and canonical StarIntel writes remain separate gates."
+            --body "Auto-Dig Prolog actor completed bounded run \`${RUN_ID}\`.\n\n- Branch: ${branch_url}\n- Prolog-RLM: \`${PROLOG_RLM_REF}\`\n- Expert route: \`${MODEL}\`, reasoning \`${REASONING_EFFORT}\`\n- Action log: ${run_url}\n- Stage: queue selection + expert model routing + supervised actor runtime + depth-1 RLM reasoning.\n\nThis receipt does **not** mark the investigation complete; tool-enabled research and canonical StarIntel writes remain separate gates."
 
       - name: Upload actor diagnostics
         if: always()
@@ -329,6 +398,7 @@ jobs:
           path: |
             ${{ runner.temp }}/prolog-rlm-smoke.log
             ${{ runner.temp }}/auto-dig-actor-tests.log
+            ${{ runner.temp }}/auto-dig-model-router-tests.log
             ${{ runner.temp }}/queue.json
             ${{ runner.temp }}/decision.json
             ${{ runner.temp }}/actor.trace
@@ -360,7 +430,7 @@ jobs:
             fi
             echo
             echo 'The Auto-Dig GitHub Actions actor failed while exercising the pinned production runtime.'
-            echo 'The Action artifacts contain the actor/runtime logs and, when reached, the portable RLM trace.'
+            echo 'The Action artifacts contain the actor/runtime logs and, when reached, the portable RLM trace and model route.'
             echo
             echo 'Reproduce against the pinned ref before triage; do not infer a core runtime bug if the failure is an Auto-Dig integration/configuration error.'
           } > "$body"
