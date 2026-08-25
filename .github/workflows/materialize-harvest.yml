@@ -1,0 +1,54 @@
+name: Materialize Auto-Dig harvest
+
+on:
+  push:
+    branches:
+      - 'agent/request-*-harvest-*'
+    paths:
+      - 'harvest-manifests/**'
+      - 'scripts/materialize_harvest.py'
+      - '.github/workflows/materialize-harvest.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  materialize:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Materialize validated harvest packets
+        shell: bash
+        run: |
+          set -euo pipefail
+          shopt -s nullglob
+          manifests=(harvest-manifests/*.json)
+          if [ "${#manifests[@]}" -eq 0 ]; then
+            echo 'No harvest manifests on this branch.'
+            exit 0
+          fi
+          for manifest in "${manifests[@]}"; do
+            python3 scripts/materialize_harvest.py "$manifest"
+          done
+          git diff --check
+
+      - name: Commit generated packet when changed
+        shell: bash
+        run: |
+          set -euo pipefail
+          if git diff --quiet -- digs/; then
+            echo 'Harvest packets already materialized.'
+            exit 0
+          fi
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add digs/
+          git commit -m 'data: materialize Auto-Dig harvest packets'
+          git push
