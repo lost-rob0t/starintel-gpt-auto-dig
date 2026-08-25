@@ -1,11 +1,14 @@
 from __future__ import annotations
 
+import json
 import unittest
 
 from scripts.quasar_autodig_worker import (
     AutoDigLifecycleWorker,
     ExecutionResult,
     LifecycleConflict,
+    QuasarControlError,
+    QuasarWebSocketControlPlane,
 )
 
 
@@ -117,6 +120,201 @@ class FailingExecutor:
         return ExecutionResult.failed(
             code="validation_failed",
             message="merge/publication validation failed",
+        )
+
+
+class FakeSocket:
+    def __init__(self, responses: list[dict]) -> None:
+        self.responses = [json.dumps(response) for response in responses]
+        self.sent: list[dict] = []
+        self.closed = False
+
+    def send(self, payload: str) -> None:
+        self.sent.append(json.loads(payload))
+
+    def recv(self) -> str:
+        if not self.responses:
+            raise AssertionError("unexpected recv")
+        return self.responses.pop(0)
+
+    def close(self) -> None:
+        self.closed = True
+
+
+class SocketFactory:
+    def __init__(self, responses: list[dict]) -> None:
+        self.socket = FakeSocket(responses)
+        self.calls: list[tuple[str, float, str | None]] = []
+
+    def __call__(self, url: str, timeout: float, origin: str | None) -> FakeSocket:
+        self.calls.append((url, timeout, origin))
+        return self.socket
+
+
+class QuasarWebSocketControlPlaneTests(unittest.TestCase):
+    def test_list_runs_uses_authenticated_session_and_exact_control_envelope(self) -> None:
+        factory = SocketFactory(
+            [
+                {
+                    "protocol": "quasar.control.v1",
+                    "id": "worker-1",
+                    "status": "ok",
+                    "result": [{"runId": "run-1", "status": "queued"}],
+                }
+            ]
+        )
+        control = QuasarWebSocketControlPlane(
+            "wss://quasar.internal/control",
+            session_token="secret token+/=",
+            socket_factory=factory,
+            request_id_factory=lambda: "worker-1",
+            timeout=3.5,
+            origin="https://worker.starintel.actor",
+        )
+
+        runs = control.list_runs("workspace-a", limit=7)
+
+        self.assertEqual(runs, [{"runId": "run-1", "status": "queued"}])
+        self.assertEqual(
+            factory.calls,
+            [
+                (
+                    "wss://quasar.internal/control?session=secret%20token%2B%2F%3D",
+                    3.5,
+                    "https://worker.starintel.actor",
+                )
+            ],
+        )
+        self.assertEqual(
+            factory.socket.sent,
+            [
+                {
+                    "protocol": "quasar.control.v1",
+                    "id": "worker-1",
+                    "command": "autodig.run.list",
+                    "payload": {"limit": 7},
+                    "metadata": {
+                        "client": "starintel-gpt-auto-dig-worker",
+                        "workspace": "workspace-a",
+                    },
+                }
+            ],
+        )
+        self.assertTrue(factory.socket.closed)
+
+    def test_claim_maps_quasar_claim_conflict_to_lifecycle_conflict(self) -> None:
+        factory = SocketFactory(
+            [
+                {
+                    "protocol": "quasar.control.v1",
+                    "id": "claim-1",
+                    "status": "error",
+                    "error": {
+                        "code": "autodig.claim-conflict",
+                        "message": "run already claimed",
+                    },
+                }
+            ]
+        )
+        control = QuasarWebSocketControlPlane(
+            "ws://127.0.0.1:8081",
+            session_token="worker-session",
+            socket_factory=factory,
+            request_id_factory=lambda: "claim-1",
+        )
+
+        with self.assertRaises(LifecycleConflict):
+            control.claim_run("ws-a", "run-1", "worker-a")
+
+        self.assertEqual(
+            factory.socket.sent[0]["payload"],
+            {"runId": "run-1", "workerId": "worker-a"},
+        )
+
+    def test_unknown_control_error_keeps_stable_code_without_raw_envelope(self) -> None:
+        factory = SocketFactory(
+            [
+                {
+                    "protocol": "quasar.control.v1",
+                    "id": "get-1",
+                    "status": "error",
+                    "error": {
+                        "code": "security.forbidden",
+                        "message": "workspace denied",
+                        "details": {"internal": "must-not-leak-in-exception-string"},
+                    },
+                }
+            ]
+        )
+        control = QuasarWebSocketControlPlane(
+            "ws://127.0.0.1:8081?mode=worker",
+            session_token="worker-session",
+            socket_factory=factory,
+            request_id_factory=lambda: "get-1",
+        )
+
+        with self.assertRaises(QuasarControlError) as caught:
+            control.get_run("ws-a", "run-1")
+
+        self.assertEqual(caught.exception.code, "security.forbidden")
+        self.assertEqual(str(caught.exception), "workspace denied")
+        self.assertNotIn("internal", str(caught.exception))
+        self.assertEqual(
+            factory.calls[0][0],
+            "ws://127.0.0.1:8081?mode=worker&session=worker-session",
+        )
+
+    def test_complete_and_fail_send_worker_fencing_payloads(self) -> None:
+        responses = [
+            {"protocol": "quasar.control.v1", "id": "1", "status": "ok", "result": {}},
+            {"protocol": "quasar.control.v1", "id": "2", "status": "ok", "result": {}},
+        ]
+        ids = iter(["1", "2"])
+        factory = SocketFactory(responses)
+        control = QuasarWebSocketControlPlane(
+            "ws://127.0.0.1:8081",
+            session_token="worker-session",
+            socket_factory=factory,
+            request_id_factory=lambda: next(ids),
+        )
+
+        control.complete_run(
+            "ws-a",
+            "run-1",
+            "worker-a",
+            "lease-a",
+            {"published": True, "validationPassed": True},
+        )
+        control.fail_run(
+            "ws-a",
+            "run-2",
+            "worker-a",
+            "lease-b",
+            {"code": "validation_failed", "message": "failed"},
+        )
+
+        self.assertEqual(
+            factory.socket.sent[0]["command"],
+            "autodig.worker.complete",
+        )
+        self.assertEqual(
+            factory.socket.sent[0]["payload"],
+            {
+                "runId": "run-1",
+                "workerId": "worker-a",
+                "leaseId": "lease-a",
+                "outcome": {"published": True, "validationPassed": True},
+            },
+        )
+        self.assertEqual(factory.socket.sent[1]["command"], "autodig.worker.fail")
+        self.assertEqual(
+            factory.socket.sent[1]["payload"],
+            {
+                "runId": "run-2",
+                "workerId": "worker-a",
+                "leaseId": "lease-b",
+                "error": {"code": "validation_failed", "message": "failed"},
+            },
         )
 
 
