@@ -64,13 +64,14 @@ select_queue(Queue, State, Decision) :-
     must_be(dict, State),
     maplist(enrich_issue, Queue, Enriched0),
     predsort(compare_candidates, Enriched0, Enriched),
+    length(Enriched, QueueSize),
     state_last_issue(State, LastIssue),
     (   choose_candidate(Enriched, LastIssue, Selected)
-    ->  selected_decision(Selected, State, Decision)
+    ->  selected_decision(Selected, State, QueueSize, Decision)
     ;   Decision = _{
             action:"idle",
             reason:"no eligible investigation target without violating repeat policy",
-            queue_size:0,
+            queue_size:QueueSize,
             next_state:State
         }
     ).
@@ -112,19 +113,26 @@ choose_candidate([Candidate|Rest], LastIssue, Selected) :-
     ),
     !.
 
-selected_decision(Candidate, State, Decision) :-
+selected_decision(Candidate, State, QueueSize, Decision) :-
     put_dict(last_issue, State, Candidate.number, NextState0),
     put_dict(last_priority, NextState0, Candidate.priority, NextState),
+    repeat_allowed(Candidate.rank, RepeatAllowed),
     Decision = _{
         action:"run",
         issue_number:Candidate.number,
         issue_title:Candidate.title,
         issue_url:Candidate.url,
         priority:Candidate.priority,
-        repeat_allowed:(Candidate.rank >= 3),
+        queue_size:QueueSize,
+        repeat_allowed:RepeatAllowed,
         selected_issue:Candidate.source,
         next_state:NextState
     }.
+
+repeat_allowed(Rank, true) :-
+    Rank >= 3,
+    !.
+repeat_allowed(_, false).
 
 state_last_issue(State, LastIssue) :-
     (   get_dict(last_issue, State, Value),
