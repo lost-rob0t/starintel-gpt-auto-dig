@@ -5,6 +5,7 @@ on:
     paths:
       - "scripts/quasar_autodig_worker.py"
       - "tests/test_quasar_autodig_worker.py"
+      - "tests/test_quasar_autodig_recovery.py"
       - ".github/workflows/autodig-lifecycle.yml"
   workflow_dispatch:
 
@@ -21,4 +22,7 @@ jobs:
         with:
           python-version: "3.13"
       - name: Run Quasar Auto-Dig worker lifecycle tests
-        run: python -m unittest tests.test_quasar_autodig_worker
+        run: >-
+          python -m unittest
+          tests.test_quasar_autodig_worker
+          tests.test_quasar_autodig_recovery
