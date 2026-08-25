@@ -7,7 +7,7 @@
         "command": [
           "npx",
           "-y",
-          "@brave/brave-search-mcp-server",
+          "@brave/brave-search-mcp-server@2.1.0",
           "--transport",
           "stdio"
         ],
@@ -26,7 +26,7 @@
         "command": [
           "npx",
           "-y",
-          "mcp-fetch-server"
+          "mcp-fetch-server@1.1.2"
         ],
         "environment": {
           "DEFAULT_LIMIT": "50000"
