@@ -1,0 +1,134 @@
+{
+  "dataset": "flock",
+  "output": "digs/flock/2026-08-25-request-2112-harvest/starintel-documents.jsonl",
+  "documents": [
+    {
+      "dtype": "analysis",
+      "id": "starintel:analysis:flock-request-2112-harvest-dunwoody-renewal-records-2026-08-25",
+      "title": "Flock request #2112 harvest: Dunwoody renewal, operations, and native-record surfaces",
+      "summary": "Harvests mature first-party Dunwoody evidence from the Flock backlash request into the canonical Flock corpus while keeping the Targeted Victory, SixAM Strategies, and West Shore Strategies retainer/astroturf allegations unresolved pending native engagement records.",
+      "metadata": {
+        "date_added": "2026-08-25T04:58:00Z",
+        "date_updated": "2026-08-25T04:58:00Z",
+        "status": "recorded",
+        "language": "en",
+        "tags": ["flock", "request-2112", "harvest", "dunwoody", "rtcc", "contract-renewal", "offboarding", "public-records"],
+        "sources": [
+          {"kind": "primary_government_source", "title": "Real Time Crime Center", "publisher": "City of Dunwoody Police Department", "url": "https://www.dunwoodyga.gov/police/crime-info-stats/real-time-crime-center", "retrieved_at": "2026-08-25T04:58:00Z", "credibility": 0.99},
+          {"kind": "primary_government_source", "title": "Transparency & Data Sharing Initiative", "publisher": "City of Dunwoody Police Department", "url": "https://www.dunwoodyga.gov/police/about/transparency-data-sharing-initiative", "retrieved_at": "2026-08-25T04:58:00Z", "credibility": 0.99},
+          {"kind": "primary_vendor_transparency", "title": "Dunwoody GA PD Transparency Portal", "publisher": "Flock Safety", "url": "https://transparency.flocksafety.com/dunwoody-ga-pd", "retrieved_at": "2026-08-25T04:58:00Z", "credibility": 0.97},
+          {"kind": "primary_government_source", "title": "Agendas and Minutes", "publisher": "City of Dunwoody", "url": "https://www.dunwoodyga.gov/government/agendas-and-minutes", "retrieved_at": "2026-08-25T04:58:00Z", "credibility": 0.99},
+          {"kind": "primary_government_source", "title": "City Clerk", "publisher": "City of Dunwoody", "url": "https://www.dunwoodyga.gov/government/departments/city-clerk", "retrieved_at": "2026-08-25T04:58:00Z", "credibility": 0.99},
+          {"kind": "primary_government_source", "title": "Finance Department", "publisher": "City of Dunwoody", "url": "https://www.dunwoodyga.gov/government/departments/finance", "retrieved_at": "2026-08-25T04:58:00Z", "credibility": 0.99},
+          {"kind": "primary_government_source", "title": "Financial Reports", "publisher": "City of Dunwoody", "url": "https://www.dunwoodyga.gov/government/departments/finance/financial-reports", "retrieved_at": "2026-08-25T04:58:00Z", "credibility": 0.99},
+          {"kind": "primary_government_source", "title": "June 2026 Police Operations Summary", "publisher": "City of Dunwoody", "url": "https://www.dunwoodyga.gov/home/showpublisheddocument/4600/639192024737230000", "retrieved_at": "2026-08-25T04:58:00Z", "credibility": 0.99}
+        ],
+        "assessment": {
+          "confidence": 0.97,
+          "gaps": [
+            "The native February 6 calendar production and February 12 meeting invitation, headers, attachments, and surrounding correspondence remain unresolved.",
+            "No primary contract, SOW, invoice, payment, or attributable work product reviewed here establishes that Flock retained Targeted Victory, SixAM Strategies, or West Shore Strategies.",
+            "The current exact executed 2026 Dunwoody Flock agreement bundle and its incorporated terms require direct contract-level reconciliation.",
+            "Account-level RTCC/Flock/Fusus access, audit logs, camera-level inventory, and actual external-sharing configuration remain unresolved."
+          ]
+        },
+        "verification": {
+          "status": "source-backed",
+          "verified": true,
+          "verified_at": "2026-08-25T04:58:00Z",
+          "last_reviewed_at": "2026-08-25T04:58:00Z",
+          "methods": ["request #2112 harvest review", "issue-comment provenance reconciliation", "first-party Dunwoody source review", "evidence-state boundary review"]
+        },
+        "handling": {"visibility": "public", "pii": false, "sensitive": false},
+        "provenance": {
+          "collector": "OpenAI GPT-5.6 Sol",
+          "collector_type": "research-agent",
+          "method": "Auto-Dig request #2112 harvest-first materialization",
+          "pipeline": "starintel-auto-dig",
+          "run_id": "request-2112-harvest-2026-08-25",
+          "metadata": {"request_issue": 2112, "request_identity": "flock-pr-crisis-network-cancellations-offboarding-2026"}
+        },
+        "related_ids": []
+      },
+      "data": {
+        "question": "Which mature Dunwoody findings from request #2112 are established strongly enough to materialize without promoting the unresolved PR-firm/astroturf allegations?",
+        "method": "Harvested first-party Dunwoody operational, transparency, and records-custody evidence accumulated in request comments while retaining secondary PR-firm meeting claims only as unresolved targets.",
+        "framework": "Deployment state, renewal controversy, platform operation, records custody, PR-firm meeting lead, contractual engagement, paid influence, and causal effect are separate evidence states.",
+        "scope": "Dunwoody Flock-powered RTCC, continued 2026 operational state, public transparency/retention surface, and native municipal records/payment recovery paths relevant to the crisis-PR allegation.",
+        "input_ids": [],
+        "finding_ids": [],
+        "findings": [
+          "Dunwoody Police publicly identifies its Real Time Crime Center as Flock-powered; the center was unveiled in August 2024 and combines LPR and other camera/response feeds.",
+          "The current Dunwoody Flock transparency surface reports a 30-day retention setting and exposes a large camera surface; this is a current public configuration statement, not a historical guarantee for every period or device.",
+          "City of Dunwoody records infrastructure provides native recovery surfaces for agendas, agenda packets, minutes, videos, approved contracts and agreements, open-records productions, contract administration, Open Checkbook data, and monthly financial/check-register records.",
+          "Those municipal systems provide a deterministic evidence route for testing the Targeted Victory, SixAM Strategies, West Shore Strategies, Stagwell, or related professional-services allegations through contracts, SOWs, invoices, purchase orders, payments, reimbursements, correspondence, and work product.",
+          "Dunwoody's June 2026 police operations material documents active RTCC/remote-camera use and a Drone-as-First-Responder assist after the April renewal controversy, supporting classification of Dunwoody as a contested-but-continued/renewed Flock deployment rather than a cancellation case.",
+          "Continued operation after the controversy does not establish that an outside PR firm caused the renewal decision, had platform access, or produced paid local advocacy.",
+          "The reported February 12 RTCC-tour meeting and outside-firm attendee list remain an attributed open-records lead until the native calendar production and related records are independently recovered."
+        ],
+        "conclusions": [
+          "Dunwoody is a verified active/continued Flock case within the 2026 backlash ledger, not a completed cancellation/offboarding case.",
+          "The strongest next step for the PR-firm allegation is no longer generic web research; it is native City Clerk, open-records, procurement, accounts-payable, and check-register recovery joined to Flock-side records.",
+          "Nothing in the mature evidence harvested here supports canonizing a Targeted Victory, SixAM, or West Shore retainer, astroturf campaign, paid media placement, or causal influence on the council vote."
+        ],
+        "recommendations": [
+          "Recover the original February 6 calendar item for the February 12 RTCC tour, including headers, invitees, attachments, and surrounding February 6-12 correspondence.",
+          "Search Dunwoody contracts, SOWs, purchase orders, invoices, Open Checkbook, monthly check registers, reimbursements, and vendor records for Targeted Victory, SixAM Strategies, West Shore Strategies, Stagwell, Flock, and related legal entities.",
+          "Recover the executed 2026 Flock agreement bundle and compare its exact terms against older/public standard terms rather than back-projecting current web terms.",
+          "Recover account-level RTCC/Flock/Fusus audit, sharing, and camera inventory evidence separately from the PR/public-affairs investigation."
+        ],
+        "counterarguments": [
+          "An outside communications professional appearing on a reported meeting invite does not establish a paid engagement, meeting substance, or resulting influence tactic.",
+          "A renewed or operational Flock deployment after public controversy does not establish that outside communications activity caused the decision."
+        ],
+        "limitations": [
+          "This bounded harvest intentionally excludes unverified retainer, astroturf, paid-placement, and causal-influence claims.",
+          "It materializes mature Dunwoody first-party evidence while the broader national cancellation/offboarding and PR-network request remains open."
+        ],
+        "unresolved": [
+          "Did Flock retain Targeted Victory, SixAM Strategies, West Shore Strategies, or related firms for Dunwoody or the broader backlash response?",
+          "What did the February 12 Dunwoody RTCC meeting actually discuss and produce?",
+          "What executed 2026 contract terms governed Dunwoody's data, publicity, hardware, termination, and access state?",
+          "Which accounts and agencies actually accessed or shared Dunwoody RTCC/Flock data during the relevant period?"
+        ],
+        "confidence": 0.97
+      }
+    },
+    {
+      "dtype": "research-pass",
+      "id": "starintel:research-pass:request-2112-harvest-dunwoody-2026-08-25",
+      "title": "Auto-Dig request #2112 Dunwoody mature-evidence harvest",
+      "summary": "Harvest-first pass converts mature first-party Dunwoody deployment, operational, and native-record-recovery evidence from issue staging into the canonical Flock corpus without promoting unresolved PR-firm or astroturf allegations.",
+      "metadata": {
+        "date_added": "2026-08-25T04:58:00Z",
+        "date_updated": "2026-08-25T04:58:00Z",
+        "status": "completed",
+        "language": "en",
+        "tags": ["research-pass", "auto-dig-request", "flock", "request-2112", "harvest", "dunwoody", "high-priority"],
+        "sources": [
+          {"kind": "primary_government_source", "title": "Real Time Crime Center", "publisher": "City of Dunwoody Police Department", "url": "https://www.dunwoodyga.gov/police/crime-info-stats/real-time-crime-center", "retrieved_at": "2026-08-25T04:58:00Z", "credibility": 0.99},
+          {"kind": "primary_government_source", "title": "Agendas and Minutes", "publisher": "City of Dunwoody", "url": "https://www.dunwoodyga.gov/government/agendas-and-minutes", "retrieved_at": "2026-08-25T04:58:00Z", "credibility": 0.99},
+          {"kind": "primary_government_source", "title": "Finance Department", "publisher": "City of Dunwoody", "url": "https://www.dunwoodyga.gov/government/departments/finance", "retrieved_at": "2026-08-25T04:58:00Z", "credibility": 0.99},
+          {"kind": "primary_government_source", "title": "Financial Reports", "publisher": "City of Dunwoody", "url": "https://www.dunwoodyga.gov/government/departments/finance/financial-reports", "retrieved_at": "2026-08-25T04:58:00Z", "credibility": 0.99}
+        ],
+        "assessment": {"confidence": 0.97},
+        "verification": {"status": "source-backed", "verified": true, "verified_at": "2026-08-25T04:58:00Z", "last_reviewed_at": "2026-08-25T04:58:00Z", "methods": ["complete request harvest review", "first-party-source reconciliation", "claim-state separation"]},
+        "handling": {"visibility": "public", "pii": false, "sensitive": false},
+        "provenance": {"collector": "OpenAI GPT-5.6 Sol", "collector_type": "research-agent", "method": "queue-first harvest review and canonical materialization", "pipeline": "starintel-auto-dig", "run_id": "request-2112-harvest-2026-08-25", "metadata": {"request_issue": 2112, "request_identity": "flock-pr-crisis-network-cancellations-offboarding-2026", "packet_path": "digs/flock/2026-08-25-request-2112-harvest/"}},
+        "related_ids": ["starintel:analysis:flock-request-2112-harvest-dunwoody-renewal-records-2026-08-25"]
+      },
+      "data": {
+        "research_question": "Which mature first-party Dunwoody findings from request #2112 are ready to leave issue staging and enter the canonical Flock corpus?",
+        "method": "Reviewed request #2112's accumulated evidence, isolated the first-party Dunwoody operational and municipal-record findings, and harvested them without canonizing the unresolved outside-PR-firm allegation.",
+        "classification_rules": ["Issue comments are staging, not completion.", "Meeting lead is not a retainer.", "Retainer is not proof of a tactic or paid placement.", "Timing is not causation.", "Continued deployment after controversy is not evidence of PR-firm influence."],
+        "finding_ids": ["starintel:analysis:flock-request-2112-harvest-dunwoody-renewal-records-2026-08-25"],
+        "findings": [
+          {"finding": "Dunwoody's Flock-powered RTCC and continued June 2026 operational state are now canonicalized as a contested-but-continued deployment."},
+          {"finding": "Dunwoody's City Clerk, open-records, contract-administration, Open Checkbook, and financial-report surfaces are now canonicalized as the native recovery path for the unresolved PR-firm engagement claim."},
+          {"finding": "The outside-firm meeting/retainer/astroturf chain remains explicitly unresolved pending native records."
+          }
+        ]
+      }
+    }
+  ]
+}
