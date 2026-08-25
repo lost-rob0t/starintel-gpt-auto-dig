@@ -14,7 +14,9 @@ operations owned by the supervising actor.
 
 The model never supplies an executable, package, version, environment value, or
 side-effect classification. Brave's secret is referenced through env_ref/1 and
-is resolved only at the explicit lifecycle boundary.
+is resolved only at the explicit lifecycle boundary. Non-secret process tuning
+is likewise represented by a trusted config_ref/1 rather than a raw declaration
+value.
 */
 
 :- use_module(library(lists)).
@@ -22,6 +24,7 @@ is resolved only at the explicit lifecycle boundary.
 :- use_module(rlm_mcp_server, []).
 
 :- multifile rlm_mcp_policy:mcp_stdio_profile/2.
+:- multifile rlm_mcp_policy:mcp_config_value/2.
 :- multifile rlm_mcp_server:mcp_server/2.
 
 /* Fixed host execution profiles. Versions intentionally match opencode.jsonc
@@ -53,6 +56,8 @@ rlm_mcp_policy:mcp_stdio_profile(
         max_output_bytes:262144
     }).
 
+rlm_mcp_policy:mcp_config_value(auto_dig_fetch_default_limit, "50000").
+
 rlm_mcp_server:mcp_server(
     brave,
     mcp_server_spec{
@@ -70,7 +75,8 @@ rlm_mcp_server:mcp_server(
     mcp_server_spec{
         transport:stdio(profile(auto_dig_fetch_npx)),
         install:none,
-        environment:[],
+        environment:[env('DEFAULT_LIMIT',
+                         config_ref(auto_dig_fetch_default_limit))],
         working_directory:inherit,
         version:'1.1.2',
         capabilities:[tools],
