@@ -3,6 +3,7 @@ name: Auto-Dig lifecycle
 on:
   pull_request:
     paths:
+      - "pyproject.toml"
       - "scripts/quasar_autodig_worker.py"
       - "scripts/quasar_issue_queue.py"
       - "scripts/quasar_autodig_runtime.py"
@@ -11,6 +12,7 @@ on:
       - "tests/test_quasar_autodig_heartbeat.py"
       - "tests/test_quasar_issue_queue_bridge.py"
       - "tests/test_quasar_autodig_runtime.py"
+      - "tests/test_quasar_autodig_packaging.py"
       - ".github/workflows/autodig-lifecycle.yml"
   workflow_dispatch:
 
@@ -34,3 +36,4 @@ jobs:
           tests.test_quasar_autodig_heartbeat
           tests.test_quasar_issue_queue_bridge
           tests.test_quasar_autodig_runtime
+          tests.test_quasar_autodig_packaging
