@@ -107,12 +107,13 @@ check_import_projection(Session) :-
               [tool('mcp.auto_dig_fixture.fixture_search')]),
     tool_discover(Registry, Schemas),
     length(Schemas, 2),
-    assertion((member(AllowedSchema, Schemas),
-               AllowedSchema.name ==
-                   'mcp.auto_dig_fixture.fixture_search')),
-    assertion((member(DeniedSchema, Schemas),
-               DeniedSchema.name ==
-                   'mcp.auto_dig_fixture.fixture_admin')),
+    findall(Name,
+            ( member(Schema, Schemas),
+              get_dict(name, Schema, Name)
+            ),
+            SchemaNames),
+    assertion(memberchk('mcp.auto_dig_fixture.fixture_search', SchemaNames)),
+    assertion(memberchk('mcp.auto_dig_fixture.fixture_admin', SchemaNames)),
     tool_registry_runtime_tools(Registry,
                                 Capabilities,
                                 RuntimeTools),
