@@ -11,7 +11,7 @@ permissions:
   contents: read
 
 env:
-  PROLOG_RLM_REF: 30c620bae7ef6d4c21a98ffdf17bb969b2686638
+  PROLOG_RLM_REF: 7f0050f524db6de5293163241176ac4660f04349
 
 jobs:
   check:
@@ -27,6 +27,12 @@ jobs:
           repository: lost-rob0t/prolog-rlm
           ref: ${{ env.PROLOG_RLM_REF }}
           path: .prolog-rlm
+
+      - name: Verify exact Prolog-RLM checkout
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git -C .prolog-rlm rev-parse HEAD)" = "$PROLOG_RLM_REF"
 
       - name: Install SWI-Prolog
         shell: bash
@@ -48,7 +54,7 @@ jobs:
             swipl -q -s test/rlm_cli_test.pl -g 'run_tests,halt'
           )
 
-      - name: Run actor, router, and MCP policy/lifecycle tests
+      - name: Run actor, native RLM, router, and MCP tests
         shell: bash
         run: |
           set -euo pipefail
@@ -56,6 +62,11 @@ jobs:
             -q \
             -p "library=$GITHUB_WORKSPACE/.prolog-rlm/prolog" \
             -s agents/test_auto_dig_prolog_actor.pl \
+            -g 'run_tests,halt'
+          swipl \
+            -q \
+            -p "library=$GITHUB_WORKSPACE/.prolog-rlm/prolog" \
+            -s agents/test_auto_dig_rlm_runner.pl \
             -g 'run_tests,halt'
           swipl \
             -q \
