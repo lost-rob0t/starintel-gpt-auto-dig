@@ -2,7 +2,8 @@
           [ main/1,
             auto_dig_runtime_options/3,
             auto_dig_runtime_options/6,
-            auto_dig_query/1
+            auto_dig_query/1,
+            outcome_log_summary/2
           ]).
 
 :- use_module(library(readutil)).
@@ -17,22 +18,35 @@
 main(Argv) :-
     catch(main_run(Argv, ExitCode),
           Exception,
-          ( print_message(error, Exception),
+          ( log_exception(fatal, Exception),
             ExitCode = 2
           )),
     halt(ExitCode).
 
 main_run(Argv, ExitCode) :-
     parse_args(Argv, Args),
+    log_line('phase=start model=~w reasoning_effort=~w',
+             [Args.model, Args.reasoning_effort]),
     read_file_to_string(Args.context_file, Context, []),
+    string_length(Context, ContextChars),
+    log_line('phase=context_loaded chars=~d file=~w',
+             [ContextChars, Args.context_file]),
     auto_dig_query(Query),
     run_research_completion(Args, Query, Context, Outcome),
+    log_outcome(Outcome),
     write_trace_json(Args.output, auto_dig_rlm_result, Outcome),
+    log_line('phase=result_written file=~w', [Args.output]),
     write_trace_file(Args.trace, Outcome),
-    outcome_exit_code(Outcome, ExitCode).
+    ( Args.trace == ''
+    -> true
+    ;  log_line('phase=trace_written file=~w', [Args.trace])
+    ),
+    outcome_exit_code(Outcome, ExitCode),
+    log_line('phase=finish exit_code=~d', [ExitCode]).
 
 run_research_completion(Args, Query, Context, Outcome) :-
     auto_dig_mcp_servers(Servers),
+    log_line('phase=mcp_session_open servers=~q', [Servers]),
     AuthorityContext = auto_dig_rlm_research,
     setup_call_cleanup(
         auto_dig_mcp_session_open(Servers, AuthorityContext, Session),
@@ -42,7 +56,9 @@ run_research_completion(Args, Query, Context, Outcome) :-
                                              AuthorityContext,
                                              Session,
                                              Outcome),
-        auto_dig_mcp_session_close(Session)).
+        ( log_line('phase=mcp_session_close', []),
+          auto_dig_mcp_session_close(Session)
+        )).
 
 run_research_completion_with_session(Args,
                                      Query,
@@ -52,13 +68,25 @@ run_research_completion_with_session(Args,
                                      Outcome) :-
     auto_dig_mcp_session_registry(Session, Registry),
     auto_dig_mcp_session_capabilities(Session, McpCapabilities),
+    length(McpCapabilities, McpCapabilityCount),
+    log_line('phase=mcp_ready capability_count=~d capabilities=~q',
+             [McpCapabilityCount, McpCapabilities]),
     auto_dig_runtime_options(Args.model,
                              Args.reasoning_effort,
                              Registry,
                              AuthorityContext,
                              McpCapabilities,
                              Options),
-    rlm_completion(Query, text(Context), Options, Outcome).
+    memberchk(budget(Budget), Options),
+    log_line('phase=rlm_start token_budget=~d model_calls=~d tool_calls=~d recursion_depth=~d time_limit=~w',
+             [ Budget.max_total_tokens,
+               Budget.max_model_calls,
+               Budget.max_tool_calls,
+               Budget.max_recursion_depth,
+               Budget.time_limit
+             ]),
+    rlm_completion(Query, text(Context), Options, Outcome),
+    log_line('phase=rlm_return', []).
 
 auto_dig_runtime_options(Model, ReasoningEffort, Options) :-
     auto_dig_runtime_options(Model,
@@ -124,6 +152,88 @@ auto_dig_query("You are the Auto-Dig Prolog actor with bounded read-only web res
 outcome_exit_code(ok(_), 0) :- !.
 outcome_exit_code(error(_), 1) :- !.
 outcome_exit_code(_, 1).
+
+log_outcome(Outcome) :-
+    outcome_log_summary(Outcome, Summary),
+    ( Outcome = error(_)
+    -> format(user_error, '::error title=Auto-Dig Prolog-RLM failure::~s~n', [Summary])
+    ;  true
+    ),
+    log_line('phase=outcome ~s', [Summary]).
+
+outcome_log_summary(ok(Result), Summary) :-
+    !,
+    usage_from_result(Result, Usage),
+    usage_summary('status=ok', Usage, Summary).
+outcome_log_summary(error(Error), Summary) :-
+    !,
+    error_field(Error, phase, unknown, Phase),
+    error_field(Error, kind, unknown, Kind),
+    error_field(Error, message, "unspecified error", Message),
+    error_field(Error, used, unknown, Used),
+    error_field(Error, limit, unknown, Limit),
+    usage_from_error(Error, Usage),
+    format(string(Prefix),
+           'status=error phase=~w kind=~w message=~w used=~w limit=~w',
+           [Phase, Kind, Message, Used, Limit]),
+    usage_summary(Prefix, Usage, Summary).
+outcome_log_summary(Other, Summary) :-
+    format(string(Summary), 'status=unknown outcome=~q', [Other]).
+
+usage_from_result(Result, Usage) :-
+    ( is_dict(Result), get_dict(usage, Result, Found), is_dict(Found)
+    -> Usage = Found
+    ;  Usage = _{}
+    ).
+
+usage_from_error(Error, Usage) :-
+    ( is_dict(Error), get_dict(usage, Error, Found), is_dict(Found)
+    -> Usage = Found
+    ;  Usage = _{}
+    ).
+
+usage_summary(Prefix, Usage, Summary) :-
+    usage_field(Usage, model_calls, unknown, ModelCalls),
+    usage_field(Usage, prompt_tokens, unknown, PromptTokens),
+    usage_field(Usage, completion_tokens, unknown, CompletionTokens),
+    usage_field(Usage, total_tokens, unknown, TotalTokens),
+    usage_field(Usage, cost_usd, unknown, CostUsd),
+    format(string(Summary),
+           '~w model_calls=~w prompt_tokens=~w completion_tokens=~w total_tokens=~w cost_usd=~w',
+           [ Prefix,
+             ModelCalls,
+             PromptTokens,
+             CompletionTokens,
+             TotalTokens,
+             CostUsd
+           ]).
+
+error_field(Error, Key, Default, Value) :-
+    ( is_dict(Error), get_dict(Key, Error, Found)
+    -> Value = Found
+    ;  Value = Default
+    ).
+
+usage_field(Usage, Key, Default, Value) :-
+    ( is_dict(Usage), get_dict(Key, Usage, Found)
+    -> Value = Found
+    ;  Value = Default
+    ).
+
+log_exception(Phase, Exception) :-
+    message_to_string(Exception, Message),
+    format(user_error,
+           '::error title=Auto-Dig Prolog-RLM exception::phase=~w message=~s~n',
+           [Phase, Message]),
+    log_line('phase=~w exception=~s', [Phase, Message]).
+
+log_line(Format, Args) :-
+    get_time(Now),
+    format_time(string(Timestamp), '%FT%TZ', Now, [utc(true)]),
+    format(user_error, '[auto-dig-rlm] ~s ', [Timestamp]),
+    format(user_error, Format, Args),
+    nl(user_error),
+    flush_output(user_error).
 
 write_trace_file('', _) :- !.
 write_trace_file(Path, Outcome) :-
