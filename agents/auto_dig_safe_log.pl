@@ -15,7 +15,8 @@ safe_log(Tag, Format, Args) :-
     format(string(Raw), Format, Args),
     safe_text(Raw, Safe),
     get_time(Now),
-    format_time(string(Timestamp), '%FT%TZ', Now, [utc(true)]),
+    stamp_date_time(Now, DateTime, 'UTC'),
+    format_time(string(Timestamp), '%FT%TZ', DateTime),
     format(user_error, '[~w] ~s ~s~n', [Tag, Timestamp, Safe]),
     flush_output(user_error).
 
