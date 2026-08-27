@@ -37,6 +37,7 @@ client_capabilities(mcp_client_capabilities{}).
 auto_dig_mcp_session_open(Servers, AuthorityContext, Session) :-
     require_server_list(Servers),
     require_authority_context(AuthorityContext),
+    mcp_log('session_open servers=~q', [Servers]),
     lifecycle_phase(registry_create,
                     tool_registry_create(Registry)),
     catch(open_session(Servers,
@@ -44,10 +45,12 @@ auto_dig_mcp_session_open(Servers, AuthorityContext, Session) :-
                        Registry,
                        Session),
           Exception,
-          ( safe_registry_destroy(Registry),
+          ( mcp_log('session_open state=error', []),
+            safe_registry_destroy(Registry),
             safe_authority_clear(AuthorityContext),
             throw(Exception)
-          )).
+          )),
+    mcp_log('session_open state=ok', []).
 
 open_session(Servers, AuthorityContext, Registry, Session) :-
     lifecycle_phase(authority_setup,
@@ -59,6 +62,8 @@ open_session(Servers, AuthorityContext, Registry, Session) :-
     lifecycle_phase(capability_projection,
                     auto_dig_mcp_read_capabilities(Servers,
                                                    Capabilities)),
+    length(Capabilities, CapabilityCount),
+    mcp_log('capability_projection count=~d', [CapabilityCount]),
     Session = auto_dig_mcp_session{
                   authority_context:AuthorityContext,
                   registry:Registry,
@@ -124,6 +129,9 @@ import_server_tools(Server, Registry, Handle, Client, State) :-
                                      ImportOptions,
                                      ImportOutcome)),
     require_ok(mcp_import(Server), ImportOutcome, Import),
+    length(Import.tools, ImportedCount),
+    mcp_log('mcp_import server=~w imported_tools=~d',
+            [Server, ImportedCount]),
     State = auto_dig_mcp_server_state{
                 server:Server,
                 handle:Handle,
@@ -141,10 +149,12 @@ auto_dig_mcp_session_capabilities(Session, Capabilities) :-
 
 auto_dig_mcp_session_close(Session) :-
     require_session(Session),
+    mcp_log('session_close state=start', []),
     reverse(Session.servers, ReverseStates),
     maplist(safe_server_close, ReverseStates),
     safe_registry_destroy(Session.registry),
-    safe_authority_clear(Session.authority_context).
+    safe_authority_clear(Session.authority_context),
+    mcp_log('session_close state=ok', []).
 
 safe_server_close(State) :-
     (   is_dict(State, auto_dig_mcp_server_state),
@@ -171,11 +181,20 @@ safe_authority_clear(Context) :-
     catch(rlm_authority_clear(Context), _, true).
 
 lifecycle_phase(Phase, Goal) :-
-    catch(call(Goal),
+    mcp_log('phase=~q state=start', [Phase]),
+    catch((   call(Goal)
+          ->  mcp_log('phase=~q state=ok', [Phase])
+          ;   throw(error(auto_dig_mcp_runner_error{
+                              phase:Phase,
+                              kind:goal_failed}, _))
+          ),
           Exception,
-          throw(error(auto_dig_mcp_runner_error{
-                          phase:Phase,
-                          exception:Exception}, _))).
+          ( message_to_string(Exception, Message),
+            mcp_log('phase=~q state=error message=~s', [Phase, Message]),
+            throw(error(auto_dig_mcp_runner_error{
+                            phase:Phase,
+                            exception:Exception}, _))
+          )).
 
 require_ok(_, ok(Value), Value) :- !.
 require_ok(Phase, error(Error), _) :-
@@ -217,3 +236,11 @@ require_session(Session) :-
     !.
 require_session(Session) :-
     throw(error(type_error(auto_dig_mcp_session, Session), _)).
+
+mcp_log(Format, Args) :-
+    get_time(Now),
+    format_time(string(Timestamp), '%FT%TZ', Now, [utc(true)]),
+    format(user_error, '[auto-dig-mcp] ~s ', [Timestamp]),
+    format(user_error, Format, Args),
+    nl(user_error),
+    flush_output(user_error).
