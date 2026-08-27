@@ -19,7 +19,7 @@ concurrency:
   cancel-in-progress: false
 
 env:
-  PROLOG_RLM_REF: 30c620bae7ef6d4c21a98ffdf17bb969b2686638
+  PROLOG_RLM_REF: 7f0050f524db6de5293163241176ac4660f04349
 
 jobs:
   actor:
@@ -38,6 +38,12 @@ jobs:
           repository: lost-rob0t/prolog-rlm
           ref: ${{ env.PROLOG_RLM_REF }}
           path: .prolog-rlm
+
+      - name: Verify exact Prolog-RLM checkout
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git -C .prolog-rlm rev-parse HEAD)" = "$PROLOG_RLM_REF"
 
       - name: Install SWI-Prolog
         shell: bash
@@ -68,6 +74,12 @@ jobs:
             -s agents/test_auto_dig_prolog_actor.pl \
             -g 'run_tests,halt' \
             2>&1 | tee "$RUNNER_TEMP/auto-dig-actor-tests.log"
+          swipl \
+            -q \
+            -p "library=$GITHUB_WORKSPACE/.prolog-rlm/prolog" \
+            -s agents/test_auto_dig_rlm_runner.pl \
+            -g 'run_tests,halt' \
+            2>&1 | tee "$RUNNER_TEMP/auto-dig-rlm-runner-tests.log"
           swipl \
             -q \
             -s agents/test_auto_dig_model_router.pl \
@@ -209,7 +221,17 @@ jobs:
               branch:$branch,
               prolog_rlm_ref:$prolog_rlm_ref,
               issue_number:($issue|tonumber),
-              status:"selected"
+              status:"selected",
+              rlm_features:[
+                "automatic_default_skills",
+                "compiled_prompt_projection",
+                "native_typed_planner",
+                "planner_validation_retry",
+                "context_search_peek_slice",
+                "depth_2_recursion",
+                "permanent_context_propagation",
+                "proof_carrying_child_acceptance"
+              ]
             }' > "$run_dir/run.json"
 
           echo "branch=$branch" >> "$GITHUB_OUTPUT"
@@ -272,7 +294,7 @@ jobs:
 
           echo "Selected ${model} with reasoning effort ${effort} (${tier})."
 
-      - name: Run a bounded live Prolog-RLM reasoning pass
+      - name: Run bounded native Prolog-RLM research reasoning
         if: steps.target.outputs.action == 'run'
         env:
           OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
@@ -294,28 +316,17 @@ jobs:
             exit 1
           fi
 
-          query="$(cat <<'EOF'
-          You are the Auto-Dig Prolog actor. Read the selected investigation request as opaque external context.
-          Produce the next bounded research slice that moves the request toward completion.
-          Use the facts in the request rather than inventing facts. When the context is too large or uncertain,
-          use RLM recursion to inspect the relevant subcontext. Explicitly identify unresolved facts, primary-source
-          targets, and what evidence would falsify the current hypothesis. Do not claim research was performed when
-          it was not. Return a concrete execution plan suitable for the next tool-enabled actor stage.
-          EOF
-          )"
-
           set +e
-          swipl -q -s .prolog-rlm/bin/prolog-rlm.pl -- rlm \
-            "$query" \
+          swipl \
+            -q \
+            -p "library=$GITHUB_WORKSPACE/.prolog-rlm/prolog" \
+            -s agents/auto_dig_rlm_runner.pl \
+            -- \
             --context-file "$REQUEST_FILE" \
             --model "$MODEL" \
             --reasoning-effort "$REASONING_EFFORT" \
-            --max-tokens 2048 \
-            --max-cost 0.10 \
-            --time-limit 90 \
-            --json \
+            --output "$RUN_DIR/rlm-result.json" \
             --trace "$RUN_DIR/rlm-trace.json" \
-            > "$RUN_DIR/rlm-result.json" \
             2> "$RUN_DIR/rlm-stderr.log"
           status=$?
           set -e
@@ -328,6 +339,11 @@ jobs:
             cat "$RUN_DIR/rlm-stderr.log" >&2
             exit "$status"
           fi
+
+          jq -e '
+            .schema == "prolog-rlm.trace.v1" and
+            .name == "auto_dig_rlm_result"
+          ' "$RUN_DIR/rlm-result.json" >/dev/null
 
       - name: Push successful actor run branch
         if: steps.target.outputs.action == 'run'
@@ -387,7 +403,7 @@ jobs:
           branch_url="${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/tree/${BRANCH}"
           gh issue comment "$ISSUE" \
             --repo "$GITHUB_REPOSITORY" \
-            --body "Auto-Dig Prolog actor completed bounded run \`${RUN_ID}\`.\n\n- Branch: ${branch_url}\n- Prolog-RLM: \`${PROLOG_RLM_REF}\`\n- Expert route: \`${MODEL}\`, reasoning \`${REASONING_EFFORT}\`\n- Action log: ${run_url}\n- Stage: queue selection + expert model routing + supervised actor runtime + depth-1 RLM reasoning.\n\nThis receipt does **not** mark the investigation complete; tool-enabled research and canonical StarIntel writes remain separate gates."
+            --body "Auto-Dig Prolog actor completed bounded run \`${RUN_ID}\`.\n\n- Branch: ${branch_url}\n- Prolog-RLM: \`${PROLOG_RLM_REF}\`\n- Expert route: \`${MODEL}\`, reasoning \`${REASONING_EFFORT}\`\n- Action log: ${run_url}\n- Stage: supervised actor + native typed RLM planner + automatic default skills + compiled prompt projection + bounded depth-2 context search/peek/slice recursion.\n\nThis receipt does **not** mark the investigation complete; tool-enabled research and canonical StarIntel writes remain separate gates."
 
       - name: Upload actor diagnostics
         if: always()
@@ -398,6 +414,7 @@ jobs:
           path: |
             ${{ runner.temp }}/prolog-rlm-smoke.log
             ${{ runner.temp }}/auto-dig-actor-tests.log
+            ${{ runner.temp }}/auto-dig-rlm-runner-tests.log
             ${{ runner.temp }}/auto-dig-model-router-tests.log
             ${{ runner.temp }}/queue.json
             ${{ runner.temp }}/decision.json
