@@ -10,6 +10,8 @@ test(native_planner_features_are_explicitly_enabled) :-
     assertion(memberchk(skill_catalog(default), Options)),
     assertion(memberchk(prompt_compile_mode(compiled), Options)),
     assertion(memberchk(planner_attempts(3), Options)),
+    assertion(memberchk(planner_reasoning_effort(low), Options)),
+    assertion(memberchk(planner_max_tokens(4096), Options)),
     assertion(\+ memberchk(planner_handler(_), Options)).
 
 test(research_context_and_recursion_are_available) :-
