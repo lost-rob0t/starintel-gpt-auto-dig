@@ -240,7 +240,7 @@ require_session(Session) :-
 mcp_log(Format, Args) :-
     get_time(Now),
     format_time(string(Timestamp), '%FT%TZ', Now, [utc(true)]),
-    format(user_error, '[auto-dig-mcp] ~s ', [Timestamp]),
-    format(user_error, Format, Args),
-    nl(user_error),
-    flush_output(user_error).
+    format('[auto-dig-mcp] ~s ', [Timestamp]),
+    format(Format, Args),
+    nl,
+    flush_output.
