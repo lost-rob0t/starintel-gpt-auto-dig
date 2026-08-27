@@ -232,7 +232,8 @@ jobs:
                 "permanent_context_propagation",
                 "proof_carrying_child_acceptance",
                 "read_only_brave_search_mcp",
-                "read_only_fetch_mcp"
+                "read_only_fetch_mcp",
+                "emission_boundary_diagnostic_sanitization"
               ]
             }' > "$run_dir/run.json"
 
@@ -297,6 +298,7 @@ jobs:
           echo "Selected ${model} with reasoning effort ${effort} (${tier})."
 
       - name: Run bounded native Prolog-RLM web research
+        id: research
         if: steps.target.outputs.action == 'run'
         env:
           OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
@@ -335,16 +337,25 @@ jobs:
             --reasoning-effort "$REASONING_EFFORT" \
             --output "$RUN_DIR/rlm-result.json" \
             --trace "$RUN_DIR/rlm-trace.json" \
-            2> "$RUN_DIR/rlm-stderr.log"
-          status=$?
+            2>&1 \
+            | python3 agents/auto_dig_failure_report.py --stream \
+            | tee "$RUN_DIR/rlm-stderr.log" >&2
+          pipeline_status=("${PIPESTATUS[@]}")
           set -e
+
+          status="${pipeline_status[0]:-1}"
+          sanitizer_status="${pipeline_status[1]:-1}"
+          tee_status="${pipeline_status[2]:-1}"
+          if [[ "$sanitizer_status" -ne 0 || "$tee_status" -ne 0 ]]; then
+            echo "::error title=Auto-Dig diagnostic emission failure::sanitizer=${sanitizer_status} tee=${tee_status}"
+            status=2
+          fi
 
           jq --argjson status "$status" '.status = (if $status == 0 then "researched" else "rlm_failed" end)' \
             "$RUN_DIR/run.json" > "$RUN_DIR/run.next.json"
           mv "$RUN_DIR/run.next.json" "$RUN_DIR/run.json"
 
           if [[ "$status" -ne 0 ]]; then
-            cat "$RUN_DIR/rlm-stderr.log" >&2
             exit "$status"
           fi
 
@@ -352,6 +363,141 @@ jobs:
             .schema == "prolog-rlm.trace.v1" and
             .name == "auto_dig_rlm_result"
           ' "$RUN_DIR/rlm-result.json" >/dev/null
+
+      - name: Emit sanitized RLM failure report
+        id: failure_report
+        if: always() && steps.research.outcome == 'failure'
+        env:
+          OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+          BRAVE_API_KEY: ${{ secrets.BRAVE_API_KEY }}
+          PROLOG_RLM_BUG_TOKEN: ${{ secrets.PROLOG_RLM_BUG_TOKEN }}
+          GITHUB_TOKEN: ${{ github.token }}
+          RUN_DIR: ${{ steps.run.outputs.run_dir }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          report="$RUN_DIR/failure-report.md"
+          args=(--output "$report" --max-lines 160)
+
+          if [[ -f "$RUN_DIR/rlm-result.json" ]]; then
+            args+=(--result "$RUN_DIR/rlm-result.json")
+          fi
+          if [[ -f "$RUN_DIR/rlm-stderr.log" ]]; then
+            args+=(--stderr "$RUN_DIR/rlm-stderr.log")
+          fi
+
+          python3 agents/auto_dig_failure_report.py "${args[@]}"
+          echo "report=$report" >> "$GITHUB_OUTPUT"
+
+          {
+            echo '## Auto-Dig Prolog actor failure'
+            echo
+            echo "- Run: ${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}"
+            echo "- Prolog-RLM: \`${PROLOG_RLM_REF}\`"
+            echo
+            cat "$report"
+          } >> "$GITHUB_STEP_SUMMARY"
+
+          echo '::group::Sanitized Auto-Dig failure report'
+          cat "$report"
+          echo '::endgroup::'
+
+      - name: Post sanitized failure to investigation target
+        if: always() && steps.research.outcome == 'failure' && steps.failure_report.outcome == 'success'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          ISSUE: ${{ steps.target.outputs.issue }}
+          REPORT_FILE: ${{ steps.failure_report.outputs.report }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [[ -z "${ISSUE:-}" || -z "${REPORT_FILE:-}" || ! -f "$REPORT_FILE" ]]; then
+            exit 0
+          fi
+
+          marker="<!-- auto-dig-failure-report:${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT} -->"
+          if gh issue view "$ISSUE" \
+              --repo "$GITHUB_REPOSITORY" \
+              --json comments \
+              --jq '.comments[].body' 2>/dev/null \
+              | grep -Fq "$marker"; then
+            exit 0
+          fi
+
+          body="$RUNNER_TEMP/auto-dig-target-failure.md"
+          {
+            echo "$marker"
+            echo 'Auto-Dig Prolog actor failed before this investigation run could land.'
+            echo
+            echo "- Failed workflow run: ${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}"
+            echo
+            cat "$REPORT_FILE"
+          } > "$body"
+
+          gh issue comment "$ISSUE" \
+            --repo "$GITHUB_REPOSITORY" \
+            --body-file "$body"
+
+      - name: Post sanitized failure to Prolog-RLM issue
+        if: always() && steps.research.outcome == 'failure' && steps.failure_report.outcome == 'success'
+        env:
+          BUG_TOKEN: ${{ secrets.PROLOG_RLM_BUG_TOKEN }}
+          ISSUE: ${{ steps.target.outputs.issue }}
+          REPORT_FILE: ${{ steps.failure_report.outputs.report }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [[ -z "${BUG_TOKEN:-}" || -z "${REPORT_FILE:-}" || ! -f "$REPORT_FILE" ]]; then
+            echo 'PROLOG_RLM_BUG_TOKEN is not configured or no safe report exists; skipping cross-repository issue post.'
+            exit 0
+          fi
+
+          title="[integration][auto-dig] actor failure in run ${GITHUB_RUN_ID}"
+          bug_number="$(GH_TOKEN="$BUG_TOKEN" gh issue list \
+            --repo lost-rob0t/prolog-rlm \
+            --state all \
+            --search "actor failure in run ${GITHUB_RUN_ID} in:title" \
+            --limit 20 \
+            --json number,title \
+            --jq ".[] | select(.title == \"${title}\") | .number" \
+            | head -n 1)"
+
+          marker="<!-- auto-dig-failure-report:${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT} -->"
+          body="$RUNNER_TEMP/prolog-rlm-failure.md"
+          {
+            echo "$marker"
+            echo '## Auto-Dig integration failure diagnostics'
+            echo
+            echo "- Consumer: \`${GITHUB_REPOSITORY}\`"
+            echo "- Workflow run: ${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}"
+            echo "- Consumer head: \`${GITHUB_SHA}\`"
+            echo "- Prolog-RLM ref: \`${PROLOG_RLM_REF}\`"
+            if [[ -n "${ISSUE:-}" ]]; then
+              echo "- Auto-Dig target: ${GITHUB_REPOSITORY}#${ISSUE}"
+            fi
+            echo
+            cat "$REPORT_FILE"
+          } > "$body"
+
+          if [[ -z "$bug_number" ]]; then
+            GH_TOKEN="$BUG_TOKEN" gh issue create \
+              --repo lost-rob0t/prolog-rlm \
+              --title "$title" \
+              --body-file "$body"
+            exit 0
+          fi
+
+          if GH_TOKEN="$BUG_TOKEN" gh issue view "$bug_number" \
+              --repo lost-rob0t/prolog-rlm \
+              --json comments \
+              --jq '.comments[].body' 2>/dev/null \
+              | grep -Fq "$marker"; then
+            exit 0
+          fi
+
+          GH_TOKEN="$BUG_TOKEN" gh issue comment "$bug_number" \
+            --repo lost-rob0t/prolog-rlm \
+            --body-file "$body"
 
       - name: Push successful actor run branch
         if: steps.target.outputs.action == 'run'
@@ -428,39 +574,3 @@ jobs:
             ${{ runner.temp }}/decision.json
             ${{ runner.temp }}/actor.trace
             agent-runs/auto-dig-prolog/**
-
-      - name: File reproducible Prolog-RLM integration failure
-        if: failure()
-        env:
-          BUG_TOKEN: ${{ secrets.PROLOG_RLM_BUG_TOKEN }}
-          ISSUE: ${{ steps.target.outputs.issue }}
-        shell: bash
-        run: |
-          set -euo pipefail
-          if [[ -z "${BUG_TOKEN:-}" ]]; then
-            echo 'PROLOG_RLM_BUG_TOKEN is not configured; preserving failure in Action artifacts only.'
-            exit 0
-          fi
-
-          run_url="${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}"
-          body="$RUNNER_TEMP/prolog-rlm-bug.md"
-          {
-            echo '## Auto-Dig integration failure'
-            echo
-            echo "- Consumer: \`${GITHUB_REPOSITORY}\`"
-            echo "- Workflow run: ${run_url}"
-            echo "- Prolog-RLM ref: \`${PROLOG_RLM_REF}\`"
-            if [[ -n "${ISSUE:-}" ]]; then
-              echo "- Auto-Dig target: #${ISSUE}"
-            fi
-            echo
-            echo 'The Auto-Dig GitHub Actions actor failed while exercising the pinned production runtime.'
-            echo 'The Action artifacts contain the actor/runtime logs and, when reached, the portable RLM trace and model route.'
-            echo
-            echo 'Reproduce against the pinned ref before triage; do not infer a core runtime bug if the failure is an Auto-Dig integration/configuration error.'
-          } > "$body"
-
-          GH_TOKEN="$BUG_TOKEN" gh issue create \
-            --repo lost-rob0t/prolog-rlm \
-            --title "[integration][auto-dig] actor failure in run ${GITHUB_RUN_ID}" \
-            --body-file "$body"

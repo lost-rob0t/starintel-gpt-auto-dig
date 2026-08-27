@@ -26,7 +26,8 @@ test(research_context_and_recursion_are_available) :-
     assertion(Budget.max_recursion_depth =:= 2),
     assertion(Budget.max_model_calls =:= 6),
     assertion(Budget.max_tool_calls =:= 8),
-    assertion(Budget.max_context_ops =:= 12).
+    assertion(Budget.max_context_ops =:= 12),
+    assertion(Budget.max_total_tokens =:= 50000).
 
 test(mcp_registry_and_read_tools_are_projected_into_runtime) :-
     auto_dig_mcp_read_capabilities(McpCapabilities),

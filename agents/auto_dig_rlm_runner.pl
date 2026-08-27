@@ -2,7 +2,8 @@
           [ main/1,
             auto_dig_runtime_options/3,
             auto_dig_runtime_options/6,
-            auto_dig_query/1
+            auto_dig_query/1,
+            outcome_log_summary/2
           ]).
 
 :- use_module(library(readutil)).
@@ -11,28 +12,44 @@
 :- use_module(library(rlm_trace)).
 :- use_module('./auto_dig_mcp_tools').
 :- use_module('./auto_dig_mcp_runner').
+:- use_module('./auto_dig_safe_log').
 
 :- initialization(main, main).
 
 main(Argv) :-
     catch(main_run(Argv, ExitCode),
           Exception,
-          ( print_message(error, Exception),
+          ( log_exception(fatal, Exception),
             ExitCode = 2
           )),
     halt(ExitCode).
 
 main_run(Argv, ExitCode) :-
     parse_args(Argv, Args),
+    safe_log(auto_dig_rlm,
+             'phase=start model=~w reasoning_effort=~w',
+             [Args.model, Args.reasoning_effort]),
     read_file_to_string(Args.context_file, Context, []),
+    string_length(Context, ContextChars),
+    safe_log(auto_dig_rlm,
+             'phase=context_loaded chars=~d file=~w',
+             [ContextChars, Args.context_file]),
     auto_dig_query(Query),
     run_research_completion(Args, Query, Context, Outcome),
+    log_outcome(Outcome),
     write_trace_json(Args.output, auto_dig_rlm_result, Outcome),
+    safe_log(auto_dig_rlm, 'phase=result_written file=~w', [Args.output]),
     write_trace_file(Args.trace, Outcome),
-    outcome_exit_code(Outcome, ExitCode).
+    ( Args.trace == ''
+    -> true
+    ;  safe_log(auto_dig_rlm, 'phase=trace_written file=~w', [Args.trace])
+    ),
+    outcome_exit_code(Outcome, ExitCode),
+    safe_log(auto_dig_rlm, 'phase=finish exit_code=~d', [ExitCode]).
 
 run_research_completion(Args, Query, Context, Outcome) :-
     auto_dig_mcp_servers(Servers),
+    safe_log(auto_dig_rlm, 'phase=mcp_session_open servers=~q', [Servers]),
     AuthorityContext = auto_dig_rlm_research,
     setup_call_cleanup(
         auto_dig_mcp_session_open(Servers, AuthorityContext, Session),
@@ -42,7 +59,9 @@ run_research_completion(Args, Query, Context, Outcome) :-
                                              AuthorityContext,
                                              Session,
                                              Outcome),
-        auto_dig_mcp_session_close(Session)).
+        ( safe_log(auto_dig_rlm, 'phase=mcp_session_close', []),
+          auto_dig_mcp_session_close(Session)
+        )).
 
 run_research_completion_with_session(Args,
                                      Query,
@@ -52,13 +71,27 @@ run_research_completion_with_session(Args,
                                      Outcome) :-
     auto_dig_mcp_session_registry(Session, Registry),
     auto_dig_mcp_session_capabilities(Session, McpCapabilities),
+    length(McpCapabilities, McpCapabilityCount),
+    safe_log(auto_dig_rlm,
+             'phase=mcp_ready capability_count=~d capabilities=~q',
+             [McpCapabilityCount, McpCapabilities]),
     auto_dig_runtime_options(Args.model,
                              Args.reasoning_effort,
                              Registry,
                              AuthorityContext,
                              McpCapabilities,
                              Options),
-    rlm_completion(Query, text(Context), Options, Outcome).
+    memberchk(budget(Budget), Options),
+    safe_log(auto_dig_rlm,
+             'phase=rlm_start token_budget=~d model_calls=~d tool_calls=~d recursion_depth=~d time_limit=~w',
+             [ Budget.max_total_tokens,
+               Budget.max_model_calls,
+               Budget.max_tool_calls,
+               Budget.max_recursion_depth,
+               Budget.time_limit
+             ]),
+    rlm_completion(Query, text(Context), Options, Outcome),
+    safe_log(auto_dig_rlm, 'phase=rlm_return', []).
 
 auto_dig_runtime_options(Model, ReasoningEffort, Options) :-
     auto_dig_runtime_options(Model,
@@ -88,7 +121,7 @@ auto_dig_runtime_options(Model,
                 max_model_calls:6,
                 max_tool_calls:8,
                 max_context_ops:12,
-                max_total_tokens:8192,
+                max_total_tokens:50000,
                 max_cost_usd:0.10,
                 max_output_bytes:65536,
                 time_limit:90.0
@@ -125,18 +158,96 @@ outcome_exit_code(ok(_), 0) :- !.
 outcome_exit_code(error(_), 1) :- !.
 outcome_exit_code(_, 1).
 
+log_outcome(Outcome) :-
+    outcome_log_summary(Outcome, Summary),
+    safe_text(Summary, SafeSummary),
+    ( Outcome = error(_)
+    -> format(user_error,
+              '::error title=Auto-Dig Prolog-RLM failure::~s~n',
+              [SafeSummary]),
+       flush_output(user_error)
+    ;  true
+    ),
+    safe_log(auto_dig_rlm, 'phase=outcome ~s', [SafeSummary]).
+
+outcome_log_summary(ok(Result), Summary) :-
+    !,
+    usage_from_result(Result, Usage),
+    usage_summary('status=ok', Usage, Summary).
+outcome_log_summary(error(Error), Summary) :-
+    !,
+    error_field(Error, phase, unknown, Phase),
+    error_field(Error, kind, unknown, Kind),
+    error_field(Error, message, "unspecified error", Message),
+    error_field(Error, used, unknown, Used),
+    error_field(Error, limit, unknown, Limit),
+    usage_from_error(Error, Usage),
+    format(string(Prefix),
+           'status=error phase=~w kind=~w message=~w used=~w limit=~w',
+           [Phase, Kind, Message, Used, Limit]),
+    usage_summary(Prefix, Usage, Summary).
+outcome_log_summary(Other, Summary) :-
+    format(string(Summary), 'status=unknown outcome=~q', [Other]).
+
+usage_from_result(Result, Usage) :-
+    ( is_dict(Result), get_dict(usage, Result, Found), is_dict(Found)
+    -> Usage = Found
+    ;  Usage = _{}
+    ).
+
+usage_from_error(Error, Usage) :-
+    ( is_dict(Error), get_dict(usage, Error, Found), is_dict(Found)
+    -> Usage = Found
+    ;  Usage = _{}
+    ).
+
+usage_summary(Prefix, Usage, Summary) :-
+    usage_field(Usage, model_calls, unknown, ModelCalls),
+    usage_field(Usage, prompt_tokens, unknown, PromptTokens),
+    usage_field(Usage, completion_tokens, unknown, CompletionTokens),
+    usage_field(Usage, total_tokens, unknown, TotalTokens),
+    usage_field(Usage, cost_usd, unknown, CostUsd),
+    format(string(Summary),
+           '~w model_calls=~w prompt_tokens=~w completion_tokens=~w total_tokens=~w cost_usd=~w',
+           [ Prefix,
+             ModelCalls,
+             PromptTokens,
+             CompletionTokens,
+             TotalTokens,
+             CostUsd
+           ]).
+
+error_field(Error, Key, Default, Value) :-
+    ( is_dict(Error), get_dict(Key, Error, Found)
+    -> Value = Found
+    ;  Value = Default
+    ).
+
+usage_field(Usage, Key, Default, Value) :-
+    ( is_dict(Usage), get_dict(Key, Usage, Found)
+    -> Value = Found
+    ;  Value = Default
+    ).
+
+log_exception(Phase, Exception) :-
+    message_to_string(Exception, Message),
+    safe_log(auto_dig_rlm,
+             'phase=~w state=exception message=~s',
+             [Phase, Message]),
+    safe_text(Message, SafeMessage),
+    format(user_error,
+           '::error title=Auto-Dig Prolog-RLM exception::phase=~w message=~s~n',
+           [Phase, SafeMessage]),
+    flush_output(user_error).
+
 write_trace_file('', _) :- !.
 write_trace_file(Path, Outcome) :-
-    trace_write(Path, json, auto_dig_rlm, Outcome, WriteOutcome),
-    require_trace_write(WriteOutcome).
-
-require_trace_write(ok(_)) :- !.
-require_trace_write(error(Error)) :-
-    throw(error(auto_dig_trace_write_failed(Error), _)).
+    write_trace_json(Path, auto_dig_rlm, Outcome).
 
 write_trace_json(Path, Name, Payload) :-
     trace_envelope(Name, Payload, Envelope),
-    trace_json(Envelope, Json),
+    trace_json(Envelope, RawJson),
+    safe_text(RawJson, Json),
     setup_call_cleanup(
         open(Path, write, Stream, [encoding(utf8)]),
         format(Stream, '~s~n', [Json]),
