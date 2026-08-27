@@ -76,8 +76,9 @@ secret_env('GITHUB_TOKEN').
 redact_known_secrets(Text0, Text) :-
     findall(Value,
             ( secret_env(Name),
-              getenv(Name, Value),
-              Value \== '',
+              getenv(Name, AtomValue),
+              AtomValue \== '',
+              atom_string(AtomValue, Value),
               string_length(Value, Length),
               Length >= 4
             ),
@@ -112,10 +113,10 @@ redact_marker(Text0, Marker, Text) :-
         Start is Before + Length,
         sub_string(Text0, Start, After, 0, Tail),
         split_credential_tail(Tail, Rest),
+        redact_marker(Rest, Marker, SafeRest),
         string_concat(Prefix, Marker, Head0),
         string_concat(Head0, "[REDACTED]", Head),
-        string_concat(Head, Rest, Next),
-        redact_marker(Next, Marker, Text)
+        string_concat(Head, SafeRest, Text)
     ;   Text = Text0
     ).
 
@@ -132,9 +133,9 @@ redact_prefix(Text0, Prefix, Text) :-
         Start is Before + Length,
         sub_string(Text0, Start, After, 0, Tail),
         split_credential_tail(Tail, Rest),
-        string_concat(Head, "[REDACTED]", NextHead),
-        string_concat(NextHead, Rest, Next),
-        redact_prefix(Next, Prefix, Text)
+        redact_prefix(Rest, Prefix, SafeRest),
+        string_concat(Head, "[REDACTED]", SafeHead),
+        string_concat(SafeHead, SafeRest, Text)
     ;   Text = Text0
     ).
 
