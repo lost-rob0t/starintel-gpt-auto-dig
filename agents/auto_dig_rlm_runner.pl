@@ -156,7 +156,7 @@ outcome_exit_code(_, 1).
 log_outcome(Outcome) :-
     outcome_log_summary(Outcome, Summary),
     ( Outcome = error(_)
-    -> format(user_error, '::error title=Auto-Dig Prolog-RLM failure::~s~n', [Summary])
+    -> format('::error title=Auto-Dig Prolog-RLM failure::~s~n', [Summary])
     ;  true
     ),
     log_line('phase=outcome ~s', [Summary]).
@@ -222,18 +222,17 @@ usage_field(Usage, Key, Default, Value) :-
 
 log_exception(Phase, Exception) :-
     message_to_string(Exception, Message),
-    format(user_error,
-           '::error title=Auto-Dig Prolog-RLM exception::phase=~w message=~s~n',
+    format('::error title=Auto-Dig Prolog-RLM exception::phase=~w message=~s~n',
            [Phase, Message]),
     log_line('phase=~w exception=~s', [Phase, Message]).
 
 log_line(Format, Args) :-
     get_time(Now),
     format_time(string(Timestamp), '%FT%TZ', Now, [utc(true)]),
-    format(user_error, '[auto-dig-rlm] ~s ', [Timestamp]),
-    format(user_error, Format, Args),
-    nl(user_error),
-    flush_output(user_error).
+    format('[auto-dig-rlm] ~s ', [Timestamp]),
+    format(Format, Args),
+    nl,
+    flush_output.
 
 write_trace_file('', _) :- !.
 write_trace_file(Path, Outcome) :-
