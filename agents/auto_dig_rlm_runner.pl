@@ -88,7 +88,7 @@ auto_dig_runtime_options(Model,
                 max_model_calls:6,
                 max_tool_calls:8,
                 max_context_ops:12,
-                max_total_tokens:8192,
+                max_total_tokens:50000,
                 max_cost_usd:0.10,
                 max_output_bytes:65536,
                 time_limit:90.0
