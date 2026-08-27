@@ -20,6 +20,7 @@ tools and planner-visible schemas through the same list.
 */
 
 :- use_module('./auto_dig_mcp_tools').
+:- use_module('./auto_dig_safe_log').
 :- use_module(library(rlm_authority)).
 :- use_module(library(rlm_mcp)).
 :- use_module(library(rlm_mcp_server)).
@@ -238,9 +239,4 @@ require_session(Session) :-
     throw(error(type_error(auto_dig_mcp_session, Session), _)).
 
 mcp_log(Format, Args) :-
-    get_time(Now),
-    format_time(string(Timestamp), '%FT%TZ', Now, [utc(true)]),
-    format('[auto-dig-mcp] ~s ', [Timestamp]),
-    format(Format, Args),
-    nl,
-    flush_output.
+    safe_log(auto_dig_mcp, Format, Args).
