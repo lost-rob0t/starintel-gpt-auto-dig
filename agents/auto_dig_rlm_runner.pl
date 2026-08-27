@@ -242,16 +242,12 @@ log_exception(Phase, Exception) :-
 
 write_trace_file('', _) :- !.
 write_trace_file(Path, Outcome) :-
-    trace_write(Path, json, auto_dig_rlm, Outcome, WriteOutcome),
-    require_trace_write(WriteOutcome).
-
-require_trace_write(ok(_)) :- !.
-require_trace_write(error(Error)) :-
-    throw(error(auto_dig_trace_write_failed(Error), _)).
+    write_trace_json(Path, auto_dig_rlm, Outcome).
 
 write_trace_json(Path, Name, Payload) :-
     trace_envelope(Name, Payload, Envelope),
-    trace_json(Envelope, Json),
+    trace_json(Envelope, RawJson),
+    safe_text(RawJson, Json),
     setup_call_cleanup(
         open(Path, write, Stream, [encoding(utf8)]),
         format(Stream, '~s~n', [Json]),
