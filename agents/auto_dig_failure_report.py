@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
-"""Build a bounded, secret-safe failure report for Auto-Dig issues and Actions.
+"""Emission-boundary sanitizer and failure reporter for Auto-Dig.
 
-Never publishes raw environment state or raw provider payloads. It extracts the
-structured Prolog-RLM error envelope and a bounded stderr tail, then redacts
-known secret values and common credential syntax before rendering Markdown.
+Live RLM/MCP output can be streamed through this process so credentials are
+removed before Actions or tee sees the line. Structured failure reports are
+also sanitized before the Markdown file used for issue comments is written.
 """
 
 from __future__ import annotations
@@ -12,6 +12,7 @@ import argparse
 import json
 import os
 import re
+import sys
 from pathlib import Path
 from typing import Any
 
@@ -57,7 +58,7 @@ def redact_text(text: str) -> str:
         result = result.replace(secret, REDACTED)
     for pattern in TEXT_PATTERNS:
         if pattern.groups:
-            result = pattern.sub(lambda m: f"{m.group(1)}{REDACTED}", result)
+            result = pattern.sub(lambda match: f"{match.group(1)}{REDACTED}", result)
         else:
             result = pattern.sub(REDACTED, result)
     return result
@@ -73,6 +74,14 @@ def sanitize(value: Any, key: str | None = None) -> Any:
     if isinstance(value, str):
         return redact_text(value)
     return value
+
+
+def emit_sanitized_stream() -> int:
+    """Write each input line only after sanitizing it."""
+    for line in sys.stdin:
+        sys.stdout.write(redact_text(line))
+        sys.stdout.flush()
+    return 0
 
 
 def extract_error_envelope(result: Any) -> dict[str, Any] | None:
@@ -93,7 +102,11 @@ def load_json(path: Path | None) -> Any:
     try:
         return json.loads(path.read_text(encoding="utf-8", errors="replace"))
     except (OSError, json.JSONDecodeError) as exc:
-        return {"phase": "diagnostics", "kind": "invalid_result_json", "message": str(exc)}
+        return {
+            "phase": "diagnostics",
+            "kind": "invalid_result_json",
+            "message": redact_text(str(exc)),
+        }
 
 
 def stderr_tail(path: Path | None, max_lines: int) -> str:
@@ -114,7 +127,13 @@ def compact_summary(error: dict[str, Any] | None) -> str:
             fields.append(f"{key}={redact_text(str(error[key]))}")
     usage = error.get("usage")
     if isinstance(usage, dict):
-        for key in ("model_calls", "prompt_tokens", "completion_tokens", "total_tokens", "cost_usd"):
+        for key in (
+            "model_calls",
+            "prompt_tokens",
+            "completion_tokens",
+            "total_tokens",
+            "cost_usd",
+        ):
             if key in usage:
                 fields.append(f"{key}={usage[key]}")
     return " ".join(fields) if fields else "phase=unknown kind=unknown"
@@ -146,24 +165,33 @@ def render_report(result_path: Path | None, stderr_path: Path | None, max_lines:
         trace,
         "```",
         "",
-        "> Raw provider payloads and environment dumps are intentionally excluded. Known secret values, auth headers, bearer tokens, key-like fields, and credential query parameters are redacted before this report is emitted.",
+        "> Diagnostics are sanitized at emission time. Raw environment dumps and raw provider payloads are never included in issue-bound output.",
     ]
     return "\n".join(sections) + "\n"
 
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser()
+    parser.add_argument("--stream", action="store_true")
     parser.add_argument("--result", type=Path)
     parser.add_argument("--stderr", type=Path)
-    parser.add_argument("--output", type=Path, required=True)
+    parser.add_argument("--output", type=Path)
     parser.add_argument("--max-lines", type=int, default=120)
     return parser.parse_args()
 
 
 def main() -> int:
     args = parse_args()
+    if args.stream:
+        if args.result or args.stderr or args.output:
+            raise SystemExit("--stream cannot be combined with report file arguments")
+        return emit_sanitized_stream()
+
+    if args.output is None:
+        raise SystemExit("--output is required unless --stream is used")
     if args.max_lines < 1 or args.max_lines > 500:
         raise SystemExit("--max-lines must be between 1 and 500")
+
     report = render_report(args.result, args.stderr, args.max_lines)
     args.output.parent.mkdir(parents=True, exist_ok=True)
     args.output.write_text(report, encoding="utf-8")
