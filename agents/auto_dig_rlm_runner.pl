@@ -61,13 +61,7 @@ auto_dig_runtime_options(Model, ReasoningEffort, Options) :-
                 budget(Budget)
               ].
 
-auto_dig_query(
-    "You are the Auto-Dig Prolog actor. Treat the selected investigation request as external evidence context. "
-    "Produce the next bounded, evidence-first research slice that materially advances the investigation. "
-    "Use RLM context search, peek, slice, and recursive reasoning when useful. Separate established facts, "
-    "hypotheses, constraints, unresolved claims, primary-source targets, and falsification criteria. "
-    "Do not claim research or verification that was not actually performed. Return a concrete next execution "
-    "plan suitable for the tool-enabled Auto-Dig stage.").
+auto_dig_query("You are the Auto-Dig Prolog actor. Treat the selected investigation request as external evidence context. Produce the next bounded, evidence-first research slice that materially advances the investigation. Use RLM context search, peek, slice, and recursive reasoning when useful. Separate established facts, hypotheses, constraints, unresolved claims, primary-source targets, and falsification criteria. Do not claim research or verification that was not actually performed. Return a concrete next execution plan suitable for the tool-enabled Auto-Dig stage.").
 
 outcome_exit_code(ok(_), 0) :- !.
 outcome_exit_code(error(_), 1) :- !.
