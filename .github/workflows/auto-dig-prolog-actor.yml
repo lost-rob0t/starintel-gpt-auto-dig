@@ -230,7 +230,9 @@ jobs:
                 "context_search_peek_slice",
                 "depth_2_recursion",
                 "permanent_context_propagation",
-                "proof_carrying_child_acceptance"
+                "proof_carrying_child_acceptance",
+                "read_only_brave_search_mcp",
+                "read_only_fetch_mcp"
               ]
             }' > "$run_dir/run.json"
 
@@ -294,10 +296,11 @@ jobs:
 
           echo "Selected ${model} with reasoning effort ${effort} (${tier})."
 
-      - name: Run bounded native Prolog-RLM research reasoning
+      - name: Run bounded native Prolog-RLM web research
         if: steps.target.outputs.action == 'run'
         env:
           OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+          BRAVE_API_KEY: ${{ secrets.BRAVE_API_KEY }}
           RUN_DIR: ${{ steps.run.outputs.run_dir }}
           REQUEST_FILE: ${{ steps.run.outputs.request }}
           MODEL: ${{ steps.model.outputs.model }}
@@ -308,6 +311,11 @@ jobs:
 
           if [[ -z "${OPENROUTER_API_KEY:-}" ]]; then
             echo 'OPENROUTER_API_KEY repository secret is required for the live Prolog-RLM lane.' >&2
+            exit 1
+          fi
+
+          if [[ -z "${BRAVE_API_KEY:-}" ]]; then
+            echo 'BRAVE_API_KEY repository secret is required for live Brave Search MCP research.' >&2
             exit 1
           fi
 
@@ -331,7 +339,7 @@ jobs:
           status=$?
           set -e
 
-          jq --argjson status "$status" '.status = (if $status == 0 then "reasoned" else "rlm_failed" end)' \
+          jq --argjson status "$status" '.status = (if $status == 0 then "researched" else "rlm_failed" end)' \
             "$RUN_DIR/run.json" > "$RUN_DIR/run.next.json"
           mv "$RUN_DIR/run.next.json" "$RUN_DIR/run.json"
 
@@ -403,7 +411,7 @@ jobs:
           branch_url="${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/tree/${BRANCH}"
           gh issue comment "$ISSUE" \
             --repo "$GITHUB_REPOSITORY" \
-            --body "Auto-Dig Prolog actor completed bounded run \`${RUN_ID}\`.\n\n- Branch: ${branch_url}\n- Prolog-RLM: \`${PROLOG_RLM_REF}\`\n- Expert route: \`${MODEL}\`, reasoning \`${REASONING_EFFORT}\`\n- Action log: ${run_url}\n- Stage: supervised actor + native typed RLM planner + automatic default skills + compiled prompt projection + bounded depth-2 context search/peek/slice recursion.\n\nThis receipt does **not** mark the investigation complete; tool-enabled research and canonical StarIntel writes remain separate gates."
+            --body "Auto-Dig Prolog actor completed bounded run \`${RUN_ID}\`.\n\n- Branch: ${branch_url}\n- Prolog-RLM: \`${PROLOG_RLM_REF}\`\n- Expert route: \`${MODEL}\`, reasoning \`${REASONING_EFFORT}\`\n- Action log: ${run_url}\n- Stage: supervised actor + native typed RLM planner + automatic default skills + compiled prompt projection + bounded depth-2 recursion + read-only Brave Search MCP + Fetch MCP evidence retrieval.\n\nThis receipt does **not** mark the investigation complete; canonical StarIntel writes and final publication remain separate gates."
 
       - name: Upload actor diagnostics
         if: always()
