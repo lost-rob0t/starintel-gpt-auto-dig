@@ -2,6 +2,14 @@
 
 Go hard on the records. No race angle, no collective blame, no mush.
 
+## Task-scoped analyst
+
+This packet runs with [`ANALYST.md`](./ANALYST.md), a **one-shot OSINT analyst for this dig only**.
+
+It has no issue dependency and does not alter the global Auto-Dig persona. It stays locked to this packet until the completion condition is met, then exits and returns to normal/default Auto-Dig work.
+
+Public forum/social/community posts can be captured when materially useful: record the source, tag the claim `unverified lead`, turn it into searches, and move on. Do not burn half the run arguing with the post.
+
 ## Mission
 
 Enumerate and verify documented corruption, abuse, coercion, conflicts of interest, financial misconduct, procedural misconduct, retaliation, cover-ups, and accountability failures involving **Beth Din / batei din**.
