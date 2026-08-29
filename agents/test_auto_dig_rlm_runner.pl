@@ -49,8 +49,10 @@ test(research_context_and_direct_tool_budget_are_available) :-
     assertion(Budget.max_output_bytes =:= 262144),
     assertion(Budget.time_limit =:= 300.0).
 
-test(mcp_registry_and_read_tools_are_projected_into_runtime) :-
+test(mcp_registry_and_complete_read_tool_inventory_are_projected) :-
     auto_dig_mcp_read_capabilities(McpCapabilities),
+    length(McpCapabilities, CapabilityCount),
+    assertion(CapabilityCount =:= 14),
     auto_dig_runtime_options('openai/gpt-5.6-luna',
                              max,
                              fake_registry,
@@ -65,10 +67,19 @@ test(mcp_registry_and_read_tools_are_projected_into_runtime) :-
            assertion(memberchk(Capability, Capabilities))),
     assertion(ChildCapabilities == Capabilities),
     assertion(memberchk(tool('mcp.brave.brave_web_search'), Capabilities)),
-    assertion(memberchk(tool('mcp.brave.brave_news_search'), Capabilities)),
+    assertion(memberchk(tool('mcp.brave.brave_local_search'), Capabilities)),
     assertion(memberchk(tool('mcp.brave.brave_video_search'), Capabilities)),
+    assertion(memberchk(tool('mcp.brave.brave_image_search'), Capabilities)),
+    assertion(memberchk(tool('mcp.brave.brave_news_search'), Capabilities)),
+    assertion(memberchk(tool('mcp.brave.brave_summarizer'), Capabilities)),
+    assertion(memberchk(tool('mcp.brave.brave_llm_context'), Capabilities)),
+    assertion(memberchk(tool('mcp.brave.brave_place_search'), Capabilities)),
+    assertion(memberchk(tool('mcp.fetch.fetch_html'), Capabilities)),
     assertion(memberchk(tool('mcp.fetch.fetch_markdown'), Capabilities)),
-    assertion(memberchk(tool('mcp.fetch.fetch_readable'), Capabilities)).
+    assertion(memberchk(tool('mcp.fetch.fetch_readable'), Capabilities)),
+    assertion(memberchk(tool('mcp.fetch.fetch_txt'), Capabilities)),
+    assertion(memberchk(tool('mcp.fetch.fetch_json'), Capabilities)),
+    assertion(memberchk(tool('mcp.fetch.fetch_youtube_transcript'), Capabilities)).
 
 test(research_prompt_requires_direct_live_tool_use) :-
     auto_dig_query(Query),
