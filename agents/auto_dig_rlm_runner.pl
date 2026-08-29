@@ -2,13 +2,14 @@
           [ main/1,
             auto_dig_runtime_options/3,
             auto_dig_runtime_options/6,
+            auto_dig_context_budget/3,
             auto_dig_query/1,
             outcome_log_summary/2
           ]).
 
 :- use_module(library(readutil)).
 :- use_module(library(rlm_chain)).
-:- use_module(library(rlm_completion)).
+:- use_module(library(rlm_direct)).
 :- use_module(library(rlm_trace)).
 :- use_module('./auto_dig_mcp_tools').
 :- use_module('./auto_dig_mcp_runner').
@@ -27,7 +28,7 @@ main(Argv) :-
 main_run(Argv, ExitCode) :-
     parse_args(Argv, Args),
     safe_log(auto_dig_rlm,
-             'phase=start model=~w reasoning_effort=~w',
+             'phase=start mode=direct model=~w reasoning_effort=~w',
              [Args.model, Args.reasoning_effort]),
     read_file_to_string(Args.context_file, Context, []),
     string_length(Context, ContextChars),
@@ -82,16 +83,19 @@ run_research_completion_with_session(Args,
                              McpCapabilities,
                              Options),
     memberchk(budget(Budget), Options),
+    auto_dig_context_budget(Args.model, ContextWindow, ContextBudget),
     safe_log(auto_dig_rlm,
-             'phase=rlm_start token_budget=~d model_calls=~d tool_calls=~d recursion_depth=~d time_limit=~w',
-             [ Budget.max_total_tokens,
+             'phase=direct_start context_window=~d token_budget=~d model_calls=~d tool_calls=~d context_ops=~d iterations=~d time_limit=~w',
+             [ ContextWindow,
+               ContextBudget,
                Budget.max_model_calls,
                Budget.max_tool_calls,
-               Budget.max_recursion_depth,
+               Budget.max_context_ops,
+               Budget.max_iterations,
                Budget.time_limit
              ]),
-    rlm_completion(Query, text(Context), Options, Outcome),
-    safe_log(auto_dig_rlm, 'phase=rlm_return', []).
+    rlm_direct(Query, text(Context), Options, Outcome),
+    safe_log(auto_dig_rlm, 'phase=direct_return', []).
 
 auto_dig_runtime_options(Model, ReasoningEffort, Options) :-
     auto_dig_runtime_options(Model,
@@ -108,6 +112,7 @@ auto_dig_runtime_options(Model,
                          McpCapabilities,
                          Options) :-
     openrouter_provider(Model, Provider),
+    auto_dig_context_budget(Model, _ContextWindow, TokenBudget),
     BaseCapabilities = [ rlm,
                          context(slice),
                          context(search),
@@ -116,15 +121,16 @@ auto_dig_runtime_options(Model,
                        ],
     append(BaseCapabilities, McpCapabilities, Capabilities0),
     sort(Capabilities0, Capabilities),
-    Budget = _{ max_recursion_depth:2,
+    Budget = _{ max_iterations:24,
+                max_recursion_depth:2,
                 max_concurrent_subcalls:2,
-                max_model_calls:6,
-                max_tool_calls:8,
-                max_context_ops:12,
-                max_total_tokens:50000,
-                max_cost_usd:0.10,
-                max_output_bytes:65536,
-                time_limit:90.0
+                max_model_calls:12,
+                max_tool_calls:24,
+                max_context_ops:32,
+                max_total_tokens:TokenBudget,
+                max_cost_usd:2.00,
+                max_output_bytes:262144,
+                time_limit:300.0
               },
     RuntimeOptions = [ provider(Provider),
                        provider_name(openrouter),
@@ -133,16 +139,35 @@ auto_dig_runtime_options(Model,
                        reasoning_effort(ReasoningEffort),
                        skill_mode(on),
                        skill_catalog(default),
-                       prompt_compile_mode(compiled),
-                       planner_attempts(3),
-                       planner_max_tokens(2048),
-                       context_options([max_bytes(32768), time_limit(2.0)]),
+                       prompt_compile_mode(all_tools),
+                       planner_max_tokens(8192),
+                       context_options([max_bytes(262144), time_limit(5.0)]),
                        budget(Budget)
                      ],
     runtime_binding_options(Registry,
                             AuthorityContext,
                             RuntimeOptions,
                             Options).
+
+/*
+ * Temporary consumer-owned model limits.
+ *
+ * Prolog-RLM issue #296 tracks moving this into a provider-neutral model
+ * metadata API. OpenRouter currently advertises a 1,050,000-token context
+ * window for all three routed GPT-5.6 tiers. Auto-Dig intentionally gives the
+ * direct worker 30% of that limit: 315,000 tokens.
+ */
+auto_dig_model_context_window('openai/gpt-5.6-luna', 1050000).
+auto_dig_model_context_window('openai/gpt-5.6-terra', 1050000).
+auto_dig_model_context_window('openai/gpt-5.6-sol', 1050000).
+
+auto_dig_context_budget(Model, ContextWindow, TokenBudget) :-
+    (   auto_dig_model_context_window(Model, ContextWindow)
+    ->  TokenBudget is (ContextWindow * 30) // 100
+    ;   throw(error(domain_error(auto_dig_model_context_window, Model),
+                    context(auto_dig_rlm_runner:auto_dig_context_budget/3,
+                            'selected model needs an explicit context-window limit until Prolog-RLM #296 lands')))
+    ).
 
 runtime_binding_options(none, _, Options, Options) :- !.
 runtime_binding_options(Registry,
@@ -152,7 +177,7 @@ runtime_binding_options(Registry,
                           authority_context(AuthorityContext)
                         | Options0 ]).
 
-auto_dig_query("You are the Auto-Dig Prolog actor with bounded read-only web research tools. Perform the research now; do not merely propose a future tool-enabled stage. Use Brave web/news/video search to discover relevant sources and Fetch tools to inspect primary or otherwise high-value source content. Use RLM context search, peek, slice, and recursive reasoning when useful. Separate established facts, hypotheses, constraints, unresolved claims, primary-source evidence, and falsification criteria. Preserve source URLs or identifiers in the result so claims are auditable. Do not claim research or verification that was not actually performed. Return an evidence-backed research slice plus clearly separated remaining follow-up work.").
+auto_dig_query("You are the Auto-Dig Prolog actor running in native direct mode with bounded read-only web research tools. Perform the research now; do not emit a typed plan and do not merely propose a future tool-enabled stage. Use the available Brave search tools broadly to discover relevant sources, then use Fetch tools to inspect primary or otherwise high-value source content. Use RLM context search, peek, and slice when useful. Keep calling tools while useful evidence remains within budget. Separate established facts, hypotheses, constraints, unresolved claims, primary-source evidence, and falsification criteria. Preserve source URLs or identifiers in the result so claims are auditable. Do not claim research or verification that was not actually performed. Return an evidence-backed research slice plus clearly separated remaining follow-up work, including any additional tool or datasource capability that would materially improve the next pass.").
 
 outcome_exit_code(ok(_), 0) :- !.
 outcome_exit_code(error(_), 1) :- !.

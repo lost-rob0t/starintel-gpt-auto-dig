@@ -19,7 +19,7 @@ concurrency:
   cancel-in-progress: false
 
 env:
-  PROLOG_RLM_REF: 7f0050f524db6de5293163241176ac4660f04349
+  PROLOG_RLM_REF: a89175bf925df3afa358f8d05a370fe2a03e2117
 
 jobs:
   actor:
@@ -224,15 +224,13 @@ jobs:
               status:"selected",
               rlm_features:[
                 "automatic_default_skills",
-                "compiled_prompt_projection",
-                "native_typed_planner",
-                "planner_validation_retry",
+                "native_direct_mode",
+                "all_capability_filtered_tools",
                 "context_search_peek_slice",
-                "depth_2_recursion",
-                "permanent_context_propagation",
-                "proof_carrying_child_acceptance",
+                "model_context_budget_30_percent",
                 "read_only_brave_search_mcp",
                 "read_only_fetch_mcp",
+                "missing_tool_followup_reporting",
                 "emission_boundary_diagnostic_sanitization"
               ]
             }' > "$run_dir/run.json"
@@ -297,7 +295,7 @@ jobs:
 
           echo "Selected ${model} with reasoning effort ${effort} (${tier})."
 
-      - name: Run bounded native Prolog-RLM web research
+      - name: Run bounded native direct Prolog-RLM web research
         id: research
         if: steps.target.outputs.action == 'run'
         env:
@@ -557,7 +555,7 @@ jobs:
           branch_url="${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/tree/${BRANCH}"
           gh issue comment "$ISSUE" \
             --repo "$GITHUB_REPOSITORY" \
-            --body "Auto-Dig Prolog actor completed bounded run \`${RUN_ID}\`.\n\n- Branch: ${branch_url}\n- Prolog-RLM: \`${PROLOG_RLM_REF}\`\n- Expert route: \`${MODEL}\`, reasoning \`${REASONING_EFFORT}\`\n- Action log: ${run_url}\n- Stage: supervised actor + native typed RLM planner + automatic default skills + compiled prompt projection + bounded depth-2 recursion + read-only Brave Search MCP + Fetch MCP evidence retrieval.\n\nThis receipt does **not** mark the investigation complete; canonical StarIntel writes and final publication remain separate gates."
+            --body "Auto-Dig Prolog actor completed bounded run \`${RUN_ID}\`.\n\n- Branch: ${branch_url}\n- Prolog-RLM: \`${PROLOG_RLM_REF}\`\n- Expert route: \`${MODEL}\`, reasoning \`${REASONING_EFFORT}\`\n- Action log: ${run_url}\n- Stage: supervised actor + native direct Prolog-RLM loop + automatic default skills + full capability-filtered read-only research tool projection + 30% model-context token budget + Brave Search MCP + Fetch MCP evidence retrieval.\n\nThis receipt does **not** mark the investigation complete; canonical StarIntel writes and final publication remain separate gates."
 
       - name: Upload actor diagnostics
         if: always()

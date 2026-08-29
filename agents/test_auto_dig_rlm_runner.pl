@@ -4,15 +4,32 @@
 :- use_module('./auto_dig_mcp_tools').
 :- use_module(library(rlm_skill)).
 
-test(native_planner_features_are_explicitly_enabled) :-
+test(native_direct_mode_features_are_explicitly_enabled) :-
     auto_dig_runtime_options('openai/gpt-5.6-luna', max, Options),
     assertion(memberchk(skill_mode(on), Options)),
     assertion(memberchk(skill_catalog(default), Options)),
-    assertion(memberchk(prompt_compile_mode(compiled), Options)),
-    assertion(memberchk(planner_attempts(3), Options)),
+    assertion(memberchk(prompt_compile_mode(all_tools), Options)),
+    assertion(memberchk(planner_max_tokens(8192), Options)),
+    assertion(\+ memberchk(planner_attempts(_), Options)),
     assertion(\+ memberchk(planner_handler(_), Options)).
 
-test(research_context_and_recursion_are_available) :-
+test(context_budget_is_thirty_percent_of_model_limit) :-
+    auto_dig_context_budget('openai/gpt-5.6-luna', Window, Budget),
+    assertion(Window =:= 1050000),
+    assertion(Budget =:= 315000),
+    auto_dig_context_budget('openai/gpt-5.6-terra', TerraWindow, TerraBudget),
+    assertion(TerraWindow =:= 1050000),
+    assertion(TerraBudget =:= 315000),
+    auto_dig_context_budget('openai/gpt-5.6-sol', SolWindow, SolBudget),
+    assertion(SolWindow =:= 1050000),
+    assertion(SolBudget =:= 315000).
+
+test(unknown_model_requires_explicit_context_limit,
+     [throws(error(domain_error(auto_dig_model_context_window,
+                                'example/unknown-model'), _))]) :-
+    auto_dig_context_budget('example/unknown-model', _, _).
+
+test(research_context_and_direct_tool_budget_are_available) :-
     auto_dig_runtime_options('openai/gpt-5.6-luna', max, Options),
     memberchk(capabilities(Capabilities), Options),
     memberchk(child_capabilities(ChildCapabilities), Options),
@@ -23,14 +40,19 @@ test(research_context_and_recursion_are_available) :-
     assertion(memberchk(model(openrouter), Capabilities)),
     assertion(ChildCapabilities == Capabilities),
     memberchk(budget(Budget), Options),
+    assertion(Budget.max_iterations =:= 24),
     assertion(Budget.max_recursion_depth =:= 2),
-    assertion(Budget.max_model_calls =:= 6),
-    assertion(Budget.max_tool_calls =:= 8),
-    assertion(Budget.max_context_ops =:= 12),
-    assertion(Budget.max_total_tokens =:= 50000).
+    assertion(Budget.max_model_calls =:= 12),
+    assertion(Budget.max_tool_calls =:= 24),
+    assertion(Budget.max_context_ops =:= 32),
+    assertion(Budget.max_total_tokens =:= 315000),
+    assertion(Budget.max_output_bytes =:= 262144),
+    assertion(Budget.time_limit =:= 300.0).
 
-test(mcp_registry_and_read_tools_are_projected_into_runtime) :-
+test(mcp_registry_and_complete_read_tool_inventory_are_projected) :-
     auto_dig_mcp_read_capabilities(McpCapabilities),
+    length(McpCapabilities, CapabilityCount),
+    assertion(CapabilityCount =:= 14),
     auto_dig_runtime_options('openai/gpt-5.6-luna',
                              max,
                              fake_registry,
@@ -45,17 +67,28 @@ test(mcp_registry_and_read_tools_are_projected_into_runtime) :-
            assertion(memberchk(Capability, Capabilities))),
     assertion(ChildCapabilities == Capabilities),
     assertion(memberchk(tool('mcp.brave.brave_web_search'), Capabilities)),
-    assertion(memberchk(tool('mcp.brave.brave_news_search'), Capabilities)),
+    assertion(memberchk(tool('mcp.brave.brave_local_search'), Capabilities)),
     assertion(memberchk(tool('mcp.brave.brave_video_search'), Capabilities)),
+    assertion(memberchk(tool('mcp.brave.brave_image_search'), Capabilities)),
+    assertion(memberchk(tool('mcp.brave.brave_news_search'), Capabilities)),
+    assertion(memberchk(tool('mcp.brave.brave_summarizer'), Capabilities)),
+    assertion(memberchk(tool('mcp.brave.brave_llm_context'), Capabilities)),
+    assertion(memberchk(tool('mcp.brave.brave_place_search'), Capabilities)),
+    assertion(memberchk(tool('mcp.fetch.fetch_html'), Capabilities)),
     assertion(memberchk(tool('mcp.fetch.fetch_markdown'), Capabilities)),
-    assertion(memberchk(tool('mcp.fetch.fetch_readable'), Capabilities)).
+    assertion(memberchk(tool('mcp.fetch.fetch_readable'), Capabilities)),
+    assertion(memberchk(tool('mcp.fetch.fetch_txt'), Capabilities)),
+    assertion(memberchk(tool('mcp.fetch.fetch_json'), Capabilities)),
+    assertion(memberchk(tool('mcp.fetch.fetch_youtube_transcript'), Capabilities)).
 
-test(research_prompt_requires_live_tool_use) :-
+test(research_prompt_requires_direct_live_tool_use) :-
     auto_dig_query(Query),
-    assertion(sub_string(Query, _, _, _, "Perform the research now")),
+    assertion(sub_string(Query, _, _, _, "native direct mode")),
+    assertion(sub_string(Query, _, _, _, "do not emit a typed plan")),
     assertion(sub_string(Query, _, _, _, "Brave")),
     assertion(sub_string(Query, _, _, _, "Fetch")),
-    assertion(\+ sub_string(Query, _, _, _, "suitable for the tool-enabled Auto-Dig stage")) .
+    assertion(sub_string(Query, _, _, _, "additional tool or datasource capability")),
+    assertion(\+ sub_string(Query, _, _, _, "suitable for the tool-enabled Auto-Dig stage")).
 
 test(default_operating_skill_catalog_is_present) :-
     skill_default_catalog(ok(Catalog)),
