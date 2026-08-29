@@ -18,7 +18,7 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           set -euo pipefail
-          # Run 2: after temporarily withholding brave_llm_context for Prolog-RLM #298.
+          # Run 3: Prolog-RLM #298 fixed; full 14-tool direct research inventory restored.
           gh workflow run auto-dig-prolog-actor.yml \
             --repo "$GITHUB_REPOSITORY" \
             --ref main
