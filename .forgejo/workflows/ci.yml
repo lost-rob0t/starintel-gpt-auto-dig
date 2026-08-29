@@ -36,11 +36,16 @@ jobs:
       - name: validate changed documents
         run: |
           CHANGED=$(cat /tmp/changed.txt)
+          BASE="${{ github.event.pull_request.base.sha || 'HEAD~1' }}"
+          if [ "$CHANGED" != "0" ] && ! git cat-file -e "$BASE" 2>/dev/null; then
+            echo "base revision $BASE unavailable in shallow clone; falling back to full corpus validation (fail closed)"
+            python3 scripts/starintel.py validate --root .
+            exit 0
+          fi
           if [ "$CHANGED" = "0" ]; then
             echo "no changed StarIntel documents; skipping per-document validation"
             exit 0
           fi
-          BASE="${{ github.event.pull_request.base.sha || 'HEAD~1' }}"
           git diff --name-only --diff-filter=ACM "$BASE" "$GITHUB_SHA" -- 'db/**/*.ndjson' 'digs/**/*.jsonl' > /tmp/changed-files.txt
           python - <<'EOF'
           import json, subprocess, sys
