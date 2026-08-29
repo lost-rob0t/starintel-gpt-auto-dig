@@ -67,7 +67,7 @@ jobs:
       - name: forgejo hygiene
         run: |
           test -d .forgejo/workflows
-          if grep -rn "uses:" .forgejo/workflows/; then
+          if grep -rn "use[s]:" .forgejo/workflows/; then
             echo "'uses:' steps are not allowed; workflows must be self-contained"; exit 1
           fi
           if grep -rlE "star\.intel" .forgejo/workflows/; then
