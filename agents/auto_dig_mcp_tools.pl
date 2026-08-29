@@ -28,14 +28,9 @@ value.
 :- multifile rlm_mcp_policy:mcp_config_value/2.
 :- multifile rlm_mcp_server:mcp_server/2.
 
-% These two policy predicates are multifile so trusted host/test modules can
-% contribute additional declared MCP servers without weakening the fixed
-% production server set returned by auto_dig_mcp_servers/1.
 :- multifile auto_dig_mcp_import_options/2.
 :- multifile auto_dig_mcp_read_tool/2.
 
-/* Fixed host execution profiles. Versions intentionally match opencode.jsonc
- * so both research surfaces exercise the same external server builds. */
 rlm_mcp_policy:mcp_stdio_profile(
     auto_dig_brave_npx,
     mcp_process_profile{
@@ -92,9 +87,6 @@ rlm_mcp_server:mcp_server(
 
 auto_dig_mcp_servers([brave, fetch]).
 
-/* Imported MCP tools are conservatively classified as write by Prolog-RLM
- * unless trusted host code supplies an effect. These two servers are retrieval
- * surfaces, so Auto-Dig explicitly imports them as read-only effects. */
 auto_dig_mcp_import_options(brave,
                             [ effect(read),
                               time_limit(30.0),
@@ -109,10 +101,11 @@ auto_dig_mcp_import_options(fetch,
 /*
  * Trusted read-only research allow-list.
  *
- * Direct mode receives the complete capability-filtered inventory from the
- * currently pinned Brave 2.1.0 and Fetch 1.1.2 servers. This remains explicit
- * host policy until Prolog-RLM #296 grows a safe projection helper for already
- * imported, already effect-classified tools.
+ * `brave_llm_context` is temporarily withheld from direct-mode projection.
+ * Its current MCP JSON Schema contains a union/unconstrained field that the
+ * pinned Prolog-RLM normalizes to type:any, while native provider rendering
+ * rejects type:any before the first model call. Prolog-RLM #298 tracks the
+ * proper renderer fix. Keep the other thirteen read-only tools available.
  */
 auto_dig_mcp_read_tool(brave, brave_web_search).
 auto_dig_mcp_read_tool(brave, brave_local_search).
@@ -120,7 +113,6 @@ auto_dig_mcp_read_tool(brave, brave_video_search).
 auto_dig_mcp_read_tool(brave, brave_image_search).
 auto_dig_mcp_read_tool(brave, brave_news_search).
 auto_dig_mcp_read_tool(brave, brave_summarizer).
-auto_dig_mcp_read_tool(brave, brave_llm_context).
 auto_dig_mcp_read_tool(brave, brave_place_search).
 
 auto_dig_mcp_read_tool(fetch, fetch_html).
