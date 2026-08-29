@@ -1,0 +1,79 @@
+name: Test Auto-Dig fixed 304
+
+on:
+  push:
+    branches:
+      - test/auto-dig-direct-run-2026-08-29
+
+permissions:
+  contents: read
+  issues: read
+
+jobs:
+  live-direct:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - name: Check out Auto-Dig main
+        uses: actions/checkout@v4
+        with:
+          ref: main
+
+      - name: Check out fixed Prolog-RLM
+        uses: actions/checkout@v4
+        with:
+          repository: lost-rob0t/prolog-rlm
+          ref: b654831a0150a593821179da1d3886dfd64deb5c
+          path: .prolog-rlm
+
+      - name: Install SWI-Prolog
+        run: |
+          set -euo pipefail
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends swi-prolog-nox
+
+      - name: Build request and select model
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/live"
+          gh issue view 2095 --repo "$GITHUB_REPOSITORY" --json title,body,url \
+            | jq -r '"# Auto-Dig request\n\nTitle: " + .title + "\nURL: " + .url + "\n\n" + .body' \
+            > "$RUNNER_TEMP/live/request.md"
+          jq -n '{task:"research",phase:"execute",risk:"normal",irreversible:false,failed_verifications:0}' \
+            > "$RUNNER_TEMP/live/model-profile.json"
+          swipl -q -s agents/auto_dig_model_router.pl -- \
+            --profile "$RUNNER_TEMP/live/model-profile.json" \
+            --output "$RUNNER_TEMP/live/model-route.json"
+          echo "MODEL=$(jq -r .model "$RUNNER_TEMP/live/model-route.json")" >> "$GITHUB_ENV"
+          echo "EFFORT=$(jq -r .reasoning.effort "$RUNNER_TEMP/live/model-route.json")" >> "$GITHUB_ENV"
+
+      - name: Run live direct research
+        env:
+          OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+          BRAVE_API_KEY: ${{ secrets.BRAVE_API_KEY }}
+        run: |
+          set -euo pipefail
+          swipl -q \
+            -p "library=$GITHUB_WORKSPACE/.prolog-rlm/prolog" \
+            -s agents/auto_dig_rlm_runner.pl -- \
+            --context-file "$RUNNER_TEMP/live/request.md" \
+            --model "$MODEL" \
+            --reasoning-effort "$EFFORT" \
+            --output "$RUNNER_TEMP/live/result.json" \
+            --trace "$RUNNER_TEMP/live/trace.json"
+          jq -e '.schema == "prolog-rlm.trace.v1" and .name == "auto_dig_rlm_result"' \
+            "$RUNNER_TEMP/live/result.json" >/dev/null
+
+      - name: Show sanitized result summary
+        if: always()
+        run: |
+          set -euo pipefail
+          if [[ -f "$RUNNER_TEMP/live/result.json" ]]; then
+            python3 agents/auto_dig_failure_report.py \
+              --result "$RUNNER_TEMP/live/result.json" \
+              --output "$RUNNER_TEMP/live/report.md" \
+              --max-lines 120 || true
+            cat "$RUNNER_TEMP/live/report.md" || true
+          fi
