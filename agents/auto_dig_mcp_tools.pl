@@ -106,12 +106,24 @@ auto_dig_mcp_import_options(fetch,
                               max_output_bytes(262144)
                             ]).
 
-/* Least-privilege invocation allow-list. Import may discover more remote tools,
- * but the RLM receives capabilities only for these research operations. */
+/*
+ * Trusted read-only research allow-list.
+ *
+ * Direct mode receives the complete capability-filtered inventory from the
+ * currently pinned Brave 2.1.0 and Fetch 1.1.2 servers. This remains explicit
+ * host policy until Prolog-RLM #296 grows a safe projection helper for already
+ * imported, already effect-classified tools.
+ */
 auto_dig_mcp_read_tool(brave, brave_web_search).
-auto_dig_mcp_read_tool(brave, brave_news_search).
+auto_dig_mcp_read_tool(brave, brave_local_search).
 auto_dig_mcp_read_tool(brave, brave_video_search).
+auto_dig_mcp_read_tool(brave, brave_image_search).
+auto_dig_mcp_read_tool(brave, brave_news_search).
+auto_dig_mcp_read_tool(brave, brave_summarizer).
+auto_dig_mcp_read_tool(brave, brave_llm_context).
+auto_dig_mcp_read_tool(brave, brave_place_search).
 
+auto_dig_mcp_read_tool(fetch, fetch_html).
 auto_dig_mcp_read_tool(fetch, fetch_markdown).
 auto_dig_mcp_read_tool(fetch, fetch_readable).
 auto_dig_mcp_read_tool(fetch, fetch_txt).
