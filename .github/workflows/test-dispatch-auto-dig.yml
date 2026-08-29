@@ -1,0 +1,23 @@
+name: Test dispatch Auto-Dig
+
+on:
+  push:
+    branches:
+      - test/auto-dig-direct-run-2026-08-29
+
+permissions:
+  actions: write
+  contents: read
+
+jobs:
+  dispatch:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Dispatch Auto-Dig on main
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          gh workflow run auto-dig-prolog-actor.yml \
+            --repo "$GITHUB_REPOSITORY" \
+            --ref main
