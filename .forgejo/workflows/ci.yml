@@ -73,7 +73,7 @@ jobs:
         run: |
           test -d .forgejo/workflows
           if grep -rn "use[s]:" .forgejo/workflows/; then
-            echo "'uses:' steps are not allowed; workflows must be self-contained"; exit 1
+            echo "GitHub Actions uses-steps are not allowed; workflows must be self-contained"; exit 1
           fi
           if grep -rlE "star\.intel" .forgejo/workflows/; then
             echo "internal hostname leak"; exit 1
