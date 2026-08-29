@@ -18,6 +18,7 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           set -euo pipefail
+          # Run 2: after temporarily withholding brave_llm_context for Prolog-RLM #298.
           gh workflow run auto-dig-prolog-actor.yml \
             --repo "$GITHUB_REPOSITORY" \
             --ref main
