@@ -19,7 +19,7 @@ concurrency:
   cancel-in-progress: false
 
 env:
-  PROLOG_RLM_REF: a89175bf925df3afa358f8d05a370fe2a03e2117
+  PROLOG_RLM_REF: eb2411afdaf981a0a121f55b7ddf23dc9fcef812
 
 jobs:
   actor:

@@ -49,12 +49,10 @@ test(research_context_and_direct_tool_budget_are_available) :-
     assertion(Budget.max_output_bytes =:= 262144),
     assertion(Budget.time_limit =:= 300.0).
 
-test(mcp_registry_and_projectable_read_tool_inventory_are_projected) :-
+test(mcp_registry_and_complete_read_tool_inventory_are_projected) :-
     auto_dig_mcp_read_capabilities(McpCapabilities),
     length(McpCapabilities, CapabilityCount),
-    assertion(CapabilityCount =:= 13),
-    assertion(\+ memberchk(tool('mcp.brave.brave_llm_context'),
-                           McpCapabilities)),
+    assertion(CapabilityCount =:= 14),
     auto_dig_runtime_options('openai/gpt-5.6-luna',
                              max,
                              fake_registry,
@@ -74,6 +72,7 @@ test(mcp_registry_and_projectable_read_tool_inventory_are_projected) :-
     assertion(memberchk(tool('mcp.brave.brave_image_search'), Capabilities)),
     assertion(memberchk(tool('mcp.brave.brave_news_search'), Capabilities)),
     assertion(memberchk(tool('mcp.brave.brave_summarizer'), Capabilities)),
+    assertion(memberchk(tool('mcp.brave.brave_llm_context'), Capabilities)),
     assertion(memberchk(tool('mcp.brave.brave_place_search'), Capabilities)),
     assertion(memberchk(tool('mcp.fetch.fetch_html'), Capabilities)),
     assertion(memberchk(tool('mcp.fetch.fetch_markdown'), Capabilities)),

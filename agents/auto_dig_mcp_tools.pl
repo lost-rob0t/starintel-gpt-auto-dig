@@ -101,11 +101,8 @@ auto_dig_mcp_import_options(fetch,
 /*
  * Trusted read-only research allow-list.
  *
- * `brave_llm_context` is temporarily withheld from direct-mode projection.
- * Its current MCP JSON Schema contains a union/unconstrained field that the
- * pinned Prolog-RLM normalizes to type:any, while native provider rendering
- * rejects type:any before the first model call. Prolog-RLM #298 tracks the
- * proper renderer fix. Keep the other thirteen read-only tools available.
+ * The pinned Prolog-RLM renders runtime type:any as unconstrained provider
+ * JSON Schema, so the complete trusted Brave + Fetch inventory is projectable.
  */
 auto_dig_mcp_read_tool(brave, brave_web_search).
 auto_dig_mcp_read_tool(brave, brave_local_search).
@@ -113,6 +110,7 @@ auto_dig_mcp_read_tool(brave, brave_video_search).
 auto_dig_mcp_read_tool(brave, brave_image_search).
 auto_dig_mcp_read_tool(brave, brave_news_search).
 auto_dig_mcp_read_tool(brave, brave_summarizer).
+auto_dig_mcp_read_tool(brave, brave_llm_context).
 auto_dig_mcp_read_tool(brave, brave_place_search).
 
 auto_dig_mcp_read_tool(fetch, fetch_html).
