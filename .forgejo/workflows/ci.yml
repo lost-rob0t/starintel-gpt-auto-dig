@@ -1,0 +1,76 @@
+name: autodig-ci
+on:
+  push:
+    branches: ["**"]
+  pull_request:
+
+jobs:
+  verify:
+    name: tests, v0.9 validation, hygiene
+    runs-on: ubuntu-latest
+    container: docker.io/library/python:3.13-slim
+    steps:
+      - name: checkout
+        run: |
+          apt-get update -qq && apt-get install -y -qq git jq > /dev/null
+          git clone --no-checkout "$GITHUB_SERVER_URL/$GITHUB_REPOSITORY" repo
+          cd repo
+          git fetch --depth=1 origin "$GITHUB_SHA"
+          git checkout --force "$GITHUB_SHA"
+          cd ..
+          mkdir -p "$GITHUB_WORKSPACE"
+          cp -a repo/. "$GITHUB_WORKSPACE"/
+      - name: python deps
+        run: pip install --quiet fastapi uvicorn httpx starlette pytest httpx
+      - name: backend api tests
+        run: python -m unittest discover -s backend/tests -p "test_*.py" -v
+      - name: importer unit tests
+        run: python -m unittest discover -s tests -p "test_import_starintel.py" -v
+      - name: detect changed documents
+        id: changed
+        run: |
+          BASE="${{ github.event.pull_request.base.sha || 'HEAD~1' }}"
+          git fetch --depth=64 origin "${{ github.event.pull_request.base.sha || format('refs/heads/{0}', github.ref_name) }}" 2>/dev/null || true
+          CHANGED=$(git diff --name-only --diff-filter=ACM "$BASE" "$GITHUB_SHA" -- 'db/**/*.ndjson' 'digs/**/*.jsonl' | wc -l)
+          echo "count=$CHANGED" | tee /tmp/changed.txt
+      - name: validate changed documents
+        run: |
+          CHANGED=$(cat /tmp/changed.txt)
+          if [ "$CHANGED" = "0" ]; then
+            echo "no changed StarIntel documents; skipping per-document validation"
+            exit 0
+          fi
+          BASE="${{ github.event.pull_request.base.sha || 'HEAD~1' }}"
+          git diff --name-only --diff-filter=ACM "$BASE" "$GITHUB_SHA" -- 'db/**/*.ndjson' 'digs/**/*.jsonl' > /tmp/changed-files.txt
+          python - <<'EOF'
+          import json, subprocess, sys
+          sys.path.insert(0, ".")
+          from backend.validation import validate_v09_line, DocumentValidationError
+          failed = 0
+          with open("/tmp/changed-files.txt") as handle:
+              for path in handle.read().splitlines():
+                  try:
+                      with open(path, encoding="utf-8") as fh:
+                          for lineno, line in enumerate(fh, 1):
+                              if not line.strip():
+                                  continue
+                              try:
+                                  validate_v09_line(line)
+                              except DocumentValidationError as exc:
+                                  print(f"INVALID {path}:{lineno}: {exc}")
+                                  failed += 1
+                  except FileNotFoundError:
+                      print(f"MISSING {path}")
+                      failed += 1
+          sys.exit(1 if failed else 0)
+          EOF
+      - name: forgejo hygiene
+        run: |
+          test -d .forgejo/workflows
+          if grep -rn "uses:" .forgejo/workflows/; then
+            echo "'uses:' steps are not allowed; workflows must be self-contained"; exit 1
+          fi
+          if grep -rlE "star\.intel" .forgejo/workflows/; then
+            echo "internal hostname leak"; exit 1
+          fi
+          echo "hygiene ok"
