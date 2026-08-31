@@ -14,6 +14,8 @@ on:
       - main
     paths:
       - '.github/workflows/auto-dig-prolog-actor.yml'
+      - 'agents/auto_dig_*.pl'
+      - 'agents/test_auto_dig_*.pl'
 
 permissions:
   contents: write
