@@ -4,10 +4,14 @@
             auto_dig_runtime_options/6,
             auto_dig_context_budget/3,
             auto_dig_query/1,
+            auto_dig_repair_query/2,
+            auto_dig_retry_options/2,
+            raw_argument_retryable/1,
             outcome_log_summary/2
           ]).
 
 :- use_module(library(readutil)).
+:- use_module(library(lists), [select/3]).
 :- use_module(library(rlm_chain)).
 :- use_module(library(rlm_direct)).
 :- use_module(library(rlm_trace)).
@@ -94,8 +98,48 @@ run_research_completion_with_session(Args,
                Budget.max_iterations,
                Budget.time_limit
              ]),
-    rlm_direct(Query, text(Context), Options, Outcome),
+    run_bounded_direct(Query, Context, Options, Outcome),
     safe_log(auto_dig_rlm, 'phase=direct_return', []).
+
+run_bounded_direct(Query, Context, Options, Outcome) :-
+    rlm_direct(Query, text(Context), Options, FirstOutcome),
+    (   raw_argument_retryable(FirstOutcome)
+    ->  outcome_log_summary(FirstOutcome, FirstSummary0),
+        safe_text(FirstSummary0, FirstSummary),
+        safe_log(auto_dig_rlm,
+                 'phase=repair_retry trigger=raw_malformed_arguments first_outcome=~s',
+                 [FirstSummary]),
+        auto_dig_repair_query(Query, RepairQuery),
+        auto_dig_retry_options(Options, RetryOptions),
+        rlm_direct(RepairQuery, text(Context), RetryOptions, RetryOutcome),
+        safe_log(auto_dig_rlm,
+                 'phase=repair_retry state=complete',
+                 []),
+        Outcome = RetryOutcome
+    ;   Outcome = FirstOutcome
+    ).
+
+raw_argument_retryable(error(Error)) :-
+    is_dict(Error),
+    get_dict(phase, Error, native_call),
+    get_dict(kind, Error, malformed_arguments),
+    get_dict(cause, Error, Cause),
+    is_dict(Cause),
+    get_dict(phase, Cause, normalize),
+    get_dict(kind, Cause, malformed_arguments).
+
+auto_dig_retry_options(Options0, Options) :-
+    select(budget(Budget0), Options0, Rest),
+    RetryBudgetPatch = _{ max_iterations:12,
+                          max_model_calls:6,
+                          max_tool_calls:12,
+                          max_context_ops:16,
+                          max_total_tokens:78750,
+                          max_cost_usd:0.50,
+                          time_limit:180.0
+                        },
+    put_dict(RetryBudgetPatch, Budget0, RetryBudget),
+    Options = [budget(RetryBudget)|Rest].
 
 auto_dig_runtime_options(Model, ReasoningEffort, Options) :-
     auto_dig_runtime_options(Model,
@@ -128,7 +172,7 @@ auto_dig_runtime_options(Model,
                 max_tool_calls:24,
                 max_context_ops:32,
                 max_total_tokens:TokenBudget,
-                max_cost_usd:2.00,
+                max_cost_usd:1.50,
                 max_output_bytes:262144,
                 time_limit:300.0
               },
@@ -177,7 +221,12 @@ runtime_binding_options(Registry,
                           authority_context(AuthorityContext)
                         | Options0 ]).
 
-auto_dig_query("You are the Auto-Dig Prolog actor running in native direct mode with bounded read-only web research tools. Perform the research now; do not emit a typed plan and do not merely propose a future tool-enabled stage. Use the available Brave search tools broadly to discover relevant sources, then use Fetch tools to inspect primary or otherwise high-value source content. Use RLM context search, peek, and slice when useful. Keep calling tools while useful evidence remains within budget. Separate established facts, hypotheses, constraints, unresolved claims, primary-source evidence, and falsification criteria. Preserve source URLs or identifiers in the result so claims are auditable. Do not claim research or verification that was not actually performed. Return an evidence-backed research slice plus clearly separated remaining follow-up work, including any additional tool or datasource capability that would materially improve the next pass.").
+auto_dig_query("You are the Auto-Dig Prolog actor running in native direct mode with bounded read-only web research tools. Perform the research now; do not emit a typed plan and do not merely propose a future tool-enabled stage. Use the available Brave search tools broadly to discover relevant sources, then use Fetch tools to inspect primary or otherwise high-value source content. Use RLM context search, peek, and slice when useful. Keep calling tools while useful evidence remains within budget. Native tool-call arguments must be strict JSON objects with every object key appearing exactly once; never emit duplicate JSON keys. Prefer no more than four parallel native tool calls in one assistant turn so each call remains easy to validate and repair. Separate established facts, hypotheses, constraints, unresolved claims, primary-source evidence, and falsification criteria. Preserve source URLs or identifiers in the result so claims are auditable. Do not claim research or verification that was not actually performed. Return an evidence-backed research slice plus clearly separated remaining follow-up work, including any additional tool or datasource capability that would materially improve the next pass.").
+
+auto_dig_repair_query(Query, RepairQuery) :-
+    string_concat(Query,
+                  "\n\nREPAIR NOTE: the previous bounded direct attempt was rejected because at least one provider-native tool call contained malformed raw JSON arguments. Start the research again from the supplied input context. Every tool argument payload MUST be exactly one strict JSON object and every key in that object MUST appear exactly once. Do not repeat keys such as search_lang or spellcheck. Prefer no more than four parallel native tool calls per assistant turn. This is the one harness-level repair attempt; use it to complete a useful evidence-backed research slice within the smaller retry budget.",
+                  RepairQuery).
 
 outcome_exit_code(ok(_), 0) :- !.
 outcome_exit_code(error(_), 1) :- !.
