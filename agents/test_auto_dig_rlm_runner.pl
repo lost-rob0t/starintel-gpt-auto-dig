@@ -46,8 +46,49 @@ test(research_context_and_direct_tool_budget_are_available) :-
     assertion(Budget.max_tool_calls =:= 24),
     assertion(Budget.max_context_ops =:= 32),
     assertion(Budget.max_total_tokens =:= 315000),
+    assertion(Budget.max_cost_usd =:= 1.50),
     assertion(Budget.max_output_bytes =:= 262144),
     assertion(Budget.time_limit =:= 300.0).
+
+test(raw_normalization_failure_is_the_only_harness_retry_trigger) :-
+    Retryable = error(_{ phase:native_call,
+                         kind:malformed_arguments,
+                         cause:_{ phase:normalize,
+                                  kind:malformed_arguments,
+                                  message:"native tool arguments must be one ground JSON object"
+                                }
+                       }),
+    assertion(raw_argument_retryable(Retryable)),
+    SchemaFailure = error(_{ phase:native_call,
+                              kind:malformed_arguments,
+                              cause:_{ phase:schema,
+                                       kind:malformed_arguments
+                                     }
+                            }),
+    assertion(\+ raw_argument_retryable(SchemaFailure)),
+    ProviderFailure = error(_{ phase:provider,
+                                kind:provider_failed,
+                                cause:_{ phase:normalize,
+                                         kind:malformed_arguments
+                                       }
+                              }),
+    assertion(\+ raw_argument_retryable(ProviderFailure)).
+
+test(repair_retry_is_smaller_and_keeps_total_cost_cap_bounded) :-
+    auto_dig_runtime_options('openai/gpt-5.6-luna', max, Options),
+    auto_dig_retry_options(Options, RetryOptions),
+    memberchk(budget(MainBudget), Options),
+    memberchk(budget(RetryBudget), RetryOptions),
+    assertion(MainBudget.max_cost_usd =:= 1.50),
+    assertion(RetryBudget.max_cost_usd =:= 0.50),
+    TotalCostCap is MainBudget.max_cost_usd + RetryBudget.max_cost_usd,
+    assertion(TotalCostCap =:= 2.00),
+    assertion(RetryBudget.max_iterations =:= 12),
+    assertion(RetryBudget.max_model_calls =:= 6),
+    assertion(RetryBudget.max_tool_calls =:= 12),
+    assertion(RetryBudget.max_context_ops =:= 16),
+    assertion(RetryBudget.max_total_tokens =:= 78750),
+    assertion(RetryBudget.time_limit =:= 180.0).
 
 test(mcp_registry_and_complete_read_tool_inventory_are_projected) :-
     auto_dig_mcp_read_capabilities(McpCapabilities),
@@ -81,14 +122,26 @@ test(mcp_registry_and_complete_read_tool_inventory_are_projected) :-
     assertion(memberchk(tool('mcp.fetch.fetch_json'), Capabilities)),
     assertion(memberchk(tool('mcp.fetch.fetch_youtube_transcript'), Capabilities)).
 
-test(research_prompt_requires_direct_live_tool_use) :-
+test(research_prompt_requires_direct_live_tool_use_and_strict_native_json) :-
     auto_dig_query(Query),
     assertion(sub_string(Query, _, _, _, "native direct mode")),
     assertion(sub_string(Query, _, _, _, "do not emit a typed plan")),
     assertion(sub_string(Query, _, _, _, "Brave")),
     assertion(sub_string(Query, _, _, _, "Fetch")),
+    assertion(sub_string(Query, _, _, _, "strict JSON objects")),
+    assertion(sub_string(Query, _, _, _, "every object key appearing exactly once")),
+    assertion(sub_string(Query, _, _, _, "no more than four parallel native tool calls")),
     assertion(sub_string(Query, _, _, _, "additional tool or datasource capability")),
     assertion(\+ sub_string(Query, _, _, _, "suitable for the tool-enabled Auto-Dig stage")).
+
+test(repair_prompt_names_duplicate_key_failure_and_is_single_attempt) :-
+    auto_dig_query(Query),
+    auto_dig_repair_query(Query, RepairQuery),
+    assertion(sub_string(RepairQuery, _, _, _, "previous bounded direct attempt")),
+    assertion(sub_string(RepairQuery, _, _, _, "MUST appear exactly once")),
+    assertion(sub_string(RepairQuery, _, _, _, "search_lang or spellcheck")),
+    assertion(sub_string(RepairQuery, _, _, _, "one harness-level repair attempt")),
+    assertion(sub_string(RepairQuery, _, _, _, "smaller retry budget")).
 
 test(default_operating_skill_catalog_is_present) :-
     skill_default_catalog(ok(Catalog)),
