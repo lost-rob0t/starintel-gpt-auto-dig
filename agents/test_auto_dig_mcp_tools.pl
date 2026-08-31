@@ -42,9 +42,15 @@ test(remote_imports_are_explicitly_read_only) :-
 test(invocation_capabilities_are_exact_namespaced_allow_list) :-
     auto_dig_mcp_read_capabilities(Capabilities),
     assertion(Capabilities ==
-              [ tool('mcp.brave.brave_news_search'),
+              [ tool('mcp.brave.brave_image_search'),
+                tool('mcp.brave.brave_llm_context'),
+                tool('mcp.brave.brave_local_search'),
+                tool('mcp.brave.brave_news_search'),
+                tool('mcp.brave.brave_place_search'),
+                tool('mcp.brave.brave_summarizer'),
                 tool('mcp.brave.brave_video_search'),
                 tool('mcp.brave.brave_web_search'),
+                tool('mcp.fetch.fetch_html'),
                 tool('mcp.fetch.fetch_json'),
                 tool('mcp.fetch.fetch_markdown'),
                 tool('mcp.fetch.fetch_readable'),
@@ -52,9 +58,12 @@ test(invocation_capabilities_are_exact_namespaced_allow_list) :-
                 tool('mcp.fetch.fetch_youtube_transcript')
               ]).
 
-test(image_and_local_search_are_not_granted_by_default) :-
+test(full_brave_read_inventory_is_granted_by_default) :-
     auto_dig_mcp_read_capabilities(Capabilities),
-    assertion(\+ memberchk(tool('mcp.brave.brave_image_search'), Capabilities)),
-    assertion(\+ memberchk(tool('mcp.brave.brave_local_search'), Capabilities)).
+    assertion(memberchk(tool('mcp.brave.brave_image_search'), Capabilities)),
+    assertion(memberchk(tool('mcp.brave.brave_local_search'), Capabilities)),
+    assertion(memberchk(tool('mcp.brave.brave_llm_context'), Capabilities)),
+    assertion(memberchk(tool('mcp.brave.brave_place_search'), Capabilities)),
+    assertion(memberchk(tool('mcp.brave.brave_summarizer'), Capabilities)).
 
 :- end_tests(auto_dig_mcp_tools).
