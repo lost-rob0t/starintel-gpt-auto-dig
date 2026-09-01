@@ -7,7 +7,9 @@
             auto_dig_repair_query/2,
             auto_dig_retry_options/2,
             raw_argument_retryable/1,
-            outcome_log_summary/2
+            outcome_log_summary/2,
+            final_report_content/2,
+            valid_research_report/1
           ]).
 
 :- use_module(library(readutil)).
@@ -49,7 +51,11 @@ main_run(Argv, ExitCode) :-
     -> true
     ;  safe_log(auto_dig_rlm, 'phase=trace_written file=~w', [Args.trace])
     ),
-    outcome_exit_code(Outcome, ExitCode),
+    outcome_exit_code(Outcome, RuntimeExitCode),
+    validate_and_materialize_result(Args.output,
+                                    Outcome,
+                                    RuntimeExitCode,
+                                    ExitCode),
     safe_log(auto_dig_rlm, 'phase=finish exit_code=~d', [ExitCode]).
 
 run_research_completion(Args, Query, Context, Outcome) :-
@@ -203,10 +209,11 @@ auto_dig_runtime_options(Model,
  * Temporary consumer-owned model limits.
  *
  * Prolog-RLM issue #296 tracks moving this into a provider-neutral model
- * metadata API. OpenRouter currently advertises a 1,050,000-token context
- * window for all three routed GPT-5.6 tiers. Auto-Dig intentionally gives the
- * direct worker 30% of that limit: 315,000 tokens.
+ * metadata API. Auto-Dig intentionally gives the direct worker 30% of the
+ * selected model context window. OpenRouter advertises 1,310,720 tokens for
+ * GLM-5.3-Flash and 1,050,000 for the existing GPT-5.6 routes.
  */
+auto_dig_model_context_window('z-ai/glm-5.3-flash', 1310720).
 auto_dig_model_context_window('openai/gpt-5.6-luna', 1050000).
 auto_dig_model_context_window('openai/gpt-5.6-terra', 1050000).
 auto_dig_model_context_window('openai/gpt-5.6-sol', 1050000).
@@ -227,12 +234,85 @@ runtime_binding_options(Registry,
                           authority_context(AuthorityContext)
                         | Options0 ]).
 
-auto_dig_query("You are the Auto-Dig Prolog actor running in native direct mode with bounded read-only web research tools. Perform the research now; do not emit a typed plan and do not merely propose a future tool-enabled stage. Use the available Brave search tools broadly to discover relevant sources, then use Fetch tools to inspect primary or otherwise high-value source content. Use RLM context search, peek, and slice when useful. Reserve the final four model responses for synthesis. Stop evidence acquisition no later than the twelfth model response. Once that boundary is reached, do not call Brave, Fetch, or context tools again; synthesize the strongest evidence already gathered into the final answer. If useful evidence remains after the boundary, list it as follow-up work instead of spending synthesis headroom. Native tool-call arguments must be strict JSON objects with every object key appearing exactly once; never emit duplicate JSON keys. Prefer no more than four parallel native tool calls in one assistant turn so each call remains easy to validate and repair. Separate established facts, hypotheses, constraints, unresolved claims, primary-source evidence, and falsification criteria. Preserve source URLs or identifiers in the result so claims are auditable. Do not claim research or verification that was not actually performed. Return an evidence-backed research slice plus clearly separated remaining follow-up work, including any additional tool or datasource capability that would materially improve the next pass.").
+auto_dig_query("You are the Auto-Dig Prolog actor running in native direct mode with bounded read-only web research tools. Perform the research now; do not emit a typed plan and do not merely propose a future tool-enabled stage. Use the available Brave search tools broadly to discover relevant sources, then use Fetch tools to inspect primary or otherwise high-value source content. Use RLM context search, peek, and slice when useful. Reserve the final four model responses for synthesis. Stop evidence acquisition no later than the twelfth model response. Once that boundary is reached, do not call Brave, Fetch, context tools, or write tool-call syntax as text; synthesize the strongest evidence already gathered into the final answer. If useful evidence remains after the boundary, list it as follow-up work instead of spending synthesis headroom. Native tool-call arguments must be strict JSON objects with every object key appearing exactly once; never emit duplicate JSON keys. Prefer no more than four parallel native tool calls in one assistant turn so each call remains easy to validate and repair. Separate established facts, hypotheses, constraints, unresolved claims, primary-source evidence, and falsification criteria. Preserve source URLs or identifiers in the result so claims are auditable. Do not claim research or verification that was not actually performed. Your final assistant response MUST be a substantive Markdown report that starts exactly with '# Auto-Dig Research Output' and contains the headings '## Findings', '## Evidence', and '## Unresolved / Follow-up', with at least one http:// or https:// source URL. The final response must contain prose findings, not pending tool invocations, serialized tool calls, or a statement that the run merely completed. Even when evidence is limited, produce the report with explicit unresolved items. Return an evidence-backed research slice plus clearly separated remaining follow-up work, including any additional tool or datasource capability that would materially improve the next pass.").
 
 auto_dig_repair_query(Query, RepairQuery) :-
     string_concat(Query,
                   "\n\nREPAIR NOTE: the previous bounded direct attempt was rejected because at least one provider-native tool call contained malformed raw JSON arguments. Start the research again from the supplied input context. Every tool argument payload MUST be exactly one strict JSON object and every key in that object MUST appear exactly once. Do not repeat keys such as search_lang or spellcheck. Prefer no more than four parallel native tool calls per assistant turn. This is the one harness-level repair attempt; use it to complete a useful evidence-backed research slice within the smaller retry budget.",
                   RepairQuery).
+
+final_report_content(ok(Result), Content) :-
+    is_dict(Result),
+    get_dict(response, Result, Response),
+    is_dict(Response),
+    get_dict(assistant, Response, Assistant),
+    is_dict(Assistant),
+    get_dict(content, Assistant, RawContent),
+    text_content_string(RawContent, Content).
+
+text_content_string(Content, Content) :-
+    string(Content),
+    !.
+text_content_string(Content, String) :-
+    atom(Content),
+    atom_string(Content, String).
+
+valid_research_report(Content) :-
+    string(Content),
+    normalize_space(string(Trimmed), Content),
+    string_length(Trimmed, Length),
+    Length >= 256,
+    sub_string(Trimmed, 0, _, _, "# Auto-Dig Research Output"),
+    sub_string(Trimmed, _, _, _, "## Findings"),
+    sub_string(Trimmed, _, _, _, "## Evidence"),
+    sub_string(Trimmed, _, _, _, "## Unresolved / Follow-up"),
+    ( sub_string(Trimmed, _, _, _, "https://")
+    ; sub_string(Trimmed, _, _, _, "http://")
+    ),
+    \+ tool_transcript_content(Trimmed).
+
+tool_transcript_content(Content) :-
+    member(Marker,
+           [ "to=functions.",
+             "to=multi_tool_use.",
+             "functions.context_slice",
+             "\"tool_uses\"",
+             "\"recipient_name\""
+           ]),
+    sub_string(Content, _, _, _, Marker),
+    !.
+
+validate_and_materialize_result(_, _, RuntimeExitCode, RuntimeExitCode) :-
+    RuntimeExitCode =\= 0,
+    !.
+validate_and_materialize_result(OutputPath, Outcome, 0, ExitCode) :-
+    (   final_report_content(Outcome, Content),
+        valid_research_report(Content)
+    ->  report_path(OutputPath, ReportPath),
+        write_report(ReportPath, Content),
+        safe_log(auto_dig_rlm,
+                 'phase=output_validation state=ok report=~w',
+                 [ReportPath]),
+        ExitCode = 0
+    ;   safe_log(auto_dig_rlm,
+                 'phase=output_validation state=error kind=non_substantive_final_output',
+                 []),
+        format(user_error,
+               '::error title=Auto-Dig invalid final output::runtime returned ok but no substantive research report satisfied the output contract~n',
+               []),
+        flush_output(user_error),
+        ExitCode = 1
+    ).
+
+report_path(OutputPath, ReportPath) :-
+    file_directory_name(OutputPath, Directory),
+    directory_file_path(Directory, 'report.md', ReportPath).
+
+write_report(Path, Content) :-
+    setup_call_cleanup(
+        open(Path, write, Stream, [encoding(utf8)]),
+        format(Stream, '~s~n', [Content]),
+        close(Stream)).
 
 outcome_exit_code(ok(_), 0) :- !.
 outcome_exit_code(error(_), 1) :- !.
