@@ -4,6 +4,8 @@
 :- use_module('./auto_dig_mcp_tools').
 :- use_module(library(rlm_skill)).
 
+% Guarded live verification marker for the synthesis-reservation dogfood slice.
+
 test(native_direct_mode_features_are_explicitly_enabled) :-
     auto_dig_runtime_options('openai/gpt-5.6-luna', max, Options),
     assertion(memberchk(skill_mode(on), Options)),
