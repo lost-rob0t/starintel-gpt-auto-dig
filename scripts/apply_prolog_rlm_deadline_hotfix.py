@@ -140,7 +140,8 @@ native_tool_synthesis_reserve(Options, Reserve) :-
     ).
 
 native_tool_provider_headroom(Options, Reserve, Headroom) :-
-    option(native_tool_provider_headroom_seconds, Options, Reserve, Requested),
+    DefaultHeadroom is Reserve*5.0/3.0,
+    option(native_tool_provider_headroom_seconds, Options, DefaultHeadroom, Requested),
     (   number(Requested),
         Requested >= 0
     ->  Headroom = Requested

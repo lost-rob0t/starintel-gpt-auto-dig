@@ -12,7 +12,7 @@ ensure_deadline_hotfix_fixture :-
     directory_file_path(Workspace, '.prolog-rlm', RuntimeRoot),
     directory_file_path(RuntimeRoot, 'prolog/rlm_direct.pl', DirectPath),
     read_file_to_string(DirectPath, DirectSource, []),
-    (   sub_string(DirectSource, _, _, _, "native_tool_provider_headroom_seconds")
+    (   sub_string(DirectSource, _, _, _, "DefaultHeadroom is Reserve*5.0/3.0")
     ->  true
     ;   apply_script('scripts/apply_prolog_rlm_hotfix.py', RuntimeRoot),
         apply_script('scripts/apply_prolog_rlm_deadline_hotfix.py', RuntimeRoot)
@@ -83,10 +83,11 @@ deadline_model(Request, ok(Response)) :-
 deadline_model_response(1, Request, "", [ToolCall]) :-
     get_dict(tools, Request.options, Tools),
     Tools \== [],
-    % Simulate one slow acquisition response. With only the synthesis reserve
-    % considered, the next provider request would still start tool-enabled and
-    % could consume the hard deadline, exactly as live run 33522569444 did.
-    sleep(0.78),
+    % Model a provider turn that leaves ~0.35s of a 1s hard budget. A
+    % reserve+equal-headroom cutoff is only 0.30s and therefore misses this
+    % transition; the live-equivalent 5/3 provider headroom closes acquisition
+    % at 0.40s and forces the next request to synthesize.
+    sleep(0.65),
     tool_call("slice_1", ToolCall).
 deadline_model_response(2, Request, "SYNTHESIZED_BEFORE_HARD_DEADLINE", []) :-
     \+ get_dict(tools, Request.options, _),
@@ -110,7 +111,7 @@ options([provider(provider(openai_compatible, [])),
                   max_output_bytes:8192,
                   time_limit:1.0})]).
 
-test(provider_headroom_hides_tools_before_slow_request_can_consume_deadline) :-
+test(provider_headroom_forces_synthesis_before_equal_headroom_would) :-
     reset_model,
     options(Options),
     rlm_direct("Acquire once, then synthesize",
