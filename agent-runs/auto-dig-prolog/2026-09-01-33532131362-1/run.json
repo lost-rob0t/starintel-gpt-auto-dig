@@ -1,0 +1,43 @@
+{
+  "schema": "auto-dig-prolog-run.v1",
+  "agent": "auto-dig-prolog",
+  "run_id": "33532131362-1",
+  "branch": "auto-dig-prolog/2026-09-01-33532131362-1",
+  "trigger": "push",
+  "prolog_rlm_ref": "39b278589dae8518e583778cd6671a6cb1e026c7",
+  "issue_number": 2284,
+  "status": "researched",
+  "rlm_features": [
+    "automatic_default_skills",
+    "native_direct_mode",
+    "all_capability_filtered_tools",
+    "context_search_peek_slice",
+    "context_peek_selector_contract",
+    "recoverable_native_preflight_faults",
+    "transient_provider_retry",
+    "read_only_tool_error_recovery",
+    "wall_clock_synthesis_reserve",
+    "model_context_budget_30_percent",
+    "read_only_brave_search_mcp",
+    "read_only_fetch_mcp",
+    "emission_boundary_diagnostic_sanitization"
+  ],
+  "model_route": {
+    "failed_verifications": 0,
+    "fallback": [],
+    "family": "glm-5.3",
+    "model": "z-ai/glm-5.3-flash",
+    "phase": "execute",
+    "provider": "openrouter",
+    "reason": [
+      "live research execution dogfoods GLM-5.3-Flash with exact model identity"
+    ],
+    "reasoning": {
+      "effort": "max"
+    },
+    "risk": "normal",
+    "schema": "auto-dig-model-route.v1",
+    "task": "research",
+    "tier": "glm-5.3-flash"
+  }
+}
