@@ -12,7 +12,7 @@ ensure_deadline_hotfix_fixture :-
     directory_file_path(Workspace, '.prolog-rlm', RuntimeRoot),
     directory_file_path(RuntimeRoot, 'prolog/rlm_direct.pl', DirectPath),
     read_file_to_string(DirectPath, DirectSource, []),
-    (   sub_string(DirectSource, _, _, _, "DefaultHeadroom is Reserve*5.0/3.0")
+    (   sub_string(DirectSource, _, _, _, "SYNTHESIS PHASE IS ACTIVE")
     ->  true
     ;   apply_script('scripts/apply_prolog_rlm_hotfix.py', RuntimeRoot),
         apply_script('scripts/apply_prolog_rlm_deadline_hotfix.py', RuntimeRoot)
@@ -83,15 +83,16 @@ deadline_model(Request, ok(Response)) :-
 deadline_model_response(1, Request, "", [ToolCall]) :-
     get_dict(tools, Request.options, Tools),
     Tools \== [],
-    % Model a provider turn that leaves ~0.35s of a 1s hard budget. A
-    % reserve+equal-headroom cutoff is only 0.30s and therefore misses this
-    % transition; the live-equivalent 5/3 provider headroom closes acquisition
-    % at 0.40s and forces the next request to synthesize.
     sleep(0.65),
     tool_call("slice_1", ToolCall).
 deadline_model_response(2, Request, "SYNTHESIZED_BEFORE_HARD_DEADLINE", []) :-
     \+ get_dict(tools, Request.options, _),
     \+ get_dict(tool_choice, Request.options, _),
+    last(Request.messages, FinalMessage),
+    assertion(FinalMessage.role == system),
+    assertion(sub_string(FinalMessage.content, _, _, _, "SYNTHESIS PHASE IS ACTIVE")),
+    assertion(sub_string(FinalMessage.content, _, _, _, "return the final answer now")),
+    assertion(sub_string(FinalMessage.content, _, _, _, "Do not narrate what you would inspect next")),
     !.
 deadline_model_response(2, _, "", [ToolCall]) :-
     tool_call("slice_2", ToolCall).
@@ -111,7 +112,7 @@ options([provider(provider(openai_compatible, [])),
                   max_output_bytes:8192,
                   time_limit:1.0})]).
 
-test(provider_headroom_forces_synthesis_before_equal_headroom_would) :-
+test(provider_headroom_forces_explicit_synthesis_request) :-
     reset_model,
     options(Options),
     rlm_direct("Acquire once, then synthesize",
