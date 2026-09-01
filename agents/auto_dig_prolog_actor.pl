@@ -1,6 +1,7 @@
 :- module(auto_dig_prolog_actor,
           [ main/1,
-            select_queue/3
+            select_queue/3,
+            select_queue/4
           ]).
 
 :- use_module(library(http/json)).
@@ -23,6 +24,7 @@ main_run(Argv) :-
     option(state(StatePath), Options),
     option(output(OutputPath), Options),
     option(trace(TracePath), Options, ''),
+    option(allow_repeat(AllowRepeat), Options, false),
     read_json_file(QueuePath, Queue),
     read_json_file(StatePath, State),
     setup_call_cleanup(
@@ -33,12 +35,12 @@ main_run(Argv) :-
               worker_backlog(1)
             ],
             Runtime),
-        run_actor(Runtime, Queue, State, Decision, Trace),
+        run_actor(Runtime, Queue, State, AllowRepeat, Decision, Trace),
         agent_runtime_destroy(Runtime)),
     write_json_file(OutputPath, Decision),
     maybe_write_trace(TracePath, Trace).
 
-run_actor(Runtime, Queue, State, Decision, Trace) :-
+run_actor(Runtime, Queue, State, AllowRepeat, Decision, Trace) :-
     agent_spawn(Runtime,
                 none,
                 agent_spec{
@@ -53,23 +55,27 @@ run_actor(Runtime, Queue, State, Decision, Trace) :-
     agent_supervised_call(Runtime,
                           Actor,
                           auto_dig_prolog_actor:worker_handler,
-                          work(select, Queue, State),
+                          work(select, Queue, State, AllowRepeat),
                           [timeout(5.0)],
                           CallOutcome),
     require_decision(CallOutcome, Decision),
     agent_trace(Runtime, Trace).
 
-worker_handler(work(select, Queue, State), Decision) :-
-    select_queue(Queue, State, Decision).
+worker_handler(work(select, Queue, State, AllowRepeat), Decision) :-
+    select_queue(Queue, State, AllowRepeat, Decision).
 
 select_queue(Queue, State, Decision) :-
+    select_queue(Queue, State, false, Decision).
+
+select_queue(Queue, State, AllowRepeat, Decision) :-
     must_be(list, Queue),
     must_be(dict, State),
+    require_boolean_flag(AllowRepeat),
     maplist(enrich_issue, Queue, Enriched0),
     predsort(compare_candidates, Enriched0, Enriched),
     length(Enriched, QueueSize),
     state_last_issue(State, LastIssue),
-    (   choose_candidate(Enriched, LastIssue, Selected)
+    (   choose_candidate(Enriched, LastIssue, AllowRepeat, Selected)
     ->  selected_decision(Selected, State, QueueSize, Decision)
     ;   Decision = _{
             action:"idle",
@@ -105,6 +111,11 @@ compare_candidates(Order, A, B) :-
     ->  compare(Order, A.number, B.number)
     ;   Order = RankOrder
     ).
+
+choose_candidate([Candidate|_], _, true, Candidate) :-
+    !.
+choose_candidate(Candidates, LastIssue, false, Selected) :-
+    choose_candidate(Candidates, LastIssue, Selected).
 
 choose_candidate([], _, _) :-
     fail.
@@ -207,6 +218,13 @@ normalize_line(Line, Normalized) :-
     normalize_space(string(Spaced), Line),
     string_lower(Spaced, Normalized).
 
+require_boolean_flag(true) :- !.
+require_boolean_flag(false) :- !.
+require_boolean_flag(Value) :-
+    throw(error(type_error(boolean, Value),
+                context(auto_dig_prolog_actor,
+                        'allow-repeat must be true or false'))).
+
 require_decision(ok(Decision0), Decision) :-
     is_dict(Decision0),
     !,
@@ -242,10 +260,13 @@ parse_args_(['--output', Path|Rest], Acc, Options) :-
 parse_args_(['--trace', Path|Rest], Acc, Options) :-
     !,
     parse_args_(Rest, [trace(Path)|Acc], Options).
+parse_args_(['--allow-repeat'|Rest], Acc, Options) :-
+    !,
+    parse_args_(Rest, [allow_repeat(true)|Acc], Options).
 parse_args_([Unknown|_], _, _) :-
     throw(error(unknown_argument(Unknown),
                 context(auto_dig_prolog_actor:main/1,
-                        'expected --queue, --state, --output, or --trace'))).
+                        'expected --queue, --state, --output, --trace, or --allow-repeat'))).
 
 require_option(Name, Options) :-
     Term =.. [Name, _],
