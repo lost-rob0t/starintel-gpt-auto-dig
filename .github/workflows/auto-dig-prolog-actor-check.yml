@@ -70,6 +70,11 @@ jobs:
             -g 'run_tests,halt'
           swipl \
             -q \
+            -p "library=$GITHUB_WORKSPACE/.prolog-rlm/prolog" \
+            -s agents/test_auto_dig_native_cutoff_hotfix.pl \
+            -g 'run_tests,halt'
+          swipl \
+            -q \
             -s agents/test_auto_dig_model_router.pl \
             -g 'run_tests,halt'
           swipl \
