@@ -102,10 +102,12 @@ native_tool_synthesis_phase(Runtime, State) :-
 native_tool_synthesis_phase(Runtime, _) :-
     native_tool_synthesis_reserve(Runtime.options, Reserve),
     Reserve \\== disabled,
+    native_tool_provider_headroom(Runtime.options, Reserve, ProviderHeadroom),
     get_time(Now),
     Elapsed is max(0.0, Now-Runtime.started_at),
     Remaining is Runtime.budget.time_limit-Elapsed,
-    Remaining =< Reserve.
+    AcquisitionCutoff is Reserve+ProviderHeadroom,
+    Remaining =< AcquisitionCutoff.
 
 native_tool_cutoff(Options, Cutoff) :-
     option(native_tool_cutoff_model_calls, Options, none, Requested),
@@ -135,6 +137,19 @@ native_tool_synthesis_reserve(Options, Reserve) :-
                              option:native_tool_synthesis_reserve_seconds,
                              value:Requested,
                              message:\"native synthesis reserve must be a nonnegative number\"}))
+    ).
+
+native_tool_provider_headroom(Options, Reserve, Headroom) :-
+    option(native_tool_provider_headroom_seconds, Options, Reserve, Requested),
+    (   number(Requested),
+        Requested >= 0
+    ->  Headroom = Requested
+    ;   throw(direct_fault(direct_error{
+                             phase:provider,
+                             kind:invalid_native_tool_provider_headroom,
+                             option:native_tool_provider_headroom_seconds,
+                             value:Requested,
+                             message:\"native provider headroom must be a nonnegative number\"}))
     ).
 """
 
