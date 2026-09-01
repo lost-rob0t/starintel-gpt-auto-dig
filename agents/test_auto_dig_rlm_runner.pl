@@ -135,6 +135,14 @@ test(research_prompt_requires_direct_live_tool_use_and_strict_native_json) :-
     assertion(sub_string(Query, _, _, _, "additional tool or datasource capability")),
     assertion(\+ sub_string(Query, _, _, _, "suitable for the tool-enabled Auto-Dig stage")).
 
+test(research_prompt_reserves_final_four_responses_for_synthesis) :-
+    auto_dig_query(Query),
+    assertion(sub_string(Query, _, _, _, "twelfth model response")),
+    assertion(sub_string(Query, _, _, _, "final four model responses for synthesis")),
+    assertion(sub_string(Query, _, _, _, "do not call Brave, Fetch, or context tools again")),
+    assertion(sub_string(Query, _, _, _, "list it as follow-up work")),
+    assertion(\+ sub_string(Query, _, _, _, "Keep calling tools while useful evidence remains within budget")).
+
 test(repair_prompt_names_duplicate_key_failure_and_is_single_attempt) :-
     auto_dig_query(Query),
     auto_dig_repair_query(Query, RepairQuery),
