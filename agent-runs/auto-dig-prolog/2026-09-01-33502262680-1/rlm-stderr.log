@@ -1,0 +1,33 @@
+[auto_dig_rlm] 2026-09-01T11:24:22Z phase=start mode=direct model=openai/gpt-5.6-luna reasoning_effort=max
+[auto_dig_rlm] 2026-09-01T11:24:22Z phase=context_loaded chars=6431 file=agent-runs/auto-dig-prolog/2026-09-01-33502262680-1/request.md
+[auto_dig_rlm] 2026-09-01T11:24:22Z phase=mcp_session_open servers=[brave,fetch]
+[auto_dig_mcp] 2026-09-01T11:24:22Z session_open servers=[brave,fetch]
+[auto_dig_mcp] 2026-09-01T11:24:22Z phase=registry_create state=start
+[auto_dig_mcp] 2026-09-01T11:24:22Z phase=registry_create state=ok
+[auto_dig_mcp] 2026-09-01T11:24:22Z phase=authority_setup state=start
+[auto_dig_mcp] 2026-09-01T11:24:22Z phase=authority_setup state=ok
+[auto_dig_mcp] 2026-09-01T11:24:22Z phase=mcp_run(brave) state=start
+[auto_dig_mcp] 2026-09-01T11:24:22Z phase=mcp_run(brave) state=ok
+[auto_dig_mcp] 2026-09-01T11:24:22Z phase=mcp_connect(brave) state=start
+[auto_dig_mcp] 2026-09-01T11:24:30Z phase=mcp_connect(brave) state=ok
+[auto_dig_mcp] 2026-09-01T11:24:30Z phase=mcp_import(brave) state=start
+[auto_dig_mcp] 2026-09-01T11:24:30Z phase=mcp_import(brave) state=ok
+[auto_dig_mcp] 2026-09-01T11:24:30Z mcp_import server=brave imported_tools=8
+[auto_dig_mcp] 2026-09-01T11:24:30Z phase=mcp_run(fetch) state=start
+[auto_dig_mcp] 2026-09-01T11:24:30Z phase=mcp_run(fetch) state=ok
+[auto_dig_mcp] 2026-09-01T11:24:30Z phase=mcp_connect(fetch) state=start
+[auto_dig_mcp] 2026-09-01T11:24:36Z phase=mcp_connect(fetch) state=ok
+[auto_dig_mcp] 2026-09-01T11:24:36Z phase=mcp_import(fetch) state=start
+[auto_dig_mcp] 2026-09-01T11:24:36Z phase=mcp_import(fetch) state=ok
+[auto_dig_mcp] 2026-09-01T11:24:36Z mcp_import server=fetch imported_tools=6
+[auto_dig_mcp] 2026-09-01T11:24:36Z phase=capability_projection state=start
+[auto_dig_mcp] 2026-09-01T11:24:36Z phase=capability_projection state=ok
+[auto_dig_mcp] 2026-09-01T11:24:36Z capability_projection count=14
+[auto_dig_mcp] 2026-09-01T11:24:36Z session_open state=ok
+[auto_dig_rlm] 2026-09-01T11:24:36Z phase=mcp_ready capability_count=14 capabilities=[tool('mcp.brave.brave_image_search'),tool('mcp.brave.brave_llm_context'),tool('mcp.brave.brave_local_search'),tool('mcp.brave.brave_news_search'),tool('mcp.brave.brave_place_search'),tool('mcp.brave.brave_summarizer'),tool('mcp.brave.brave_video_search'),tool('mcp.brave.brave_web_search'),tool('mcp.fetch.fetch_html'),tool('mcp.fetch.fetch_json'),tool('mcp.fetch.fetch_markdown'),tool('mcp.fetch.fetch_readable'),tool('mcp.fetch.fetch_txt'),tool('mcp.fetch.fetch_youtube_transcript')]
+[auto_dig_rlm] 2026-09-01T11:24:36Z phase=direct_start context_window=1050000 token_budget=315000 model_calls=16 native_tool_cutoff=12 tool_calls=24 context_ops=32 iterations=24 time_limit=300.0
+[auto_dig_rlm] 2026-09-01T11:26:53Z phase=direct_return
+[auto_dig_rlm] 2026-09-01T11:26:53Z phase=outcome status=ok model_calls=13 prompt_tokens=265707 completion_tokens=12490 total_tokens=278197 cost_usd=0.03629278
+[auto_dig_rlm] 2026-09-01T11:26:54Z phase=result_written file=agent-runs/auto-dig-prolog/2026-09-01-33502262680-1/rlm-result.json
+[auto_dig_rlm] 2026-09-01T11:26:54Z phase=trace_written file=agent-runs/auto-dig-prolog/2026-09-01-33502262680-1/rlm-trace.json
+[auto_dig_rlm] 2026-09-01T11:26:54Z phase=finish exit_code=0

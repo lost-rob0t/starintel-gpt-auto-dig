@@ -1,0 +1,57 @@
+{
+  "schema": "auto-dig-prolog-run.v1",
+  "agent": "auto-dig-prolog",
+  "run_id": "33502262680-1",
+  "branch": "auto-dig-prolog/2026-09-01-33502262680-1",
+  "trigger": "push",
+  "prolog_rlm_ref": "a89711d504e6cc6c3fac789b7f0b6b0453aea23b",
+  "issue_number": 2284,
+  "status": "researched",
+  "rlm_features": [
+    "automatic_default_skills",
+    "native_direct_mode",
+    "all_capability_filtered_tools",
+    "context_search_peek_slice",
+    "context_peek_selector_contract",
+    "recoverable_native_preflight_faults",
+    "transient_provider_retry",
+    "read_only_tool_error_recovery",
+    "model_context_budget_30_percent",
+    "read_only_brave_search_mcp",
+    "read_only_fetch_mcp",
+    "emission_boundary_diagnostic_sanitization"
+  ],
+  "model_route": {
+    "failed_verifications": 0,
+    "fallback": [
+      {
+        "model": "openai/gpt-5.6-terra",
+        "provider": "openrouter",
+        "reasoning": {
+          "effort": "max"
+        }
+      },
+      {
+        "model": "openai/gpt-5.6-sol",
+        "provider": "openrouter",
+        "reasoning": {
+          "effort": "max"
+        }
+      }
+    ],
+    "family": "gpt-5.6",
+    "model": "openai/gpt-5.6-luna",
+    "phase": "execute",
+    "provider": "openrouter",
+    "reason": [
+      "Luna Max is the default bounded worker route"
+    ],
+    "reasoning": {
+      "effort": "max"
+    },
+    "risk": "normal",
+    "schema": "auto-dig-model-route.v1",
+    "task": "research",
+    "tier": "luna"
+  }
+}
