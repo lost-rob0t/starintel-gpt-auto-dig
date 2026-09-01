@@ -160,12 +160,16 @@ read_failure_model_response(1, _, "", [ToolCall]) :-
         json{url:"https://example.invalid/article", proxy:""},
         ToolCall).
 read_failure_model_response(2, Request, "RECOVERED", []) :-
+    read_failure_tool_message(Request, Content),
+    assertion(sub_string(Content, _, _, _, "handler_exception")),
+    assertion(sub_string(Content, _, _, _, "Invalid URL")).
+
+read_failure_tool_message(Request, Content) :-
     member(Message, Request.messages),
     Message.role == tool,
     Message.tool_call_id == "fetch_1",
     Message.name == read_failure_tool,
-    assertion(sub_string(Message.content, _, _, _, "handler_exception")),
-    assertion(sub_string(Message.content, _, _, _, "Invalid URL")),
+    Content = Message.content,
     !.
 
 read_failure_schema(
@@ -174,17 +178,17 @@ read_failure_schema(
         description:"Simulate an MCP read tool rejecting an invalid optional URL",
         capability:tool(read_failure_tool),
         effect:read,
-        arguments:json_schema{
+        arguments:_{
             type:object,
-            properties:json_schema{
-                url:json_schema{type:string},
-                proxy:json_schema{type:string}
+            properties:_{
+                url:_{type:string},
+                proxy:_{type:string}
             },
             required:[url],
             additional_properties:false
         },
-        result:json_schema{type:any},
-        limits:tool_limits{time_limit:1.0, max_output_bytes:4096}
+        result:_{type:string},
+        limits:_{time_limit:1.0, max_output_bytes:4096}
     }).
 
 read_failure_handler(_, _) :-
@@ -309,21 +313,23 @@ test(read_only_handler_exception_is_model_repairable) :-
               Registry,
               Schema,
               plunit_auto_dig_provider_retry_hotfix:read_failure_handler,
-              ok(_))
+              Registration),
+          assertion(Registration = ok(_))
         ),
         ( read_failure_options(Registry, Options),
           rlm_direct("Use the read tool and recover from remote validation",
                      text("opaque"),
                      Options,
-                     ok(Result)),
+                     Outcome),
+          assertion(Outcome = ok(Result)),
           assertion(Result.value == "RECOVERED"),
           assertion(Result.turns =:= 2),
           assertion(Result.tool_calls =:= 1),
-          read_failure_model_call(2),
-          once(( member(Event, Result.trajectory),
-                 Event.type == native_tool,
-                 Event.call_id == "fetch_1"
-               )),
+          assertion(read_failure_model_call(2)),
+          assertion(once(( member(Event, Result.trajectory),
+                           Event.type == native_tool,
+                           Event.call_id == "fetch_1"
+                         ))),
           assertion(Event.status == error),
           assertion(Event.kind == handler_exception)
         ),
