@@ -1,6 +1,7 @@
 :- module(auto_dig_prolog_actor,
           [ main/1,
-            select_queue/3
+            select_queue/3,
+            select_queue/4
           ]).
 
 :- use_module(library(http/json)).
@@ -23,6 +24,8 @@ main_run(Argv) :-
     option(state(StatePath), Options),
     option(output(OutputPath), Options),
     option(trace(TracePath), Options, ''),
+    option(force_issue(ExplicitForceIssue), Options, none),
+    resolve_force_issue(ExplicitForceIssue, ForceIssue),
     read_json_file(QueuePath, Queue),
     read_json_file(StatePath, State),
     setup_call_cleanup(
@@ -33,12 +36,12 @@ main_run(Argv) :-
               worker_backlog(1)
             ],
             Runtime),
-        run_actor(Runtime, Queue, State, Decision, Trace),
+        run_actor(Runtime, Queue, State, ForceIssue, Decision, Trace),
         agent_runtime_destroy(Runtime)),
     write_json_file(OutputPath, Decision),
     maybe_write_trace(TracePath, Trace).
 
-run_actor(Runtime, Queue, State, Decision, Trace) :-
+run_actor(Runtime, Queue, State, ForceIssue, Decision, Trace) :-
     agent_spawn(Runtime,
                 none,
                 agent_spec{
@@ -53,30 +56,52 @@ run_actor(Runtime, Queue, State, Decision, Trace) :-
     agent_supervised_call(Runtime,
                           Actor,
                           auto_dig_prolog_actor:worker_handler,
-                          work(select, Queue, State),
+                          work(select, Queue, State, ForceIssue),
                           [timeout(5.0)],
                           CallOutcome),
     require_decision(CallOutcome, Decision),
     agent_trace(Runtime, Trace).
 
-worker_handler(work(select, Queue, State), Decision) :-
-    select_queue(Queue, State, Decision).
+worker_handler(work(select, Queue, State, ForceIssue), Decision) :-
+    select_queue(Queue, State, ForceIssue, Decision).
 
 select_queue(Queue, State, Decision) :-
+    select_queue(Queue, State, none, Decision).
+
+select_queue(Queue, State, ForceIssue, Decision) :-
     must_be(list, Queue),
     must_be(dict, State),
     maplist(enrich_issue, Queue, Enriched0),
     predsort(compare_candidates, Enriched0, Enriched),
     length(Enriched, QueueSize),
+    (   ForceIssue == none
+    ->  select_queue_normal(Enriched, State, QueueSize, Decision)
+    ;   select_queue_forced(Enriched,
+                            State,
+                            QueueSize,
+                            ForceIssue,
+                            Decision)
+    ).
+
+select_queue_normal(Enriched, State, QueueSize, Decision) :-
     state_last_issue(State, LastIssue),
     (   choose_candidate(Enriched, LastIssue, Selected)
-    ->  selected_decision(Selected, State, QueueSize, Decision)
+    ->  selected_decision(Selected, State, QueueSize, false, Decision)
     ;   Decision = _{
             action:"idle",
             reason:"no eligible investigation target without violating repeat policy",
             queue_size:QueueSize,
             next_state:State
         }
+    ).
+
+select_queue_forced(Enriched, State, QueueSize, ForceIssue, Decision) :-
+    (   member(Candidate, Enriched),
+        Candidate.number =:= ForceIssue
+    ->  selected_decision(Candidate, State, QueueSize, true, Decision)
+    ;   throw(error(existence_error(forced_investigation_target, ForceIssue),
+                    context(auto_dig_prolog_actor:select_queue/4,
+                            'forced issue must be present in the validated investigation queue')))
     ).
 
 enrich_issue(Issue, Candidate) :-
@@ -134,10 +159,10 @@ same_rank_alternative([Candidate|Rest], Rank, LastIssue, Alternative) :-
 same_rank_alternative(_, _, _, _) :-
     fail.
 
-selected_decision(Candidate, State, QueueSize, Decision) :-
+selected_decision(Candidate, State, QueueSize, Forced, Decision) :-
     put_dict(last_issue, State, Candidate.number, NextState0),
     put_dict(last_priority, NextState0, Candidate.priority, NextState),
-    repeat_allowed(Candidate.rank, RepeatAllowed),
+    decision_repeat_allowed(Forced, Candidate.rank, RepeatAllowed),
     Decision = _{
         action:"run",
         issue_number:Candidate.number,
@@ -145,10 +170,15 @@ selected_decision(Candidate, State, QueueSize, Decision) :-
         issue_url:Candidate.url,
         priority:Candidate.priority,
         queue_size:QueueSize,
+        forced:Forced,
         repeat_allowed:RepeatAllowed,
         selected_issue:Candidate.source,
         next_state:NextState
     }.
+
+decision_repeat_allowed(true, _, true) :- !.
+decision_repeat_allowed(false, Rank, RepeatAllowed) :-
+    repeat_allowed(Rank, RepeatAllowed).
 
 repeat_allowed(Rank, true) :-
     Rank >= 3,
@@ -207,6 +237,57 @@ normalize_line(Line, Normalized) :-
     normalize_space(string(Spaced), Line),
     string_lower(Spaced, Normalized).
 
+resolve_force_issue(none, ForceIssue) :-
+    !,
+    (   guarded_environment_force_issue(EnvironmentForce)
+    ->  ForceIssue = EnvironmentForce
+    ;   ForceIssue = none
+    ).
+resolve_force_issue(Raw, ForceIssue) :-
+    force_issue_value(Raw, ForceIssue).
+
+guarded_environment_force_issue(ForceIssue) :-
+    getenv('GITHUB_EVENT_NAME', EventName),
+    EventName == push,
+    getenv('LIVE_TEST_ISSUE', Raw),
+    force_issue_value(Raw, ForceIssue),
+    !.
+guarded_environment_force_issue(ForceIssue) :-
+    getenv('GITHUB_EVENT_NAME', EventName),
+    EventName == workflow_dispatch,
+    getenv('GITHUB_EVENT_PATH', EventPath),
+    read_json_file(EventPath, Event),
+    get_dict(inputs, Event, Inputs),
+    is_dict(Inputs),
+    get_dict(force_issue, Inputs, Raw),
+    Raw \== null,
+    Raw \== "",
+    force_issue_value(Raw, ForceIssue).
+
+force_issue_value(Value, ForceIssue) :-
+    integer(Value),
+    Value > 0,
+    !,
+    ForceIssue = Value.
+force_issue_value(Value, ForceIssue) :-
+    atom(Value),
+    catch(atom_number(Value, Number), _, fail),
+    integer(Number),
+    Number > 0,
+    !,
+    ForceIssue = Number.
+force_issue_value(Value, ForceIssue) :-
+    string(Value),
+    catch(number_string(Number, Value), _, fail),
+    integer(Number),
+    Number > 0,
+    !,
+    ForceIssue = Number.
+force_issue_value(Value, _) :-
+    throw(error(domain_error(positive_issue_number, Value),
+                context(auto_dig_prolog_actor,
+                        'forced issue must be a positive integer'))).
+
 require_decision(ok(Decision0), Decision) :-
     is_dict(Decision0),
     !,
@@ -242,10 +323,13 @@ parse_args_(['--output', Path|Rest], Acc, Options) :-
 parse_args_(['--trace', Path|Rest], Acc, Options) :-
     !,
     parse_args_(Rest, [trace(Path)|Acc], Options).
+parse_args_(['--force-issue', Value|Rest], Acc, Options) :-
+    !,
+    parse_args_(Rest, [force_issue(Value)|Acc], Options).
 parse_args_([Unknown|_], _, _) :-
     throw(error(unknown_argument(Unknown),
                 context(auto_dig_prolog_actor:main/1,
-                        'expected --queue, --state, --output, or --trace'))).
+                        'expected --queue, --state, --output, --trace, or --force-issue'))).
 
 require_option(Name, Options) :-
     Term =.. [Name, _],
