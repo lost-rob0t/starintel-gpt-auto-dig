@@ -12,6 +12,8 @@ The packet therefore records that address only as a public government-compound l
 
 Recent reporting identifies Marco Rubio as the current national security adviser while he also serves as Secretary of State. The pass does not treat that as proof of the formal acting/permanent designation. A recursive target remains queued for an authoritative appointment or personnel record that resolves the status and valid-from date.
 
+The packet reuses the canonical `starintel:person:marco-rubio` identity created by the earlier cabinet seed. The current-role evidence lives on `starintel:relation:marco-rubio-national-security-adviser-eop-2026-08-19`, including its source, confidence, role qualifier, and unresolved formal-status qualifier. A redundant same-version FED person redefinition was removed on 2026-09-01 instead of weakening importer duplicate detection or silently replacing the canonical person record.
+
 ## Current news
 
 The August 14, 2026 report that Deputy National Security Adviser Andy Baker is departing was ingested as a material personnel-transition event. Non-material commentary was not ingested.
