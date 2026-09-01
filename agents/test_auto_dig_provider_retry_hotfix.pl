@@ -169,7 +169,6 @@ read_failure_tool_message(Request, Content) :-
     member(Message, Request.messages),
     Message.role == tool,
     Message.tool_call_id == "fetch_1",
-    Message.name == read_failure_tool,
     Content = Message.content,
     !.
 
@@ -257,7 +256,6 @@ context_alias_tool_message(Request, Content) :-
     member(Message, Request.messages),
     Message.role == tool,
     Message.tool_call_id == "ctx_1",
-    Message.name == context_peek,
     Content = Message.content,
     !.
 
@@ -329,7 +327,7 @@ test(reserved_prefix_safe_name_is_collision_free) :-
     native_tool_call_normalize(WireCall, ok(Call)),
     assertion(Call.name == Name).
 
-test(tool_result_message_reencodes_internal_name_for_next_turn) :-
+test(tool_result_message_correlates_without_optional_name) :-
     Name = 'mcp.fetch.fetch_markdown',
     wire_schema(Name, _, Wire),
     WireName = Wire.function.name,
@@ -353,8 +351,11 @@ test(tool_result_message_reencodes_internal_name_for_next_turn) :-
                                           'vendor/model',
                                           ok(Payload)),
     Payload.messages = [PayloadMessage],
-    assertion(PayloadMessage.name == WireName),
-    assertion(provider_safe_name(PayloadMessage.name)).
+    assertion(\+ get_dict(name, PayloadMessage, _)),
+    assertion(PayloadMessage.tool_call_id == "call-3"),
+    assertion(sub_string(PayloadMessage.content, _, _, _,
+                         "\"name\":\"mcp.fetch.fetch_markdown\"")),
+    assertion(provider_safe_name(WireName)).
 
 test(read_only_handler_exception_is_model_repairable) :-
     reset_read_failure_model,
