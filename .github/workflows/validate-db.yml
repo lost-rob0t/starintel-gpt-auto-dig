@@ -77,7 +77,7 @@ jobs:
       - name: Test canonical dataset roots
         run: python -m unittest tests.test_canonical_dataset_roots
 
-      - name: Test importer corpus duplicate invariant
+      - name: Probe importer corpus duplicate invariant
         id: importer-corpus
         shell: bash
         run: |
@@ -85,17 +85,21 @@ jobs:
           python -m unittest tests.test_import_starintel_corpus
           status=$?
           set -e
+          echo "status=$status" >> "$GITHUB_OUTPUT"
           if (( status != 0 )); then
             conflict_id=$(sed -n "s/.*conflicting duplicate _id '\([^']*\)'.*/\1/p" importer-corpus-error.txt | head -n1)
             conflict_id=${conflict_id//:/-}
             echo "conflict_id=${conflict_id:-unknown}" >> "$GITHUB_OUTPUT"
-            exit "$status"
+          else
+            echo "conflict_id=none" >> "$GITHUB_OUTPUT"
           fi
-          echo "conflict_id=none" >> "$GITHUB_OUTPUT"
 
       - name: "Importer conflict ${{ steps.importer-corpus.outputs.conflict_id }}"
-        if: ${{ always() && steps.importer-corpus.outcome == 'failure' }}
-        run: cat importer-corpus-error.txt
+        if: ${{ steps.importer-corpus.outputs.status != '0' }}
+        shell: bash
+        run: |
+          cat importer-corpus-error.txt
+          exit 1
 
       - name: Test Nim validator compatibility
         run: |
