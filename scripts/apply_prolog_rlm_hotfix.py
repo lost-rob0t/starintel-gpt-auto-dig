@@ -130,6 +130,193 @@ provider_transient_status(Error, Key) :-
     memberchk(Status, [408,425,429,500,502,503,504]).
 """
 
+NATIVE_EXPORT_OLD = """:- module(rlm_native_tool,
+          [ native_tool_call_normalize/2,
+            native_tool_calls_normalize/2,
+            native_tool_calls_classify/2,
+            native_tool_schema_normalize/2,
+            native_tool_schema_wire/3,
+            native_tool_result_message/3
+          ]).
+"""
+
+NATIVE_EXPORT_NEW = """:- module(rlm_native_tool,
+          [ native_tool_call_normalize/2,
+            native_tool_calls_normalize/2,
+            native_tool_calls_classify/2,
+            native_tool_schema_normalize/2,
+            native_tool_schema_wire/3,
+            native_tool_name_wire/2,
+            native_tool_name_unwire/2,
+            native_tool_result_message/3
+          ]).
+"""
+
+NATIVE_CALL_OLD = """    require_key(Function, name, Name0, function),
+    normalize_tool_name(Name0, Name),
+    require_key(Function, arguments, Arguments0, function).
+"""
+
+NATIVE_CALL_NEW = """    require_key(Function, name, Name0, function),
+    native_tool_name_unwire(Name0, Name),
+    require_key(Function, arguments, Arguments0, function).
+"""
+
+NATIVE_WIRE_OLD = """native_schema_wire(openai_compatible, Schema, Wire) :-
+    require_native_schema(Schema),
+    atom_string(Schema.name, Name),
+    Wire = json{type:\"function\",
+                function:json{name:Name,
+                              description:Schema.description,
+                              parameters:Schema.parameters}},
+    !.
+"""
+
+NATIVE_WIRE_NEW = """native_schema_wire(openai_compatible, Schema, Wire) :-
+    require_native_schema(Schema),
+    native_tool_name_wire(Schema.name, Name),
+    Wire = json{type:\"function\",
+                function:json{name:Name,
+                              description:Schema.description,
+                              parameters:Schema.parameters}},
+    !.
+"""
+
+NATIVE_CODEC_OLD = """normalize_tool_name(Name0, Name) :-
+    normalize_protocol_token(Name0, tool_name, Text),
+    atom_string(Name, Text).
+
+normalize_protocol_token(Value, Field, Text) :-
+"""
+
+NATIVE_CODEC_NEW = """normalize_tool_name(Name0, Name) :-
+    normalize_protocol_token(Name0, tool_name, Text),
+    atom_string(Name, Text).
+
+% OpenAI-compatible function names accept only ASCII alphanumerics, `_`, and
+% `-`. Runtime/MCP capability names intentionally retain `.` and `:`. Keep the
+% runtime identity canonical and project only the provider wire name through a
+% reserved, reversible codec. Safe names remain unchanged unless they occupy
+% the reserved prefix, preventing collisions with encoded names.
+native_tool_name_wire(Name0, WireName) :-
+    normalize_tool_name(Name0, Name),
+    atom_string(Name, Text),
+    (   provider_safe_tool_name(Text),
+        \\+ sub_string(Text, 0, 5, _, \"rlm0_\")
+    ->  WireName = Text
+    ;   provider_tool_encode(Text, Encoded),
+        string_concat(\"rlm0_\", Encoded, WireName)
+    ).
+
+native_tool_name_unwire(Name0, Name) :-
+    normalize_protocol_token(Name0, tool_name, Text),
+    (   sub_string(Text, 0, 5, _, \"rlm0_\")
+    ->  sub_string(Text, 5, _, 0, Encoded),
+        (   provider_tool_decode(Encoded, Decoded)
+        ->  normalize_tool_name(Decoded, Name)
+        ;   native_error(normalize, malformed_tool_name_alias,
+                         _{value:Text},
+                         \"provider tool name alias is malformed\")
+        )
+    ;   atom_string(Name, Text)
+    ).
+
+provider_safe_tool_name(Text) :-
+    string_codes(Text, Codes),
+    Codes \\== [],
+    maplist(provider_safe_tool_name_code, Codes).
+
+provider_safe_tool_name_code(Code) :-
+    (   Code >= 0'A, Code =< 0'Z
+    ;   Code >= 0'a, Code =< 0'z
+    ;   Code >= 0'0, Code =< 0'9
+    ;   memberchk(Code, [0'_,0'-])
+    ).
+
+provider_tool_encode(Text, Encoded) :-
+    string_codes(Text, Codes),
+    (   provider_tool_encode_codes(Codes, EncodedCodes)
+    ->  string_codes(Encoded, EncodedCodes)
+    ;   native_error(render, unsupported_provider_tool_name,
+                     _{value:Text},
+                     \"provider tool name contains unsupported characters\")
+    ).
+
+provider_tool_encode_codes([], []).
+provider_tool_encode_codes([Code|Codes], Encoded) :-
+    provider_tool_encode_code(Code, Head),
+    provider_tool_encode_codes(Codes, Tail),
+    append(Head, Tail, Encoded).
+
+provider_tool_encode_code(0'_, [0'_,0'u]) :- !.
+provider_tool_encode_code(0'., [0'_,0'd]) :- !.
+provider_tool_encode_code(0':, [0'_,0'c]) :- !.
+provider_tool_encode_code(Code, [Code]) :-
+    provider_safe_tool_name_code(Code),
+    Code =\\= 0'_.
+
+provider_tool_decode(Text, Decoded) :-
+    string_codes(Text, Codes),
+    provider_tool_decode_codes(Codes, DecodedCodes),
+    string_codes(Decoded, DecodedCodes).
+
+provider_tool_decode_codes([], []).
+provider_tool_decode_codes([0'_,0'u|Codes], [0'_|Decoded]) :-
+    !,
+    provider_tool_decode_codes(Codes, Decoded).
+provider_tool_decode_codes([0'_,0'd|Codes], [0'.|Decoded]) :-
+    !,
+    provider_tool_decode_codes(Codes, Decoded).
+provider_tool_decode_codes([0'_,0'c|Codes], [0':|Decoded]) :-
+    !,
+    provider_tool_decode_codes(Codes, Decoded).
+provider_tool_decode_codes([0'_|_], _) :-
+    !,
+    fail.
+provider_tool_decode_codes([Code|Codes], [Code|Decoded]) :-
+    provider_safe_tool_name_code(Code),
+    Code =\\= 0'_,
+    provider_tool_decode_codes(Codes, Decoded).
+
+normalize_protocol_token(Value, Field, Text) :-
+"""
+
+OPENAI_IMPORT_OLD = ":- use_module(library(pairs)).\n"
+OPENAI_IMPORT_NEW = """:- use_module(library(pairs)).
+:- use_module(rlm_native_tool, [native_tool_name_wire/2]).
+"""
+
+OPENAI_MESSAGE_OLD = """message_payload(Message, Payload) :-
+    get_dict(role, Message, Role),
+    get_dict(content, Message, Content),
+    Base = message_payload{role:Role, content:Content},
+    copy_optional_message_fields([name,
+                                  tool_call_id,
+                                  tool_calls,
+                                  reasoning,
+                                  reasoning_details],
+                                 Message, Base, Payload).
+"""
+
+OPENAI_MESSAGE_NEW = """message_payload(Message, Payload) :-
+    get_dict(role, Message, Role),
+    get_dict(content, Message, Content),
+    Base = message_payload{role:Role, content:Content},
+    copy_optional_message_fields([tool_call_id,
+                                  tool_calls,
+                                  reasoning,
+                                  reasoning_details],
+                                 Message, Base, Payload0),
+    copy_optional_provider_message_name(Message, Payload0, Payload).
+
+copy_optional_provider_message_name(Message, Payload0, Payload) :-
+    (   get_dict(name, Message, Name0)
+    ->  native_tool_name_wire(Name0, Name),
+        put_dict(name, Payload0, Name, Payload)
+    ;   Payload = Payload0
+    ).
+"""
+
 
 def replace_exact(text: str, old: str, new: str, label: str) -> str:
     count = text.count(old)
@@ -154,6 +341,50 @@ def patch_tree(root: Path) -> None:
         COMPLETION_NEW,
         "rlm_completion.pl transient provider retry",
     )
+
+    native_tool = root / "prolog/rlm_native_tool.pl"
+    native_text = native_tool.read_text(encoding="utf-8")
+    native_text = replace_exact(
+        native_text,
+        NATIVE_EXPORT_OLD,
+        NATIVE_EXPORT_NEW,
+        "rlm_native_tool.pl wire-name exports",
+    )
+    native_text = replace_exact(
+        native_text,
+        NATIVE_CALL_OLD,
+        NATIVE_CALL_NEW,
+        "rlm_native_tool.pl provider call-name decode",
+    )
+    native_text = replace_exact(
+        native_text,
+        NATIVE_WIRE_OLD,
+        NATIVE_WIRE_NEW,
+        "rlm_native_tool.pl provider schema-name encode",
+    )
+    native_text = replace_exact(
+        native_text,
+        NATIVE_CODEC_OLD,
+        NATIVE_CODEC_NEW,
+        "rlm_native_tool.pl reversible provider name codec",
+    )
+    plans[native_tool] = native_text
+
+    openai = root / "prolog/rlm_openai_compatible.pl"
+    openai_text = openai.read_text(encoding="utf-8")
+    openai_text = replace_exact(
+        openai_text,
+        OPENAI_IMPORT_OLD,
+        OPENAI_IMPORT_NEW,
+        "rlm_openai_compatible.pl provider wire-name import",
+    )
+    openai_text = replace_exact(
+        openai_text,
+        OPENAI_MESSAGE_OLD,
+        OPENAI_MESSAGE_NEW,
+        "rlm_openai_compatible.pl tool-result name encode",
+    )
+    plans[openai] = openai_text
 
     # Validate every replacement before mutating any checked-out dependency file.
     for path, text in plans.items():
