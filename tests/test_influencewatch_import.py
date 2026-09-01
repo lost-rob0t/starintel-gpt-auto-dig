@@ -1,9 +1,11 @@
 from __future__ import annotations
 
+import http.client
 import importlib.util
 import sys
 import unittest
 from pathlib import Path
+from unittest import mock
 
 ROOT = Path(__file__).resolve().parents[1]
 MODULE_PATH = ROOT / "scripts" / "import_influencewatch.py"
@@ -101,6 +103,36 @@ class InfluenceWatchImportTests(unittest.TestCase):
             )
         with self.assertRaises(ValueError):
             MODULE.NetworkClient(user_agent, 0.5, 30.0)
+
+    def test_truncated_chunked_response_is_retried(self) -> None:
+        client = MODULE.NetworkClient(
+            "a" * MODULE.USER_AGENT_HEX_LENGTH,
+            MODULE.MIN_REQUEST_DELAY,
+            30.0,
+        )
+        first = mock.MagicMock()
+        first.__enter__.return_value.read.side_effect = http.client.IncompleteRead(
+            b"partial"
+        )
+        second = mock.MagicMock()
+        second.__enter__.return_value.read.return_value = b"complete"
+        globals_ = MODULE.NetworkClient.fetch.__globals__
+
+        with (
+            mock.patch.object(
+                globals_["urllib"].request,
+                "urlopen",
+                side_effect=[first, second],
+            ) as urlopen,
+            mock.patch.object(globals_["time"], "sleep"),
+        ):
+            payload = client.fetch(
+                "https://www.influencewatch.org/person/example-person/",
+                accept="text/html",
+            )
+
+        self.assertEqual(b"complete", payload)
+        self.assertEqual(2, urlopen.call_count)
 
     def test_person_profile_is_normalized(self) -> None:
         profile = MODULE.parse_profile(
