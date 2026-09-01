@@ -13,7 +13,7 @@ test(native_direct_mode_features_are_explicitly_enabled) :-
     assertion(memberchk(prompt_compile_mode(all_tools), Options)),
     assertion(memberchk(planner_max_tokens(8192), Options)),
     assertion(memberchk(native_tool_cutoff_model_calls(12), Options)),
-    assertion(memberchk(native_tool_synthesis_reserve_seconds(90.0), Options)),
+    assertion(memberchk(synthesis_reservation(90.0), Options)),
     assertion(\+ memberchk(planner_attempts(_), Options)),
     assertion(\+ memberchk(planner_handler(_), Options)).
 
@@ -96,7 +96,7 @@ test(repair_retry_is_smaller_and_keeps_total_cost_cap_bounded) :-
     assertion(RetryBudget.max_context_ops =:= 16),
     assertion(RetryBudget.max_total_tokens =:= 78750),
     assertion(RetryBudget.time_limit =:= 180.0),
-    assertion(memberchk(native_tool_synthesis_reserve_seconds(90.0), RetryOptions)).
+    assertion(memberchk(synthesis_reservation(90.0), RetryOptions)).
 
 test(mcp_registry_and_complete_read_tool_inventory_are_projected) :-
     auto_dig_mcp_read_capabilities(McpCapabilities),

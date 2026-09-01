@@ -5,7 +5,6 @@ on:
     paths:
       - 'agents/**'
       - 'scripts/apply_prolog_rlm_hotfix.py'
-      - 'scripts/apply_prolog_rlm_deadline_hotfix.py'
       - '.github/workflows/auto-dig-prolog-actor*.yml'
   workflow_dispatch:
 
@@ -13,7 +12,7 @@ permissions:
   contents: read
 
 env:
-  PROLOG_RLM_REF: a89711d504e6cc6c3fac789b7f0b6b0453aea23b
+  PROLOG_RLM_REF: 39b278589dae8518e583778cd6671a6cb1e026c7
 
 jobs:
   check:
@@ -41,7 +40,6 @@ jobs:
         run: |
           set -euo pipefail
           python3 scripts/apply_prolog_rlm_hotfix.py .prolog-rlm
-          python3 scripts/apply_prolog_rlm_deadline_hotfix.py .prolog-rlm
 
       - name: Install SWI-Prolog
         shell: bash
@@ -80,17 +78,7 @@ jobs:
           swipl \
             -q \
             -p "library=$GITHUB_WORKSPACE/.prolog-rlm/prolog" \
-            -s agents/test_auto_dig_native_cutoff_hotfix.pl \
-            -g 'run_tests,halt'
-          swipl \
-            -q \
-            -p "library=$GITHUB_WORKSPACE/.prolog-rlm/prolog" \
             -s agents/test_auto_dig_provider_retry_hotfix.pl \
-            -g 'run_tests,halt'
-          swipl \
-            -q \
-            -p "library=$GITHUB_WORKSPACE/.prolog-rlm/prolog" \
-            -s agents/test_auto_dig_deadline_synthesis_hotfix.pl \
             -g 'run_tests,halt'
           swipl \
             -q \
