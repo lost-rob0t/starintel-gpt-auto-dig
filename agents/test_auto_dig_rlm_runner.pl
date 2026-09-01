@@ -155,6 +155,17 @@ test(repair_prompt_names_duplicate_key_failure_and_is_single_attempt) :-
     assertion(sub_string(RepairQuery, _, _, _, "one harness-level repair attempt")),
     assertion(sub_string(RepairQuery, _, _, _, "smaller retry budget")).
 
+test(tool_markup_is_not_a_final_actor_answer) :-
+    ToolMarkup = " to=multi_tool_use.parallel code\n{\"tool_uses\":[]}\n to=functions.context_slice code\n{\"context\":\"input\"}",
+    Result = _{response:_{assistant:_{content:ToolMarkup}}},
+    assertion(\+ outcome_final_answer(ok(Result), _)).
+
+test(substantive_plain_report_is_a_final_actor_answer) :-
+    Report = "Established facts: the actor completed a real evidence synthesis rather than another tool request. Primary-source evidence: https://example.invalid/source. Remaining follow-up work is explicitly separated from the findings.",
+    Result = _{response:_{assistant:_{content:Report}}},
+    outcome_final_answer(ok(Result), Answer),
+    assertion(Answer == Report).
+
 test(default_operating_skill_catalog_is_present) :-
     skill_default_catalog(ok(Catalog)),
     skill_catalog_skills(Catalog, Skills),
