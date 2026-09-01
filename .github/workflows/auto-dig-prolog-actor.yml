@@ -423,6 +423,24 @@ jobs:
             .name == "auto_dig_rlm_result"
           ' "$RUN_DIR/rlm-result.json" >/dev/null
 
+      - name: Render full actor report in job summary
+        if: steps.target.outputs.action == 'run' && steps.research.outcome == 'success'
+        env:
+          RUN_DIR: ${{ steps.run.outputs.run_dir }}
+          MODEL: ${{ steps.model.outputs.model }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          report="$RUN_DIR/report.md"
+          test -s "$report"
+          {
+            echo '## Auto-Dig Prolog actor output'
+            echo
+            echo "- Model: \`${MODEL}\`"
+            echo
+            cat "$report"
+          } >> "$GITHUB_STEP_SUMMARY"
+
       - name: Emit sanitized live failure report
         id: failure_report
         if: always() && steps.research.outcome == 'failure'
