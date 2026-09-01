@@ -87,12 +87,14 @@ run_research_completion_with_session(Args,
                              McpCapabilities,
                              Options),
     memberchk(budget(Budget), Options),
+    memberchk(native_tool_cutoff_model_calls(ToolCutoff), Options),
     auto_dig_context_budget(Args.model, ContextWindow, ContextBudget),
     safe_log(auto_dig_rlm,
-             'phase=direct_start context_window=~d token_budget=~d model_calls=~d tool_calls=~d context_ops=~d iterations=~d time_limit=~w',
+             'phase=direct_start context_window=~d token_budget=~d model_calls=~d native_tool_cutoff=~d tool_calls=~d context_ops=~d iterations=~d time_limit=~w',
              [ ContextWindow,
                ContextBudget,
                Budget.max_model_calls,
+               ToolCutoff,
                Budget.max_tool_calls,
                Budget.max_context_ops,
                Budget.max_iterations,
@@ -165,10 +167,9 @@ auto_dig_runtime_options(Model,
                        ],
     append(BaseCapabilities, McpCapabilities, Capabilities0),
     sort(Capabilities0, Capabilities),
-    % A live dogfood run reached 12 calls after gathering evidence and before
-    % the synthesis turn, while still below token/time/tool/context limits.
-    % Leave bounded call headroom so the cumulative token budget remains the
-    % tighter research-depth guard instead of terminating before synthesis.
+    % The live actor gets 12 evidence-acquisition responses and four reserved
+    % provider calls for synthesis. The runtime cutoff removes every native
+    % tool schema before call 13 rather than trusting prompt compliance.
     Budget = _{ max_iterations:24,
                 max_recursion_depth:2,
                 max_concurrent_subcalls:2,
@@ -189,6 +190,7 @@ auto_dig_runtime_options(Model,
                        skill_catalog(default),
                        prompt_compile_mode(all_tools),
                        planner_max_tokens(8192),
+                       native_tool_cutoff_model_calls(12),
                        context_options([max_bytes(262144), time_limit(5.0)]),
                        budget(Budget)
                      ],
