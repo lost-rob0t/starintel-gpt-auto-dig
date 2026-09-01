@@ -54,6 +54,12 @@ jobs:
           set -euo pipefail
           test "$(git -C .prolog-rlm rev-parse HEAD)" = "$PROLOG_RLM_REF"
 
+      - name: Apply pinned Prolog-RLM hotfixes
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/apply_prolog_rlm_hotfix.py .prolog-rlm
+
       - name: Install SWI-Prolog
         shell: bash
         run: |
@@ -75,6 +81,11 @@ jobs:
             swipl -q -s test/rlm_native_tool_test.pl -g 'run_tests,halt'
           ) 2>&1 | tee "$RUNNER_TEMP/prolog-rlm-smoke.log"
 
+          if grep -F 'Singleton variables: [Phase]' "$RUNNER_TEMP/prolog-rlm-smoke.log"; then
+            echo 'Pinned Prolog-RLM still emits the Phase singleton warning.' >&2
+            exit 1
+          fi
+
           swipl \
             -q \
             -p "library=$GITHUB_WORKSPACE/.prolog-rlm/prolog" \
@@ -88,6 +99,13 @@ jobs:
             -s agents/test_auto_dig_rlm_runner.pl \
             -g 'run_tests,halt' \
             2>&1 | tee "$RUNNER_TEMP/auto-dig-rlm-runner-tests.log"
+
+          swipl \
+            -q \
+            -p "library=$GITHUB_WORKSPACE/.prolog-rlm/prolog" \
+            -s agents/test_auto_dig_provider_retry_hotfix.pl \
+            -g 'run_tests,halt' \
+            2>&1 | tee "$RUNNER_TEMP/auto-dig-provider-retry-hotfix-tests.log"
 
           swipl \
             -q \
@@ -269,6 +287,7 @@ jobs:
                 "context_search_peek_slice",
                 "context_peek_selector_contract",
                 "recoverable_native_preflight_faults",
+                "transient_provider_retry",
                 "model_context_budget_30_percent",
                 "read_only_brave_search_mcp",
                 "read_only_fetch_mcp",
@@ -488,7 +507,7 @@ jobs:
           branch_url="${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/tree/${BRANCH}"
           gh issue comment "$ISSUE" \
             --repo "$GITHUB_REPOSITORY" \
-            --body "Auto-Dig Prolog actor completed bounded run \`${RUN_ID}\`.\n\n- Branch: ${branch_url}\n- Prolog-RLM: \`${PROLOG_RLM_REF}\`\n- Expert route: \`${MODEL}\`, reasoning \`${REASONING_EFFORT}\`\n- Action log: ${run_url}\n- Stage: supervised actor + current native direct Prolog-RLM loop + automatic default skills + full capability-filtered read-only Brave/Fetch MCP research + recoverable per-call native preflight + 30% model-context token budget.\n\nThis receipt does **not** mark the investigation complete; canonical StarIntel writes, validation, merge, and final publication remain separate gates."
+            --body "Auto-Dig Prolog actor completed bounded run \`${RUN_ID}\`.\n\n- Branch: ${branch_url}\n- Prolog-RLM: \`${PROLOG_RLM_REF}\`\n- Expert route: \`${MODEL}\`, reasoning \`${REASONING_EFFORT}\`\n- Action log: ${run_url}\n- Stage: supervised actor + current native direct Prolog-RLM loop + automatic default skills + full capability-filtered read-only Brave/Fetch MCP research + recoverable per-call native preflight + bounded transient provider retries + 30% model-context token budget.\n\nThis receipt does **not** mark the investigation complete; canonical StarIntel writes, validation, merge, and final publication remain separate gates."
 
       - name: Upload actor diagnostics
         if: always()
@@ -500,6 +519,7 @@ jobs:
             ${{ runner.temp }}/prolog-rlm-smoke.log
             ${{ runner.temp }}/auto-dig-actor-tests.log
             ${{ runner.temp }}/auto-dig-rlm-runner-tests.log
+            ${{ runner.temp }}/auto-dig-provider-retry-hotfix-tests.log
             ${{ runner.temp }}/auto-dig-model-router-tests.log
             ${{ runner.temp }}/auto-dig-mcp-tools-tests.log
             ${{ runner.temp }}/auto-dig-mcp-runner-tests.log
