@@ -7,6 +7,7 @@
             auto_dig_repair_query/2,
             auto_dig_retry_options/2,
             raw_argument_retryable/1,
+            outcome_final_answer/2,
             outcome_log_summary/2
           ]).
 
@@ -40,7 +41,8 @@ main_run(Argv, ExitCode) :-
              'phase=context_loaded chars=~d file=~w',
              [ContextChars, Args.context_file]),
     auto_dig_query(Query),
-    run_research_completion(Args, Query, Context, Outcome),
+    run_research_completion(Args, Query, Context, RawOutcome),
+    validate_terminal_outcome(RawOutcome, Outcome),
     log_outcome(Outcome),
     write_trace_json(Args.output, auto_dig_rlm_result, Outcome),
     safe_log(auto_dig_rlm, 'phase=result_written file=~w', [Args.output]),
@@ -203,10 +205,11 @@ auto_dig_runtime_options(Model,
  * Temporary consumer-owned model limits.
  *
  * Prolog-RLM issue #296 tracks moving this into a provider-neutral model
- * metadata API. OpenRouter currently advertises a 1,050,000-token context
- * window for all three routed GPT-5.6 tiers. Auto-Dig intentionally gives the
- * direct worker 30% of that limit: 315,000 tokens.
+ * metadata API. The live dogfood route is pinned to GLM-5.3-Flash; the older
+ * GPT-5.6 entries remain for regression fixtures and explicit historical
+ * routes. Auto-Dig gives the direct worker 30% of the selected model limit.
  */
+auto_dig_model_context_window('z-ai/glm-5.3-flash', 1310720).
 auto_dig_model_context_window('openai/gpt-5.6-luna', 1050000).
 auto_dig_model_context_window('openai/gpt-5.6-terra', 1050000).
 auto_dig_model_context_window('openai/gpt-5.6-sol', 1050000).
@@ -227,14 +230,77 @@ runtime_binding_options(Registry,
                           authority_context(AuthorityContext)
                         | Options0 ]).
 
-auto_dig_query("You are the Auto-Dig Prolog actor running in native direct mode with bounded read-only web research tools. Perform the research now; do not emit a typed plan and do not merely propose a future tool-enabled stage. Use the available Brave search tools broadly to discover relevant sources, then use Fetch tools to inspect primary or otherwise high-value source content. Use RLM context search, peek, and slice when useful. Reserve the final four model responses for synthesis. Stop evidence acquisition no later than the twelfth model response. Once that boundary is reached, do not call Brave, Fetch, or context tools again; synthesize the strongest evidence already gathered into the final answer. If useful evidence remains after the boundary, list it as follow-up work instead of spending synthesis headroom. Native tool-call arguments must be strict JSON objects with every object key appearing exactly once; never emit duplicate JSON keys. Prefer no more than four parallel native tool calls in one assistant turn so each call remains easy to validate and repair. Separate established facts, hypotheses, constraints, unresolved claims, primary-source evidence, and falsification criteria. Preserve source URLs or identifiers in the result so claims are auditable. Do not claim research or verification that was not actually performed. Return an evidence-backed research slice plus clearly separated remaining follow-up work, including any additional tool or datasource capability that would materially improve the next pass.").
+auto_dig_query("You are the Auto-Dig Prolog actor running in native direct mode with bounded read-only web research tools. Perform the research now; do not emit a typed plan and do not merely propose a future tool-enabled stage. Use the available Brave search tools broadly to discover relevant sources, then use Fetch tools to inspect primary or otherwise high-value source content. Use RLM context search, peek, and slice when useful. Reserve the final four model responses for synthesis. Stop evidence acquisition no later than the twelfth model response. Once that boundary is reached, do not call Brave, Fetch, or context tools again; synthesize the strongest evidence already gathered into the final answer. The terminal response MUST be plain evidence-backed report prose, not tool-call syntax, provider function markup, another context operation, or a statement that the run merely completed. If useful evidence remains after the boundary, list it as follow-up work instead of spending synthesis headroom. Native tool-call arguments must be strict JSON objects with every object key appearing exactly once; never emit duplicate JSON keys. Prefer no more than four parallel native tool calls in one assistant turn so each call remains easy to validate and repair. Separate established facts, hypotheses, constraints, unresolved claims, primary-source evidence, and falsification criteria. Preserve source URLs or identifiers in the result so claims are auditable. Do not claim research or verification that was not actually performed. Return an evidence-backed research slice plus clearly separated remaining follow-up work, including any additional tool or datasource capability that would materially improve the next pass.").
 
 auto_dig_repair_query(Query, RepairQuery) :-
     string_concat(Query,
                   "\n\nREPAIR NOTE: the previous bounded direct attempt was rejected because at least one provider-native tool call contained malformed raw JSON arguments. Start the research again from the supplied input context. Every tool argument payload MUST be exactly one strict JSON object and every key in that object MUST appear exactly once. Do not repeat keys such as search_lang or spellcheck. Prefer no more than four parallel native tool calls per assistant turn. This is the one harness-level repair attempt; use it to complete a useful evidence-backed research slice within the smaller retry budget.",
                   RepairQuery).
 
-outcome_exit_code(ok(_), 0) :- !.
+validate_terminal_outcome(ok(Result), ok(Result)) :-
+    outcome_final_answer(ok(Result), Answer),
+    !,
+    emit_final_answer_preview(Answer).
+validate_terminal_outcome(ok(Result), error(Error)) :-
+    usage_from_result(Result, Usage),
+    Error = _{ phase:finalize,
+               kind:missing_final_answer,
+               message:"terminal provider response did not contain a substantive plain-text actor answer",
+               usage:Usage
+             }.
+validate_terminal_outcome(error(Error), error(Error)) :- !.
+validate_terminal_outcome(Other,
+                          error(_{ phase:finalize,
+                                   kind:invalid_outcome,
+                                   message:"runtime returned an unexpected terminal outcome",
+                                   outcome:Other
+                                 })).
+
+outcome_final_answer(ok(Result), Answer) :-
+    is_dict(Result),
+    get_dict(response, Result, Response),
+    is_dict(Response),
+    get_dict(assistant, Response, Assistant),
+    is_dict(Assistant),
+    get_dict(content, Assistant, RawContent),
+    string(RawContent),
+    normalize_space(string(Answer), RawContent),
+    string_length(Answer, Length),
+    Length >= 80,
+    \+ terminal_tool_markup(Answer).
+
+terminal_tool_markup(Content) :-
+    sub_string(Content, _, _, _, "to=functions."),
+    !.
+terminal_tool_markup(Content) :-
+    sub_string(Content, _, _, _, "to=multi_tool_use"),
+    !.
+terminal_tool_markup(Content) :-
+    sub_string(Content, _, _, _, "<tool_call>"),
+    !.
+
+emit_final_answer_preview(Answer) :-
+    bounded_preview(Answer, 1600, Preview0),
+    safe_text(Preview0, Preview),
+    format(user_error,
+           '::notice title=Auto-Dig final actor output::~s~n',
+           [Preview]),
+    flush_output(user_error),
+    safe_log(auto_dig_rlm,
+             'phase=final_answer_verified chars=~d',
+             [len(Answer)]).
+
+bounded_preview(Text, MaxChars, Preview) :-
+    string_length(Text, Length),
+    ( Length =< MaxChars
+    -> Preview = Text
+    ;  sub_string(Text, 0, MaxChars, _, Prefix),
+       string_concat(Prefix, " ...", Preview)
+    ).
+
+outcome_exit_code(ok(Result), 0) :-
+    outcome_final_answer(ok(Result), _),
+    !.
 outcome_exit_code(error(_), 1) :- !.
 outcome_exit_code(_, 1).
 
