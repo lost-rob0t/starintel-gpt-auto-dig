@@ -165,10 +165,14 @@ auto_dig_runtime_options(Model,
                        ],
     append(BaseCapabilities, McpCapabilities, Capabilities0),
     sort(Capabilities0, Capabilities),
+    % A live dogfood run reached 12 calls after gathering evidence and before
+    % the synthesis turn, while still below token/time/tool/context limits.
+    % Leave bounded call headroom so the cumulative token budget remains the
+    % tighter research-depth guard instead of terminating before synthesis.
     Budget = _{ max_iterations:24,
                 max_recursion_depth:2,
                 max_concurrent_subcalls:2,
-                max_model_calls:12,
+                max_model_calls:16,
                 max_tool_calls:24,
                 max_context_ops:32,
                 max_total_tokens:TokenBudget,
