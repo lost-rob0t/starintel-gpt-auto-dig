@@ -113,5 +113,6 @@ jobs:
             unverifed
             validation-errors
             validator.log
+            importer-corpus-error.txt
           if-no-files-found: warn
           retention-days: 7
