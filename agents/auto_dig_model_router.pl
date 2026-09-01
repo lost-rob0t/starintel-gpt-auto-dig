@@ -12,10 +12,16 @@
 /*
  * Model-routing knowledge base.
  *
- * The router chooses a model from task facts.  The default worker is Luna Max;
- * larger tiers are escalation targets, not prestige defaults.
+ * Live research execution dogfoods GLM-5.3-Flash.  The existing GPT-5.6
+ * tiers remain available for deterministic bulk work and explicit
+ * verification/escalation paths.
  */
 
+model_spec(glm_flash,
+           _{provider:"openrouter",
+             model:"z-ai/glm-5.3-flash",
+             family:"glm-5.3",
+             tier:"glm-5.3-flash"}).
 model_spec(luna,
            _{provider:"openrouter",
              model:"openai/gpt-5.6-luna",
@@ -91,8 +97,13 @@ route_class(Profile, sol, max,
     Profile.failed_verifications >= 2,
     !.
 route_class(Profile, terra, max,
-            ["one verification failure escalates from Luna before Sol"]) :-
+            ["one verification failure escalates before flagship adjudication"]) :-
     Profile.failed_verifications =:= 1,
+    !.
+route_class(Profile, glm_flash, max,
+            ["live research execution dogfoods GLM-5.3-Flash with exact model identity"]) :-
+    Profile.task == research,
+    Profile.phase == execute,
     !.
 route_class(Profile, luna, high,
             ["bulk deterministic work stays on Luna at reduced effort"]) :-
@@ -100,7 +111,7 @@ route_class(Profile, luna, high,
     Profile.risk \== high,
     !.
 route_class(_, luna, max,
-            ["Luna Max is the default bounded worker route"]).
+            ["Luna Max is the default bounded non-research worker route"]).
 
 critical_profile(Profile) :-
     Profile.risk == critical,
@@ -111,6 +122,7 @@ critical_profile(Profile) :-
 critical_profile(Profile) :-
     high_judgment_task(Profile.task).
 
+fallback_chain(glm_flash, _, []) :- !.
 fallback_chain(luna, high,
                [ _{provider:"openrouter",
                     model:"openai/gpt-5.6-luna",
