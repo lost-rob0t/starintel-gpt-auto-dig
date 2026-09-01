@@ -60,6 +60,24 @@ test(single_normal_repeat_idles) :-
     select_queue([Only], State, Decision),
     assertion(Decision.action == "idle").
 
+test(single_low_repeat_can_be_forced_for_guarded_live_test) :-
+    issue(10, low, Only),
+    state(10, State),
+    select_queue([Only], State, true, Decision),
+    assertion(Decision.action == "run"),
+    assertion(Decision.issue_number =:= 10),
+    assertion(Decision.priority == low),
+    assertion(Decision.repeat_allowed == false).
+
+test(forced_selection_still_uses_priority_order) :-
+    issue(10, low, Low),
+    issue(11, high, High),
+    state(11, State),
+    select_queue([Low, High], State, true, Decision),
+    assertion(Decision.action == "run"),
+    assertion(Decision.issue_number =:= 11),
+    assertion(Decision.priority == high).
+
 test(priority_order_is_urgent_high_normal_low) :-
     issue(1, low, Low),
     issue(2, normal, Normal),
