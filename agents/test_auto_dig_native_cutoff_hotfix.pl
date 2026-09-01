@@ -1,6 +1,26 @@
 :- begin_tests(auto_dig_native_cutoff_hotfix).
 
 :- use_module(library(http/json)).
+:- use_module(library(process)).
+
+apply_pinned_hotfix_fixture :-
+    (   getenv('GITHUB_WORKSPACE', Workspace)
+    ->  true
+    ;   working_directory(Workspace, Workspace)
+    ),
+    directory_file_path(Workspace, '.prolog-rlm', RuntimeRoot),
+    process_create(path(python3),
+                   ['scripts/apply_prolog_rlm_hotfix.py', RuntimeRoot],
+                   [process(Pid)]),
+    process_wait(Pid, Status),
+    (   Status == exit(0)
+    ->  true
+    ;   throw(error(hotfix_fixture_failed(Status),
+                    context(plunit_auto_dig_native_cutoff_hotfix,
+                            'failed to patch pinned Prolog-RLM fixture')))
+    ).
+
+:- initialization(apply_pinned_hotfix_fixture, now).
 :- use_module(library(rlm_direct), [rlm_direct/4]).
 
 :- dynamic cutoff_model_call/1.
