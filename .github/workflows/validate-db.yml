@@ -11,6 +11,7 @@ on:
       - "scripts/starintel_transport.nim"
       - "scripts/starintel_validate.nim"
       - "tests/test_canonical_dataset_roots.py"
+      - "tests/test_import_starintel_corpus.py"
       - "tests/test_starintel_legacy.nim"
       - "tests/test_starintel_transport.nim"
       - ".github/workflows/validate-db.yml"
@@ -23,6 +24,7 @@ on:
       - "scripts/starintel_transport.nim"
       - "scripts/starintel_validate.nim"
       - "tests/test_canonical_dataset_roots.py"
+      - "tests/test_import_starintel_corpus.py"
       - "tests/test_starintel_legacy.nim"
       - "tests/test_starintel_transport.nim"
       - ".github/workflows/validate-db.yml"
@@ -74,6 +76,9 @@ jobs:
 
       - name: Test canonical dataset roots
         run: python -m unittest tests.test_canonical_dataset_roots
+
+      - name: Test importer corpus duplicate invariant
+        run: python -m unittest tests.test_import_starintel_corpus
 
       - name: Test Nim validator compatibility
         run: |
