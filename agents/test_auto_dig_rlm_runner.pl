@@ -13,6 +13,7 @@ test(native_direct_mode_features_are_explicitly_enabled) :-
     assertion(memberchk(prompt_compile_mode(all_tools), Options)),
     assertion(memberchk(planner_max_tokens(8192), Options)),
     assertion(memberchk(native_tool_cutoff_model_calls(12), Options)),
+    assertion(memberchk(native_tool_synthesis_reserve_seconds(90.0), Options)),
     assertion(\+ memberchk(planner_attempts(_), Options)),
     assertion(\+ memberchk(planner_handler(_), Options)).
 
@@ -94,7 +95,8 @@ test(repair_retry_is_smaller_and_keeps_total_cost_cap_bounded) :-
     assertion(RetryBudget.max_tool_calls =:= 12),
     assertion(RetryBudget.max_context_ops =:= 16),
     assertion(RetryBudget.max_total_tokens =:= 78750),
-    assertion(RetryBudget.time_limit =:= 180.0).
+    assertion(RetryBudget.time_limit =:= 180.0),
+    assertion(memberchk(native_tool_synthesis_reserve_seconds(90.0), RetryOptions)).
 
 test(mcp_registry_and_complete_read_tool_inventory_are_projected) :-
     auto_dig_mcp_read_capabilities(McpCapabilities),
@@ -144,6 +146,8 @@ test(research_prompt_reserves_final_four_responses_for_synthesis) :-
     auto_dig_query(Query),
     assertion(sub_string(Query, _, _, _, "twelfth model response")),
     assertion(sub_string(Query, _, _, _, "final four model responses for synthesis")),
+    assertion(sub_string(Query, _, _, _, "wall-clock synthesis reserve")),
+    assertion(sub_string(Query, _, _, _, "if tools are no longer available")),
     assertion(sub_string(Query, _, _, _, "do not call Brave, Fetch, context tools, or write tool-call syntax as text")),
     assertion(sub_string(Query, _, _, _, "list it as follow-up work")),
     assertion(\+ sub_string(Query, _, _, _, "Keep calling tools while useful evidence remains within budget")).
