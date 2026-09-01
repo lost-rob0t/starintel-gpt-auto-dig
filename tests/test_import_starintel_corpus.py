@@ -1,14 +1,18 @@
+from __future__ import annotations
+
 import importlib.util
 from pathlib import Path
+import sys
 import unittest
 
 
 ROOT = Path(__file__).resolve().parents[1]
 SCRIPT = ROOT / "scripts" / "import-starintel-documents.py"
 DIAGNOSTIC = ROOT / "importer-corpus-error.txt"
-SPEC = importlib.util.spec_from_file_location("import_starintel_documents", SCRIPT)
+SPEC = importlib.util.spec_from_file_location("import_starintel_documents_corpus", SCRIPT)
 assert SPEC is not None and SPEC.loader is not None
 MODULE = importlib.util.module_from_spec(SPEC)
+sys.modules[SPEC.name] = MODULE
 SPEC.loader.exec_module(MODULE)
 
 
