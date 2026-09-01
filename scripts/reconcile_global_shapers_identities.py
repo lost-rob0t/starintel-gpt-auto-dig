@@ -11,7 +11,7 @@ import unicodedata
 from collections import Counter, defaultdict
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Any, Iterable, Iterator
+from typing import Any, Iterator
 from urllib.parse import parse_qsl, urlencode, urlparse, urlunparse
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -25,6 +25,8 @@ PROFILE_HOSTS = {
     "weforum.org",
     "www.weforum.org",
 }
+GLOBAL_SHAPERS_HOSTS = {"globalshapers.org", "www.globalshapers.org"}
+WEF_HOSTS = {"weforum.org", "www.weforum.org"}
 SOCIAL_HOST_ALIASES = {
     "linkedin.com": "linkedin.com",
     "www.linkedin.com": "linkedin.com",
@@ -35,6 +37,7 @@ SOCIAL_HOST_ALIASES = {
     "facebook.com": "facebook.com",
     "www.facebook.com": "facebook.com",
 }
+SOCIAL_HOSTS = set(SOCIAL_HOST_ALIASES.values())
 HUB_RE = re.compile(r"\b(.{2,100}?\s+Hub)\b", re.I)
 
 
@@ -65,7 +68,7 @@ def canonical_url(value: str) -> str | None:
     parsed = urlparse(value)
     host = parsed.netloc.casefold().split("@")[-1].split(":", 1)[0]
     host = SOCIAL_HOST_ALIASES.get(host, host)
-    if host not in PROFILE_HOSTS and host not in set(SOCIAL_HOST_ALIASES.values()):
+    if host not in PROFILE_HOSTS and host not in SOCIAL_HOSTS:
         return None
     path = re.sub(r"/{2,}", "/", parsed.path).rstrip("/") or "/"
     query = urlencode(
@@ -76,6 +79,36 @@ def canonical_url(value: str) -> str | None:
         )
     )
     return urlunparse(("https", host, path, "", query, ""))
+
+
+def is_official_profile_url(url: str) -> bool:
+    parsed = urlparse(url)
+    host = parsed.netloc.casefold()
+    path = parsed.path.rstrip("/") or "/"
+
+    if host in GLOBAL_SHAPERS_HOSTS:
+        if any(
+            path.startswith(prefix)
+            for prefix in ("/member-details/", "/members/", "/shapers/")
+        ):
+            return True
+        if path == "/member-details":
+            query = {key.casefold(): value for key, value in parse_qsl(parsed.query)}
+            return any(query.get(key) for key in ("id", "member", "profile", "uid", "user"))
+        return False
+
+    if host in WEF_HOSTS:
+        return any(path.startswith(prefix) for prefix in ("/people/", "/agenda/authors/"))
+
+    return False
+
+
+def is_linkedin_profile_url(url: str) -> bool:
+    parsed = urlparse(url)
+    if parsed.netloc.casefold() != "linkedin.com":
+        return False
+    path = parsed.path.rstrip("/")
+    return path.startswith("/in/") or path.startswith("/pub/")
 
 
 def read_packet(packet_dir: Path) -> list[dict[str, Any]]:
@@ -93,6 +126,7 @@ def read_packet(packet_dir: Path) -> list[dict[str, Any]]:
         payload = plain.read_text(encoding="utf-8")
     else:
         raise RuntimeError(f"no StarIntel packet found under {packet_dir}")
+
     documents: list[dict[str, Any]] = []
     for number, line in enumerate(payload.splitlines(), 1):
         if not line.strip():
@@ -124,7 +158,11 @@ class Identity:
         return keys
 
     def hub_name_keys(self) -> set[str]:
-        return {f"name-hub:{self.normalized_name}|{hub}" for hub in self.hubs if self.normalized_name and hub}
+        return {
+            f"name-hub:{self.normalized_name}|{hub}"
+            for hub in self.hubs
+            if self.normalized_name and hub
+        }
 
 
 def identity_from_document(document: dict[str, Any], source: str) -> Identity:
@@ -143,12 +181,17 @@ def identity_from_document(document: dict[str, Any], source: str) -> Identity:
         normalized_name=normalize_text(name),
     )
 
-    for value in data.get("external_ids", []) if isinstance(data.get("external_ids"), list) else []:
+    external_ids = data.get("external_ids", [])
+    for value in external_ids if isinstance(external_ids, list) else []:
         if not isinstance(value, dict):
             continue
         scheme = str(value.get("scheme") or "").casefold()
         identifier = str(value.get("value") or "").strip().casefold()
-        if identifier and scheme in {"wef-profile-id", "global-shapers-profile-id", "salesforce-profile-id"}:
+        if identifier and scheme in {
+            "wef-profile-id",
+            "global-shapers-profile-id",
+            "salesforce-profile-id",
+        }:
             identity.wef_ids.add(identifier)
 
     extensions = document.get("extensions") if isinstance(document.get("extensions"), dict) else {}
@@ -183,9 +226,13 @@ def identity_from_document(document: dict[str, Any], source: str) -> Identity:
         identity.all_urls.add(url)
         host = urlparse(url).netloc
         if host in PROFILE_HOSTS:
-            identity.official_urls.add(url)
+            if is_official_profile_url(url):
+                identity.official_urls.add(url)
         elif host == "linkedin.com":
-            identity.linkedin_urls.add(url)
+            if is_linkedin_profile_url(url):
+                identity.linkedin_urls.add(url)
+            else:
+                identity.social_urls.add(url)
         else:
             identity.social_urls.add(url)
     return identity
@@ -216,16 +263,38 @@ class UnionFind:
 
 def reconcile(identities: list[Identity]) -> dict[str, Any]:
     union = UnionFind(len(identities))
-    strong_index: dict[str, int] = {}
-    strong_matches: Counter[str] = Counter()
+    strong_members: dict[str, list[int]] = defaultdict(list)
     for index, identity in enumerate(identities):
         for key in sorted(identity.strong_keys()):
-            prior = strong_index.get(key)
-            if prior is None:
-                strong_index[key] = index
-            else:
-                union.union(index, prior)
-                strong_matches[key.split(":", 1)[0]] += 1
+            strong_members[key].append(index)
+
+    strong_matches: Counter[str] = Counter()
+    suppressed_strong_key_collisions: list[dict[str, Any]] = []
+    for key, members in sorted(strong_members.items()):
+        if len(members) < 2:
+            continue
+        key_type = key.split(":", 1)[0]
+        normalized_names = sorted(
+            {
+                identities[index].normalized_name
+                for index in members
+                if identities[index].normalized_name
+            }
+        )
+        if key_type in {"official", "linkedin"} and len(members) > 2 and len(normalized_names) > 1:
+            suppressed_strong_key_collisions.append(
+                {
+                    "key": key,
+                    "documents": len(members),
+                    "normalized_names": normalized_names,
+                    "document_ids": sorted(identities[index].document_id for index in members),
+                }
+            )
+            continue
+        anchor = members[0]
+        for index in members[1:]:
+            union.union(anchor, index)
+            strong_matches[key_type] += 1
 
     name_hub_index: dict[str, int] = {}
     name_hub_matches = 0
@@ -259,11 +328,21 @@ def reconcile(identities: list[Identity]) -> dict[str, Any]:
                 "source_counts": dict(sorted(source_counts.items())),
                 "document_ids": sorted(identities[index].document_id for index in members),
                 "names": sorted({identities[index].name for index in members if identities[index].name}),
-                "normalized_names": sorted({identities[index].normalized_name for index in members if identities[index].normalized_name}),
+                "normalized_names": sorted(
+                    {
+                        identities[index].normalized_name
+                        for index in members
+                        if identities[index].normalized_name
+                    }
+                ),
                 "hubs": sorted({hub for index in members for hub in identities[index].hubs}),
                 "wef_ids": sorted({value for index in members for value in identities[index].wef_ids}),
-                "official_urls": sorted({value for index in members for value in identities[index].official_urls}),
-                "linkedin_urls": sorted({value for index in members for value in identities[index].linkedin_urls}),
+                "official_urls": sorted(
+                    {value for index in members for value in identities[index].official_urls}
+                ),
+                "linkedin_urls": sorted(
+                    {value for index in members for value in identities[index].linkedin_urls}
+                ),
             }
         )
 
@@ -293,6 +372,8 @@ def reconcile(identities: list[Identity]) -> dict[str, Any]:
         "reconciled_unique_people": len(components),
         "duplicates_reconciled": len(identities) - len(components),
         "strong_match_events": dict(sorted(strong_matches.items())),
+        "suppressed_strong_key_collision_count": len(suppressed_strong_key_collisions),
+        "suppressed_strong_key_collisions": suppressed_strong_key_collisions,
         "name_hub_match_events": name_hub_matches,
         "cross_source_components": sum(len(record["sources"]) > 1 for record in component_records),
         "overlaps_by_sources": dict(sorted(overlaps_by_sources.items())),
@@ -311,7 +392,9 @@ def load_people(packet_dir: Path, source: str) -> list[Identity]:
 
 
 def main() -> int:
-    parser = argparse.ArgumentParser(description="Reconcile Global Shapers identities across current API and historical packet sources.")
+    parser = argparse.ArgumentParser(
+        description="Reconcile Global Shapers identities across current API and historical packet sources."
+    )
     parser.add_argument("--root", type=Path, default=ROOT)
     parser.add_argument("--current-packet", type=Path, default=CURRENT_PACKET)
     parser.add_argument("--legacy-packet", type=Path, default=LEGACY_PACKET)
@@ -328,6 +411,7 @@ def main() -> int:
         raise RuntimeError(f"current API packet has {len(current)} people; expected at least {args.minimum_current}")
     if len(legacy) < args.minimum_legacy:
         raise RuntimeError(f"legacy prefix packet has {len(legacy)} people; expected at least {args.minimum_legacy}")
+
     report = reconcile([*current, *legacy])
     report.update(
         {
@@ -336,15 +420,19 @@ def main() -> int:
             "legacy_packet": str(args.legacy_packet.relative_to(ROOT)),
             "identity_policy": [
                 "merge exact WEF profile identifiers",
-                "merge canonical official profile URLs",
-                "merge canonical LinkedIn profile URLs",
+                "merge canonical person-specific official profile URLs only",
+                "merge canonical personal LinkedIn profile URLs only",
+                "suppress high-fanout official/LinkedIn key collisions across distinct names",
                 "merge normalized exact name plus normalized hub",
                 "report exact-name-only candidates without merging them",
             ],
         }
     )
     args.report.parent.mkdir(parents=True, exist_ok=True)
-    args.report.write_text(json.dumps(report, ensure_ascii=False, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+    args.report.write_text(
+        json.dumps(report, ensure_ascii=False, indent=2, sort_keys=True) + "\n",
+        encoding="utf-8",
+    )
     REPORT_MD.write_text(
         "# Global Shapers identity reconciliation\n\n"
         f"- Current API people: **{len(current):,}**\n"
@@ -353,23 +441,31 @@ def main() -> int:
         f"- Reconciled unique people: **{report['reconciled_unique_people']:,}**\n"
         f"- Cross-source duplicate identities merged: **{report['duplicates_reconciled']:,}**\n"
         f"- Cross-source components: **{report['cross_source_components']:,}**\n"
+        f"- Suppressed high-fanout strong-key collisions: **{report['suppressed_strong_key_collision_count']:,}**\n"
         f"- Unmerged exact-name candidates: **{report['possible_name_only_overlap_count']:,}**\n\n"
-        "Exact-name-only candidates are deliberately not counted as duplicates without a shared hub, WEF ID, official profile URL, or LinkedIn URL.\n",
+        "Generic organization/community URLs are never identity keys. Exact-name-only candidates are deliberately not counted as duplicates without a shared hub, WEF ID, person-specific official profile URL, or personal LinkedIn URL.\n",
         encoding="utf-8",
     )
-    print(json.dumps({
-        key: report[key]
-        for key in (
-            "input_people_by_source",
-            "input_people",
-            "reconciled_unique_people",
-            "duplicates_reconciled",
-            "cross_source_components",
-            "strong_match_events",
-            "name_hub_match_events",
-            "possible_name_only_overlap_count",
+    print(
+        json.dumps(
+            {
+                key: report[key]
+                for key in (
+                    "input_people_by_source",
+                    "input_people",
+                    "reconciled_unique_people",
+                    "duplicates_reconciled",
+                    "cross_source_components",
+                    "strong_match_events",
+                    "suppressed_strong_key_collision_count",
+                    "name_hub_match_events",
+                    "possible_name_only_overlap_count",
+                )
+            },
+            indent=2,
+            sort_keys=True,
         )
-    }, indent=2, sort_keys=True))
+    )
     return 0
 
 
