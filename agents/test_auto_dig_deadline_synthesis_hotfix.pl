@@ -12,7 +12,8 @@ ensure_deadline_hotfix_fixture :-
     directory_file_path(Workspace, '.prolog-rlm', RuntimeRoot),
     directory_file_path(RuntimeRoot, 'prolog/rlm_direct.pl', DirectPath),
     read_file_to_string(DirectPath, DirectSource, []),
-    (   sub_string(DirectSource, _, _, _, "DefaultHeadroom is Reserve*5.0/3.0")
+    (   sub_string(DirectSource, _, _, _, "DefaultHeadroom is Reserve*5.0/3.0"),
+        sub_string(DirectSource, _, _, _, "evidence acquisition is closed")
     ->  true
     ;   apply_script('scripts/apply_prolog_rlm_hotfix.py', RuntimeRoot),
         apply_script('scripts/apply_prolog_rlm_deadline_hotfix.py', RuntimeRoot)
@@ -92,9 +93,22 @@ deadline_model_response(1, Request, "", [ToolCall]) :-
 deadline_model_response(2, Request, "SYNTHESIZED_BEFORE_HARD_DEADLINE", []) :-
     \+ get_dict(tools, Request.options, _),
     \+ get_dict(tool_choice, Request.options, _),
+    synthesis_transition_visible(Request),
+    !.
+deadline_model_response(2, Request,
+                        "I'll inspect the result context before writing the report.",
+                        []) :-
+    \+ get_dict(tools, Request.options, _),
+    \+ get_dict(tool_choice, Request.options, _),
     !.
 deadline_model_response(2, _, "", [ToolCall]) :-
     tool_call("slice_2", ToolCall).
+
+synthesis_transition_visible(Request) :-
+    member(Message, Request.messages),
+    Message.role == system,
+    sub_string(Message.content, _, _, _, "evidence acquisition is closed"),
+    sub_string(Message.content, _, _, _, "produce the final answer now").
 
 options([provider(provider(openai_compatible, [])),
          provider_name(openai_compatible),
@@ -111,7 +125,7 @@ options([provider(provider(openai_compatible, [])),
                   max_output_bytes:8192,
                   time_limit:1.0})]).
 
-test(provider_headroom_forces_synthesis_before_equal_headroom_would) :-
+test(provider_headroom_forces_explicit_synthesis_before_hard_deadline) :-
     reset_model,
     options(Options),
     rlm_direct("Acquire once, then synthesize",

@@ -154,6 +154,23 @@ native_tool_provider_headroom(Options, Reserve, Headroom) :-
     ).
 """
 
+DIRECT_SYSTEM_OLD = """direct_system_message(Options, System) :-
+    direct_capabilities(Options, Capabilities),
+    (   member(context(_), Capabilities)
+    ->  System = \"You are a bounded direct agent. Answer normally. Use provider-native tools only when they add needed information or execution. Never emit a typed plan. Context content is opaque; its initial alias is input. Registered tool results are retained as opaque result contexts and must be inspected with context tools. Return final answer text after all needed observations.\"
+    ;   System = \"You are a bounded direct agent. Answer normally. Use provider-native tools only when they add needed information or execution. Never emit a typed plan. No opaque context operations are granted in this session: do not attempt context reads. Return final answer text after all needed observations.\"
+    ).
+"""
+
+DIRECT_SYSTEM_NEW = """direct_system_message(Options, System) :-
+    direct_capabilities(Options, Capabilities),
+    Synthesis = \" Native tool schemas may be withdrawn on a later turn to reserve deadline headroom for synthesis. When tool schemas are absent, evidence acquisition is closed: do not describe, request, or defer to any further tool/context operation; produce the final answer now from the observations already present.\",
+    (   member(context(_), Capabilities)
+    ->  string_concat(\"You are a bounded direct agent. Answer normally. Use provider-native tools only when they add needed information or execution. Never emit a typed plan. Context content is opaque; its initial alias is input. Registered tool results are retained as opaque result contexts and must be inspected with context tools. Return final answer text after all needed observations.\", Synthesis, System)
+    ;   string_concat(\"You are a bounded direct agent. Answer normally. Use provider-native tools only when they add needed information or execution. Never emit a typed plan. No opaque context operations are granted in this session: do not attempt context reads. Return final answer text after all needed observations.\", Synthesis, System)
+    ).
+"""
+
 
 def replace_exact(text: str, old: str, new: str, label: str) -> str:
     count = text.count(old)
@@ -169,6 +186,8 @@ def patch_tree(root: Path) -> None:
                          "rlm_direct.pl runtime start timestamp")
     text = replace_exact(text, DIRECT_CUTOFF_OLD, DIRECT_CUTOFF_NEW,
                          "rlm_direct.pl wall-clock synthesis reserve")
+    text = replace_exact(text, DIRECT_SYSTEM_OLD, DIRECT_SYSTEM_NEW,
+                         "rlm_direct.pl explicit synthesis transition")
     if not text.endswith("\n"):
         raise RuntimeError(f"{direct}: patched text unexpectedly lacks final newline")
     direct.write_text(text, encoding="utf-8")
