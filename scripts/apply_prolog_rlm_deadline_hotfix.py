@@ -90,7 +90,9 @@ native_tool_cutoff(Options, Cutoff) :-
 
 DIRECT_CUTOFF_NEW = """direct_request_options(Runtime, State, StepOptions, RequestOptions) :-
     (   native_tool_synthesis_phase(Runtime, State)
-    ->  RequestOptions = StepOptions
+    ->  native_synthesis_request_options(Runtime.options,
+                                          StepOptions,
+                                          RequestOptions)
     ;   request_options(Runtime.schemas, StepOptions, RequestOptions)
     ).
 
@@ -106,6 +108,16 @@ native_tool_synthesis_phase(Runtime, _) :-
     Elapsed is max(0.0, Now-Runtime.started_at),
     Remaining is Runtime.budget.time_limit-Elapsed,
     Remaining =< Reserve.
+
+native_synthesis_request_options(Options, StepOptions0, StepOptions) :-
+    native_synthesis_max_tokens(Options, Cap),
+    (   Cap == disabled
+    ->  StepOptions = StepOptions0
+    ;   get_dict(max_tokens, StepOptions0, Requested)
+    ->  Effective is max(1, min(Requested, Cap)),
+        put_dict(max_tokens, StepOptions0, Effective, StepOptions)
+    ;   put_dict(max_tokens, StepOptions0, Cap, StepOptions)
+    ).
 
 native_tool_cutoff(Options, Cutoff) :-
     option(native_tool_cutoff_model_calls, Options, none, Requested),
@@ -136,6 +148,21 @@ native_tool_synthesis_reserve(Options, Reserve) :-
                              value:Requested,
                              message:\"native synthesis reserve must be a nonnegative number\"}))
     ).
+
+native_synthesis_max_tokens(Options, Cap) :-
+    option(native_synthesis_max_tokens, Options, none, Requested),
+    (   Requested == none
+    ->  Cap = disabled
+    ;   integer(Requested),
+        Requested > 0
+    ->  Cap = Requested
+    ;   throw(direct_fault(direct_error{
+                             phase:provider,
+                             kind:invalid_native_synthesis_max_tokens,
+                             option:native_synthesis_max_tokens,
+                             value:Requested,
+                             message:\"native synthesis max tokens must be a positive integer\"}))
+    ).
 """
 
 
@@ -152,16 +179,16 @@ def patch_tree(root: Path) -> None:
     text = replace_exact(text, DIRECT_RUNTIME_OLD, DIRECT_RUNTIME_NEW,
                          "rlm_direct.pl runtime start timestamp")
     text = replace_exact(text, DIRECT_CUTOFF_OLD, DIRECT_CUTOFF_NEW,
-                         "rlm_direct.pl wall-clock synthesis reserve")
+                         "rlm_direct.pl bounded synthesis phase")
     if not text.endswith("\n"):
         raise RuntimeError(f"{direct}: patched text unexpectedly lacks final newline")
     direct.write_text(text, encoding="utf-8")
-    print(f"patched {direct.relative_to(root)} deadline synthesis reserve")
+    print(f"patched {direct.relative_to(root)} bounded deadline synthesis phase")
 
 
 def main() -> int:
     parser = argparse.ArgumentParser(
-        description="Apply wall-clock synthesis-reserve hotfix to pinned Prolog-RLM"
+        description="Apply bounded wall-clock synthesis hotfix to pinned Prolog-RLM"
     )
     parser.add_argument("root", type=Path)
     args = parser.parse_args()
