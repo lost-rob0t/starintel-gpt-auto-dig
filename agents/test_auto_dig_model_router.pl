@@ -2,21 +2,23 @@
 
 :- use_module('./auto_dig_model_router').
 
-test(default_research_uses_luna_max) :-
+test(default_research_uses_glm_53_flash) :-
     select_model(_{task:"research"}, Route),
-    assertion(Route.model == "openai/gpt-5.6-luna"),
+    assertion(Route.model == "z-ai/glm-5.3-flash"),
     assertion(Route.reasoning.effort == max),
-    assertion(Route.tier == "luna").
+    assertion(Route.tier == "glm-5.3-flash"),
+    assertion(Route.fallback == []).
 
 test(bulk_extraction_uses_luna_high) :-
     select_model(_{task:"extraction"}, Route),
     assertion(Route.model == "openai/gpt-5.6-luna"),
     assertion(Route.reasoning.effort == high).
 
-test(high_priority_is_not_implicitly_flagship) :-
+test(high_priority_research_still_uses_exact_flash_route) :-
     select_model(_{task:"research", risk:"high"}, Route),
-    assertion(Route.model == "openai/gpt-5.6-luna"),
-    assertion(Route.reasoning.effort == max).
+    assertion(Route.model == "z-ai/glm-5.3-flash"),
+    assertion(Route.reasoning.effort == max),
+    assertion(Route.fallback == []).
 
 test(one_failed_verification_escalates_to_terra) :-
     select_model(_{task:"research", failed_verifications:1}, Route),
