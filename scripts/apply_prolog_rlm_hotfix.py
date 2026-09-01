@@ -329,7 +329,50 @@ DIRECT_AFTER_TOOL_OLD = """after_tool(ToolResult, Resolved, _, _, State, error(E
 DIRECT_AFTER_TOOL_NEW = """% Read-only handler/runtime failures are safe to surface as a bounded tool
 % observation. The provider can repair malformed remote arguments or choose a
 % fallback without terminating the whole direct session. Effectful failures
-% remain fatal below because retry/fallback could duplicate or obscure effects.
+% remain fatal because retry/fallback could duplicate or obscure effects.
+recoverable_read_tool_error(Cause) :-
+    is_dict(Cause),
+    get_dict(phase, Cause, invoke),
+    get_dict(kind, Cause, Kind),
+    memberchk(Kind, [handler_failed,handler_exception,timeout]).
+
+read_tool_failure_observation(ToolResult, Resolved, Event, Result) :-
+    Call = Resolved.call,
+    Binding = Resolved.binding,
+    ToolResult.outcome = error(Cause),
+    get_dict(kind, Cause, Kind),
+    Trace = ToolResult.trace,
+    read_tool_failure_value(Cause, Value),
+    Result = native_tool_result{call_id:Call.id,
+                                name:Call.name,
+                                operation:Binding.kind,
+                                value:Value,
+                                truncated:false,
+                                trace:Trace},
+    Event = direct_event{type:native_tool,
+                         call_id:Call.id,
+                         name:Call.name,
+                         status:error,
+                         kind:Kind,
+                         result:Result,
+                         trace:Trace}.
+
+read_tool_failure_value(Cause, Value) :-
+    get_dict(kind, Cause, Kind),
+    get_dict(message, Cause, Message),
+    Base = _{error:Kind, message:Message},
+    (   read_tool_failure_detail(Cause, Detail)
+    ->  put_dict(detail, Base, Detail, Value)
+    ;   Value = Base
+    ).
+
+read_tool_failure_detail(Cause, Detail) :-
+    (   get_dict(cause, Cause, Detail)
+    ;   get_dict(detail, Cause, Detail)
+    ;   get_dict(exception, Cause, Detail)
+    ),
+    !.
+
 after_tool(ToolResult, Resolved, Calls, Runtime, State0, Outcome) :-
     ToolResult.outcome = error(Cause),
     Resolved.binding.effect == read,
@@ -350,45 +393,6 @@ after_tool(ToolResult, Resolved, _, _, State, error(Error)) :-
     error_kind(Cause, tool_execution_failed, Kind),
     state_error(State1, tool, Kind, _{cause:Cause},
                 \"native registered-tool execution failed\", Error).
-
-recoverable_read_tool_error(Cause) :-
-    is_dict(Cause),
-    get_dict(phase, Cause, invoke),
-    get_dict(kind, Cause, Kind),
-    memberchk(Kind, [handler_failed,handler_exception,timeout]).
-
-read_tool_failure_observation(ToolResult, Resolved,
-                              direct_event{type:native_tool,
-                                           call_id:Call.id,
-                                           name:Call.name,
-                                           status:error,
-                                           kind:Cause.kind,
-                                           result:Result,
-                                           trace:ToolResult.trace},
-                              Result) :-
-    Call = Resolved.call,
-    ToolResult.outcome = error(Cause),
-    read_tool_failure_value(Cause, Value),
-    Result = native_tool_result{call_id:Call.id,
-                                name:Call.name,
-                                operation:Resolved.binding.kind,
-                                value:Value,
-                                truncated:false,
-                                trace:ToolResult.trace}.
-
-read_tool_failure_value(Cause, Value) :-
-    Base = _{error:Cause.kind, message:Cause.message},
-    (   read_tool_failure_detail(Cause, Detail)
-    ->  put_dict(detail, Base, Detail, Value)
-    ;   Value = Base
-    ).
-
-read_tool_failure_detail(Cause, Detail) :-
-    (   get_dict(cause, Cause, Detail)
-    ;   get_dict(detail, Cause, Detail)
-    ;   get_dict(exception, Cause, Detail)
-    ),
-    !.
 """
 
 
