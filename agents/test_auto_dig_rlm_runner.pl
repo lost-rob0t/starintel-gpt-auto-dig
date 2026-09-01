@@ -173,6 +173,14 @@ test(final_report_content_extracts_assistant_content) :-
     final_report_content(Outcome, Content),
     assertion(Content == "hello").
 
+test(validated_report_is_emitted_verbatim_for_humans) :-
+    Report = "# Auto-Dig Research Output\n\n## Findings\nThis is the actual human-facing actor answer.\n\n## Evidence\nhttps://example.org/source\n\n## Unresolved / Follow-up\nNothing else is hidden in a JSON wrapper.",
+    with_output_to(string(Output), emit_human_report(Report)),
+    assertion(sub_string(Output, _, _, _, Report)),
+    assertion(\+ sub_string(Output, _, _, _, "rlm-result.json")),
+    assertion(\+ sub_string(Output, _, _, _, "\"schema\"")),
+    assertion(\+ sub_string(Output, _, _, _, "run complete")).
+
 test(repair_prompt_names_duplicate_key_failure_and_is_single_attempt) :-
     auto_dig_query(Query),
     auto_dig_repair_query(Query, RepairQuery),
