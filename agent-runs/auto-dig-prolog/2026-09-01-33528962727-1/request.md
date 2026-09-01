@@ -1,0 +1,62 @@
+# Auto-Dig request
+
+Title: [Auto-Dig request] Greenville police Ring-camera detention, phone unlock, and internal review
+URL: https://github.com/lost-rob0t/starintel-gpt-auto-dig/issues/2284
+
+## Subject
+Greenville, North Carolina police interaction involving a resident who declined to provide Ring-camera footage, was detained in handcuffs, and allegedly had her phone retrieved and unlocked with her face while officers investigated a nearby shooting.
+
+## Dataset
+Use the existing StarIntel public-safety / police-accountability dataset family. Do **not** create a standalone Ring-camera dataset for this incident. Resolve and reuse the canonical existing dataset slug during the dig, then cross-link the Greenville Police Department, involved officer(s), complaint, internal review, and any resulting discipline or litigation.
+
+## Goal
+Build a source-grounded account of the Greenville Police Department incident and determine what actually happened, what legal authority officers relied on, whether department policy or constitutional limits were violated, and what became of the internal review.
+
+Specifically answer:
+- Identify the date, location, incident/report number, and shooting investigation that led officers to seek nearby Ring-camera footage.
+- Identify the primary officer and other officers materially involved once names become available through public records or official releases.
+- Recover the resident's original video/post where lawfully public and preserve the exact sequence of the encounter.
+- Verify whether the resident was a suspect, witness, detained person, or merely the owner/controller of a camera thought to contain evidence.
+- Verify the officer's reported statements that she could show the Ring footage or officers would remove the camera, seek a warrant, and keep her up all night.
+- Determine when and why she was placed in handcuffs, how long the detention lasted, and what legal justification was documented.
+- Verify the allegation that an officer entered/reached into the residence or bedroom, retrieved her phone, and held it to her face to unlock it.
+- Determine exactly what officers accessed on the phone and whether consent, exigency, a warrant, another exception, or no documented authority was relied upon.
+- Determine whether officers seized, searched, copied, photographed, exported, or otherwise obtained Ring footage or account data.
+- Determine whether officers separately sought records from Ring/Amazon and, if so, through what legal process.
+- Recover Greenville Police Department policy governing witness/evidence requests, detention/handcuffing, consent searches, electronic devices, biometric unlocking, exigent circumstances, and search-warrant handling.
+- Track the formal complaint, administrative-leave decision, internal review/investigation, findings, discipline, retraining, reinstatement, resignation, referral, or other disposition.
+- Check for related civil claims, attorney correspondence, court filings, public-record requests, body-camera footage, dispatch records, supervisory review, or prosecutor involvement.
+- Compare public statements by the department and officer(s) with bodycam, resident video, reports, policy, and any later findings.
+
+## Scope
+- Greenville Police Department, Greenville, North Carolina.
+- Primary focus is the specific Ring-camera encounter and resulting accountability process.
+- Expand only where necessary into North Carolina law, relevant federal constitutional precedent, Ring/Amazon law-enforcement request mechanisms, city oversight, prosecutor review, or civil litigation.
+- Prefer primary records: GPD incident reports, bodycam, dispatch/CAD, complaint and internal-affairs records, administrative-leave notices, policy manuals, search-warrant applications/returns, court filings, city records, and original resident video/post.
+- Use commentary and reporting only as leads when primary records are obtainable.
+
+## Seed sources / leads
+- Lato's Law video: "Officer Handcuffs Woman for Not Sharing Ring Cam Footage" — https://www.youtube.com/watch?v=KP2SJb3soLE
+- Video cites reporting from The Daily Reflector concerning Greenville Police Department placing the primary officer on administrative leave pending an internal review.
+- Reported encounter facts from the supplied transcript include: officers investigating shots fired at an apartment complex on Mosley Drive; a nearby resident declining to show Ring-camera footage; reported threats to remove the camera, seek a warrant, and keep her awake; detention in handcuffs; alleged use of her face to unlock her phone; a formal complaint; and the primary officer being placed on administrative leave.
+
+## Constraints
+- Treat the YouTube transcript and the resident's allegations as leads, not final findings.
+- Preserve the distinction between verified fact, allegation, officer statement, department statement, legal analysis, policy finding, and unresolved claim.
+- Do not characterize the officer's conduct as unlawful, unconstitutional, retaliatory, coercive, or misconduct unless supported by records, governing law, or an official/court finding.
+- Administrative leave is not discipline or a finding of wrongdoing.
+- Do not infer consent merely because the device was ultimately accessed.
+- Do not infer that a Ring camera contained relevant footage merely because it recorded the later police interaction.
+- Do not collect unrelated private information about the resident, children, officers, or neighbors.
+- Avoid reproducing private phone contents or identifying minors unless indispensable to a verified public record.
+
+## Priority
+low
+
+## Completion criteria
+Publish validated findings to the canonical existing public-safety / police-accountability Auto-Dig dataset, merge the research changes, and reply here with a concise findings summary, evidence status, landed commit(s), exact StarIntel IDs, validation results, and verified auto-dig.starintel.actor links.
+
+The dig is not complete until it includes: (1) a verified incident timeline; (2) officer identity/roles where public; (3) the legal and policy basis claimed for detention, phone access, and any camera/evidence seizure; (4) primary-source reconciliation of the resident video, police records, and public statements; and (5) the final status of the complaint/internal review or an explicit unresolved-status finding.
+
+## Stable dedupe key
+`greenville-nc-ring-camera-detention-phone-unlock`

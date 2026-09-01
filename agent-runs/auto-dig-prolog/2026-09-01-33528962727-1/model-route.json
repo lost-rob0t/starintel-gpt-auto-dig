@@ -1,0 +1,1 @@
+{"failed_verifications":0, "fallback": [], "family":"glm-5.3", "model":"z-ai/glm-5.3-flash", "phase":"execute", "provider":"openrouter", "reason": ["live research execution dogfoods GLM-5.3-Flash with exact model identity" ], "reasoning": {"effort":"max"}, "risk":"normal", "schema":"auto-dig-model-route.v1", "task":"research", "tier":"glm-5.3-flash"}

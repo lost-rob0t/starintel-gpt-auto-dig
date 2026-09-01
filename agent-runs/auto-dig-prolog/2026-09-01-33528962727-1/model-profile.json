@@ -1,0 +1,7 @@
+{
+  "task": "research",
+  "phase": "execute",
+  "risk": "normal",
+  "irreversible": false,
+  "failed_verifications": 0
+}
