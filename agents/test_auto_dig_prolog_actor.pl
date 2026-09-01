@@ -60,6 +60,18 @@ test(single_normal_repeat_idles) :-
     select_queue([Only], State, Decision),
     assertion(Decision.action == "idle").
 
+test(explicit_forced_target_bypasses_repeat_policy_without_changing_normal_policy) :-
+    issue(10, low, Only),
+    state(10, State),
+    select_queue([Only], State, allow_repeat, Decision),
+    assertion(Decision.action == "run"),
+    assertion(Decision.issue_number =:= 10),
+    assertion(Decision.priority == low),
+    assertion(Decision.forced_repeat == true),
+    assertion(Decision.repeat_allowed == false),
+    select_queue([Only], State, NormalDecision),
+    assertion(NormalDecision.action == "idle").
+
 test(priority_order_is_urgent_high_normal_low) :-
     issue(1, low, Low),
     issue(2, normal, Normal),
