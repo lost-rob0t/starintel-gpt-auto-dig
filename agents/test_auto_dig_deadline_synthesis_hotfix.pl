@@ -2,15 +2,21 @@
 
 :- use_module(library(http/json)).
 :- use_module(library(process)).
+:- use_module(library(readutil)).
 
-apply_deadline_hotfix_fixture :-
+ensure_deadline_hotfix_fixture :-
     (   getenv('GITHUB_WORKSPACE', Workspace)
     ->  true
     ;   working_directory(Workspace, Workspace)
     ),
     directory_file_path(Workspace, '.prolog-rlm', RuntimeRoot),
-    apply_script('scripts/apply_prolog_rlm_hotfix.py', RuntimeRoot),
-    apply_script('scripts/apply_prolog_rlm_deadline_hotfix.py', RuntimeRoot).
+    directory_file_path(RuntimeRoot, 'prolog/rlm_direct.pl', DirectPath),
+    read_file_to_string(DirectPath, DirectSource, []),
+    (   sub_string(DirectSource, _, _, _, "native_tool_synthesis_reserve_seconds")
+    ->  true
+    ;   apply_script('scripts/apply_prolog_rlm_hotfix.py', RuntimeRoot),
+        apply_script('scripts/apply_prolog_rlm_deadline_hotfix.py', RuntimeRoot)
+    ).
 
 apply_script(Script, RuntimeRoot) :-
     process_create(path(python3), [Script, RuntimeRoot], [process(Pid)]),
@@ -20,7 +26,7 @@ apply_script(Script, RuntimeRoot) :-
     ;   throw(error(hotfix_fixture_failed(Script, Status), _))
     ).
 
-:- initialization(apply_deadline_hotfix_fixture, now).
+:- initialization(ensure_deadline_hotfix_fixture, now).
 :- use_module(library(rlm_direct), [rlm_direct/4]).
 
 :- dynamic model_call/1.
