@@ -1,6 +1,7 @@
 :- module(auto_dig_prolog_actor,
           [ main/1,
-            select_queue/3
+            select_queue/3,
+            select_queue/4
           ]).
 
 :- use_module(library(http/json)).
@@ -23,6 +24,7 @@ main_run(Argv) :-
     option(state(StatePath), Options),
     option(output(OutputPath), Options),
     option(trace(TracePath), Options, ''),
+    selection_mode(Options, SelectionMode),
     read_json_file(QueuePath, Queue),
     read_json_file(StatePath, State),
     setup_call_cleanup(
@@ -33,12 +35,29 @@ main_run(Argv) :-
               worker_backlog(1)
             ],
             Runtime),
-        run_actor(Runtime, Queue, State, Decision, Trace),
+        run_actor(Runtime, Queue, State, SelectionMode, Decision, Trace),
         agent_runtime_destroy(Runtime)),
     write_json_file(OutputPath, Decision),
     maybe_write_trace(TracePath, Trace).
 
-run_actor(Runtime, Queue, State, Decision, Trace) :-
+/*
+ * The push job only executes when the workflow's guarded
+ * `[auto-dig-live-test]` condition is true. Such a run exists to dogfood the
+ * exact current head, so it must not be silently turned into an idle success
+ * merely because its fixed fixture issue was also the previous successful
+ * issue. Ordinary scheduled selection remains under the anti-repeat policy.
+ * `--allow-repeat` is also available for explicit callers that have already
+ * narrowed the queue to an operator-forced target.
+ */
+selection_mode(Options, allow_repeat) :-
+    option(allow_repeat(true), Options),
+    !.
+selection_mode(_, allow_repeat) :-
+    getenv('GITHUB_EVENT_NAME', push),
+    !.
+selection_mode(_, normal).
+
+run_actor(Runtime, Queue, State, SelectionMode, Decision, Trace) :-
     agent_spawn(Runtime,
                 none,
                 agent_spec{
@@ -53,24 +72,41 @@ run_actor(Runtime, Queue, State, Decision, Trace) :-
     agent_supervised_call(Runtime,
                           Actor,
                           auto_dig_prolog_actor:worker_handler,
-                          work(select, Queue, State),
+                          work(select, Queue, State, SelectionMode),
                           [timeout(5.0)],
                           CallOutcome),
     require_decision(CallOutcome, Decision),
     agent_trace(Runtime, Trace).
 
-worker_handler(work(select, Queue, State), Decision) :-
-    select_queue(Queue, State, Decision).
+worker_handler(work(select, Queue, State, SelectionMode), Decision) :-
+    select_queue(Queue, State, SelectionMode, Decision).
 
 select_queue(Queue, State, Decision) :-
+    select_queue(Queue, State, normal, Decision).
+
+select_queue(Queue, State, SelectionMode, Decision) :-
     must_be(list, Queue),
     must_be(dict, State),
+    valid_selection_mode(SelectionMode),
     maplist(enrich_issue, Queue, Enriched0),
     predsort(compare_candidates, Enriched0, Enriched),
     length(Enriched, QueueSize),
     state_last_issue(State, LastIssue),
-    (   choose_candidate(Enriched, LastIssue, Selected)
-    ->  selected_decision(Selected, State, QueueSize, Decision)
+    (   choose_candidate_for_mode(SelectionMode,
+                                  Enriched,
+                                  LastIssue,
+                                  Selected,
+                                  ForcedSelection)
+    ->  selected_decision(Selected, State, QueueSize, Decision0),
+        forced_repeat_value(ForcedSelection,
+                            Selected.number,
+                            LastIssue,
+                            ForcedRepeat),
+        put_dict(_{ forced_selection:ForcedSelection,
+                    forced_repeat:ForcedRepeat
+                  },
+                 Decision0,
+                 Decision)
     ;   Decision = _{
             action:"idle",
             reason:"no eligible investigation target without violating repeat policy",
@@ -78,6 +114,31 @@ select_queue(Queue, State, Decision) :-
             next_state:State
         }
     ).
+
+valid_selection_mode(normal) :- !.
+valid_selection_mode(allow_repeat) :- !.
+valid_selection_mode(Other) :-
+    throw(error(domain_error(auto_dig_selection_mode, Other),
+                context(auto_dig_prolog_actor:select_queue/4,
+                        'expected normal or allow_repeat'))).
+
+choose_candidate_for_mode(allow_repeat,
+                          [Selected|_],
+                          _,
+                          Selected,
+                          true) :-
+    !.
+choose_candidate_for_mode(normal,
+                          Enriched,
+                          LastIssue,
+                          Selected,
+                          false) :-
+    choose_candidate(Enriched, LastIssue, Selected).
+
+forced_repeat_value(true, Number, LastIssue, true) :-
+    same_issue(Number, LastIssue),
+    !.
+forced_repeat_value(_, _, _, false).
 
 enrich_issue(Issue, Candidate) :-
     must_be(dict, Issue),
@@ -242,10 +303,13 @@ parse_args_(['--output', Path|Rest], Acc, Options) :-
 parse_args_(['--trace', Path|Rest], Acc, Options) :-
     !,
     parse_args_(Rest, [trace(Path)|Acc], Options).
+parse_args_(['--allow-repeat'|Rest], Acc, Options) :-
+    !,
+    parse_args_(Rest, [allow_repeat(true)|Acc], Options).
 parse_args_([Unknown|_], _, _) :-
     throw(error(unknown_argument(Unknown),
                 context(auto_dig_prolog_actor:main/1,
-                        'expected --queue, --state, --output, or --trace'))).
+                        'expected --queue, --state, --output, --trace, or --allow-repeat'))).
 
 require_option(Name, Options) :-
     Term =.. [Name, _],
