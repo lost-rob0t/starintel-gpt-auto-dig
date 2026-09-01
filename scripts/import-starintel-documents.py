@@ -96,7 +96,15 @@ def integer_version(document: dict) -> int | None:
     return None
 
 
-def merge_records(records: Iterable[DocumentRecord]) -> dict[str, DocumentRecord]:
+def db_source(record: DocumentRecord) -> bool:
+    return record.source.startswith("db/")
+
+
+def merge_records(
+    records: Iterable[DocumentRecord],
+    *,
+    prefer_db: bool = False,
+) -> dict[str, DocumentRecord]:
     merged: dict[str, DocumentRecord] = {}
     for record in records:
         previous = merged.get(record.document_id)
@@ -104,6 +112,10 @@ def merge_records(records: Iterable[DocumentRecord]) -> dict[str, DocumentRecord
             merged[record.document_id] = record
             continue
         if canonical_document(previous.document) == canonical_document(record.document):
+            continue
+        if prefer_db and db_source(previous) != db_source(record):
+            if db_source(record):
+                merged[record.document_id] = record
             continue
         old_version = integer_version(previous.document)
         new_version = integer_version(record.document)
@@ -132,7 +144,7 @@ def collect_all_documents(root: Path) -> list[DocumentRecord]:
     for path in current_document_paths(root):
         relative = path.relative_to(root).as_posix()
         records.extend(parse_jsonl(path.read_text(encoding="utf-8"), relative))
-    return list(merge_records(records).values())
+    return list(merge_records(records, prefer_db=True).values())
 
 
 def git_show_text(root: Path, ref: str, path: str) -> str:
