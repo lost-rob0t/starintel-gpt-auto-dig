@@ -12,7 +12,7 @@ ensure_deadline_hotfix_fixture :-
     directory_file_path(Workspace, '.prolog-rlm', RuntimeRoot),
     directory_file_path(RuntimeRoot, 'prolog/rlm_direct.pl', DirectPath),
     read_file_to_string(DirectPath, DirectSource, []),
-    (   sub_string(DirectSource, _, _, _, "native_tool_synthesis_reserve_seconds")
+    (   sub_string(DirectSource, _, _, _, "native_tool_provider_headroom_seconds")
     ->  true
     ;   apply_script('scripts/apply_prolog_rlm_hotfix.py', RuntimeRoot),
         apply_script('scripts/apply_prolog_rlm_deadline_hotfix.py', RuntimeRoot)
@@ -83,7 +83,10 @@ deadline_model(Request, ok(Response)) :-
 deadline_model_response(1, Request, "", [ToolCall]) :-
     get_dict(tools, Request.options, Tools),
     Tools \== [],
-    sleep(0.15),
+    % Simulate one slow acquisition response. With only the synthesis reserve
+    % considered, the next provider request would still start tool-enabled and
+    % could consume the hard deadline, exactly as live run 33522569444 did.
+    sleep(0.78),
     tool_call("slice_1", ToolCall).
 deadline_model_response(2, Request, "SYNTHESIZED_BEFORE_HARD_DEADLINE", []) :-
     \+ get_dict(tools, Request.options, _),
@@ -98,7 +101,7 @@ options([provider(provider(openai_compatible, [])),
          capabilities([context(slice)]),
          prompt_compile_mode(all_tools),
          native_tool_cutoff_model_calls(99),
-         native_tool_synthesis_reserve_seconds(0.9),
+         native_tool_synthesis_reserve_seconds(0.15),
          budget(_{max_iterations:4,
                   max_model_calls:3,
                   max_tool_calls:3,
@@ -107,7 +110,7 @@ options([provider(provider(openai_compatible, [])),
                   max_output_bytes:8192,
                   time_limit:1.0})]).
 
-test(wall_clock_reserve_hides_tools_before_model_call_cutoff) :-
+test(provider_headroom_hides_tools_before_slow_request_can_consume_deadline) :-
     reset_model,
     options(Options),
     rlm_direct("Acquire once, then synthesize",
