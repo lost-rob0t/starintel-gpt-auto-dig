@@ -91,8 +91,13 @@ jobs:
           from pathlib import Path
           import re
 
-          text = Path("importer-corpus-error.txt").read_text(encoding="utf-8").strip()
-          match = re.search(r"conflicting duplicate _id '([^']+)': (.+?) vs (.+)$", text)
+          lines = [
+              line
+              for line in Path("importer-corpus-error.txt").read_text(encoding="utf-8").splitlines()
+              if "conflicting duplicate _id" in line
+          ]
+          print(f"conflict_count={len(lines)}")
+          match = re.search(r"conflicting duplicate _id '([^']+)': (.+?) vs (.+)$", lines[0] if lines else "")
           if not match:
               print("conflict_id=unknown")
               print("source_a=unknown")
@@ -110,16 +115,19 @@ jobs:
           print(f"source_b={packet_name(source_b)}")
           PY
           else
+            echo "conflict_count=0" >> "$GITHUB_OUTPUT"
             echo "conflict_id=none" >> "$GITHUB_OUTPUT"
             echo "source_a=none" >> "$GITHUB_OUTPUT"
             echo "source_b=none" >> "$GITHUB_OUTPUT"
           fi
 
-      - name: "Importer conflict ${{ steps.importer-corpus.outputs.conflict_id }} :: ${{ steps.importer-corpus.outputs.source_a }} vs ${{ steps.importer-corpus.outputs.source_b }}"
+      - name: "Importer conflicts ${{ steps.importer-corpus.outputs.conflict_count }} :: first ${{ steps.importer-corpus.outputs.conflict_id }} :: ${{ steps.importer-corpus.outputs.source_a }} vs ${{ steps.importer-corpus.outputs.source_b }}"
         if: ${{ steps.importer-corpus.outputs.status != '0' }}
         shell: bash
         run: |
-          cat importer-corpus-error.txt
+          while IFS= read -r line; do
+            echo "::error title=Importer duplicate::$line"
+          done < importer-corpus-error.txt
           exit 1
 
       - name: Test Nim validator compatibility
