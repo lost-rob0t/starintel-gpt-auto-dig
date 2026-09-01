@@ -22,6 +22,7 @@ test(context_budget_is_thirty_percent_of_model_limit) :-
     assertion(TerraBudget =:= 315000),
     auto_dig_context_budget('openai/gpt-5.6-sol', SolWindow, SolBudget),
     assertion(SolWindow =:= 1050000),
+    assertion(Budget =:= 315000),
     assertion(SolBudget =:= 315000).
 
 test(unknown_model_requires_explicit_context_limit,
@@ -42,7 +43,7 @@ test(research_context_and_direct_tool_budget_are_available) :-
     memberchk(budget(Budget), Options),
     assertion(Budget.max_iterations =:= 24),
     assertion(Budget.max_recursion_depth =:= 2),
-    assertion(Budget.max_model_calls =:= 12),
+    assertion(Budget.max_model_calls =:= 16),
     assertion(Budget.max_tool_calls =:= 24),
     assertion(Budget.max_context_ops =:= 32),
     assertion(Budget.max_total_tokens =:= 315000),
