@@ -87,14 +87,35 @@ jobs:
           set -e
           echo "status=$status" >> "$GITHUB_OUTPUT"
           if (( status != 0 )); then
-            conflict_id=$(sed -n "s/.*conflicting duplicate _id '\([^']*\)'.*/\1/p" importer-corpus-error.txt | head -n1)
-            conflict_id=${conflict_id//:/-}
-            echo "conflict_id=${conflict_id:-unknown}" >> "$GITHUB_OUTPUT"
+            python - <<'PY' >> "$GITHUB_OUTPUT"
+          from pathlib import Path
+          import re
+
+          text = Path("importer-corpus-error.txt").read_text(encoding="utf-8").strip()
+          match = re.search(r"conflicting duplicate _id '([^']+)': (.+?) vs (.+)$", text)
+          if not match:
+              print("conflict_id=unknown")
+              print("source_a=unknown")
+              print("source_b=unknown")
+              raise SystemExit
+
+          document_id, source_a, source_b = match.groups()
+
+          def packet_name(source: str) -> str:
+              path = source.rsplit(":", 1)[0]
+              return Path(path).parent.name.replace(":", "-")
+
+          print(f"conflict_id={document_id.replace(':', '-')}")
+          print(f"source_a={packet_name(source_a)}")
+          print(f"source_b={packet_name(source_b)}")
+          PY
           else
             echo "conflict_id=none" >> "$GITHUB_OUTPUT"
+            echo "source_a=none" >> "$GITHUB_OUTPUT"
+            echo "source_b=none" >> "$GITHUB_OUTPUT"
           fi
 
-      - name: "Importer conflict ${{ steps.importer-corpus.outputs.conflict_id }}"
+      - name: "Importer conflict ${{ steps.importer-corpus.outputs.conflict_id }} :: ${{ steps.importer-corpus.outputs.source_a }} vs ${{ steps.importer-corpus.outputs.source_b }}"
         if: ${{ steps.importer-corpus.outputs.status != '0' }}
         shell: bash
         run: |
