@@ -177,6 +177,21 @@ test(final_report_content_extracts_assistant_content) :-
     final_report_content(Outcome, Content),
     assertion(Content == "hello").
 
+test(final_report_content_discards_synthesis_preamble) :-
+    Report = "# Auto-Dig Research Output\n\n## Findings\nA substantive finding.\n\n## Evidence\nhttps://example.org/source\n\n## Unresolved / Follow-up\nNone.",
+    string_concat("Evidence acquisition is complete. Synthesizing now.\n\n",
+                  Report,
+                  RawContent),
+    Outcome = ok(_{response:_{assistant:_{content:RawContent}}}),
+    final_report_content(Outcome, Content),
+    assertion(Content == Report).
+
+test(final_report_content_does_not_extract_inline_heading_mentions) :-
+    RawContent = "I was instructed to emit # Auto-Dig Research Output but did not produce the report.",
+    Outcome = ok(_{response:_{assistant:_{content:RawContent}}}),
+    final_report_content(Outcome, Content),
+    assertion(Content == RawContent).
+
 test(validated_report_is_emitted_verbatim_for_humans) :-
     Report = "# Auto-Dig Research Output\n\n## Findings\nThis is the actual human-facing actor answer.\n\n## Evidence\nhttps://example.org/source\n\n## Unresolved / Follow-up\nNothing else is hidden in a JSON wrapper.",
     with_output_to(string(Output), emit_human_report(Report)),
