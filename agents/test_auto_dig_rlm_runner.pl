@@ -12,6 +12,7 @@ test(native_direct_mode_features_are_explicitly_enabled) :-
     assertion(memberchk(skill_catalog(default), Options)),
     assertion(memberchk(prompt_compile_mode(all_tools), Options)),
     assertion(memberchk(planner_max_tokens(8192), Options)),
+    assertion(memberchk(native_tool_cutoff_model_calls(12), Options)),
     assertion(\+ memberchk(planner_attempts(_), Options)),
     assertion(\+ memberchk(planner_handler(_), Options)).
 
