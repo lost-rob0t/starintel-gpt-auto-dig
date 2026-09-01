@@ -33,6 +33,7 @@ test(high_priority_may_repeat_when_uniquely_highest) :-
     assertion(Decision.action == "run"),
     assertion(Decision.issue_number =:= 10),
     assertion(Decision.priority == high),
+    assertion(Decision.forced == false),
     assertion(Decision.repeat_allowed == true).
 
 test(high_priority_prefers_same_rank_alternative_before_repeat) :-
@@ -43,7 +44,8 @@ test(high_priority_prefers_same_rank_alternative_before_repeat) :-
     select_queue([Normal, First, Second], State, Decision),
     assertion(Decision.action == "run"),
     assertion(Decision.issue_number =:= 11),
-    assertion(Decision.priority == high).
+    assertion(Decision.priority == high),
+    assertion(Decision.forced == false).
 
 test(normal_priority_does_not_repeat_when_alternative_exists) :-
     issue(10, normal, First),
@@ -52,6 +54,7 @@ test(normal_priority_does_not_repeat_when_alternative_exists) :-
     select_queue([First, Second], State, Decision),
     assertion(Decision.action == "run"),
     assertion(Decision.issue_number =:= 11),
+    assertion(Decision.forced == false),
     assertion(Decision.repeat_allowed == false).
 
 test(single_normal_repeat_idles) :-
@@ -59,6 +62,36 @@ test(single_normal_repeat_idles) :-
     state(10, State),
     select_queue([Only], State, Decision),
     assertion(Decision.action == "idle").
+
+test(explicit_force_bypasses_repeat_policy_for_exact_validated_issue) :-
+    issue(10, normal, Only),
+    state(10, State),
+    select_queue([Only], State, 10, Decision),
+    assertion(Decision.action == "run"),
+    assertion(Decision.issue_number =:= 10),
+    assertion(Decision.forced == true),
+    assertion(Decision.repeat_allowed == true),
+    assertion(Decision.next_state.last_issue =:= 10).
+
+test(explicit_force_selects_exact_issue_not_higher_rank_candidate) :-
+    issue(10, urgent, Urgent),
+    issue(11, low, Forced),
+    state(null, State),
+    select_queue([Urgent, Forced], State, 11, Decision),
+    assertion(Decision.action == "run"),
+    assertion(Decision.issue_number =:= 11),
+    assertion(Decision.priority == low),
+    assertion(Decision.forced == true).
+
+test(explicit_force_fails_closed_when_issue_is_not_in_validated_queue,
+     [throws(error(existence_error(forced_investigation_target, 99), _))]) :-
+    issue(10, normal, Only),
+    state(null, State),
+    select_queue([Only], State, 99, _).
+
+test(invalid_force_issue_fails_closed,
+     [throws(error(domain_error(positive_issue_number, "garbage"), _))]) :-
+    auto_dig_prolog_actor:force_issue_value("garbage", _).
 
 test(priority_order_is_urgent_high_normal_low) :-
     issue(1, low, Low),
