@@ -79,6 +79,62 @@ class ImportStarIntelDocumentsTests(unittest.TestCase):
             self.assertEqual(len(records), 1)
             self.assertEqual(records[0].document["version"], 2)
 
+    def test_all_mode_prefers_db_for_same_version_packet_conflict(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            document_id = "starintel:dataset-manifest:bilderberg-public-roster"
+            write_packet(
+                root / "db" / "dataset-manifest" / f"{document_id}.ndjson",
+                [
+                    {
+                        "_id": document_id,
+                        "dtype": "dataset-manifest",
+                        "version": 1,
+                        "data": {"surface": "db"},
+                    }
+                ],
+            )
+            write_packet(
+                root / "digs" / "dark-academia" / "run" / "starintel-documents.jsonl",
+                [
+                    {
+                        "_id": document_id,
+                        "dtype": "dataset-manifest",
+                        "version": 1,
+                        "data": {"surface": "packet"},
+                    }
+                ],
+            )
+
+            records = MODULE.collect_all_documents(root)
+            self.assertEqual(len(records), 1)
+            self.assertEqual(records[0].document["data"]["surface"], "db")
+
+    def test_diff_merge_remains_strict_for_same_version_conflict(self) -> None:
+        document_id = "starintel:test:strict"
+        records = [
+            MODULE.DocumentRecord(
+                {
+                    "_id": document_id,
+                    "dtype": "note",
+                    "version": 1,
+                    "data": {"value": "a"},
+                },
+                "digs/a/starintel-documents.jsonl:1",
+            ),
+            MODULE.DocumentRecord(
+                {
+                    "_id": document_id,
+                    "dtype": "note",
+                    "version": 1,
+                    "data": {"value": "b"},
+                },
+                "digs/b/starintel-documents.jsonl:1",
+            ),
+        ]
+        with self.assertRaises(ValueError):
+            MODULE.merge_records(records)
+
     def test_upload_batch_sends_bearer_auth_and_polls_async_job(self) -> None:
         client = MODULE.IngestClient(
             "https://ingest.example.test",
