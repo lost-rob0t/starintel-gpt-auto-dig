@@ -95,13 +95,15 @@ run_research_completion_with_session(Args,
                              Options),
     memberchk(budget(Budget), Options),
     memberchk(native_tool_cutoff_model_calls(ToolCutoff), Options),
+    memberchk(native_tool_synthesis_reserve_seconds(SynthesisReserve), Options),
     auto_dig_context_budget(Args.model, ContextWindow, ContextBudget),
     safe_log(auto_dig_rlm,
-             'phase=direct_start context_window=~d token_budget=~d model_calls=~d native_tool_cutoff=~d tool_calls=~d context_ops=~d iterations=~d time_limit=~w',
+             'phase=direct_start context_window=~d token_budget=~d model_calls=~d native_tool_cutoff=~d synthesis_reserve=~w tool_calls=~d context_ops=~d iterations=~d time_limit=~w',
              [ ContextWindow,
                ContextBudget,
                Budget.max_model_calls,
                ToolCutoff,
+               SynthesisReserve,
                Budget.max_tool_calls,
                Budget.max_context_ops,
                Budget.max_iterations,
@@ -174,9 +176,9 @@ auto_dig_runtime_options(Model,
                        ],
     append(BaseCapabilities, McpCapabilities, Capabilities0),
     sort(Capabilities0, Capabilities),
-    % The live actor gets 12 evidence-acquisition responses and four reserved
-    % provider calls for synthesis. The runtime cutoff removes every native
-    % tool schema before call 13 rather than trusting prompt compliance.
+    % Keep both ceilings: a response-count cutoff bounds acquisition even on
+    % fast providers, while the wall-clock reserve forces synthesis early on
+    % slow providers. The hard 300s runtime deadline remains the final guard.
     Budget = _{ max_iterations:24,
                 max_recursion_depth:2,
                 max_concurrent_subcalls:2,
@@ -198,6 +200,7 @@ auto_dig_runtime_options(Model,
                        prompt_compile_mode(all_tools),
                        planner_max_tokens(8192),
                        native_tool_cutoff_model_calls(12),
+                       native_tool_synthesis_reserve_seconds(90.0),
                        context_options([max_bytes(262144), time_limit(5.0)]),
                        budget(Budget)
                      ],
@@ -235,7 +238,7 @@ runtime_binding_options(Registry,
                           authority_context(AuthorityContext)
                         | Options0 ]).
 
-auto_dig_query("You are the Auto-Dig Prolog actor running in native direct mode with bounded read-only web research tools. Perform the research now; do not emit a typed plan and do not merely propose a future tool-enabled stage. Use the available Brave search tools broadly to discover relevant sources, then use Fetch tools to inspect primary or otherwise high-value source content. Use RLM context search, peek, and slice when useful. Reserve the final four model responses for synthesis. Stop evidence acquisition no later than the twelfth model response. Once that boundary is reached, do not call Brave, Fetch, context tools, or write tool-call syntax as text; synthesize the strongest evidence already gathered into the final answer. If useful evidence remains after the boundary, list it as follow-up work instead of spending synthesis headroom. Native tool-call arguments must be strict JSON objects with every object key appearing exactly once; never emit duplicate JSON keys. Prefer no more than four parallel native tool calls in one assistant turn so each call remains easy to validate and repair. Separate established facts, hypotheses, constraints, unresolved claims, primary-source evidence, and falsification criteria. Preserve source URLs or identifiers in the result so claims are auditable. Do not claim research or verification that was not actually performed. Your final assistant response MUST be a substantive Markdown report that starts exactly with '# Auto-Dig Research Output' and contains the headings '## Findings', '## Evidence', and '## Unresolved / Follow-up', with at least one http:// or https:// source URL. The final response must contain prose findings, not pending tool invocations, serialized tool calls, or a statement that the run merely completed. Even when evidence is limited, produce the report with explicit unresolved items. Return an evidence-backed research slice plus clearly separated remaining follow-up work, including any additional tool or datasource capability that would materially improve the next pass.").
+auto_dig_query("You are the Auto-Dig Prolog actor running in native direct mode with bounded read-only web research tools. Perform the research now; do not emit a typed plan and do not merely propose a future tool-enabled stage. Use the available Brave search tools broadly to discover relevant sources, then use Fetch tools to inspect primary or otherwise high-value source content. Use RLM context search, peek, and slice when useful. Reserve the final four model responses for synthesis. Stop evidence acquisition no later than the twelfth model response. The runtime may remove all native tool schemas earlier when its wall-clock synthesis reserve activates; if tools are no longer available, treat evidence acquisition as closed and synthesize immediately from evidence already gathered. Once either boundary is reached, do not call Brave, Fetch, context tools, or write tool-call syntax as text; synthesize the strongest evidence already gathered into the final answer. If useful evidence remains after the boundary, list it as follow-up work instead of spending synthesis headroom. Native tool-call arguments must be strict JSON objects with every object key appearing exactly once; never emit duplicate JSON keys. Prefer no more than four parallel native tool calls in one assistant turn so each call remains easy to validate and repair. Separate established facts, hypotheses, constraints, unresolved claims, primary-source evidence, and falsification criteria. Preserve source URLs or identifiers in the result so claims are auditable. Do not claim research or verification that was not actually performed. Your final assistant response MUST be a substantive Markdown report that starts exactly with '# Auto-Dig Research Output' and contains the headings '## Findings', '## Evidence', and '## Unresolved / Follow-up', with at least one http:// or https:// source URL. The final response must contain prose findings, not pending tool invocations, serialized tool calls, or a statement that the run merely completed. Even when evidence is limited, produce the report with explicit unresolved items. Return an evidence-backed research slice plus clearly separated remaining follow-up work, including any additional tool or datasource capability that would materially improve the next pass.").
 
 auto_dig_repair_query(Query, RepairQuery) :-
     string_concat(Query,
