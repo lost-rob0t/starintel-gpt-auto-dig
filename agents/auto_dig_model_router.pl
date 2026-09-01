@@ -12,10 +12,16 @@
 /*
  * Model-routing knowledge base.
  *
- * The router chooses a model from task facts.  The default worker is Luna Max;
- * larger tiers are escalation targets, not prestige defaults.
+ * Dogfood is explicitly pinned to GLM-5.3-Flash until the real actor proves
+ * end-to-end final-output conformance. Historical GPT-5.6 tiers remain below
+ * as dormant routing data for regression/history, not as live fallbacks.
  */
 
+model_spec(glm_flash,
+           _{provider:"openrouter",
+             model:"z-ai/glm-5.3-flash",
+             family:"glm-5.3",
+             tier:"glm-flash"}).
 model_spec(luna,
            _{provider:"openrouter",
              model:"openai/gpt-5.6-luna",
@@ -81,7 +87,12 @@ select_model(Profile0, Route) :-
         fallback:Fallback
     }.
 
-/* Hard gates first. */
+/* Explicit dogfood pin outranks ordinary escalation rules. */
+route_class(_, glm_flash, none,
+            ["operator dogfood route pins GLM-5.3-Flash until live final-output conformance is proven"]) :-
+    !.
+
+/* Historical routing policy retained below for later reactivation. */
 route_class(Profile, sol, max,
             ["critical or irreversible work requires flagship adjudication"]) :-
     critical_profile(Profile),
@@ -111,6 +122,7 @@ critical_profile(Profile) :-
 critical_profile(Profile) :-
     high_judgment_task(Profile.task).
 
+fallback_chain(glm_flash, _, []) :- !.
 fallback_chain(luna, high,
                [ _{provider:"openrouter",
                     model:"openai/gpt-5.6-luna",
