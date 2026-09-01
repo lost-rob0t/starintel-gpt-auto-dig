@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import http.client
 import time
 import urllib.error
 import urllib.parse
@@ -81,7 +82,7 @@ class NetworkClient:
                 if exc.code not in {429, 500, 502, 503, 504} or attempt == 3:
                     raise
                 time.sleep(max(self.delay, 2 ** (attempt - 1)))
-            except urllib.error.URLError as exc:
+            except (urllib.error.URLError, http.client.IncompleteRead) as exc:
                 last_error = exc
                 if attempt == 3:
                     raise
