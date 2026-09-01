@@ -8,6 +8,7 @@ on:
       - "digs/global-shapers/global-shapers-current-members-api/**"
       - "digs/wef/global-shapers-legacy-intact-prefix/**"
       - "scripts/reconcile_global_shapers_identities.py"
+      - "tests/test_reconcile_global_shapers_identities.py"
       - ".github/workflows/reconcile-global-shapers-identities.yml"
   workflow_dispatch:
 
@@ -35,6 +36,9 @@ jobs:
         with:
           python-version: "3.13"
 
+      - name: Run reconciliation regression tests
+        run: python -m unittest tests.test_reconcile_global_shapers_identities
+
       - name: Build cross-source identity ledger
         run: |
           python scripts/reconcile_global_shapers_identities.py \
@@ -58,12 +62,14 @@ jobs:
           assert report["input_people"] == 7388
           assert 4652 <= report["reconciled_unique_people"] <= 7388
           assert report["duplicates_reconciled"] == report["input_people"] - report["reconciled_unique_people"]
+          assert report["suppressed_strong_key_collision_count"] >= 0
           print(json.dumps({
               "input_people": report["input_people"],
               "reconciled_unique_people": report["reconciled_unique_people"],
               "duplicates_reconciled": report["duplicates_reconciled"],
               "cross_source_components": report["cross_source_components"],
               "strong_match_events": report["strong_match_events"],
+              "suppressed_strong_key_collision_count": report["suppressed_strong_key_collision_count"],
               "name_hub_match_events": report["name_hub_match_events"],
               "possible_name_only_overlap_count": report["possible_name_only_overlap_count"],
           }, indent=2))
