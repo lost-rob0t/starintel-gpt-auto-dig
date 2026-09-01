@@ -17,6 +17,7 @@ on:
       - 'agents/auto_dig_*.pl'
       - 'agents/test_auto_dig_*.pl'
       - 'scripts/apply_prolog_rlm_hotfix.py'
+      - 'scripts/apply_prolog_rlm_deadline_hotfix.py'
 
 permissions:
   contents: write
@@ -60,6 +61,7 @@ jobs:
         run: |
           set -euo pipefail
           python3 scripts/apply_prolog_rlm_hotfix.py .prolog-rlm
+          python3 scripts/apply_prolog_rlm_deadline_hotfix.py .prolog-rlm
 
       - name: Install SWI-Prolog
         shell: bash
@@ -107,6 +109,13 @@ jobs:
             -s agents/test_auto_dig_provider_retry_hotfix.pl \
             -g 'run_tests,halt' \
             2>&1 | tee "$RUNNER_TEMP/auto-dig-provider-retry-hotfix-tests.log"
+
+          swipl \
+            -q \
+            -p "library=$GITHUB_WORKSPACE/.prolog-rlm/prolog" \
+            -s agents/test_auto_dig_deadline_synthesis_hotfix.pl \
+            -g 'run_tests,halt' \
+            2>&1 | tee "$RUNNER_TEMP/auto-dig-deadline-synthesis-hotfix-tests.log"
 
           swipl \
             -q \
@@ -290,6 +299,7 @@ jobs:
                 "recoverable_native_preflight_faults",
                 "transient_provider_retry",
                 "read_only_tool_error_recovery",
+                "wall_clock_synthesis_reserve",
                 "model_context_budget_30_percent",
                 "read_only_brave_search_mcp",
                 "read_only_fetch_mcp",
@@ -527,7 +537,7 @@ jobs:
           branch_url="${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/tree/${BRANCH}"
           gh issue comment "$ISSUE" \
             --repo "$GITHUB_REPOSITORY" \
-            --body "Auto-Dig Prolog actor completed bounded run \`${RUN_ID}\`.\n\n- Branch: ${branch_url}\n- Prolog-RLM: \`${PROLOG_RLM_REF}\`\n- Expert route: \`${MODEL}\`, reasoning \`${REASONING_EFFORT}\`\n- Action log: ${run_url}\n- Stage: supervised actor + current native direct Prolog-RLM loop + automatic default skills + full capability-filtered read-only Brave/Fetch MCP research + recoverable per-call native preflight + bounded transient provider retries + 30% model-context token budget.\n\nThis receipt does **not** mark the investigation complete; canonical StarIntel writes, validation, merge, and final publication remain separate gates."
+            --body "Auto-Dig Prolog actor completed bounded run \`${RUN_ID}\`.\n\n- Branch: ${branch_url}\n- Prolog-RLM: \`${PROLOG_RLM_REF}\`\n- Expert route: \`${MODEL}\`, reasoning \`${REASONING_EFFORT}\`\n- Action log: ${run_url}\n- Stage: supervised actor + current native direct Prolog-RLM loop + automatic default skills + full capability-filtered read-only Brave/Fetch MCP research + recoverable per-call native preflight + bounded transient provider retries + wall-clock synthesis reserve + 30% model-context token budget.\n\nThis receipt does **not** mark the investigation complete; canonical StarIntel writes, validation, merge, and final publication remain separate gates."
 
       - name: Upload actor diagnostics
         if: always()
@@ -540,6 +550,7 @@ jobs:
             ${{ runner.temp }}/auto-dig-actor-tests.log
             ${{ runner.temp }}/auto-dig-rlm-runner-tests.log
             ${{ runner.temp }}/auto-dig-provider-retry-hotfix-tests.log
+            ${{ runner.temp }}/auto-dig-deadline-synthesis-hotfix-tests.log
             ${{ runner.temp }}/auto-dig-model-router-tests.log
             ${{ runner.temp }}/auto-dig-mcp-tools-tests.log
             ${{ runner.temp }}/auto-dig-mcp-runner-tests.log
