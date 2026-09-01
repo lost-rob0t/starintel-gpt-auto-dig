@@ -18,6 +18,7 @@
 
 :- dynamic attempt_count/1.
 :- dynamic read_failure_model_call/1.
+:- dynamic context_alias_model_call/1.
 
 reset_attempts :-
     retractall(attempt_count(_)),
@@ -224,6 +225,57 @@ read_failure_options(Registry,
                        })
                      ]).
 
+reset_context_alias_model :-
+    retractall(context_alias_model_call(_)),
+    assertz(context_alias_model_call(0)).
+
+next_context_alias_model_call(Call) :-
+    retract(context_alias_model_call(Previous)),
+    Call is Previous+1,
+    assertz(context_alias_model_call(Call)).
+
+context_alias_model(Request, ok(Response)) :-
+    next_context_alias_model_call(Call),
+    context_alias_model_response(Call, Request, Text, ToolCalls),
+    read_failure_response(Call, Text, ToolCalls, Response).
+
+context_alias_model_response(1, _, "", [ToolCall]) :-
+    read_failure_native_call(
+        "ctx_1",
+        context_peek,
+        json{context:"call_70e2a06482f44f86b174220f",
+             selector:json{type:"metadata"}},
+        ToolCall).
+context_alias_model_response(2, Request, "RECOVERED", []) :-
+    context_alias_tool_message(Request, Content),
+    assertion(sub_string(Content, _, _, _, "unknown_context_alias")),
+    assertion(sub_string(Content, _, _, _, "available_contexts")),
+    assertion(sub_string(Content, _, _, _, "input")),
+    assertion(sub_string(Content, _, _, _, "call_70e2a06482f44f86b174220f")).
+
+context_alias_tool_message(Request, Content) :-
+    member(Message, Request.messages),
+    Message.role == tool,
+    Message.tool_call_id == "ctx_1",
+    Message.name == context_peek,
+    Content = Message.content,
+    !.
+
+context_alias_options(
+    [ provider(provider(openai_compatible, [])),
+      provider_name(openai_compatible),
+      model_handler(plunit_auto_dig_provider_retry_hotfix:context_alias_model),
+      capabilities([context(peek)]),
+      budget(_{
+          max_iterations:4,
+          max_model_calls:3,
+          max_tool_calls:0,
+          max_context_ops:2,
+          max_total_tokens:1000,
+          max_output_bytes:8192
+      })
+    ]).
+
 test(transient_429_retries_same_provider_request) :-
     reset_attempts,
     retry_test_options(
@@ -334,5 +386,24 @@ test(read_only_handler_exception_is_model_repairable) :-
           assertion(Event.kind == handler_exception)
         ),
         tool_registry_destroy(Registry)).
+
+test(unknown_context_alias_is_model_repairable) :-
+    reset_context_alias_model,
+    context_alias_options(Options),
+    rlm_direct("Inspect the context and recover from a mistaken alias",
+               text("opaque input"),
+               Options,
+               Outcome),
+    Outcome = ok(Result),
+    assertion(Result.value == "RECOVERED"),
+    assertion(Result.turns =:= 2),
+    assertion(Result.context_calls =:= 1),
+    assertion(context_alias_model_call(2)),
+    once(( member(Event, Result.trajectory),
+           Event.type == native_context,
+           Event.call_id == "ctx_1"
+         )),
+    assertion(Event.status == error),
+    assertion(Event.kind == unknown_context_alias).
 
 :- end_tests(auto_dig_provider_retry_hotfix).

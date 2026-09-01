@@ -157,7 +157,7 @@ jobs:
             --output "$RUNNER_TEMP/model-route.json"
 
           jq -e '
-            .model == "openai/gpt-5.6-luna" and
+            .model == "z-ai/glm-5.3-flash" and
             .reasoning.effort == "max" and
-            .tier == "luna"
+            .tier == "glm-5.3-flash"
           ' "$RUNNER_TEMP/model-route.json" >/dev/null

@@ -395,6 +395,95 @@ after_tool(ToolResult, Resolved, _, _, State, error(Error)) :-
                 \"native registered-tool execution failed\", Error).
 """
 
+DIRECT_CONTEXT_EXECUTE_OLD = """execute_one(Resolved, Runtime, State, context(ContextOutcome)) :-
+    Resolved.binding.kind = context(Operation),
+    !,
+    context_arguments(Resolved.binding.kind, Resolved.call.arguments, Args),
+    context_handle(Args.context, State.contexts, Handle),
+    context_runtime_options(Runtime.options, ContextOptions),
+    call_context(Operation, Handle, Args, ContextOptions, ContextOutcome).
+"""
+
+DIRECT_CONTEXT_EXECUTE_NEW = """execute_one(Resolved, Runtime, State, context(ContextOutcome)) :-
+    Resolved.binding.kind = context(Operation),
+    !,
+    context_arguments(Resolved.binding.kind, Resolved.call.arguments, Args),
+    catch(context_handle(Args.context, State.contexts, Handle),
+          direct_fault(Cause),
+          ContextOutcome = error(Cause)),
+    (   var(ContextOutcome)
+    ->  context_runtime_options(Runtime.options, ContextOptions),
+        call_context(Operation, Handle, Args, ContextOptions, ContextOutcome)
+    ;   true
+    ).
+"""
+
+DIRECT_AFTER_CONTEXT_OLD = """after_execution(context(error(Cause)), _, _, _, State, error(Error)) :-
+    !,
+    state_error(State, context, context_operation_failed, _{cause:Cause},
+                \"native context operation failed\", Error).
+"""
+
+DIRECT_AFTER_CONTEXT_NEW = """% An unknown opaque context alias is a read-only reference mistake, not an
+% authority or effect failure. Surface it as one correlated, bounded model
+% observation so the provider can retry with an alias the runtime actually
+% advertised. Never guess or silently rewrite the requested alias.
+recoverable_context_error(Cause) :-
+    is_dict(Cause),
+    get_dict(phase, Cause, context),
+    get_dict(kind, Cause, unknown_context_alias),
+    get_dict(context, Cause, _).
+
+context_failure_observation(Cause, Resolved, Contexts, Event, Result) :-
+    Call = Resolved.call,
+    get_dict(context, Cause, RequestedContext),
+    get_dict(message, Cause, Message),
+    findall(Alias,
+            ( member(Context, Contexts), Alias = Context.id ),
+            AvailableContexts),
+    Value = _{error:unknown_context_alias,
+              message:Message,
+              requested_context:RequestedContext,
+              available_contexts:AvailableContexts},
+    Trace = context_failure_trace{phase:context,
+                                  kind:unknown_context_alias,
+                                  requested_context:RequestedContext},
+    Result = native_tool_result{call_id:Call.id,
+                                name:Call.name,
+                                operation:Resolved.binding.kind,
+                                value:Value,
+                                truncated:false,
+                                trace:Trace},
+    Event = direct_event{type:native_context,
+                         call_id:Call.id,
+                         name:Call.name,
+                         status:error,
+                         kind:unknown_context_alias,
+                         result:Result,
+                         trace:Trace}.
+
+after_execution(context(error(Cause)), Resolved, Calls, Runtime, State0,
+                Outcome) :-
+    recoverable_context_error(Cause),
+    !,
+    context_failure_observation(Cause,
+                                Resolved,
+                                State0.contexts,
+                                Event,
+                                Result),
+    append_observation(Resolved.call,
+                       Result,
+                       Event,
+                       Runtime,
+                       State0,
+                       StateOutcome),
+    continue_observation(StateOutcome, Calls, Runtime, Outcome).
+after_execution(context(error(Cause)), _, _, _, State, error(Error)) :-
+    !,
+    state_error(State, context, context_operation_failed, _{cause:Cause},
+                \"native context operation failed\", Error).
+"""
+
 DIRECT_PROVIDER_TURN_OLD = """provider_turn(Runtime, State0, Outcome) :-
     remaining_tokens(Runtime.budget.max_total_tokens,
                      State0.usage.total_tokens,
@@ -523,6 +612,18 @@ def patch_tree(root: Path) -> None:
         DIRECT_AFTER_TOOL_OLD,
         DIRECT_AFTER_TOOL_NEW,
         "rlm_direct.pl recoverable read-tool invocation failures",
+    )
+    direct_text = replace_exact(
+        direct_text,
+        DIRECT_CONTEXT_EXECUTE_OLD,
+        DIRECT_CONTEXT_EXECUTE_NEW,
+        "rlm_direct.pl recoverable context alias lookup",
+    )
+    direct_text = replace_exact(
+        direct_text,
+        DIRECT_AFTER_CONTEXT_OLD,
+        DIRECT_AFTER_CONTEXT_NEW,
+        "rlm_direct.pl context alias repair observation",
     )
     direct_text = replace_exact(
         direct_text,
