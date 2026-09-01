@@ -321,15 +321,15 @@ test(read_only_handler_exception_is_model_repairable) :-
                      text("opaque"),
                      Options,
                      Outcome),
-          assertion(Outcome = ok(Result)),
+          Outcome = ok(Result),
           assertion(Result.value == "RECOVERED"),
           assertion(Result.turns =:= 2),
           assertion(Result.tool_calls =:= 1),
           assertion(read_failure_model_call(2)),
-          assertion(once(( member(Event, Result.trajectory),
-                           Event.type == native_tool,
-                           Event.call_id == "fetch_1"
-                         ))),
+          once(( member(Event, Result.trajectory),
+                 Event.type == native_tool,
+                 Event.call_id == "fetch_1"
+               )),
           assertion(Event.status == error),
           assertion(Event.kind == handler_exception)
         ),
