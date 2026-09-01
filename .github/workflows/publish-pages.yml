@@ -2,8 +2,7 @@ name: Build and publish research site (publishing paused)
 
 # Publishing is intentionally paused. Keep this workflow file present so the
 # previous implementation remains easy to recover from git history, but do not
-# allow pushes, pull requests, or manual dispatches to publish Pages or GitHub
-# release assets.
+# allow pushes or manual dispatches to publish Pages or GitHub release assets.
 on:
   workflow_dispatch:
 
