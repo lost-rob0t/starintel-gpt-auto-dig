@@ -16,6 +16,7 @@ on:
       - '.github/workflows/auto-dig-prolog-actor.yml'
       - 'agents/auto_dig_*.pl'
       - 'agents/test_auto_dig_*.pl'
+      - 'scripts/apply_prolog_rlm_hotfix.py'
 
 permissions:
   contents: write
@@ -128,386 +129,152 @@ jobs:
             2>&1 | tee "$RUNNER_TEMP/auto-dig-mcp-runner-tests.log"
 
       - name: Snapshot investigation queue
+        id: queue
+        shell: bash
         env:
           GH_TOKEN: ${{ github.token }}
-          FORCE_ISSUE: ${{ inputs.force_issue }}
-        shell: bash
+          FORCE_ISSUE: ${{ inputs.force_issue || '' }}
         run: |
           set -euo pipefail
-
-          force_issue="${FORCE_ISSUE:-}"
-          if [[ "$GITHUB_EVENT_NAME" == push ]]; then
-            force_issue="$LIVE_TEST_ISSUE"
-            echo "Guarded live-test push: forcing investigation target #${force_issue}."
-          fi
-
-          if [[ -n "$force_issue" ]]; then
-            gh issue view "$force_issue" \
-              --repo "$GITHUB_REPOSITORY" \
-              --json number,title,body,url,createdAt,updatedAt,labels \
-              | jq -e '
-                  select(.labels | map(.name) | index("investigation-target"))
-                  | [.]
-                ' > "$RUNNER_TEMP/queue.json"
-          else
-            gh issue list \
-              --repo "$GITHUB_REPOSITORY" \
-              --state open \
-              --label investigation-target \
-              --limit 1000 \
-              --json number,title,body,url,createdAt,updatedAt,labels \
-              > "$RUNNER_TEMP/queue.json"
-          fi
-
-          jq -e 'type == "array"' "$RUNNER_TEMP/queue.json" >/dev/null
-          echo "Queue candidates: $(jq 'length' "$RUNNER_TEMP/queue.json")"
+          python3 scripts/auto-dig-prolog-queue.py \
+            --repo "$GITHUB_REPOSITORY" \
+            --output "$RUNNER_TEMP/queue.json" \
+            ${FORCE_ISSUE:+--force-issue "$FORCE_ISSUE"}
+          python3 - <<'PY'
+          import json, os
+          from pathlib import Path
+          queue = json.loads(Path(os.environ['RUNNER_TEMP'], 'queue.json').read_text())
+          with open(os.environ['GITHUB_OUTPUT'], 'a', encoding='utf-8') as fh:
+              fh.write(f"count={queue['count']}\n")
+          PY
 
       - name: Load durable actor state
-        id: state
-        env:
-          GH_TOKEN: ${{ github.token }}
+        if: steps.queue.outputs.count != '0'
         shell: bash
         run: |
           set -euo pipefail
-
-          state_json="$(gh issue list \
-            --repo "$GITHUB_REPOSITORY" \
-            --state open \
-            --search '"[actor-state] auto-dig-prolog" in:title' \
-            --limit 1 \
-            --json number,body)"
-
-          state_issue="$(jq -r '.[0].number // empty' <<<"$state_json")"
-
-          if [[ -z "$state_issue" ]]; then
-            cat > "$RUNNER_TEMP/state.json" <<'JSON'
-          {
-            "schema": "auto-dig-prolog-state.v1",
-            "last_issue": null,
-            "last_priority": null,
-            "last_branch": null,
-            "last_run_id": null,
-            "last_success_at": null
-          }
-          JSON
-            state_url="$(gh issue create \
-              --repo "$GITHUB_REPOSITORY" \
-              --title '[actor-state] auto-dig-prolog' \
-              --body-file "$RUNNER_TEMP/state.json")"
-            state_issue="${state_url##*/}"
-          else
-            jq -r '.[0].body' <<<"$state_json" > "$RUNNER_TEMP/state.json"
-            jq -e '.schema == "auto-dig-prolog-state.v1"' "$RUNNER_TEMP/state.json" >/dev/null
+          mkdir -p .auto-dig/prolog-actor
+          if [[ ! -f .auto-dig/prolog-actor/state.pl ]]; then
+            printf 'actor_state(last_issue(none), last_success(none)).\n' > .auto-dig/prolog-actor/state.pl
           fi
-
-          echo "issue=$state_issue" >> "$GITHUB_OUTPUT"
 
       - name: Let supervised Prolog actor select work
-        id: target
+        if: steps.queue.outputs.count != '0'
         shell: bash
         run: |
           set -euo pipefail
-
-          swipl \
-            -q \
+          swipl -q \
             -p "library=$GITHUB_WORKSPACE/.prolog-rlm/prolog" \
             -s agents/auto_dig_prolog_actor.pl \
-            -- \
-            --queue "$RUNNER_TEMP/queue.json" \
-            --state "$RUNNER_TEMP/state.json" \
-            --output "$RUNNER_TEMP/decision.json" \
-            --trace "$RUNNER_TEMP/actor.trace"
-
-          jq . "$RUNNER_TEMP/decision.json"
-          action="$(jq -r '.action' "$RUNNER_TEMP/decision.json")"
-          echo "action=$action" >> "$GITHUB_OUTPUT"
-
-          if [[ "$action" == run ]]; then
-            echo "issue=$(jq -r '.issue_number' "$RUNNER_TEMP/decision.json")" >> "$GITHUB_OUTPUT"
-            echo "url=$(jq -r '.issue_url' "$RUNNER_TEMP/decision.json")" >> "$GITHUB_OUTPUT"
-            echo "priority=$(jq -r '.priority' "$RUNNER_TEMP/decision.json")" >> "$GITHUB_OUTPUT"
-          fi
+            -g "auto_dig_prolog_actor:choose_from_files('$RUNNER_TEMP/queue.json','.auto-dig/prolog-actor/state.pl','$RUNNER_TEMP/decision.json','$RUNNER_TEMP/actor.trace'),halt"
 
       - name: Report idle actor
-        if: steps.target.outputs.action == 'idle'
+        if: steps.queue.outputs.count == '0'
         shell: bash
-        run: |
-          {
-            echo '## Auto-Dig Prolog actor'
-            echo
-            echo 'No eligible target was selected.'
-            echo
-            echo 'The actor did not advance durable state.'
-          } >> "$GITHUB_STEP_SUMMARY"
+        run: echo 'No open investigation-target issues; actor is idle.'
 
       - name: Prepare isolated run branch and context
-        if: steps.target.outputs.action == 'run'
-        id: run
+        if: steps.queue.outputs.count != '0'
+        id: prepare
         shell: bash
         run: |
           set -euo pipefail
-
-          date_utc="$(date -u +%F)"
-          run_id="${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
-          branch="auto-dig-prolog/${date_utc}-${run_id}"
-          run_dir="agent-runs/auto-dig-prolog/${date_utc}-${run_id}"
-          mkdir -p "$run_dir"
-
-          cp "$RUNNER_TEMP/decision.json" "$run_dir/decision.json"
-          cp "$RUNNER_TEMP/actor.trace" "$run_dir/actor.trace"
-          jq '.selected_issue' "$RUNNER_TEMP/decision.json" > "$run_dir/issue.json"
-          jq -r '
-            "# Auto-Dig request\n\n" +
-            "Title: " + .selected_issue.title + "\n" +
-            "URL: " + .selected_issue.url + "\n\n" +
-            .selected_issue.body
-          ' "$RUNNER_TEMP/decision.json" > "$run_dir/request.md"
-
-          jq -n \
-            --arg schema 'auto-dig-prolog-run.v1' \
-            --arg agent 'auto-dig-prolog' \
-            --arg run_id "$run_id" \
-            --arg branch "$branch" \
-            --arg event "$GITHUB_EVENT_NAME" \
-            --arg prolog_rlm_ref "$PROLOG_RLM_REF" \
-            --arg issue "${{ steps.target.outputs.issue }}" \
-            '{
-              schema:$schema,
-              agent:$agent,
-              run_id:$run_id,
-              branch:$branch,
-              trigger:$event,
-              prolog_rlm_ref:$prolog_rlm_ref,
-              issue_number:($issue|tonumber),
-              status:"selected",
-              rlm_features:[
-                "automatic_default_skills",
-                "native_direct_mode",
-                "all_capability_filtered_tools",
-                "context_search_peek_slice",
-                "context_peek_selector_contract",
-                "recoverable_native_preflight_faults",
-                "transient_provider_retry",
-                "model_context_budget_30_percent",
-                "read_only_brave_search_mcp",
-                "read_only_fetch_mcp",
-                "emission_boundary_diagnostic_sanitization"
-              ]
-            }' > "$run_dir/run.json"
-
-          echo "branch=$branch" >> "$GITHUB_OUTPUT"
-          echo "run_id=$run_id" >> "$GITHUB_OUTPUT"
-          echo "run_dir=$run_dir" >> "$GITHUB_OUTPUT"
-          echo "request=$run_dir/request.md" >> "$GITHUB_OUTPUT"
+          python3 scripts/auto-dig-prolog-prepare.py \
+            --decision "$RUNNER_TEMP/decision.json" \
+            --run-root "agent-runs/auto-dig-prolog" \
+            --run-id "$GITHUB_RUN_ID-$GITHUB_RUN_ATTEMPT" \
+            --github-output "$GITHUB_OUTPUT"
 
       - name: Select model route in Prolog
-        if: steps.target.outputs.action == 'run'
-        id: model
-        env:
-          RUN_DIR: ${{ steps.run.outputs.run_dir }}
-          PRIORITY: ${{ steps.target.outputs.priority }}
+        if: steps.queue.outputs.count != '0'
+        id: route
         shell: bash
         run: |
           set -euo pipefail
-
-          risk=normal
-          if [[ "$PRIORITY" == urgent ]]; then
-            risk=high
-          fi
-
-          jq -n \
-            --arg task research \
-            --arg phase execute \
-            --arg risk "$risk" \
-            '{
-              task:$task,
-              phase:$phase,
-              risk:$risk,
-              irreversible:false,
-              failed_verifications:0
-            }' > "$RUN_DIR/model-profile.json"
-
-          swipl \
-            -q \
+          swipl -q \
             -s agents/auto_dig_model_router.pl \
-            -- \
-            --profile "$RUN_DIR/model-profile.json" \
-            --output "$RUN_DIR/model-route.json"
-
-          jq -e '
-            .schema == "auto-dig-model-route.v1" and
-            (.model | type == "string") and
-            (.reasoning.effort | type == "string")
-          ' "$RUN_DIR/model-route.json" >/dev/null
-
-          model="$(jq -r '.model' "$RUN_DIR/model-route.json")"
-          effort="$(jq -r '.reasoning.effort' "$RUN_DIR/model-route.json")"
-          tier="$(jq -r '.tier' "$RUN_DIR/model-route.json")"
-
-          echo "model=$model" >> "$GITHUB_OUTPUT"
-          echo "effort=$effort" >> "$GITHUB_OUTPUT"
-          echo "tier=$tier" >> "$GITHUB_OUTPUT"
-
-          jq --slurpfile route "$RUN_DIR/model-route.json" \
-            '. + {model_route:$route[0]}' \
-            "$RUN_DIR/run.json" > "$RUN_DIR/run.next.json"
-          mv "$RUN_DIR/run.next.json" "$RUN_DIR/run.json"
-
-          echo "Selected ${model} with reasoning effort ${effort} (${tier})."
+            -g "auto_dig_model_router:route_from_file('$RUNNER_TEMP/decision.json','$RUNNER_TEMP/model-route.env'),halt"
+          cat "$RUNNER_TEMP/model-route.env" >> "$GITHUB_OUTPUT"
 
       - name: Run bounded native direct Prolog-RLM web research
-        id: research
-        if: steps.target.outputs.action == 'run'
+        if: steps.queue.outputs.count != '0'
+        id: live
         continue-on-error: true
+        shell: bash
         env:
           OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
           BRAVE_API_KEY: ${{ secrets.BRAVE_API_KEY }}
-          RUN_DIR: ${{ steps.run.outputs.run_dir }}
-          REQUEST_FILE: ${{ steps.run.outputs.request }}
-          MODEL: ${{ steps.model.outputs.model }}
-          REASONING_EFFORT: ${{ steps.model.outputs.effort }}
-        shell: bash
+          AUTO_DIG_MODEL: ${{ steps.route.outputs.model }}
+          AUTO_DIG_PROVIDER: ${{ steps.route.outputs.provider }}
+          AUTO_DIG_BASE_URL: ${{ steps.route.outputs.base_url }}
+          AUTO_DIG_API_KEY_ENV: ${{ steps.route.outputs.api_key_env }}
+          AUTO_DIG_MAX_MODEL_CALLS: ${{ steps.route.outputs.max_model_calls }}
+          AUTO_DIG_MAX_TOOL_CALLS: ${{ steps.route.outputs.max_tool_calls }}
+          AUTO_DIG_MAX_CONTEXT_OPS: ${{ steps.route.outputs.max_context_ops }}
+          AUTO_DIG_MAX_ITERATIONS: ${{ steps.route.outputs.max_iterations }}
+          AUTO_DIG_MAX_TOTAL_TOKENS: ${{ steps.route.outputs.max_total_tokens }}
+          AUTO_DIG_MAX_OUTPUT_BYTES: ${{ steps.route.outputs.max_output_bytes }}
+          AUTO_DIG_PLANNER_MAX_TOKENS: ${{ steps.route.outputs.planner_max_tokens }}
         run: |
           set -euo pipefail
-
-          test -n "${OPENROUTER_API_KEY:-}" || {
-            echo 'OPENROUTER_API_KEY repository secret is required for live research.' >&2
-            exit 1
-          }
-          test -n "${BRAVE_API_KEY:-}" || {
-            echo 'BRAVE_API_KEY repository secret is required for live Brave MCP research.' >&2
-            exit 1
-          }
-          test -n "${MODEL:-}" || exit 1
-          test -n "${REASONING_EFFORT:-}" || exit 1
-
-          set +e
-          swipl \
-            -q \
+          test -n "${OPENROUTER_API_KEY:-}"
+          test -n "${BRAVE_API_KEY:-}"
+          swipl -q \
             -p "library=$GITHUB_WORKSPACE/.prolog-rlm/prolog" \
             -s agents/auto_dig_rlm_runner.pl \
-            -- \
-            --context-file "$REQUEST_FILE" \
-            --model "$MODEL" \
-            --reasoning-effort "$REASONING_EFFORT" \
-            --output "$RUN_DIR/rlm-result.json" \
-            --trace "$RUN_DIR/rlm-trace.json" \
-            2>&1 \
-            | python3 agents/auto_dig_failure_report.py --stream \
-            | tee "$RUN_DIR/rlm-stderr.log" >&2
-          pipeline_status=("${PIPESTATUS[@]}")
-          set -e
-
-          status="${pipeline_status[0]:-1}"
-          sanitizer_status="${pipeline_status[1]:-1}"
-          tee_status="${pipeline_status[2]:-1}"
-
-          if [[ "$sanitizer_status" -ne 0 || "$tee_status" -ne 0 ]]; then
-            echo "::error title=Auto-Dig diagnostic emission failure::sanitizer=${sanitizer_status} tee=${tee_status}"
-            status=2
-          fi
-
-          jq --argjson status "$status" \
-            '.status = (if $status == 0 then "researched" else "rlm_failed" end)' \
-            "$RUN_DIR/run.json" > "$RUN_DIR/run.next.json"
-          mv "$RUN_DIR/run.next.json" "$RUN_DIR/run.json"
-
-          if [[ "$status" -ne 0 ]]; then
-            exit "$status"
-          fi
-
-          jq -e '
-            .schema == "prolog-rlm.trace.v1" and
-            .name == "auto_dig_rlm_result"
-          ' "$RUN_DIR/rlm-result.json" >/dev/null
+            -g "auto_dig_rlm_runner:run_from_files('${{ steps.prepare.outputs.context_file }}','${{ steps.prepare.outputs.run_dir }}'),halt"
 
       - name: Emit sanitized live failure report
-        id: failure_report
-        if: always() && steps.research.outcome == 'failure'
-        env:
-          RUN_DIR: ${{ steps.run.outputs.run_dir }}
+        if: steps.queue.outputs.count != '0' && steps.live.outcome != 'success'
         shell: bash
         run: |
           set -euo pipefail
-
-          report="$RUN_DIR/failure-report.md"
-          args=(--output "$report" --max-lines 180)
-          [[ -f "$RUN_DIR/rlm-result.json" ]] && args+=(--result "$RUN_DIR/rlm-result.json")
-          [[ -f "$RUN_DIR/rlm-stderr.log" ]] && args+=(--stderr "$RUN_DIR/rlm-stderr.log")
-          python3 agents/auto_dig_failure_report.py "${args[@]}"
-          echo "report=$report" >> "$GITHUB_OUTPUT"
-
-          {
-            echo '## Auto-Dig live-run failure'
-            echo
-            echo "- Run: ${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}"
-            echo "- Prolog-RLM: \`${PROLOG_RLM_REF}\`"
-            echo
-            cat "$report"
-          } >> "$GITHUB_STEP_SUMMARY"
+          python3 scripts/auto-dig-prolog-failure-report.py \
+            --run-dir "${{ steps.prepare.outputs.run_dir }}" \
+            --output "${{ steps.prepare.outputs.run_dir }}/failure-report.md"
 
       - name: Push successful actor run branch
-        if: steps.target.outputs.action == 'run' && steps.research.outcome == 'success'
-        env:
-          BRANCH: ${{ steps.run.outputs.branch }}
-          RUN_DIR: ${{ steps.run.outputs.run_dir }}
+        if: steps.queue.outputs.count != '0' && steps.live.outcome == 'success'
+        id: push
         shell: bash
         run: |
           set -euo pipefail
-
-          git config user.name 'auto-dig-prolog[bot]'
-          git config user.email 'auto-dig-prolog@users.noreply.github.com'
-          git switch -c "$BRANCH"
-          git add "$RUN_DIR"
-          git commit -m "agent(auto-dig-prolog): run ${{ steps.run.outputs.run_id }}"
-          git push origin "$BRANCH"
+          git config user.name 'auto-dig-prolog-actor[bot]'
+          git config user.email 'auto-dig-prolog-actor@users.noreply.github.com'
+          git add -- "${{ steps.prepare.outputs.run_dir }}"
+          git diff --cached --quiet && {
+            echo 'Actor reported success but produced no run artifact to commit.' >&2
+            exit 1
+          }
+          git commit -m "auto-dig: Prolog actor issue #${{ steps.prepare.outputs.issue_number }}"
+          git push --set-upstream origin "${{ steps.prepare.outputs.branch }}"
+          echo "commit=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
 
       - name: Advance durable state only after successful push
-        if: steps.target.outputs.action == 'run' && steps.research.outcome == 'success'
-        env:
-          GH_TOKEN: ${{ github.token }}
-          STATE_ISSUE: ${{ steps.state.outputs.issue }}
-          BRANCH: ${{ steps.run.outputs.branch }}
-          RUN_ID: ${{ steps.run.outputs.run_id }}
+        if: steps.queue.outputs.count != '0' && steps.live.outcome == 'success' && steps.push.outcome == 'success'
         shell: bash
         run: |
           set -euo pipefail
-
-          jq \
-            --arg branch "$BRANCH" \
-            --arg run_id "$RUN_ID" \
-            --arg now "$(date -u +%FT%TZ)" \
-            '.next_state + {
-              schema:"auto-dig-prolog-state.v1",
-              last_branch:$branch,
-              last_run_id:$run_id,
-              last_success_at:$now
-            }' \
-            "$RUNNER_TEMP/decision.json" > "$RUNNER_TEMP/state.next.json"
-
-          jq -e . "$RUNNER_TEMP/state.next.json" >/dev/null
-          gh issue edit "$STATE_ISSUE" \
-            --repo "$GITHUB_REPOSITORY" \
-            --body-file "$RUNNER_TEMP/state.next.json"
+          mkdir -p .auto-dig/prolog-actor
+          printf 'actor_state(last_issue(%s), last_success(%s)).\n' \
+            "${{ steps.prepare.outputs.issue_number }}" \
+            "${{ steps.push.outputs.commit }}" \
+            > .auto-dig/prolog-actor/state.pl
 
       - name: Post run receipt on investigation target
-        if: steps.target.outputs.action == 'run' && steps.research.outcome == 'success'
+        if: steps.queue.outputs.count != '0' && steps.live.outcome == 'success' && steps.push.outcome == 'success'
+        shell: bash
         env:
           GH_TOKEN: ${{ github.token }}
-          ISSUE: ${{ steps.target.outputs.issue }}
-          BRANCH: ${{ steps.run.outputs.branch }}
-          RUN_ID: ${{ steps.run.outputs.run_id }}
-          MODEL: ${{ steps.model.outputs.model }}
-          REASONING_EFFORT: ${{ steps.model.outputs.effort }}
-        shell: bash
         run: |
           set -euo pipefail
-
-          run_url="${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}"
-          branch_url="${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/tree/${BRANCH}"
-          gh issue comment "$ISSUE" \
+          python3 scripts/auto-dig-prolog-receipt.py \
             --repo "$GITHUB_REPOSITORY" \
-            --body "Auto-Dig Prolog actor completed bounded run \`${RUN_ID}\`.\n\n- Branch: ${branch_url}\n- Prolog-RLM: \`${PROLOG_RLM_REF}\`\n- Expert route: \`${MODEL}\`, reasoning \`${REASONING_EFFORT}\`\n- Action log: ${run_url}\n- Stage: supervised actor + current native direct Prolog-RLM loop + automatic default skills + full capability-filtered read-only Brave/Fetch MCP research + recoverable per-call native preflight + bounded transient provider retries + 30% model-context token budget.\n\nThis receipt does **not** mark the investigation complete; canonical StarIntel writes, validation, merge, and final publication remain separate gates."
+            --issue "${{ steps.prepare.outputs.issue_number }}" \
+            --branch "${{ steps.prepare.outputs.branch }}" \
+            --commit "${{ steps.push.outputs.commit }}" \
+            --run-id "$GITHUB_RUN_ID" \
+            --run-dir "${{ steps.prepare.outputs.run_dir }}"
 
       - name: Upload actor diagnostics
         if: always()
@@ -529,6 +296,6 @@ jobs:
             agent-runs/auto-dig-prolog/**
 
       - name: Fail workflow if live research failed
-        if: always() && steps.research.outcome == 'failure'
+        if: steps.queue.outputs.count != '0' && steps.live.outcome != 'success'
         shell: bash
         run: exit 1
