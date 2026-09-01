@@ -135,9 +135,40 @@ jobs:
             .issue_number == 42 and
             .priority == "high" and
             .repeat_allowed == true and
+            .forced_selection == false and
+            .forced_repeat == false and
             .next_state.last_issue == 42
           ' "$RUNNER_TEMP/decision.json" >/dev/null
           test -s "$RUNNER_TEMP/actor.trace"
+
+          cat > "$RUNNER_TEMP/forced-queue.json" <<'JSON'
+          [
+            {
+              "number": 41,
+              "title": "guarded forced target",
+              "url": "https://example.invalid/issues/41",
+              "body": "## Priority\n\nlow\n"
+            }
+          ]
+          JSON
+
+          GITHUB_EVENT_NAME=push swipl \
+            -q \
+            -p "library=$GITHUB_WORKSPACE/.prolog-rlm/prolog" \
+            -s agents/auto_dig_prolog_actor.pl \
+            -- \
+            --queue "$RUNNER_TEMP/forced-queue.json" \
+            --state "$RUNNER_TEMP/state.json" \
+            --output "$RUNNER_TEMP/forced-decision.json"
+
+          jq -e '
+            .action == "run" and
+            .issue_number == 41 and
+            .priority == "low" and
+            .repeat_allowed == false and
+            .forced_selection == true and
+            .forced_repeat == true
+          ' "$RUNNER_TEMP/forced-decision.json" >/dev/null
 
           cat > "$RUNNER_TEMP/model-profile.json" <<'JSON'
           {
@@ -157,7 +188,8 @@ jobs:
             --output "$RUNNER_TEMP/model-route.json"
 
           jq -e '
-            .model == "openai/gpt-5.6-luna" and
+            .model == "z-ai/glm-5.3-flash" and
             .reasoning.effort == "max" and
-            .tier == "luna"
+            .tier == "glm-5.3-flash" and
+            (.fallback | length) == 0
           ' "$RUNNER_TEMP/model-route.json" >/dev/null
