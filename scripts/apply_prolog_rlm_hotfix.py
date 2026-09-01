@@ -317,6 +317,80 @@ copy_optional_provider_message_name(Message, Payload0, Payload) :-
     ).
 """
 
+DIRECT_AFTER_TOOL_OLD = """after_tool(ToolResult, Resolved, _, _, State, error(Error)) :-
+    ToolResult.outcome = error(Cause),
+    !,
+    tool_failure_state(ToolResult, Resolved, error, State, State1),
+    error_kind(Cause, tool_execution_failed, Kind),
+    state_error(State1, tool, Kind, _{cause:Cause},
+                \"native registered-tool execution failed\", Error).
+"""
+
+DIRECT_AFTER_TOOL_NEW = """% Read-only handler/runtime failures are safe to surface as a bounded tool
+% observation. The provider can repair malformed remote arguments or choose a
+% fallback without terminating the whole direct session. Effectful failures
+% remain fatal below because retry/fallback could duplicate or obscure effects.
+after_tool(ToolResult, Resolved, Calls, Runtime, State0, Outcome) :-
+    ToolResult.outcome = error(Cause),
+    Resolved.binding.effect == read,
+    recoverable_read_tool_error(Cause),
+    !,
+    read_tool_failure_observation(ToolResult, Resolved, Event, Result),
+    append_observation(Resolved.call,
+                       Result,
+                       Event,
+                       Runtime,
+                       State0,
+                       StateOutcome),
+    continue_observation(StateOutcome, Calls, Runtime, Outcome).
+after_tool(ToolResult, Resolved, _, _, State, error(Error)) :-
+    ToolResult.outcome = error(Cause),
+    !,
+    tool_failure_state(ToolResult, Resolved, error, State, State1),
+    error_kind(Cause, tool_execution_failed, Kind),
+    state_error(State1, tool, Kind, _{cause:Cause},
+                \"native registered-tool execution failed\", Error).
+
+recoverable_read_tool_error(Cause) :-
+    is_dict(Cause),
+    get_dict(phase, Cause, invoke),
+    get_dict(kind, Cause, Kind),
+    memberchk(Kind, [handler_failed,handler_exception,timeout]).
+
+read_tool_failure_observation(ToolResult, Resolved,
+                              direct_event{type:native_tool,
+                                           call_id:Call.id,
+                                           name:Call.name,
+                                           status:error,
+                                           kind:Cause.kind,
+                                           result:Result,
+                                           trace:ToolResult.trace},
+                              Result) :-
+    Call = Resolved.call,
+    ToolResult.outcome = error(Cause),
+    read_tool_failure_value(Cause, Value),
+    Result = native_tool_result{call_id:Call.id,
+                                name:Call.name,
+                                operation:Resolved.binding.kind,
+                                value:Value,
+                                truncated:false,
+                                trace:ToolResult.trace}.
+
+read_tool_failure_value(Cause, Value) :-
+    Base = _{error:Cause.kind, message:Cause.message},
+    (   read_tool_failure_detail(Cause, Detail)
+    ->  put_dict(detail, Base, Detail, Value)
+    ;   Value = Base
+    ).
+
+read_tool_failure_detail(Cause, Detail) :-
+    (   get_dict(cause, Cause, Detail)
+    ;   get_dict(detail, Cause, Detail)
+    ;   get_dict(exception, Cause, Detail)
+    ),
+    !.
+"""
+
 
 def replace_exact(text: str, old: str, new: str, label: str) -> str:
     count = text.count(old)
@@ -385,6 +459,15 @@ def patch_tree(root: Path) -> None:
         "rlm_openai_compatible.pl tool-result name encode",
     )
     plans[openai] = openai_text
+
+    direct = root / "prolog/rlm_direct.pl"
+    direct_text = direct.read_text(encoding="utf-8")
+    plans[direct] = replace_exact(
+        direct_text,
+        DIRECT_AFTER_TOOL_OLD,
+        DIRECT_AFTER_TOOL_NEW,
+        "rlm_direct.pl recoverable read-tool invocation failures",
+    )
 
     # Validate every replacement before mutating any checked-out dependency file.
     for path, text in plans.items():

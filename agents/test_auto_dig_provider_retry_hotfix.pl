@@ -1,6 +1,8 @@
 :- begin_tests(auto_dig_provider_retry_hotfix).
 
+:- use_module(library(http/json)).
 :- use_module(library(rlm_completion), [call_model/4]).
+:- use_module(library(rlm_direct), [rlm_direct/4]).
 :- use_module(library(rlm_native_tool),
               [ native_tool_call_normalize/2,
                 native_tool_schema_normalize/2,
@@ -8,8 +10,14 @@
                 native_tool_result_message/3
               ]).
 :- use_module(library(rlm_openai_compatible), []).
+:- use_module(library(rlm_tool),
+              [ tool_registry_create/1,
+                tool_registry_destroy/1,
+                tool_register/4
+              ]).
 
 :- dynamic attempt_count/1.
+:- dynamic read_failure_model_call/1.
 
 reset_attempts :-
     retractall(attempt_count(_)),
@@ -83,6 +91,134 @@ provider_safe_code(Code) :-
     ;   Code >= 0'0, Code =< 0'9
     ;   memberchk(Code, [0'_,0'-])
     ).
+
+reset_read_failure_model :-
+    retractall(read_failure_model_call(_)),
+    assertz(read_failure_model_call(0)).
+
+next_read_failure_model_call(Call) :-
+    retract(read_failure_model_call(Previous)),
+    Call is Previous+1,
+    assertz(read_failure_model_call(Call)).
+
+read_failure_native_call(Id, Name, Args, Call) :-
+    atom_json_dict(ArgumentsAtom, Args, [width(0)]),
+    atom_string(ArgumentsAtom, Arguments),
+    atom_string(Name, WireName),
+    Call = json{
+        id:Id,
+        type:"function",
+        function:json{name:WireName, arguments:Arguments}
+    }.
+
+read_failure_response(Call, Text, ToolCalls,
+                      model_response{
+                          provider:fake,
+                          requested_model:fake,
+                          selected_model:fake,
+                          response_id:ResponseId,
+                          assistant:message{
+                              role:assistant,
+                              content:Text,
+                              tool_calls:ToolCalls,
+                              reasoning:"",
+                              reasoning_details:[]
+                          },
+                          text:Text,
+                          tool_calls:ToolCalls,
+                          reasoning:"",
+                          reasoning_details:[],
+                          finish_reason:FinishReason,
+                          usage:usage{
+                              present:true,
+                              prompt_tokens:2,
+                              completion_tokens:1,
+                              total_tokens:3,
+                              cost:0.0
+                          },
+                          metadata:provider_metadata{
+                              provider:fake,
+                              http_status:200,
+                              response_received:true
+                          }
+                      }) :-
+    format(string(ResponseId), "read_failure_response_~d", [Call]),
+    (   ToolCalls == []
+    ->  FinishReason = stop
+    ;   FinishReason = tool_calls
+    ).
+
+read_failure_model(Request, ok(Response)) :-
+    next_read_failure_model_call(Call),
+    read_failure_model_response(Call, Request, Text, ToolCalls),
+    read_failure_response(Call, Text, ToolCalls, Response).
+
+read_failure_model_response(1, _, "", [ToolCall]) :-
+    read_failure_native_call(
+        "fetch_1",
+        read_failure_tool,
+        json{url:"https://example.invalid/article", proxy:""},
+        ToolCall).
+read_failure_model_response(2, Request, "RECOVERED", []) :-
+    member(Message, Request.messages),
+    Message.role == tool,
+    Message.tool_call_id == "fetch_1",
+    Message.name == read_failure_tool,
+    assertion(sub_string(Message.content, _, _, _, "handler_exception")),
+    assertion(sub_string(Message.content, _, _, _, "Invalid URL")),
+    !.
+
+read_failure_schema(
+    tool_schema{
+        name:read_failure_tool,
+        description:"Simulate an MCP read tool rejecting an invalid optional URL",
+        capability:tool(read_failure_tool),
+        effect:read,
+        arguments:json_schema{
+            type:object,
+            properties:json_schema{
+                url:json_schema{type:string},
+                proxy:json_schema{type:string}
+            },
+            required:[url],
+            additional_properties:false
+        },
+        result:json_schema{type:any},
+        limits:tool_limits{time_limit:1.0, max_output_bytes:4096}
+    }).
+
+read_failure_handler(_, _) :-
+    throw(error(
+        rlm_mcp_imported_tool(
+            error(mcp_error{
+                phase:adapter_2025_11_25,
+                kind:protocol_error,
+                message:"MCP protocol operation failed",
+                detail:remote_error(mcp_remote_error{
+                    code: -32603,
+                    data:none,
+                    message:"proxy: Invalid URL"
+                })
+            })),
+        context(read_failure_handler, "simulated remote validation error"))).
+
+read_failure_options(Registry,
+                     [ provider(provider(openai_compatible, [])),
+                       provider_name(openai_compatible),
+                       model_handler(
+                           plunit_auto_dig_provider_retry_hotfix:read_failure_model),
+                       capabilities([tool(read_failure_tool)]),
+                       prompt_compile_mode(all_tools),
+                       tool_registry(Registry),
+                       budget(_{
+                           max_iterations:4,
+                           max_model_calls:3,
+                           max_tool_calls:2,
+                           max_context_ops:1,
+                           max_total_tokens:1000,
+                           max_output_bytes:8192
+                       })
+                     ]).
 
 test(transient_429_retries_same_provider_request) :-
     reset_attempts,
@@ -163,5 +299,34 @@ test(tool_result_message_reencodes_internal_name_for_next_turn) :-
     Payload.messages = [PayloadMessage],
     assertion(PayloadMessage.name == WireName),
     assertion(provider_safe_name(PayloadMessage.name)).
+
+test(read_only_handler_exception_is_model_repairable) :-
+    reset_read_failure_model,
+    tool_registry_create(Registry),
+    setup_call_cleanup(
+        ( read_failure_schema(Schema),
+          tool_register(
+              Registry,
+              Schema,
+              plunit_auto_dig_provider_retry_hotfix:read_failure_handler,
+              ok(_))
+        ),
+        ( read_failure_options(Registry, Options),
+          rlm_direct("Use the read tool and recover from remote validation",
+                     text("opaque"),
+                     Options,
+                     ok(Result)),
+          assertion(Result.value == "RECOVERED"),
+          assertion(Result.turns =:= 2),
+          assertion(Result.tool_calls =:= 1),
+          read_failure_model_call(2),
+          once(( member(Event, Result.trajectory),
+                 Event.type == native_tool,
+                 Event.call_id == "fetch_1"
+               )),
+          assertion(Event.status == error),
+          assertion(Event.kind == handler_exception)
+        ),
+        tool_registry_destroy(Registry)).
 
 :- end_tests(auto_dig_provider_retry_hotfix).
