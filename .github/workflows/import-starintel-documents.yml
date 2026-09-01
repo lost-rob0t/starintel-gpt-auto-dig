@@ -1,0 +1,73 @@
+name: Import StarIntel documents
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "db/**/*.ndjson"
+      - "digs/**/starintel-documents.jsonl"
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: "Import mode"
+        required: true
+        default: all
+        type: choice
+        options:
+          - all
+          - diff
+      base:
+        description: "Base commit for diff mode"
+        required: false
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: starintel-ingest-main
+  cancel-in-progress: false
+
+jobs:
+  ingest-documents:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout full history
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - name: Import documents
+        env:
+          STAR_SERVER_API_KEY: ${{ secrets.STAR_SERVER_API_KEY }}
+          EVENT_NAME: ${{ github.event_name }}
+          PUSH_BASE: ${{ github.event.before }}
+          MANUAL_MODE: ${{ inputs.mode }}
+          MANUAL_BASE: ${{ inputs.base }}
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          if [[ "$EVENT_NAME" == "workflow_dispatch" ]]; then
+            if [[ "$MANUAL_MODE" == "all" ]]; then
+              python3 scripts/import-starintel-documents.py --all
+              exit 0
+            fi
+
+            if [[ -z "$MANUAL_BASE" ]]; then
+              echo "base is required when manual mode is diff" >&2
+              exit 2
+            fi
+
+            python3 scripts/import-starintel-documents.py --diff "$MANUAL_BASE"
+            exit 0
+          fi
+
+          if [[ -z "$PUSH_BASE" || "$PUSH_BASE" =~ ^0+$ ]]; then
+            echo "No usable pre-push base SHA; refusing to turn diff CI into a full backfill."
+            exit 0
+          fi
+
+          python3 scripts/import-starintel-documents.py --diff "$PUSH_BASE"
