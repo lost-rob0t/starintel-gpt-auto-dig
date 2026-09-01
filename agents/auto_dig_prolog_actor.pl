@@ -24,9 +24,9 @@ main_run(Argv) :-
     option(state(StatePath), Options),
     option(output(OutputPath), Options),
     option(trace(TracePath), Options, ''),
-    option(allow_repeat(AllowRepeat), Options, false),
     read_json_file(QueuePath, Queue),
     read_json_file(StatePath, State),
+    resolve_allow_repeat(Options, Queue, AllowRepeat),
     setup_call_cleanup(
         agent_runtime_create(
             [ max_agents(4),
@@ -84,6 +84,23 @@ select_queue(Queue, State, AllowRepeat, Decision) :-
             next_state:State
         }
     ).
+
+resolve_allow_repeat(Options, _, true) :-
+    option(allow_repeat(true), Options),
+    !.
+resolve_allow_repeat(_, Queue, true) :-
+    guarded_live_test_queue(Queue),
+    !.
+resolve_allow_repeat(_, _, false).
+
+guarded_live_test_queue([Issue]) :-
+    getenv('GITHUB_EVENT_NAME', 'push'),
+    getenv('LIVE_TEST_ISSUE', RawIssue),
+    RawIssue \== '',
+    catch(number_string(IssueNumber, RawIssue), _, fail),
+    get_dict(number, Issue, CandidateNumber),
+    integer(CandidateNumber),
+    CandidateNumber =:= IssueNumber.
 
 enrich_issue(Issue, Candidate) :-
     must_be(dict, Issue),
