@@ -63,6 +63,13 @@ DIRECT_RUNTIME_NEW = """    zero_usage(Usage),
     direct_loop(Runtime, State, Outcome).
 """
 
+DIRECT_REQUEST_MESSAGES_OLD = """    Request = model_request{messages:State0.messages,options:RequestOptions},
+"""
+
+DIRECT_REQUEST_MESSAGES_NEW = """    direct_request_messages(Runtime, State0, RequestMessages),
+    Request = model_request{messages:RequestMessages,options:RequestOptions},
+"""
+
 DIRECT_CUTOFF_OLD = """direct_request_options(Runtime, State, StepOptions, RequestOptions) :-
     native_tool_cutoff(Runtime.options, Cutoff),
     (   Cutoff == disabled
@@ -92,6 +99,34 @@ DIRECT_CUTOFF_NEW = """direct_request_options(Runtime, State, StepOptions, Reque
     (   native_tool_synthesis_phase(Runtime, State)
     ->  RequestOptions = StepOptions
     ;   request_options(Runtime.schemas, StepOptions, RequestOptions)
+    ).
+
+direct_request_messages(Runtime, State, Messages) :-
+    (   native_tool_synthesis_phase(Runtime, State)
+    ->  native_tool_synthesis_instruction(Runtime.options, Instruction),
+        append(State.messages,
+               [message{role:system,content:Instruction}],
+               Messages)
+    ;   Messages = State.messages
+    ).
+
+native_tool_synthesis_instruction(Options, Instruction) :-
+    option(native_tool_synthesis_instruction,
+           Options,
+           \"SYNTHESIS PHASE IS ACTIVE. Native tool acquisition is closed. Do not request, describe, or simulate tool calls. Using only observations already present in this conversation, return the final answer now. Do not narrate what you would inspect next. Do not repeat planning text. Finish within this response.\",
+           Requested),
+    (   string(Requested),
+        Requested \\== \"\"
+    ->  Instruction = Requested
+    ;   atom(Requested),
+        Requested \\== ''
+    ->  atom_string(Requested, Instruction)
+    ;   throw(direct_fault(direct_error{
+                             phase:provider,
+                             kind:invalid_native_tool_synthesis_instruction,
+                             option:native_tool_synthesis_instruction,
+                             value:Requested,
+                             message:\"native synthesis instruction must be non-empty text\"}))
     ).
 
 native_tool_synthesis_phase(Runtime, State) :-
@@ -167,6 +202,8 @@ def patch_tree(root: Path) -> None:
     text = direct.read_text(encoding="utf-8")
     text = replace_exact(text, DIRECT_RUNTIME_OLD, DIRECT_RUNTIME_NEW,
                          "rlm_direct.pl runtime start timestamp")
+    text = replace_exact(text, DIRECT_REQUEST_MESSAGES_OLD, DIRECT_REQUEST_MESSAGES_NEW,
+                         "rlm_direct.pl synthesis request messages")
     text = replace_exact(text, DIRECT_CUTOFF_OLD, DIRECT_CUTOFF_NEW,
                          "rlm_direct.pl wall-clock synthesis reserve")
     if not text.endswith("\n"):
