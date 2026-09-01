@@ -13,7 +13,7 @@ ensure_deadline_hotfix_fixture :-
     directory_file_path(RuntimeRoot, 'prolog/rlm_direct.pl', DirectPath),
     read_file_to_string(DirectPath, DirectSource, []),
     (   sub_string(DirectSource, _, _, _, "DefaultHeadroom is Reserve*5.0/3.0"),
-        sub_string(DirectSource, _, _, _, "evidence acquisition is closed")
+        sub_string(DirectSource, _, _, _, "SYNTHESIS PHASE ACTIVE")
     ->  true
     ;   apply_script('scripts/apply_prolog_rlm_hotfix.py', RuntimeRoot),
         apply_script('scripts/apply_prolog_rlm_deadline_hotfix.py', RuntimeRoot)
@@ -84,31 +84,37 @@ deadline_model(Request, ok(Response)) :-
 deadline_model_response(1, Request, "", [ToolCall]) :-
     get_dict(tools, Request.options, Tools),
     Tools \== [],
-    % Model a provider turn that leaves ~0.35s of a 1s hard budget. A
-    % reserve+equal-headroom cutoff is only 0.30s and therefore misses this
-    % transition; the live-equivalent 5/3 provider headroom closes acquisition
-    % at 0.40s and forces the next request to synthesize.
+    \+ synthesis_transition_active(Request),
+    % Leave ~0.35s of a 1s hard budget. The live-equivalent 5/3 provider
+    % headroom closes acquisition at 0.40s and forces the next request into
+    % synthesis even though the model-call cutoff is still far away.
     sleep(0.65),
     tool_call("slice_1", ToolCall).
 deadline_model_response(2, Request, "SYNTHESIZED_BEFORE_HARD_DEADLINE", []) :-
     \+ get_dict(tools, Request.options, _),
     \+ get_dict(tool_choice, Request.options, _),
-    synthesis_transition_visible(Request),
+    synthesis_transition_active(Request),
     !.
-deadline_model_response(2, Request,
-                        "I'll inspect the result context before writing the report.",
-                        []) :-
+deadline_model_response(2, Request, Text, []) :-
     \+ get_dict(tools, Request.options, _),
     \+ get_dict(tool_choice, Request.options, _),
-    !.
+    \+ synthesis_transition_active(Request),
+    !,
+    Text = "Now I'll read the retained result context.\n```json\n{\"name\":\"context_slice\",\"arguments\":{\"context\":\"result_call_1\",\"start\":0,\"length\":1}}\n```".
 deadline_model_response(2, _, "", [ToolCall]) :-
     tool_call("slice_2", ToolCall).
 
-synthesis_transition_visible(Request) :-
-    member(Message, Request.messages),
-    Message.role == system,
-    sub_string(Message.content, _, _, _, "evidence acquisition is closed"),
-    sub_string(Message.content, _, _, _, "produce the final answer now").
+synthesis_transition_active(Request) :-
+    findall(Message,
+            ( member(Message, Request.messages),
+              Message.role == system,
+              sub_string(Message.content, _, _, _, "SYNTHESIS PHASE ACTIVE")
+            ),
+            Messages),
+    Messages = [Message],
+    sub_string(Message.content, _, _, _, "Evidence acquisition is closed"),
+    sub_string(Message.content, _, _, _, "Do not emit"),
+    sub_string(Message.content, _, _, _, "Produce the final human-readable answer now").
 
 options([provider(provider(openai_compatible, [])),
          provider_name(openai_compatible),
@@ -125,7 +131,7 @@ options([provider(provider(openai_compatible, [])),
                   max_output_bytes:8192,
                   time_limit:1.0})]).
 
-test(provider_headroom_forces_explicit_synthesis_before_hard_deadline) :-
+test(provider_headroom_injects_transition_time_synthesis_message) :-
     reset_model,
     options(Options),
     rlm_direct("Acquire once, then synthesize",

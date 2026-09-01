@@ -63,6 +63,17 @@ DIRECT_RUNTIME_NEW = """    zero_usage(Usage),
     direct_loop(Runtime, State, Outcome).
 """
 
+DIRECT_PROVIDER_OLD = """    direct_request_options(Runtime, State0, StepOptions, RequestOptions),
+    Request = model_request{messages:State0.messages,options:RequestOptions},
+    call_model(Runtime.options, Runtime.provider, Request, ModelOutcome),
+"""
+
+DIRECT_PROVIDER_NEW = """    direct_request_options(Runtime, State0, StepOptions, RequestOptions),
+    direct_request_messages(Runtime, State0, RequestMessages),
+    Request = model_request{messages:RequestMessages,options:RequestOptions},
+    call_model(Runtime.options, Runtime.provider, Request, ModelOutcome),
+"""
+
 DIRECT_CUTOFF_OLD = """direct_request_options(Runtime, State, StepOptions, RequestOptions) :-
     native_tool_cutoff(Runtime.options, Cutoff),
     (   Cutoff == disabled
@@ -93,6 +104,16 @@ DIRECT_CUTOFF_NEW = """direct_request_options(Runtime, State, StepOptions, Reque
     ->  RequestOptions = StepOptions
     ;   request_options(Runtime.schemas, StepOptions, RequestOptions)
     ).
+
+direct_request_messages(Runtime, State, Messages) :-
+    (   native_tool_synthesis_phase(Runtime, State)
+    ->  synthesis_transition_message(Transition),
+        append(State.messages, [Transition], Messages)
+    ;   Messages = State.messages
+    ).
+
+synthesis_transition_message(message{role:system,content:Content}) :-
+    Content = \"SYNTHESIS PHASE ACTIVE. Evidence acquisition is closed. Native tools and context operations are unavailable for the rest of this run. Do not emit, describe, encode, request, or defer to any tool call, context operation, or pseudo-tool JSON. Produce the final human-readable answer now using only evidence and observations already present in the conversation.\".
 
 native_tool_synthesis_phase(Runtime, State) :-
     native_tool_cutoff(Runtime.options, Cutoff),
@@ -184,10 +205,12 @@ def patch_tree(root: Path) -> None:
     text = direct.read_text(encoding="utf-8")
     text = replace_exact(text, DIRECT_RUNTIME_OLD, DIRECT_RUNTIME_NEW,
                          "rlm_direct.pl runtime start timestamp")
+    text = replace_exact(text, DIRECT_PROVIDER_OLD, DIRECT_PROVIDER_NEW,
+                         "rlm_direct.pl transition-time request messages")
     text = replace_exact(text, DIRECT_CUTOFF_OLD, DIRECT_CUTOFF_NEW,
                          "rlm_direct.pl wall-clock synthesis reserve")
     text = replace_exact(text, DIRECT_SYSTEM_OLD, DIRECT_SYSTEM_NEW,
-                         "rlm_direct.pl explicit synthesis transition")
+                         "rlm_direct.pl synthesis contract")
     if not text.endswith("\n"):
         raise RuntimeError(f"{direct}: patched text unexpectedly lacks final newline")
     direct.write_text(text, encoding="utf-8")
