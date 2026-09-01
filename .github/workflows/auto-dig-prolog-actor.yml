@@ -26,7 +26,7 @@ concurrency:
   cancel-in-progress: false
 
 env:
-  PROLOG_RLM_REF: 61d308fa5e815d5656e32ee8e34e4aaba46638cf
+  PROLOG_RLM_REF: a89711d504e6cc6c3fac789b7f0b6b0453aea23b
   LIVE_TEST_ISSUE: '2284'
 
 jobs:
