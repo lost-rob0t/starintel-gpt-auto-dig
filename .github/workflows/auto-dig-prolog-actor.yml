@@ -16,6 +16,7 @@ on:
       - '.github/workflows/auto-dig-prolog-actor.yml'
       - 'agents/auto_dig_*.pl'
       - 'agents/test_auto_dig_*.pl'
+      - 'scripts/apply_prolog_rlm_hotfix.py'
 
 permissions:
   contents: write
@@ -288,6 +289,7 @@ jobs:
                 "context_peek_selector_contract",
                 "recoverable_native_preflight_faults",
                 "transient_provider_retry",
+                "read_only_tool_error_recovery",
                 "model_context_budget_30_percent",
                 "read_only_brave_search_mcp",
                 "read_only_fetch_mcp",
