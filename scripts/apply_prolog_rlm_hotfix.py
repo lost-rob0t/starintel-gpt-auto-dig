@@ -395,6 +395,58 @@ after_tool(ToolResult, Resolved, _, _, State, error(Error)) :-
                 \"native registered-tool execution failed\", Error).
 """
 
+DIRECT_PROVIDER_TURN_OLD = """provider_turn(Runtime, State0, Outcome) :-
+    remaining_tokens(Runtime.budget.max_total_tokens,
+                     State0.usage.total_tokens,
+                     Remaining),
+    planner_token_limit(Runtime.options, Requested),
+    Limit is max(1, min(Requested, Remaining)),
+    model_request_options(Runtime.options, Limit, BaseOptions),
+    native_request_options(Runtime.options, Limit, BaseOptions, StepOptions),
+    request_options(Runtime.schemas, StepOptions, RequestOptions),
+    Request = model_request{messages:State0.messages,options:RequestOptions},
+    call_model(Runtime.options, Runtime.provider, Request, ModelOutcome),
+    after_provider(ModelOutcome, Runtime, State0, Outcome).
+"""
+
+DIRECT_PROVIDER_TURN_NEW = """provider_turn(Runtime, State0, Outcome) :-
+    remaining_tokens(Runtime.budget.max_total_tokens,
+                     State0.usage.total_tokens,
+                     Remaining),
+    planner_token_limit(Runtime.options, Requested),
+    Limit is max(1, min(Requested, Remaining)),
+    model_request_options(Runtime.options, Limit, BaseOptions),
+    native_request_options(Runtime.options, Limit, BaseOptions, StepOptions),
+    direct_request_options(Runtime, State0, StepOptions, RequestOptions),
+    Request = model_request{messages:State0.messages,options:RequestOptions},
+    call_model(Runtime.options, Runtime.provider, Request, ModelOutcome),
+    after_provider(ModelOutcome, Runtime, State0, Outcome).
+
+direct_request_options(Runtime, State, StepOptions, RequestOptions) :-
+    native_tool_cutoff(Runtime.options, Cutoff),
+    (   Cutoff == disabled
+    ->  request_options(Runtime.schemas, StepOptions, RequestOptions)
+    ;   State.model_calls >= Cutoff
+    ->  RequestOptions = StepOptions
+    ;   request_options(Runtime.schemas, StepOptions, RequestOptions)
+    ).
+
+native_tool_cutoff(Options, Cutoff) :-
+    option(native_tool_cutoff_model_calls, Options, none, Requested),
+    (   Requested == none
+    ->  Cutoff = disabled
+    ;   integer(Requested),
+        Requested >= 0
+    ->  Cutoff = Requested
+    ;   throw(direct_fault(direct_error{
+                             phase:provider,
+                             kind:invalid_native_tool_cutoff,
+                             option:native_tool_cutoff_model_calls,
+                             value:Requested,
+                             message:\"native tool cutoff must be a nonnegative integer\"}))
+    ).
+"""
+
 
 def replace_exact(text: str, old: str, new: str, label: str) -> str:
     count = text.count(old)
@@ -466,12 +518,19 @@ def patch_tree(root: Path) -> None:
 
     direct = root / "prolog/rlm_direct.pl"
     direct_text = direct.read_text(encoding="utf-8")
-    plans[direct] = replace_exact(
+    direct_text = replace_exact(
         direct_text,
         DIRECT_AFTER_TOOL_OLD,
         DIRECT_AFTER_TOOL_NEW,
         "rlm_direct.pl recoverable read-tool invocation failures",
     )
+    direct_text = replace_exact(
+        direct_text,
+        DIRECT_PROVIDER_TURN_OLD,
+        DIRECT_PROVIDER_TURN_NEW,
+        "rlm_direct.pl native tool cutoff before synthesis",
+    )
+    plans[direct] = direct_text
 
     # Validate every replacement before mutating any checked-out dependency file.
     for path, text in plans.items():
