@@ -41,8 +41,7 @@ main_run(Argv, ExitCode) :-
              'phase=context_loaded chars=~d file=~w',
              [ContextChars, Args.context_file]),
     auto_dig_query(Query),
-    run_research_completion(Args, Query, Context, RawOutcome),
-    validate_terminal_outcome(RawOutcome, Outcome),
+    run_research_completion(Args, Query, Context, Outcome),
     log_outcome(Outcome),
     write_trace_json(Args.output, auto_dig_rlm_result, Outcome),
     safe_log(auto_dig_rlm, 'phase=result_written file=~w', [Args.output]),
@@ -51,6 +50,7 @@ main_run(Argv, ExitCode) :-
     -> true
     ;  safe_log(auto_dig_rlm, 'phase=trace_written file=~w', [Args.trace])
     ),
+    report_terminal_answer(Outcome),
     outcome_exit_code(Outcome, ExitCode),
     safe_log(auto_dig_rlm, 'phase=finish exit_code=~d', [ExitCode]).
 
@@ -237,25 +237,6 @@ auto_dig_repair_query(Query, RepairQuery) :-
                   "\n\nREPAIR NOTE: the previous bounded direct attempt was rejected because at least one provider-native tool call contained malformed raw JSON arguments. Start the research again from the supplied input context. Every tool argument payload MUST be exactly one strict JSON object and every key in that object MUST appear exactly once. Do not repeat keys such as search_lang or spellcheck. Prefer no more than four parallel native tool calls per assistant turn. This is the one harness-level repair attempt; use it to complete a useful evidence-backed research slice within the smaller retry budget.",
                   RepairQuery).
 
-validate_terminal_outcome(ok(Result), ok(Result)) :-
-    outcome_final_answer(ok(Result), Answer),
-    !,
-    emit_final_answer_preview(Answer).
-validate_terminal_outcome(ok(Result), error(Error)) :-
-    usage_from_result(Result, Usage),
-    Error = _{ phase:finalize,
-               kind:missing_final_answer,
-               message:"terminal provider response did not contain a substantive plain-text actor answer",
-               usage:Usage
-             }.
-validate_terminal_outcome(error(Error), error(Error)) :- !.
-validate_terminal_outcome(Other,
-                          error(_{ phase:finalize,
-                                   kind:invalid_outcome,
-                                   message:"runtime returned an unexpected terminal outcome",
-                                   outcome:Other
-                                 })).
-
 outcome_final_answer(ok(Result), Answer) :-
     is_dict(Result),
     get_dict(response, Result, Response),
@@ -279,16 +260,31 @@ terminal_tool_markup(Content) :-
     sub_string(Content, _, _, _, "<tool_call>"),
     !.
 
+report_terminal_answer(Outcome) :-
+    (   outcome_final_answer(Outcome, Answer)
+    ->  emit_final_answer_preview(Answer)
+    ;   Outcome = ok(_)
+    ->  format(user_error,
+               '::error title=Auto-Dig missing final output::terminal provider response was not substantive plain report prose~n',
+               []),
+        flush_output(user_error),
+        safe_log(auto_dig_rlm,
+                 'phase=final_answer_rejected kind=missing_final_answer',
+                 [])
+    ;   true
+    ).
+
 emit_final_answer_preview(Answer) :-
     bounded_preview(Answer, 1600, Preview0),
     safe_text(Preview0, Preview),
+    string_length(Answer, AnswerChars),
     format(user_error,
            '::notice title=Auto-Dig final actor output::~s~n',
            [Preview]),
     flush_output(user_error),
     safe_log(auto_dig_rlm,
              'phase=final_answer_verified chars=~d',
-             [len(Answer)]).
+             [AnswerChars]).
 
 bounded_preview(Text, MaxChars, Preview) :-
     string_length(Text, Length),
@@ -301,6 +297,7 @@ bounded_preview(Text, MaxChars, Preview) :-
 outcome_exit_code(ok(Result), 0) :-
     outcome_final_answer(ok(Result), _),
     !.
+outcome_exit_code(ok(_), 1) :- !.
 outcome_exit_code(error(_), 1) :- !.
 outcome_exit_code(_, 1).
 
