@@ -2,45 +2,34 @@
 
 :- use_module('./auto_dig_model_router').
 
-test(default_research_uses_luna_max) :-
+test(default_research_uses_glm_53_flash) :-
     select_model(_{task:"research"}, Route),
-    assertion(Route.model == "openai/gpt-5.6-luna"),
-    assertion(Route.reasoning.effort == max),
-    assertion(Route.tier == "luna").
+    assertion(Route.model == "z-ai/glm-5.3-flash"),
+    assertion(Route.reasoning.effort == none),
+    assertion(Route.tier == "glm-flash"),
+    assertion(Route.fallback == []).
 
-test(bulk_extraction_uses_luna_high) :-
+test(bulk_extraction_stays_on_glm_53_flash) :-
     select_model(_{task:"extraction"}, Route),
-    assertion(Route.model == "openai/gpt-5.6-luna"),
-    assertion(Route.reasoning.effort == high).
+    assertion(Route.model == "z-ai/glm-5.3-flash"),
+    assertion(Route.reasoning.effort == none).
 
-test(high_priority_is_not_implicitly_flagship) :-
+test(high_priority_stays_on_glm_53_flash) :-
     select_model(_{task:"research", risk:"high"}, Route),
-    assertion(Route.model == "openai/gpt-5.6-luna"),
-    assertion(Route.reasoning.effort == max).
+    assertion(Route.model == "z-ai/glm-5.3-flash"),
+    assertion(Route.reasoning.effort == none).
 
-test(one_failed_verification_escalates_to_terra) :-
-    select_model(_{task:"research", failed_verifications:1}, Route),
-    assertion(Route.model == "openai/gpt-5.6-terra"),
-    assertion(Route.reasoning.effort == max).
-
-test(two_failed_verifications_escalate_to_sol) :-
+test(verification_failures_do_not_escape_dogfood_pin) :-
     select_model(_{task:"research", failed_verifications:2}, Route),
-    assertion(Route.model == "openai/gpt-5.6-sol"),
-    assertion(Route.reasoning.effort == max).
+    assertion(Route.model == "z-ai/glm-5.3-flash"),
+    assertion(Route.fallback == []).
 
-test(threat_model_uses_sol_max) :-
+test(high_judgment_task_does_not_escape_dogfood_pin) :-
     select_model(_{task:"threat_model"}, Route),
-    assertion(Route.model == "openai/gpt-5.6-sol"),
-    assertion(Route.reasoning.effort == max).
+    assertion(Route.model == "z-ai/glm-5.3-flash").
 
-test(irreversible_work_uses_sol_max) :-
+test(irreversible_work_does_not_escape_dogfood_pin) :-
     select_model(_{task:"research", irreversible:true}, Route),
-    assertion(Route.model == "openai/gpt-5.6-sol").
-
-test(luna_max_has_terra_then_sol_fallback) :-
-    select_model(_{task:"verification"}, Route),
-    Route.fallback = [Terra, Sol],
-    assertion(Terra.model == "openai/gpt-5.6-terra"),
-    assertion(Sol.model == "openai/gpt-5.6-sol").
+    assertion(Route.model == "z-ai/glm-5.3-flash").
 
 :- end_tests(auto_dig_model_router).
