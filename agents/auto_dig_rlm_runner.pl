@@ -252,7 +252,8 @@ final_report_content(ok(Result), Content) :-
     get_dict(assistant, Response, Assistant),
     is_dict(Assistant),
     get_dict(content, Assistant, RawContent),
-    text_content_string(RawContent, Content).
+    text_content_string(RawContent, Text),
+    canonical_report_content(Text, Content).
 
 text_content_string(Content, Content) :-
     string(Content),
@@ -260,6 +261,21 @@ text_content_string(Content, Content) :-
 text_content_string(Content, String) :-
     atom(Content),
     atom_string(Content, String).
+
+canonical_report_content(Text, Content) :-
+    report_heading_start(Text, Start),
+    !,
+    sub_string(Text, Start, _, 0, Content).
+canonical_report_content(Content, Content).
+
+report_heading_start(Text, 0) :-
+    sub_string(Text, 0, _, _, "# Auto-Dig Research Output"),
+    !.
+report_heading_start(Text, Start) :-
+    sub_string(Text, Start, _, _, "# Auto-Dig Research Output"),
+    Start > 0,
+    Before is Start-1,
+    sub_string(Text, Before, 1, _, "\n").
 
 valid_research_report(Content) :-
     string(Content),
