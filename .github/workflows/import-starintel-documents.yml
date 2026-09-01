@@ -1,0 +1,41 @@
+name: Import new StarIntel documents
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "db/**/*.ndjson"
+      - "digs/**/starintel-documents.jsonl"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: starintel-ingest-main
+  cancel-in-progress: false
+
+jobs:
+  ingest-new-documents:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout full history
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - name: Import logical documents introduced by this push
+        env:
+          STAR_SERVER_API_KEY: ${{ secrets.STAR_SERVER_API_KEY }}
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          base="${{ github.event.before }}"
+          if [[ -z "$base" || "$base" =~ ^0+$ ]]; then
+            echo "No usable pre-push base SHA; refusing to turn diff CI into a full backfill."
+            exit 0
+          fi
+
+          python3 scripts/import-starintel-documents.py --diff "$base"
