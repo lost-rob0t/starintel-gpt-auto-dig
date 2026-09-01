@@ -9,7 +9,8 @@
             raw_argument_retryable/1,
             outcome_log_summary/2,
             final_report_content/2,
-            valid_research_report/1
+            valid_research_report/1,
+            emit_human_report/1
           ]).
 
 :- use_module(library(readutil)).
@@ -293,6 +294,7 @@ validate_and_materialize_result(OutputPath, Outcome, 0, ExitCode) :-
         safe_log(auto_dig_rlm,
                  'phase=output_validation state=ok report=~w',
                  [ReportPath]),
+        emit_human_report(Content),
         ExitCode = 0
     ;   safe_log(auto_dig_rlm,
                  'phase=output_validation state=error kind=non_substantive_final_output',
@@ -303,6 +305,10 @@ validate_and_materialize_result(OutputPath, Outcome, 0, ExitCode) :-
         flush_output(user_error),
         ExitCode = 1
     ).
+
+emit_human_report(Content) :-
+    format('~n~s~n', [Content]),
+    flush_output.
 
 report_path(OutputPath, ReportPath) :-
     file_directory_name(OutputPath, Directory),
