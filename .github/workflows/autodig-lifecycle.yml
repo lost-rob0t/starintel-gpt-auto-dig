@@ -1,0 +1,39 @@
+name: Auto-Dig lifecycle
+
+on:
+  pull_request:
+    paths:
+      - "pyproject.toml"
+      - "scripts/quasar_autodig_worker.py"
+      - "scripts/quasar_issue_queue.py"
+      - "scripts/quasar_autodig_runtime.py"
+      - "tests/test_quasar_autodig_worker.py"
+      - "tests/test_quasar_autodig_recovery.py"
+      - "tests/test_quasar_autodig_heartbeat.py"
+      - "tests/test_quasar_issue_queue_bridge.py"
+      - "tests/test_quasar_autodig_runtime.py"
+      - "tests/test_quasar_autodig_packaging.py"
+      - ".github/workflows/autodig-lifecycle.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  worker-lifecycle:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.13"
+      - name: Run Quasar Auto-Dig worker lifecycle tests
+        run: >-
+          python -m unittest
+          tests.test_quasar_autodig_worker
+          tests.test_quasar_autodig_recovery
+          tests.test_quasar_autodig_heartbeat
+          tests.test_quasar_issue_queue_bridge
+          tests.test_quasar_autodig_runtime
+          tests.test_quasar_autodig_packaging
