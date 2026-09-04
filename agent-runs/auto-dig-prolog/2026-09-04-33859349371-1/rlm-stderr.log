@@ -1,0 +1,74 @@
+[auto_dig_rlm] 2026-09-04T09:39:05Z phase=start mode=direct model=z-ai/glm-5.3-flash reasoning_effort=max
+[auto_dig_rlm] 2026-09-04T09:39:05Z phase=context_loaded chars=9433 file=agent-runs/auto-dig-prolog/2026-09-04-33859349371-1/request.md
+[auto_dig_rlm] 2026-09-04T09:39:05Z phase=mcp_session_open servers=[brave,fetch]
+[auto_dig_mcp] 2026-09-04T09:39:05Z session_open servers=[brave,fetch]
+[auto_dig_mcp] 2026-09-04T09:39:05Z phase=registry_create state=start
+[auto_dig_mcp] 2026-09-04T09:39:05Z phase=registry_create state=ok
+[auto_dig_mcp] 2026-09-04T09:39:05Z phase=authority_setup state=start
+[auto_dig_mcp] 2026-09-04T09:39:05Z phase=authority_setup state=ok
+[auto_dig_mcp] 2026-09-04T09:39:05Z phase=mcp_run(brave) state=start
+[auto_dig_mcp] 2026-09-04T09:39:05Z phase=mcp_run(brave) state=ok
+[auto_dig_mcp] 2026-09-04T09:39:05Z phase=mcp_connect(brave) state=start
+[auto_dig_mcp] 2026-09-04T09:46:09Z phase=mcp_connect(brave) state=ok
+[auto_dig_mcp] 2026-09-04T09:46:09Z phase=mcp_import(brave) state=start
+[auto_dig_mcp] 2026-09-04T09:46:09Z phase=mcp_import(brave) state=ok
+[auto_dig_mcp] 2026-09-04T09:46:09Z mcp_import server=brave imported_tools=8
+[auto_dig_mcp] 2026-09-04T09:46:09Z phase=mcp_run(fetch) state=start
+[auto_dig_mcp] 2026-09-04T09:46:09Z phase=mcp_run(fetch) state=ok
+[auto_dig_mcp] 2026-09-04T09:46:09Z phase=mcp_connect(fetch) state=start
+[auto_dig_mcp] 2026-09-04T09:49:24Z phase=mcp_connect(fetch) state=ok
+[auto_dig_mcp] 2026-09-04T09:49:24Z phase=mcp_import(fetch) state=start
+[auto_dig_mcp] 2026-09-04T09:49:24Z phase=mcp_import(fetch) state=ok
+[auto_dig_mcp] 2026-09-04T09:49:24Z mcp_import server=fetch imported_tools=6
+[auto_dig_mcp] 2026-09-04T09:49:24Z phase=capability_projection state=start
+[auto_dig_mcp] 2026-09-04T09:49:24Z phase=capability_projection state=ok
+[auto_dig_mcp] 2026-09-04T09:49:24Z capability_projection count=14
+[auto_dig_mcp] 2026-09-04T09:49:24Z session_open state=ok
+[auto_dig_rlm] 2026-09-04T09:49:24Z phase=mcp_ready capability_count=14 capabilities=[tool('mcp.brave.brave_image_search'),tool('mcp.brave.brave_llm_context'),tool('mcp.brave.brave_local_search'),tool('mcp.brave.brave_news_search'),tool('mcp.brave.brave_place_search'),tool('mcp.brave.brave_summarizer'),tool('mcp.brave.brave_video_search'),tool('mcp.brave.brave_web_search'),tool('mcp.fetch.fetch_html'),tool('mcp.fetch.fetch_json'),tool('mcp.fetch.fetch_markdown'),tool('mcp.fetch.fetch_readable'),tool('mcp.fetch.fetch_txt'),tool('mcp.fetch.fetch_youtube_transcript')]
+[auto_dig_rlm] 2026-09-04T09:49:24Z phase=direct_start context_window=1310720 token_budget=393216 model_calls=16 native_tool_cutoff=12 synthesis_reserve=90.0 tool_calls=24 context_ops=32 iterations=24 time_limit=300.0
+[auto_dig_rlm] 2026-09-04T09:54:07Z phase=direct_return
+[auto_dig_rlm] 2026-09-04T09:54:07Z phase=outcome status=ok model_calls=8 prompt_tokens=55535 completion_tokens=7430 total_tokens=62965 cost_usd=0.00748333
+[auto_dig_rlm] 2026-09-04T09:54:08Z phase=result_written file=agent-runs/auto-dig-prolog/2026-09-04-33859349371-1/rlm-result.json
+[auto_dig_rlm] 2026-09-04T09:54:08Z phase=trace_written file=agent-runs/auto-dig-prolog/2026-09-04-33859349371-1/rlm-trace.json
+[auto_dig_rlm] 2026-09-04T09:54:08Z phase=output_validation state=ok report=agent-runs/auto-dig-prolog/2026-09-04-33859349371-1/report.md
+
+# Auto-Dig Research Output
+
+**Run status:** Evidence acquisition closed early — the runtime's wall-clock synthesis reserve activated during the first discovery round. Four Brave result contexts were captured (call IDs below) but the reserve fired before they could be inspected, so nothing from them is quoted here. What follows synthesizes (1) the full Auto-Dig brief, read in its entirety from the RLM context this run, and (2) clearly labeled background knowledge, every item of which is falsifiable and flagged for verification against the captured contexts and primary sources. Nothing below is claimed as web-verified in this run.
+
+## Findings
+
+**Established in this run (read directly from the task context, `input`, 9,499 bytes, sliced 0–9,499):**
+- The dig's subject chain is fixed: `Sam Altman → Tools for Humanity → World Foundation → World Assets Ltd → World ID → Orb → WLD → World Chain → operators → investors → governments → regulators → commercial partners` (brief, §Scope).
+- The brief itself asserts the load-bearing separation the research must prove: branding ("World") vs. legal entities (Tools for Humanity Corp., World Foundation, World Assets Ltd), and claimed decentralization vs. deployed control (brief, §Constraints, §7).
+- Twelve workstreams are mandated: founders/control, money/token flows, Orb biometric data flow, country-by-country enforcement, operators, World ID integrations, contract upgrade authority, Altman network cross-links, lobbying, controversies, UBI rhetoric-vs-product, and recursive prioritization (brief, §§1–12).
+- Dataset key: `worldcoin-eyeball-empire-v1`; dedupe against `digs/tech-bro/2026-07-26-seed/`; existing StarIntel records already distinguish TFH services from World Foundation stewardship (brief, §Seed sources).
+
+**Reported (background knowledge — unverified in this run; each needs primary confirmation):**
+- **The men behind the Orb:** Sam Altman (co-founder, chairman of Tools for Humanity), Alex Blania (co-founder, CEO), Max Novendstern (co-founder, departed operational role). "Founder ≠ controller" is an open question: Altman's equity percentage, board voting rights, and any Foundation governance role are not publicly documented in anything inspected this run.
+- **Follow the money:** Widely reported rounds — ~$100M Series A led by Andreessen Horowitz (March 2022, ~$3B valuation), $115M Series B led by Blockchain Capital (May 2023), ~$135M led by a16z and Bain Capital Crypto (2025, ~$6B valuation for World). WLD launched July 24, 2023; initial supply 10B tokens (20-year cap ~14B); roughly 75% community/foundation allocation vs. ~17.5%+ to team/investors with multi-year unlocks. **Who got the tokens / who can sell them** remains unanswered without on-chain and unlock-schedule evidence.
+- **What happens to your eyeball:** Reported design — Orb captures iris images, computes iris codes on-device, deletes images by default unless the user opts into custody; iris codes are split via secure multi-party computation (SMPC) across partner institutions; World ID proofs are zero-knowledge; 2024–2025 changes added Face Authentication and "Personal Custody" (encrypted data held on the user's device). Deletion of an iris code is possible, but uniqueness checking requires the code to persist in the SMPC system — the central tension the report must surface.
+- **Banned, paused, back again (reported enforcement, needs regulator primary docs):** Kenya suspension + Nairobi police raid (Aug 2023); Spain AEPD provisional stop (March 2024); Portugal CNPD 20-day ban, extended (March 2024); Hong Kong PCPD orders (May 2024); South Korea PIPC fine (~1.1B won, Sept 2024); Bavarian BayLDA GDPR orders (Dec 2024); Brazil ANPD suspension order (Jan 2025); Indonesia registration suspension (May 2025); US consumer launch April–May 2025 with Orb Mini announced.
+- **Who holds the keys:** World Chain is an OP Stack / Superchain L2 (launched Oct 2024); sequencer and upgrade keys are reported to sit with Foundation-controlled multisigs — the `system | claimed governance | actual upgrade authority | emergency authority | controller | evidence` table is entirely unpopulated this run.
+
+**Hypotheses (to test, not assert):** (1) Altman's control is exercised through TFH board/economics rather than Foundation governance documents; (2) operator payments in WLD create the strongest regulator exposure in emerging markets; (3) the 2024–2025 pivot from UBI rhetoric to proof-of-humanity tracks product changes, not new tokenomics.
+
+**Constraints honored:** no scandal invented; disputed claims attributed once; no wallet attribution without evidence; demos not converted into partnerships; branding separated from legal entities.
+
+## Evidence
+
+- **Primary-source evidence actually obtained this run:** the complete Auto-Dig brief, read via `context_slice` in five passes (0–1,800; 1,800–3,800; 3,800–5,800; 5,800–7,800; 7,800–9,499). Source of record: https://github.com/lost-rob0t/starintel-gpt-auto-dig/issues/2095
+- **Captured but uninspected result contexts (opaque, audit identifiers preserved):** `result_call_01a06bd5c53a72e1a9a44e80` (funding/investors search, 14,121 bytes), `result_call_01a06bd5ce6775b18f2f021d` (entity/governance search, 18,324 bytes), `result_call_01a06bd5d63a7761bb668e4a` (regulator search, 19,749 bytes), `result_call_01a06bd5de357b20ba10d484` (Orb biometric data-flow LLM context, 55,718 bytes). These are the first items the next pass must open with `context_search`/`context_peek`.
+- **Canonical primary-source pointers for verification (URLs listed as targets, not as inspected content):** https://whitepaper.worldcoin.org (token/biometric design), https://docs.world.co (Orb data flow, Personal Custody, SMPC), https://world.org (entity/brand surface), https://www.aepd.es (Spain), https://www.cnpd.pt (Portugal), https://www.pcpd.org.hk (Hong Kong), https://www.pipc.go.kr (Korea), https://www.gov.br/anpd (Brazil), https://worldchain-mainnet.explorer.alchemy.com (World Chain contracts/upgrade keys).
+- **Falsification criteria (examples):** Funding claims fall if TFH press releases or Form D filings show different leads/amounts/dates. "Images deleted by default" falls if any Orb firmware/doc shows retention without opt-in. "Foundation-controlled multisigs" falls if on-chain proxy admin/upgrade keys resolve to TFH or a single EOA. Country enforcement items fall if the cited regulator docket shows withdrawal, reversal, or a different date. Any wallet-to-entity claim falls absent cluster evidence (bridge flows, labeled exchange deposits, self-declarations).
+
+## Unresolved / Follow-up
+
+1. **Inspect the four captured result contexts** (call IDs above) — highest-value, zero-cost next step; they likely contain the funding, entity, regulator, and biometric citations this run paid for but never read.
+2. **Fetch primary documents:** World whitepaper + docs pages on iris-code deletion and SMPC; AEPD, CNPD, PCPD, ANPD, PIPC, BayLDA decisions; TFH press releases for each round; Cayman/DE corporate registry entries for World Foundation and World Assets Ltd.
+3. **On-chain pass:** WLD genesis allocation wallets, unlock schedules, Foundation treasury flows, World Chain proxy admin/upgrade multisig signers, sequencer operator — populate the "CAN SOMEBODY FLIP THE SWITCH?" table.
+4. **Operator map:** recruitment firms, per-scan WLD incentives, retail deployments (malls, universities, telecom partners) from public professional sources only.
+5. **Lobbying pass:** US LDA filings, EU Transparency Register, disclosed executive contributions — "WHO IS WORLD TALKING TO IN GOVERNMENT?"
+6. **Capability gaps that would materially improve the next pass:** a corporate-registry tool (Cayman/Germany/DE), an on-chain explorer/contract-reader tool, a lobbying-database connector, and court/regulator docket search — none were available in this run's toolset.
+7. **Altman network cross-link:** verify no OpenAI↔World corporate relationship beyond shared investors (a16z, Hoffman) before any "other empire" claims are published.
+[auto_dig_rlm] 2026-09-04T09:54:08Z phase=finish exit_code=0
