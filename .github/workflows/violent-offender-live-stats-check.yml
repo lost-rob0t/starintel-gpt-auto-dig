@@ -1,0 +1,65 @@
+name: Violent offender live stats check
+
+on:
+  pull_request:
+    paths:
+      - ".github/workflows/violent-offender-live-stats-check.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  collect-primary-locality:
+    strategy:
+      fail-fast: false
+      matrix:
+        source: [franklin, licking, madison, lucas, hamilton]
+    name: collect-${{ matrix.source }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+      - name: Install collector dependencies
+        run: python -m pip install -r requirements/violent-offender-scrapers.txt
+      - name: Run ${{ matrix.source }} and print stats
+        env:
+          SOURCE: ${{ matrix.source }}
+        run: |
+          out="artifacts/live-stats/$SOURCE"
+          mkdir -p "$out"
+          set +e
+          python scripts/scrape_violent_offender_localities.py \
+            --source "$SOURCE" \
+            --output "$out" \
+            --max-records-per-source 2500
+          status=$?
+          set -e
+          echo "COLLECTOR_EXIT $status"
+          test -f "$out/summary.json"
+          python - "$out/summary.json" <<'PY'
+          import json
+          import sys
+          from pathlib import Path
+          summary = json.loads(Path(sys.argv[1]).read_text())
+          print("=== VIOLENT_OFFENDER_LOCALITY_STATS ===")
+          print("GROUP_RECORDS", summary.get("record_count", 0))
+          for source in summary.get("sources", []):
+              print(
+                  "SOURCE", source.get("source"),
+                  "LOCALITY", json.dumps(source.get("locality")),
+                  "RECORDS", source.get("records", 0),
+                  "CANDIDATES", source.get("candidates_seen", 0) or 0,
+                  "PAGES", source.get("pages_fetched", 0),
+                  "ERROR", json.dumps(source.get("error")),
+              )
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: violent-offender-live-stats-${{ matrix.source }}-${{ github.run_id }}
+          path: artifacts/live-stats/${{ matrix.source }}/
+          if-no-files-found: error
+          retention-days: 1
