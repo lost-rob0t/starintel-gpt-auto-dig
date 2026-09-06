@@ -942,8 +942,8 @@ def run_one_pass(
             {"status": "researched" if status == 0 else "rlm_failed"},
         )
         if status != 0:
+            report = write_failure_report(cfg, run_dir)
             if client is not None:
-                report = write_failure_report(cfg, run_dir)
                 body = (
                     "## Auto-Dig live-run failure\n\n"
                     f"- Run: `{run_id}`\n"
