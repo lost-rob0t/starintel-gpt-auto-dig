@@ -1,0 +1,13 @@
+{
+  "body": "## Subject\n\nMozilla Corporation chief executive\n\n## Goal\n\nIdentify the current CEO of Mozilla Corporation and one primary Mozilla source (official page or authoritative announcement) that names them in the role.\n\n## Scope\n\nPublic open web; primary Mozilla sources preferred; current year.\n\n## Seed sources\n\nhttps://www.mozilla.org/en-US/about/leadership/\n\n## Constraints\n\nRead-only research only.\n\n## Completion criteria\n\nA short evidence-backed answer with the primary source URL.\n\n## Priority\n\nhigh\n",
+  "createdAt": "2026-09-06T00:00:00Z",
+  "labels": [
+    {
+      "name": "investigation-target"
+    }
+  ],
+  "number": 9001,
+  "title": "[Auto-Dig request] Mozilla CEO verification",
+  "updatedAt": "2026-09-06T00:00:00Z",
+  "url": "https://git.starintel.actor/lost-rob0t/starintel-gpt-auto-dig/issues/9001"
+}
