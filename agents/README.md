@@ -24,6 +24,52 @@ GitHub Actions
 
 GitHub Actions owns credentials, checkout, repository mutation, logs, scheduling, and branch push. Prolog owns queue-selection semantics, actor execution, model-routing policy, and the trusted MCP allow-list/lifecycle. Prolog-RLM owns bounded recursive reasoning, provider requests, reasoning-effort enforcement, prompt compilation, skill activation, child-result acceptance, context projection, tool-schema projection, capability checks, budgets, and traces.
 
+## Standalone service runner (no action runner required)
+
+`auto_dig_service.py` runs the same harness end to end without GitHub Actions or the `gh` CLI. It is the reuse path for the deployed service later: a long-running process wraps this entrypoint, exactly like the other StarIntel Common Lisp/node services that run behind the shared infra web origin. No deployment logic lives in the harness itself.
+
+```text
+git.starintel.actor issues (label `investigation-target`)
+  -> Forgejo API queue snapshot (stdlib HTTP, no gh/tea dependency)
+  -> durable `[actor-state] auto-dig-prolog` state (state issue or --state-file)
+  -> supervised Prolog actor selects one eligible request
+  -> expert model route
+  -> bounded read-only Prolog-RLM web research (Brave + Fetch MCP unchanged)
+  -> run branch pushed to origin, receipt comment posted, state advanced
+  -> queue re-snapshots; the drain keeps working down the issues
+```
+
+Key behavior:
+
+- **Drain semantics**: one invocation works down the queue until the actor idles, `--max-issues`, or `--time-budget` stops it. Each issue is attempted at most once per invocation, so a failing `urgent` target cannot spin the drain; the repeat policy still lives in the Prolog actor.
+- **Failure isolation**: a failed research pass posts a sanitized failure comment, leaves durable state untouched, and the drain continues with the next eligible issue. The invocation exits 1 when any pass failed.
+- **State durability**: identical `auto-dig-prolog-state.v1` state issue contract, advanced only after a successful branch push, so a crashed service never records unconsumed work.
+- **`--dry-run`** selects and stages a run (including the rendered request contract) without research, git mutation, or issue writes; combine with `--queue-file`/`--state-file` for fully offline wiring checks.
+
+Configuration is environment-driven; no secrets are logged:
+
+| Variable | Meaning | Default |
+|---|---|---|
+| `AUTO_DIG_FORGE_HOST` | Forgejo intake host | `https://git.starintel.actor` |
+| `AUTO_DIG_FORGE_REPO` | queue repository `owner/name` | the canonical Auto-Dig repo |
+| `AUTO_DIG_FORGE_TOKEN` (or `FORGEJO_TOKEN`) | Forgejo API token for queue/state/receipts | anonymous read only |
+| `OPENROUTER_API_KEY` | required for live research | — |
+| `BRAVE_API_KEY` | required for live Brave MCP research | — |
+| `PROLOG_RLM_REF` | pinned Prolog-RLM commit the checkout must match | the harness pin |
+
+The pinned Prolog-RLM checkout (default `<repo>/.prolog-rlm`) is verified by SHA before every drain. Checkout preparation and `scripts/apply_prolog_rlm_hotfix.py` remain setup steps, because the hotfix patch is not idempotent.
+
+Example single drain and service mode:
+
+```bash
+python3 agents/auto_dig_service.py                 # one drain of git.starintel.actor issues
+python3 agents/auto_dig_service.py --loop         # deployed-service mode, hourly drains
+python3 agents/auto_dig_service.py --force-issue 2297
+python3 agents/auto_dig_service.py --queue-file q.json --state-file s.json --dry-run
+```
+
+Tests: `python3 -m unittest tests.test_auto_dig_service` covers queue normalization, state schema handling, request rendering, and receipt content without network access.
+
 ### Prolog-RLM integration contract
 
 `auto_dig_rlm_runner.pl` deliberately uses the public `rlm_completion/4` runtime instead of the convenience `prolog-rlm rlm` CLI. The convenience CLI currently supplies a fixed planner and disables skills for its small deterministic RLM lane; that is the wrong contract for Auto-Dig research.

@@ -200,6 +200,73 @@ test(validated_report_is_emitted_verbatim_for_humans) :-
     assertion(\+ sub_string(Output, _, _, _, "\"schema\"")),
     assertion(\+ sub_string(Output, _, _, _, "run complete")).
 
+test(gateway_endpoint_override_selects_openai_compatible_provider) :-
+    setup_call_cleanup(
+        setenv('AUTO_DIG_LLM_ENDPOINT',
+               'https://llm.starintel.actor/v1/chat/completions'),
+        ( auto_dig_provider('qwen38-27b', Provider),
+          Provider = provider(openai_compatible, Options),
+          memberchk(endpoint("https://llm.starintel.actor/v1/chat/completions"),
+                    Options),
+          memberchk(credential(env('AUTO_DIG_LLM_API_KEY')), Options),
+          memberchk(model('qwen38-27b'), Options),
+          memberchk(timeout(180), Options)
+        ),
+        unsetenv('AUTO_DIG_LLM_ENDPOINT')).
+
+test(gateway_timeout_env_is_honored) :-
+    setup_call_cleanup(
+        ( setenv('AUTO_DIG_LLM_ENDPOINT', 'https://example.internal/v1/chat/completions'),
+          setenv('AUTO_DIG_LLM_TIMEOUT', '240')
+        ),
+        ( auto_dig_provider(m, Provider),
+          Provider = provider(_, Options),
+          memberchk(timeout(240), Options)
+        ),
+        ( unsetenv('AUTO_DIG_LLM_ENDPOINT'),
+          unsetenv('AUTO_DIG_LLM_TIMEOUT')
+        )).
+
+test(provider_falls_back_to_openrouter_without_gateway_env) :-
+    setup_call_cleanup(
+        unsetenv('AUTO_DIG_LLM_ENDPOINT'),
+        ( auto_dig_provider('z-ai/glm-5.3-flash', Provider),
+          Provider = provider(openrouter, Options),
+          memberchk(endpoint('https://openrouter.ai/api/v1/chat/completions'),
+                    Options),
+          memberchk(credential(env('OPENROUTER_API_KEY')), Options)
+        ),
+        true).
+
+test(context_window_env_overrides_model_table) :-
+    setup_call_cleanup(
+        setenv('AUTO_DIG_MODEL_CONTEXT_WINDOW', '32768'),
+        ( auto_dig_context_budget('qwen38-27b', 32768, 9830)
+        ),
+        unsetenv('AUTO_DIG_MODEL_CONTEXT_WINDOW')).
+
+test(unknown_model_without_window_override_still_fails_closed) :-
+    setup_call_cleanup(
+        unsetenv('AUTO_DIG_MODEL_CONTEXT_WINDOW'),
+        catch(auto_dig_context_budget('totally-unknown-model', _, _),
+              error(domain_error(auto_dig_model_context_window, _), _),
+              true),
+        true).
+
+test(research_prompt_grounded_in_request_and_evidence_discipline) :-
+    auto_dig_query(Query),
+    assertion(sub_string(Query, _, _, _, "single research request")),
+    assertion(sub_string(Query, _, _, _, "state exactly which parts of the request remain unanswered")),
+    assertion(sub_string(Query, _, _, _, "Search broadly")),
+    assertion(sub_string(Query, _, _, _, "multiple distinct queries")),
+    assertion(sub_string(Query, _, _, _, "preferring primary records")),
+    assertion(sub_string(Query, _, _, _, "at least two unrelated origins")),
+    assertion(sub_string(Query, _, _, _, "label single-source claims as single-source")),
+    assertion(sub_string(Query, _, _, _, "never invent, complete, or pattern-guess a URL")),
+    assertion(sub_string(Query, _, _, _, "established (multi-source), provisional (single-source), or hypothesis (inferred)")),
+    assertion(sub_string(Query, _, _, _, "falsification criteria for the load-bearing ones")),
+    assertion(sub_string(Query, _, _, _, "map each cited claim to its exact source URL")).
+
 test(repair_prompt_names_duplicate_key_failure_and_is_single_attempt) :-
     auto_dig_query(Query),
     auto_dig_repair_query(Query, RepairQuery),

@@ -3,6 +3,7 @@
             auto_dig_runtime_options/3,
             auto_dig_runtime_options/6,
             auto_dig_context_budget/3,
+            auto_dig_provider/2,
             auto_dig_query/1,
             auto_dig_repair_query/2,
             auto_dig_retry_options/2,
@@ -166,13 +167,14 @@ auto_dig_runtime_options(Model,
                          AuthorityContext,
                          McpCapabilities,
                          Options) :-
-    openrouter_provider(Model, Provider),
+    auto_dig_provider(Model, Provider),
+    Provider = provider(ProviderName, _),
     auto_dig_context_budget(Model, _ContextWindow, TokenBudget),
     BaseCapabilities = [ rlm,
                          context(slice),
                          context(search),
                          context(peek),
-                         model(openrouter)
+                         model(ProviderName)
                        ],
     append(BaseCapabilities, McpCapabilities, Capabilities0),
     sort(Capabilities0, Capabilities),
@@ -191,7 +193,7 @@ auto_dig_runtime_options(Model,
                 time_limit:300.0
               },
     RuntimeOptions = [ provider(Provider),
-                       provider_name(openrouter),
+                       provider_name(ProviderName),
                        capabilities(Capabilities),
                        child_capabilities(Capabilities),
                        reasoning_effort(ReasoningEffort),
@@ -210,18 +212,58 @@ auto_dig_runtime_options(Model,
                             Options).
 
 /*
+ * Provider selection: OpenRouter by default, or any OpenAI-compatible
+ * endpoint (for example the in-house llm.starintel.actor gateway) when
+ * AUTO_DIG_LLM_ENDPOINT is set. The credential is always env(Name); the
+ * transport resolves it at call time and never logs secrets.
+ */
+auto_dig_provider(Model, Provider) :-
+    getenv('AUTO_DIG_LLM_ENDPOINT', Endpoint),
+    atom_string(Endpoint, EndpointString),
+    EndpointString \== "",
+    !,
+    auto_dig_llm_timeout(Timeout),
+    Provider = provider(openai_compatible,
+                        [ endpoint(EndpointString),
+                          credential(env('AUTO_DIG_LLM_API_KEY')),
+                          model(Model),
+                          timeout(Timeout)
+                        ]).
+
+auto_dig_provider(Model, Provider) :-
+    openrouter_provider(Model, Provider).
+
+auto_dig_llm_timeout(Timeout) :-
+    getenv('AUTO_DIG_LLM_TIMEOUT', Raw),
+    atom_string(Raw, RawString),
+    catch(number_string(Timeout0, RawString), _, fail),
+    Timeout0 > 0,
+    !,
+    Timeout is round(Timeout0).
+auto_dig_llm_timeout(180).
+
+/*
  * Temporary consumer-owned model limits.
  *
  * Prolog-RLM issue #296 tracks moving this into a provider-neutral model
- * metadata API. Auto-Dig intentionally gives the direct worker 30% of the
- * selected model context window. OpenRouter advertises 1,310,720 tokens for
- * GLM-5.3-Flash and 1,050,000 for the existing GPT-5.6 routes.
+ * model metadata API. Auto-Dig intentionally gives the direct worker 30% of
+ * the selected model context window. OPENROUTER_TEST_MODEL routes to the
+ * default openrouter model. AUTO_DIG_MODEL_CONTEXT_WINDOW overrides the
+ * window for gateway models that are absent from the table below.
  */
 auto_dig_model_context_window('z-ai/glm-5.3-flash', 1310720).
 auto_dig_model_context_window('openai/gpt-5.6-luna', 1050000).
 auto_dig_model_context_window('openai/gpt-5.6-terra', 1050000).
 auto_dig_model_context_window('openai/gpt-5.6-sol', 1050000).
 
+auto_dig_context_budget(_Model, ContextWindow, TokenBudget) :-
+    getenv('AUTO_DIG_MODEL_CONTEXT_WINDOW', Raw),
+    atom_string(Raw, RawString),
+    catch(number_string(ContextWindow0, RawString), _, fail),
+    ContextWindow0 > 0,
+    !,
+    ContextWindow = ContextWindow0,
+    TokenBudget is (ContextWindow * 30) // 100.
 auto_dig_context_budget(Model, ContextWindow, TokenBudget) :-
     (   auto_dig_model_context_window(Model, ContextWindow)
     ->  TokenBudget is (ContextWindow * 30) // 100
@@ -238,7 +280,7 @@ runtime_binding_options(Registry,
                           authority_context(AuthorityContext)
                         | Options0 ]).
 
-auto_dig_query("You are the Auto-Dig Prolog actor running in native direct mode with bounded read-only web research tools. Perform the research now; do not emit a typed plan and do not merely propose a future tool-enabled stage. Use the available Brave search tools broadly to discover relevant sources, then use Fetch tools to inspect primary or otherwise high-value source content. Use RLM context search, peek, and slice when useful. Reserve the final four model responses for synthesis. Stop evidence acquisition no later than the twelfth model response. The runtime may remove all native tool schemas earlier when its wall-clock synthesis reserve activates; if tools are no longer available, treat evidence acquisition as closed and synthesize immediately from evidence already gathered. Once either boundary is reached, do not call Brave, Fetch, context tools, or write tool-call syntax as text; synthesize the strongest evidence already gathered into the final answer. If useful evidence remains after the boundary, list it as follow-up work instead of spending synthesis headroom. Native tool-call arguments must be strict JSON objects with every object key appearing exactly once; never emit duplicate JSON keys. Prefer no more than four parallel native tool calls in one assistant turn so each call remains easy to validate and repair. Separate established facts, hypotheses, constraints, unresolved claims, primary-source evidence, and falsification criteria. Preserve source URLs or identifiers in the result so claims are auditable. Do not claim research or verification that was not actually performed. Your final assistant response MUST be a substantive Markdown report that starts exactly with '# Auto-Dig Research Output' and contains the headings '## Findings', '## Evidence', and '## Unresolved / Follow-up', with at least one http:// or https:// source URL. The final response must contain prose findings, not pending tool invocations, serialized tool calls, or a statement that the run merely completed. Even when evidence is limited, produce the report with explicit unresolved items. Return an evidence-backed research slice plus clearly separated remaining follow-up work, including any additional tool or datasource capability that would materially improve the next pass.").
+auto_dig_query("You are the Auto-Dig Prolog actor running in native direct mode with bounded read-only web research tools. The supplied input context is a single research request: read it first, answer its stated goal and completion criteria, respect its scope, seed sources, and constraints, and state exactly which parts of the request remain unanswered when this bounded slice cannot cover them. Method, in order: (1) plan coverage from the request's own terms, naming its people, organizations, jurisdictions, records, and date ranges; (2) Search broadly with the available Brave tools using multiple distinct queries and varied terminology, covering every required surface the request names; (3) use Fetch tools to inspect primary or otherwise high-value source content, preferring primary records (filings, official documents, legislation, court records, original statements) over outlets that merely restate another source; (4) corroborate load-bearing claims across at least two unrelated origins where feasible and label single-source claims as single-source; (5) use RLM context search, peek, and slice when useful, then synthesize. Perform the research now; do not emit a typed plan and do not merely propose a future tool-enabled stage. Budget discipline: reserve the final four model responses for synthesis; stop evidence acquisition no later than the twelfth model response. The runtime may remove all native tool schemas earlier when its wall-clock synthesis reserve activates; if tools are no longer available, treat evidence acquisition as closed and synthesize immediately from evidence already gathered. Once either boundary is reached, do not call Brave, Fetch, context tools, or write tool-call syntax as text; synthesize the strongest evidence already gathered into the final answer. If useful evidence remains after the boundary, list it as follow-up work instead of spending synthesis headroom. Tool-call hygiene: native tool-call arguments must be strict JSON objects with every object key appearing exactly once; never emit duplicate JSON keys. Prefer no more than four parallel native tool calls in one assistant turn so each call remains easy to validate and repair. Evidence discipline: separate established facts, hypotheses, constraints, unresolved claims, primary-source evidence, and falsification criteria. Preserve source URLs or identifiers in the result so claims are auditable. Cite only URLs that a search or fetch tool actually returned; never invent, complete, or pattern-guess a URL. Do not claim research or verification that was not actually performed. Report contract: your final assistant response MUST be a substantive Markdown report that starts exactly with '# Auto-Dig Research Output' and contains the headings '## Findings', '## Evidence', and '## Unresolved / Follow-up', with at least one http:// or https:// source URL. In '## Findings', mark each finding as established (multi-source), provisional (single-source), or hypothesis (inferred), and give falsification criteria for the load-bearing ones. In '## Evidence', map each cited claim to its exact source URL and state what that source directly supports. In '## Unresolved / Follow-up', list unanswered request parts, single-source claims needing corroboration, and any additional tool or datasource capability that would materially improve the next pass. The final response must contain prose findings, not pending tool invocations, serialized tool calls, or a statement that the run merely completed. Even when evidence is limited, produce the report with explicit unresolved items. Return an evidence-backed research slice plus clearly separated remaining follow-up work.").
 
 auto_dig_repair_query(Query, RepairQuery) :-
     string_concat(Query,
