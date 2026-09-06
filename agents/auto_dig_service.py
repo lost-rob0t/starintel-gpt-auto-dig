@@ -680,22 +680,27 @@ def current_branch(cfg: ServiceConfig) -> str:
 
 def push_run_branch(cfg: ServiceConfig, run_dir_rel: Path, branch: str, run_id: str) -> str:
     original = current_branch(cfg)
-    git(cfg, "switch", "-c", branch)
-    git(cfg, "add", str(run_dir_rel))
-    git(
-        cfg,
-        "-c",
-        "user.name=auto-dig-prolog[bot]",
-        "-c",
-        "user.email=auto-dig-prolog@users.noreply.starintel.actor",
-        "commit",
-        "-m",
-        f"agent({AGENT_NAME}): run {run_id}",
-    )
-    git(cfg, "push", "origin", branch)
-    pushed = git(cfg, "rev-parse", branch).stdout.strip()
-    git(cfg, "switch", original)
-    return pushed
+    try:
+        git(cfg, "switch", "-c", branch)
+        git(cfg, "add", str(run_dir_rel))
+        git(
+            cfg,
+            "-c",
+            "user.name=auto-dig-prolog[bot]",
+            "-c",
+            "user.email=auto-dig-prolog@users.noreply.starintel.actor",
+            "commit",
+            "-m",
+            f"agent({AGENT_NAME}): run {run_id}",
+        )
+        git(cfg, "push", "origin", branch)
+        pushed = git(cfg, "rev-parse", branch).stdout.strip()
+        return pushed
+    finally:
+        # The run artifacts live on the run branch now; switching back
+        # removes them from this worktree, so nothing may touch the run
+        # directory after this returns.
+        git(cfg, "switch", original, check=False)
 
 
 # ---------------------------------------------------------------------------
@@ -963,9 +968,12 @@ def run_one_pass(
         if not report_path.is_file() or not report_path.stat().st_size:
             raise ValueError("research passed but no substantive report.md was emitted")
 
-        # 6. Push the isolated run branch.
+        # 6. Push the isolated run branch. The manifest records everything
+        # knowable before the push ("researched" plus the run contract);
+        # pushed/receipt state is durably recorded in the actor state and
+        # the issue receipt instead, because the run directory leaves this
+        # worktree once the branch is pushed and we switch back.
         pushed = push_run_branch(cfg, run_dir_rel, branch, run_id)
-        update_run_manifest(run_dir, {"status": "pushed", "pushed_commit": pushed})
         log(f"pushed {branch} at {pushed}")
 
         # 7. Advance durable state only after a successful push.
@@ -977,8 +985,7 @@ def run_one_pass(
                 issue_number,
                 render_receipt_comment(cfg, run_id, branch, model, effort),
             )
-        update_run_manifest(run_dir, {"status": "receipt_posted"})
-        log(f"receipt posted for #{issue_number}")
+        log(f"pass complete for #{issue_number} (branch {branch})")
         return PassResult(outcome="run", issue_number=issue_number, detail=run_id)
     except Exception as exc:  # noqa: BLE001 - pass isolation boundary
         log(f"pass failed for #{issue_number}: {exc}")
