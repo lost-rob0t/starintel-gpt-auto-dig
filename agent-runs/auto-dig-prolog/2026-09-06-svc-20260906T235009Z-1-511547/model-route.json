@@ -1,0 +1,8 @@
+{
+  "model": "qwen38-27b",
+  "reasoning": {
+    "effort": "high"
+  },
+  "schema": "auto-dig-model-route.v1",
+  "tier": "override"
+}

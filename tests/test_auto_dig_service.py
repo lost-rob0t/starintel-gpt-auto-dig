@@ -56,8 +56,8 @@ class ServiceConfigTests(unittest.TestCase):
     def test_defaults_target_starintel_forgejo(self) -> None:
         cfg = make_config()
         self.assertEqual(cfg.host, "https://git.starintel.actor")
-        self.assertEqual(cfg.repo, "lost-rob0t/starintel-gpt-auto-dig")
-        self.assertEqual(cfg.api_base, "https://git.starintel.actor/api/v1/repos/lost-rob0t/starintel-gpt-auto-dig")
+        self.assertEqual(cfg.repo, "nsaspy/starintel-gpt-auto-dig")
+        self.assertEqual(cfg.api_base, "https://git.starintel.actor/api/v1/repos/nsaspy/starintel-gpt-auto-dig")
 
     def test_cli_flags_override_environment_defaults(self) -> None:
         cfg = load_config(
@@ -85,7 +85,7 @@ class QueueTests(unittest.TestCase):
             "number": 2297,
             "title": "[Auto-Dig request] Flock vendor control",
             "body": "## Priority\n\nurgent\n",
-            "html_url": "https://git.starintel.actor/lost-rob0t/starintel-gpt-auto-dig/issues/2297",
+            "html_url": "https://git.starintel.actor/nsaspy/starintel-gpt-auto-dig/issues/2297",
             "created_at": "2026-08-27T10:00:00Z",
             "updated_at": "2026-08-27T10:00:00Z",
             "labels": [{"name": "investigation-target"}],
@@ -101,13 +101,13 @@ class QueueTests(unittest.TestCase):
         entry = normalize_issue({"number": 5, "title": "t", "body": ""}, cfg)
         self.assertEqual(
             entry["url"],
-            "https://git.starintel.actor/lost-rob0t/starintel-gpt-auto-dig/issues/5",
+            "https://git.starintel.actor/nsaspy/starintel-gpt-auto-dig/issues/5",
         )
 
     def test_client_queue_path_filters_open_issues_with_label(self) -> None:
         cfg = make_config()
         client = ForgejoClient(cfg)
-        self.assertTrue(str(client.cfg.api_base).endswith("/api/v1/repos/lost-rob0t/starintel-gpt-auto-dig"))
+        self.assertTrue(str(client.cfg.api_base).endswith("/api/v1/repos/nsaspy/starintel-gpt-auto-dig"))
 
 
 class StateTests(unittest.TestCase):
@@ -154,7 +154,7 @@ class RequestRenderingTests(unittest.TestCase):
         issue = {
             "number": 1901,
             "title": "[Auto-Dig request] Rensselaer sheriff network",
-            "url": "https://git.starintel.actor/lost-rob0t/starintel-gpt-auto-dig/issues/1901",
+            "url": "https://git.starintel.actor/nsaspy/starintel-gpt-auto-dig/issues/1901",
             "body": "## Subject\n\nRensselaer County Sheriff\n\n## Goal\n\nMap the Flock vendor network.",
         }
         markdown = render_request_markdown(decision, issue)
@@ -174,7 +174,7 @@ class RequestRenderingTests(unittest.TestCase):
         cfg = make_config()
         comment = render_receipt_comment(cfg, "svc-1", "auto-dig-prolog/2026-09-06-svc-1", "z-ai/glm-5.3-flash", "max")
         self.assertIn("completed bounded run `svc-1`", comment)
-        self.assertIn("https://git.starintel.actor/lost-rob0t/starintel-gpt-auto-dig/src/branch/auto-dig-prolog/2026-09-06-svc-1", comment)
+        self.assertIn("https://git.starintel.actor/nsaspy/starintel-gpt-auto-dig/src/branch/auto-dig-prolog/2026-09-06-svc-1", comment)
         self.assertIn("does **not** mark the investigation complete", comment)
         self.assertIn("z-ai/glm-5.3-flash", comment)
 

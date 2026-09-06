@@ -43,7 +43,7 @@ from pathlib import Path
 from typing import Any
 
 DEFAULT_FORGE_HOST = "https://git.starintel.actor"
-DEFAULT_REPO = "lost-rob0t/starintel-gpt-auto-dig"
+DEFAULT_REPO = "nsaspy/starintel-gpt-auto-dig"
 DEFAULT_PROLOG_RLM_REF = "39b278589dae8518e583778cd6671a6cb1e026c7"
 DEFAULT_TOKEN_ENVS = ("AUTO_DIG_FORGE_TOKEN", "FORGEJO_TOKEN")
 QUEUE_LABEL = "investigation-target"

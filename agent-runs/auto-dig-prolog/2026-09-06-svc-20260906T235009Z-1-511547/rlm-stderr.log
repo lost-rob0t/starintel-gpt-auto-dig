@@ -1,0 +1,37 @@
+[auto_dig_rlm] 2026-09-06T23:50:09Z phase=start mode=direct model=qwen38-27b reasoning_effort=high
+[auto_dig_rlm] 2026-09-06T23:50:09Z phase=context_loaded chars=1451 file=/tmp/opencode/auto-dig-gateway-test/agent-runs/auto-dig-prolog/2026-09-06-svc-20260906T235009Z-1-511547/request.md
+[auto_dig_rlm] 2026-09-06T23:50:09Z phase=mcp_session_open servers=[brave,fetch]
+[auto_dig_mcp] 2026-09-06T23:50:09Z session_open servers=[brave,fetch]
+[auto_dig_mcp] 2026-09-06T23:50:09Z phase=registry_create state=start
+[auto_dig_mcp] 2026-09-06T23:50:09Z phase=registry_create state=ok
+[auto_dig_mcp] 2026-09-06T23:50:09Z phase=authority_setup state=start
+[auto_dig_mcp] 2026-09-06T23:50:09Z phase=authority_setup state=ok
+[auto_dig_mcp] 2026-09-06T23:50:09Z phase=mcp_run(brave) state=start
+[auto_dig_mcp] 2026-09-06T23:50:09Z phase=mcp_run(brave) state=ok
+[auto_dig_mcp] 2026-09-06T23:50:09Z phase=mcp_connect(brave) state=start
+[auto_dig_mcp] 2026-09-06T23:50:10Z phase=mcp_connect(brave) state=ok
+[auto_dig_mcp] 2026-09-06T23:50:10Z phase=mcp_import(brave) state=start
+[auto_dig_mcp] 2026-09-06T23:50:11Z phase=mcp_import(brave) state=ok
+[auto_dig_mcp] 2026-09-06T23:50:11Z mcp_import server=brave imported_tools=8
+[auto_dig_mcp] 2026-09-06T23:50:11Z phase=mcp_run(fetch) state=start
+[auto_dig_mcp] 2026-09-06T23:50:11Z phase=mcp_run(fetch) state=ok
+[auto_dig_mcp] 2026-09-06T23:50:11Z phase=mcp_connect(fetch) state=start
+[auto_dig_mcp] 2026-09-06T23:50:12Z phase=mcp_connect(fetch) state=ok
+[auto_dig_mcp] 2026-09-06T23:50:12Z phase=mcp_import(fetch) state=start
+[auto_dig_mcp] 2026-09-06T23:50:12Z phase=mcp_import(fetch) state=ok
+[auto_dig_mcp] 2026-09-06T23:50:12Z mcp_import server=fetch imported_tools=6
+[auto_dig_mcp] 2026-09-06T23:50:12Z phase=capability_projection state=start
+[auto_dig_mcp] 2026-09-06T23:50:12Z phase=capability_projection state=ok
+[auto_dig_mcp] 2026-09-06T23:50:12Z capability_projection count=14
+[auto_dig_mcp] 2026-09-06T23:50:12Z session_open state=ok
+[auto_dig_rlm] 2026-09-06T23:50:12Z phase=mcp_ready capability_count=14 capabilities=[tool('mcp.brave.brave_image_search'),tool('mcp.brave.brave_llm_context'),tool('mcp.brave.brave_local_search'),tool('mcp.brave.brave_news_search'),tool('mcp.brave.brave_place_search'),tool('mcp.brave.brave_summarizer'),tool('mcp.brave.brave_video_search'),tool('mcp.brave.brave_web_search'),tool('mcp.fetch.fetch_html'),tool('mcp.fetch.fetch_json'),tool('mcp.fetch.fetch_markdown'),tool('mcp.fetch.fetch_readable'),tool('mcp.fetch.fetch_txt'),tool('mcp.fetch.fetch_youtube_transcript')]
+[auto_dig_rlm] 2026-09-06T23:50:12Z phase=direct_start context_window=32768 token_budget=9830 model_calls=16 native_tool_cutoff=12 synthesis_reserve=90.0 tool_calls=24 context_ops=32 iterations=24 time_limit=300.0
+[auto_dig_rlm] 2026-09-06T23:52:17Z phase=direct_return
+[auto_dig_rlm] 2026-09-06T23:52:17Z phase=mcp_session_close
+[auto_dig_mcp] 2026-09-06T23:52:17Z session_close state=start
+[auto_dig_mcp] 2026-09-06T23:52:17Z session_close state=ok
+::error title=Auto-Dig Prolog-RLM failure::status=error phase=provider kind=provider_failed message=direct provider request failed used=unknown limit=unknown model_calls=0 prompt_tokens=0 completion_tokens=0 total_tokens=0 cost_usd=0.0
+[auto_dig_rlm] 2026-09-06T23:52:17Z phase=outcome status=error phase=provider kind=provider_failed message=direct provider request failed used=unknown limit=unknown model_calls=0 prompt_tokens=0 completion_tokens=0 total_tokens=0 cost_usd=0.0
+[auto_dig_rlm] 2026-09-06T23:52:17Z phase=result_written file=/tmp/opencode/auto-dig-gateway-test/agent-runs/auto-dig-prolog/2026-09-06-svc-20260906T235009Z-1-511547/rlm-result.json
+[auto_dig_rlm] 2026-09-06T23:52:17Z phase=trace_written file=/tmp/opencode/auto-dig-gateway-test/agent-runs/auto-dig-prolog/2026-09-06-svc-20260906T235009Z-1-511547/rlm-trace.json
+[auto_dig_rlm] 2026-09-06T23:52:17Z phase=finish exit_code=1
