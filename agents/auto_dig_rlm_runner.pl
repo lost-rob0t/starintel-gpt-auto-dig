@@ -1,7 +1,8 @@
 :- module(auto_dig_rlm_runner,
           [ main/1,
-            auto_dig_runtime_options/3,
-            auto_dig_runtime_options/6,
+             auto_dig_runtime_options/3,
+             auto_dig_runtime_options/6,
+             auto_dig_runtime_options/7,
             auto_dig_context_budget/3,
             auto_dig_query/1,
             auto_dig_repair_query/2,
@@ -20,7 +21,9 @@
 :- use_module(library(rlm_trace)).
 :- use_module('./auto_dig_mcp_tools').
 :- use_module('./auto_dig_mcp_runner').
+:- use_module('./auto_dig_starintel_tools').
 :- use_module('./auto_dig_safe_log').
+:- use_module(library(rlm_effect)).
 
 :- initialization(main, main).
 
@@ -42,7 +45,8 @@ main_run(Argv, ExitCode) :-
     safe_log(auto_dig_rlm,
              'phase=context_loaded chars=~d file=~w',
              [ContextChars, Args.context_file]),
-    auto_dig_query(Query),
+    auto_dig_query(BaseQuery),
+    auto_dig_tool_query(Args, BaseQuery, Query),
     run_research_completion(Args, Query, Context, Outcome),
     log_outcome(Outcome),
     write_trace_json(Args.output, auto_dig_rlm_result, Outcome),
@@ -60,6 +64,12 @@ main_run(Argv, ExitCode) :-
     safe_log(auto_dig_rlm, 'phase=finish exit_code=~d', [ExitCode]).
 
 run_research_completion(Args, Query, Context, Outcome) :-
+    setup_call_cleanup(
+        open_effect_store(Args, EffectState),
+        run_research_completion_with_effect(Args, Query, Context, Outcome),
+        close_effect_store(EffectState)).
+
+run_research_completion_with_effect(Args, Query, Context, Outcome) :-
     auto_dig_mcp_servers(Servers),
     safe_log(auto_dig_rlm, 'phase=mcp_session_open servers=~q', [Servers]),
     AuthorityContext = auto_dig_rlm_research,
@@ -83,6 +93,13 @@ run_research_completion_with_session(Args,
                                      Outcome) :-
     auto_dig_mcp_session_registry(Session, Registry),
     auto_dig_mcp_session_capabilities(Session, McpCapabilities),
+    starintel_tool_config(Args, StarIntelConfig),
+    auto_dig_starintel_tools_register(Registry,
+                                      StarIntelConfig,
+                                      StarIntelRootCapabilities,
+                                      StarIntelChildCapabilities),
+    append(McpCapabilities, StarIntelRootCapabilities, RootToolCapabilities),
+    append(McpCapabilities, StarIntelChildCapabilities, ChildToolCapabilities),
     length(McpCapabilities, McpCapabilityCount),
     safe_log(auto_dig_rlm,
              'phase=mcp_ready capability_count=~d capabilities=~q',
@@ -91,7 +108,8 @@ run_research_completion_with_session(Args,
                              Args.reasoning_effort,
                              Registry,
                              AuthorityContext,
-                             McpCapabilities,
+                             RootToolCapabilities,
+                             ChildToolCapabilities,
                              Options),
     memberchk(budget(Budget), Options),
     memberchk(native_tool_cutoff_model_calls(ToolCutoff), Options),
@@ -161,11 +179,26 @@ auto_dig_runtime_options(Model, ReasoningEffort, Options) :-
                              Options).
 
 auto_dig_runtime_options(Model,
-                         ReasoningEffort,
-                         Registry,
-                         AuthorityContext,
-                         McpCapabilities,
-                         Options) :-
+                          ReasoningEffort,
+                          Registry,
+                          AuthorityContext,
+                          McpCapabilities,
+                          Options) :-
+    auto_dig_runtime_options(Model,
+                             ReasoningEffort,
+                             Registry,
+                             AuthorityContext,
+                             McpCapabilities,
+                             McpCapabilities,
+                             Options).
+
+auto_dig_runtime_options(Model,
+                          ReasoningEffort,
+                          Registry,
+                          AuthorityContext,
+                          RootToolCapabilities,
+                          ChildToolCapabilities,
+                          Options) :-
     openrouter_provider(Model, Provider),
     auto_dig_context_budget(Model, _ContextWindow, TokenBudget),
     BaseCapabilities = [ rlm,
@@ -174,8 +207,10 @@ auto_dig_runtime_options(Model,
                          context(peek),
                          model(openrouter)
                        ],
-    append(BaseCapabilities, McpCapabilities, Capabilities0),
+    append(BaseCapabilities, RootToolCapabilities, Capabilities0),
     sort(Capabilities0, Capabilities),
+    append(BaseCapabilities, ChildToolCapabilities, ChildCapabilities0),
+    sort(ChildCapabilities0, ChildCapabilities),
     % Keep both ceilings: a response-count cutoff bounds acquisition even on
     % fast providers, while the wall-clock reserve forces synthesis early on
     % slow providers. The hard 300s runtime deadline remains the final guard.
@@ -193,7 +228,7 @@ auto_dig_runtime_options(Model,
     RuntimeOptions = [ provider(Provider),
                        provider_name(openrouter),
                        capabilities(Capabilities),
-                       child_capabilities(Capabilities),
+                       child_capabilities(ChildCapabilities),
                        reasoning_effort(ReasoningEffort),
                        skill_mode(on),
                        skill_catalog(default),
