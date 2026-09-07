@@ -2,3 +2,7 @@ _site/
 .generated/
 __pycache__/
 *.pyc
+.prolog/
+.prolog-rlm/
+.starintel-doc-nim/
+agent-runs/

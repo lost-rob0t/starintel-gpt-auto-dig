@@ -14,7 +14,7 @@ GitHub Actions
   -> starts exact-pinned prolog-rlm runtime
   -> Prolog actor selects one eligible request
   -> Prolog expert KB selects model + reasoning effort
-  -> opens a private read-only Brave Search + Fetch MCP research session
+  -> opens a private read-only Brave Search + Fetch + StarIntel corpus MCP research session
   -> native Prolog-RLM typed planner researches the selected request
      with automatic default skills, compiled prompt projection,
      bounded context search/peek/slice, depth-2 recursion, and MCP tools
@@ -23,6 +23,54 @@ GitHub Actions
 ```
 
 GitHub Actions owns credentials, checkout, repository mutation, logs, scheduling, and branch push. Prolog owns queue-selection semantics, actor execution, model-routing policy, and the trusted MCP allow-list/lifecycle. Prolog-RLM owns bounded recursive reasoning, provider requests, reasoning-effort enforcement, prompt compilation, skill activation, child-result acceptance, context projection, tool-schema projection, capability checks, budgets, and traces.
+
+## Standalone service runner (no action runner required)
+
+`auto_dig_service.py` runs the same harness end to end without GitHub Actions or the `gh` CLI. It is the reuse path for the deployed service later: a long-running process wraps this entrypoint, exactly like the other StarIntel Common Lisp/node services that run behind the shared infra web origin. No deployment logic lives in the harness itself.
+
+```text
+git.starintel.actor issues (label `investigation-target`)
+  -> Forgejo API queue snapshot (stdlib HTTP, no gh/tea dependency)
+  -> durable `[actor-state] auto-dig-prolog` state (state issue or --state-file)
+  -> supervised Prolog actor selects one eligible request
+  -> expert model route
+  -> bounded read-only Prolog-RLM research (Brave + Fetch + StarIntel corpus MCP; corpus consulted first)
+  -> run branch pushed to origin, receipt comment posted, state advanced
+  -> queue re-snapshots; the drain keeps working down the issues
+```
+
+Key behavior:
+
+- **Drain semantics**: one invocation works down the queue until the actor idles, `--max-issues`, or `--time-budget` stops it. Each issue is attempted at most once per invocation, so a failing `urgent` target cannot spin the drain; the repeat policy still lives in the Prolog actor.
+- **Failure isolation**: a failed research pass posts a sanitized failure comment, leaves durable state untouched, and the drain continues with the next eligible issue. The invocation exits 1 when any pass failed.
+- **State durability**: identical `auto-dig-prolog-state.v1` state issue contract, advanced only after a successful branch push, so a crashed service never records unconsumed work.
+- **`--dry-run`** selects and stages a run (including the rendered request contract) without research, git mutation, or issue writes; combine with `--queue-file`/`--state-file` for fully offline wiring checks.
+
+Configuration is environment-driven; no secrets are logged:
+
+| Variable | Meaning | Default |
+|---|---|---|
+| `AUTO_DIG_FORGE_HOST` | Forgejo intake host | `https://git.starintel.actor` |
+| `AUTO_DIG_FORGE_REPO` | queue repository `owner/name` | the canonical Auto-Dig repo |
+| `AUTO_DIG_FORGE_TOKEN` (or `FORGEJO_TOKEN`) | Forgejo API token for queue/state/receipts | anonymous read only |
+| `OPENROUTER_API_KEY` | required for live research | — |
+| `BRAVE_API_KEY` | required for live Brave MCP research | — |
+| `STARINTEL_SERVER_URL` | StarIntel corpus server API base URL for the read-only corpus tools | trusted loopback |
+| `STARINTEL_TOKEN` | optional bearer token for the StarIntel server API | none (trusted loopback) |
+| `PROLOG_RLM_REF` | pinned Prolog-RLM commit the checkout must match | the harness pin |
+
+The pinned Prolog-RLM checkout (default `<repo>/.prolog-rlm`) is verified by SHA before every drain. Checkout preparation and `scripts/apply_prolog_rlm_hotfix.py` remain setup steps, because the hotfix patch is not idempotent.
+
+Example single drain and service mode:
+
+```bash
+python3 agents/auto_dig_service.py                 # one drain of git.starintel.actor issues
+python3 agents/auto_dig_service.py --loop         # deployed-service mode, hourly drains
+python3 agents/auto_dig_service.py --force-issue 2297
+python3 agents/auto_dig_service.py --queue-file q.json --state-file s.json --dry-run
+```
+
+Tests: `python3 -m unittest tests.test_auto_dig_service` covers queue normalization, state schema handling, request rendering, and receipt content without network access. `python3 -m unittest tests.test_starintel_corpus_mcp_server` covers the pinned corpus MCP server wire protocol, both backends, and the read-only tool surface offline.
 
 ### Prolog-RLM integration contract
 
@@ -39,9 +87,11 @@ The Auto-Dig runner explicitly enables or relies on the current native runtime p
 - current proof-carrying child-result acceptance and delegation boundaries supplied by Prolog-RLM;
 - one private MCP tool registry per live actor run;
 - `tool_registry(Registry)` plus the matching trusted `authority_context(...)` passed into `rlm_completion/4`;
-- only the host allow-listed read capabilities for Brave Search and Fetch projected to the root planner and recursive children.
+- only the host allow-listed read capabilities for Brave Search, Fetch, and the StarIntel corpus projected to the root planner and recursive children.
 
-The MCP declarations remain host-owned and inert until the actor explicitly opens a session. Brave runs as the pinned `@brave/brave-search-mcp-server@2.1.0` stdio server and Fetch runs as pinned `mcp-fetch-server@1.1.2`. The model cannot choose executable paths, package versions, environment values, or effect classifications.
+The MCP declarations remain host-owned and inert until the actor explicitly opens a session. Brave runs as the pinned `@brave/brave-search-mcp-server@2.1.0` stdio server and Fetch runs as pinned `mcp-fetch-server@1.1.2`. The StarIntel corpus runs as the in-repo pinned `agents/starintel_corpus_mcp_server.py` stdio server: a read-only MCP 2025-11-25 surface over the StarIntel server API (`STARINTEL_SERVER_URL`, trusted-loopback default) with the on-disk corpus as the offline fallback, so both backends produce interchangeable results. The model cannot choose executable paths, package versions, environment values, or effect classifications. The optional `STARINTEL_TOKEN` bearer secret binds through `env_ref/1` only when the host supplies it, and the base URL resolves through a trusted `config_ref/1`; neither is ever a model-supplied argument.
+
+The research method consults the corpus first: before searching the open web, the actor searches for existing records, packets, and canonical StarIntel IDs and reuses them instead of minting duplicates; findings that merely restate an existing corpus record cite that record's `_id`. The canonical StarIntel write path (`scripts/create-db-document.py`, `scripts/starintel.py import`) is deliberately not exposed to the research loop.
 
 The read-only research allow-list is currently:
 
@@ -54,6 +104,9 @@ mcp.fetch.fetch_readable
 mcp.fetch.fetch_txt
 mcp.fetch.fetch_json
 mcp.fetch.fetch_youtube_transcript
+mcp.starintel.starintel_search
+mcp.starintel.starintel_get_document
+mcp.starintel.starintel_health
 ```
 
 Importing an MCP server-advertised tool does not grant it. The private registry can contain additional discovered tools, but Prolog-RLM only projects and executes the capabilities explicitly admitted by Auto-Dig policy. Tool invocation independently rechecks the same capability and authority context.
