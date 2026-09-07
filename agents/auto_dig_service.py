@@ -66,6 +66,8 @@ RLM_FEATURES = [
     "model_context_budget_30_percent",
     "read_only_brave_search_mcp",
     "read_only_fetch_mcp",
+    "read_only_starintel_corpus_mcp",
+    "corpus_first_identity_reuse",
     "emission_boundary_diagnostic_sanitization",
 ]
 

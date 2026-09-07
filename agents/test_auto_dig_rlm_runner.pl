@@ -101,7 +101,7 @@ test(repair_retry_is_smaller_and_keeps_total_cost_cap_bounded) :-
 test(mcp_registry_and_complete_read_tool_inventory_are_projected) :-
     auto_dig_mcp_read_capabilities(McpCapabilities),
     length(McpCapabilities, CapabilityCount),
-    assertion(CapabilityCount =:= 14),
+    assertion(CapabilityCount =:= 17),
     auto_dig_runtime_options('z-ai/glm-5.3-flash',
                              max,
                              fake_registry,
@@ -128,7 +128,21 @@ test(mcp_registry_and_complete_read_tool_inventory_are_projected) :-
     assertion(memberchk(tool('mcp.fetch.fetch_readable'), Capabilities)),
     assertion(memberchk(tool('mcp.fetch.fetch_txt'), Capabilities)),
     assertion(memberchk(tool('mcp.fetch.fetch_json'), Capabilities)),
-    assertion(memberchk(tool('mcp.fetch.fetch_youtube_transcript'), Capabilities)).
+    assertion(memberchk(tool('mcp.fetch.fetch_youtube_transcript'), Capabilities)),
+    assertion(memberchk(tool('mcp.starintel.starintel_search'), Capabilities)),
+    assertion(memberchk(tool('mcp.starintel.starintel_get_document'), Capabilities)),
+    assertion(memberchk(tool('mcp.starintel.starintel_health'), Capabilities)).
+
+test(research_prompt_consults_the_corpus_first_and_reuses_ids) :-
+    auto_dig_query(Query),
+    assertion(sub_string(Query, _, _, _, "search the local StarIntel corpus first")),
+    assertion(sub_string(Query, _, _, _, "starintel_search")),
+    assertion(sub_string(Query, _, _, _, "starintel_get_document")),
+    assertion(sub_string(Query, _, _, _, "existing records, packets, and canonical IDs")),
+    assertion(sub_string(Query, _, _, _, "reuse existing StarIntel IDs instead of minting duplicates")),
+    assertion(sub_string(Query, _, _, _, "cite that record's `_id`")),
+    assertion(sub_string(Query, _, _, _, "or call the StarIntel corpus tools")),
+    assertion(sub_string(Query, _, _, _, "findings that merely restate an existing corpus record")).
 
 test(research_prompt_requires_direct_live_tool_use_and_strict_native_json) :-
     auto_dig_query(Query),

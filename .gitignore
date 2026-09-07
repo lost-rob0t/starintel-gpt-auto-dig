@@ -5,3 +5,4 @@ __pycache__/
 .prolog/
 .prolog-rlm/
 .starintel-doc-nim/
+agent-runs/

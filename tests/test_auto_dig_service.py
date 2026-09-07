@@ -10,6 +10,7 @@ from agents.auto_dig_service import (
     DEFAULT_FORGE_HOST,
     DEFAULT_REPO,
     QUEUE_LABEL,
+    RLM_FEATURES,
     STATE_ISSUE_TITLE,
     STATE_SCHEMA,
     ForgejoClient,
@@ -23,6 +24,7 @@ from agents.auto_dig_service import (
     render_request_markdown,
     research_env,
     resolve_model_route,
+    write_run_manifest,
 )
 
 
@@ -242,6 +244,18 @@ class GatewayModeTests(unittest.TestCase):
                 json.loads((run_dir / "model-route.json").read_text(encoding="utf-8")),
                 route,
             )
+
+    def test_run_manifest_carries_the_starintel_corpus_feature_contract(self) -> None:
+        cfg = make_config()
+        self.assertIn("read_only_starintel_corpus_mcp", RLM_FEATURES)
+        self.assertIn("corpus_first_identity_reuse", RLM_FEATURES)
+        with TemporaryDirectory() as tmp:
+            run_dir = Path(tmp)
+            write_run_manifest(cfg, run_dir, "svc-1", "auto-dig-prolog/2026-09-06-svc-1", 1901)
+            manifest = json.loads((run_dir / "run.json").read_text(encoding="utf-8"))
+            self.assertEqual(manifest["rlm_features"], list(RLM_FEATURES))
+            self.assertIn("read_only_starintel_corpus_mcp", manifest["rlm_features"])
+            self.assertIn("corpus_first_identity_reuse", manifest["rlm_features"])
 
 
 if __name__ == "__main__":
