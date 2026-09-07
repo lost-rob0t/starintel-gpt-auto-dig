@@ -1,0 +1,8 @@
+{
+  "model": "z-ai/glm-5.3-flash",
+  "reasoning": {
+    "effort": "high"
+  },
+  "schema": "auto-dig-model-route.v1",
+  "tier": "override"
+}
