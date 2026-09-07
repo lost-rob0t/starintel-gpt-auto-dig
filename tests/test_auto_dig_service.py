@@ -10,6 +10,7 @@ from agents.auto_dig_service import (
     DEFAULT_FORGE_HOST,
     DEFAULT_REPO,
     QUEUE_LABEL,
+    RECEIPT_REPORT_CHAR_LIMIT,
     RLM_FEATURES,
     STATE_ISSUE_TITLE,
     STATE_SCHEMA,
@@ -179,6 +180,47 @@ class RequestRenderingTests(unittest.TestCase):
         self.assertIn("https://git.starintel.actor/nsaspy/starintel-gpt-auto-dig/src/branch/auto-dig-prolog/2026-09-06-svc-1", comment)
         self.assertIn("does **not** mark the investigation complete", comment)
         self.assertIn("z-ai/glm-5.3-flash", comment)
+        self.assertNotIn("## Research report", comment)
+
+    def test_receipt_embeds_the_research_findings(self) -> None:
+        cfg = make_config()
+        report = (
+            "# Auto-Dig Research Output\n\n"
+            "## Findings\nA bounded finding.\n\n"
+            "## Evidence\nhttps://example.org/primary-record\n\n"
+            "## Unresolved / Follow-up\nNone."
+        )
+        comment = render_receipt_comment(
+            cfg, "svc-2", "auto-dig-prolog/2026-09-06-svc-2", "z-ai/glm-5.3-flash", "max",
+            report=report,
+        )
+        self.assertIn("## Research report", comment)
+        self.assertIn(report, comment)
+        self.assertIn("does **not** mark the investigation complete", comment)
+        trailer = comment.rfind("This receipt does **not**")
+        report_block = comment.find(report)
+        self.assertGreater(trailer, report_block)
+
+    def test_receipt_report_is_bounded_and_points_to_the_branch_copy(self) -> None:
+        cfg = make_config()
+        report = "A" * (RECEIPT_REPORT_CHAR_LIMIT + 5000)
+        comment = render_receipt_comment(
+            cfg, "svc-3", "auto-dig-prolog/2026-09-06-svc-3", "z-ai/glm-5.3-flash", "max",
+            report=report,
+        )
+        self.assertIn("## Research report (truncated)", comment)
+        self.assertIn("truncated at", comment)
+        self.assertIn("complete validated report is `report.md`", comment)
+        self.assertLess(len(comment), len(report))
+
+    def test_receipt_ignores_blank_reports(self) -> None:
+        cfg = make_config()
+        for blank in ("", "   \n", None):
+            comment = render_receipt_comment(
+                cfg, "svc-4", "auto-dig-prolog/2026-09-06-svc-4", "z-ai/glm-5.3-flash", "max",
+                report=blank,
+            )
+            self.assertNotIn("## Research report", comment)
 
 
 class GatewayModeTests(unittest.TestCase):

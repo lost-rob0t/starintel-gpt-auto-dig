@@ -35,7 +35,7 @@ git.starintel.actor issues (label `investigation-target`)
   -> supervised Prolog actor selects one eligible request
   -> expert model route
   -> bounded read-only Prolog-RLM research (Brave + Fetch + StarIntel corpus MCP; corpus consulted first)
-  -> run branch pushed to origin, receipt comment posted, state advanced
+  -> run branch pushed to origin, receipt comment posted (findings embedded), state advanced
   -> queue re-snapshots; the drain keeps working down the issues
 ```
 
@@ -43,6 +43,7 @@ Key behavior:
 
 - **Drain semantics**: one invocation works down the queue until the actor idles, `--max-issues`, or `--time-budget` stops it. Each issue is attempted at most once per invocation, so a failing `urgent` target cannot spin the drain; the repeat policy still lives in the Prolog actor.
 - **Failure isolation**: a failed research pass posts a sanitized failure comment, leaves durable state untouched, and the drain continues with the next eligible issue. The invocation exits 1 when any pass failed.
+- **Findings-bearing receipt**: a successful pass embeds the validated `report.md` research report in the issue receipt comment, bounded at 16,000 characters; oversized reports are truncated with a pointer to the complete `report.md` on the run branch. The full artifact on the branch remains the authoritative copy.
 - **State durability**: identical `auto-dig-prolog-state.v1` state issue contract, advanced only after a successful branch push, so a crashed service never records unconsumed work.
 - **`--dry-run`** selects and stages a run (including the rendered request contract) without research, git mutation, or issue writes; combine with `--queue-file`/`--state-file` for fully offline wiring checks.
 

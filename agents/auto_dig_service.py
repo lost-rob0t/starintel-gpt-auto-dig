@@ -448,6 +448,40 @@ def render_request_markdown(decision: dict[str, Any], issue: dict[str, Any]) -> 
     )
 
 
+RECEIPT_REPORT_CHAR_LIMIT = 16000
+
+
+def receipt_report_section(report: str | None) -> list[str]:
+    """Render the research report block appended to the receipt comment.
+
+    The full report always lives on the run branch as report.md; the copy in
+    the comment is bounded so one oversized report cannot crowd out the
+    receipt contract or trip the forge's comment size limits.
+    """
+    if not report:
+        return []
+    text = report.strip()
+    if not text:
+        return []
+    if len(text) > RECEIPT_REPORT_CHAR_LIMIT:
+        truncated = text[:RECEIPT_REPORT_CHAR_LIMIT].rstrip()
+        return [
+            "",
+            "## Research report (truncated)",
+            "",
+            truncated,
+            "",
+            f"Report truncated at {RECEIPT_REPORT_CHAR_LIMIT} characters in this comment; "
+            "the complete validated report is `report.md` on the run branch above.",
+        ]
+    return [
+        "",
+        "## Research report",
+        "",
+        text,
+    ]
+
+
 def render_receipt_comment(
     cfg: ServiceConfig,
     run_id: str,
@@ -455,6 +489,7 @@ def render_receipt_comment(
     model: str,
     effort: str,
     dry_run: bool = False,
+    report: str | None = None,
 ) -> str:
     branch_url = f"{cfg.host}/{cfg.repo}/src/branch/{branch}"
     lines = [
@@ -468,11 +503,14 @@ def render_receipt_comment(
         "Brave/Fetch MCP research + recoverable per-call native preflight + "
         "bounded transient provider retries + wall-clock synthesis reserve + "
         "30% model-context token budget.",
+    ]
+    lines.extend(receipt_report_section(report))
+    lines.extend([
         "",
         "This receipt does **not** mark the investigation complete; canonical "
         "StarIntel writes, validation, merge, and final publication remain "
         "separate gates.",
-    ]
+    ])
     if dry_run:
         lines.append("")
         lines.append("(Dry run: no branch was pushed and no state advanced.)")
@@ -969,6 +1007,9 @@ def run_one_pass(
         report_path = run_dir / "report.md"
         if not report_path.is_file() or not report_path.stat().st_size:
             raise ValueError("research passed but no substantive report.md was emitted")
+        # The receipt embeds the findings; read the report before the push
+        # because the run directory leaves this worktree with the branch.
+        report_text = report_path.read_text(encoding="utf-8")
 
         # 6. Push the isolated run branch. The manifest records everything
         # knowable before the push ("researched" plus the run contract);
@@ -981,11 +1022,13 @@ def run_one_pass(
         # 7. Advance durable state only after a successful push.
         state_store.save(advance_state(decision, branch, run_id))
 
-        # 8. Post the receipt comment.
+        # 8. Post the receipt comment with the embedded findings report.
         if client is not None:
             client.add_comment(
                 issue_number,
-                render_receipt_comment(cfg, run_id, branch, model, effort),
+                render_receipt_comment(
+                    cfg, run_id, branch, model, effort, report=report_text
+                ),
             )
         log(f"pass complete for #{issue_number} (branch {branch})")
         return PassResult(outcome="run", issue_number=issue_number, detail=run_id)
