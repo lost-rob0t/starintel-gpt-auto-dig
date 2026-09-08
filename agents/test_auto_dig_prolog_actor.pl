@@ -125,4 +125,27 @@ test(missing_priority_defaults_to_normal) :-
     select_queue([Issue], State, Decision),
     assertion(Decision.priority == normal).
 
+test(coverage_ledger_survives_issue_selection) :-
+    issue(20, normal, Issue),
+    state(null, Base),
+    Coverage = json{
+        'anarchist-violence/us-geographic-npa/B':json{
+            schema:"auto-dig-coverage-ledger.v1",
+            corpus:"anarchist-violence",
+            seed_kind:"us-geographic-npa",
+            authority:"NANPA/FCC",
+            shard:"B",
+            shard_count:3,
+            shard_index:1,
+            ordering:"numeric_ascending",
+            completed:[202,205,208],
+            in_progress:[],
+            failed_retryable:[]
+        }
+    },
+    put_dict(coverage, Base, Coverage, State),
+    select_queue([Issue], State, Decision),
+    assertion(Decision.next_state.coverage == Coverage),
+    assertion(Decision.next_state.last_issue =:= 20).
+
 :- end_tests(auto_dig_prolog_actor).
