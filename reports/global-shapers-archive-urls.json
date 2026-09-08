@@ -4,924 +4,882 @@
   "common_crawl_indexes_requested": 24,
   "discoveries": [
     {
-      "error": "HTTPError: 503 Server Error: Service Temporarily Unavailable for url: https://index.commoncrawl.org/CC-MAIN-2024-33-index?url=globalshapers.org%2Falumni%2F%2A&output=json&filter=status%3A200&filter=mime%3Atext%2Fhtml&collapse=urlkey&fl=url",
+      "error": "ConnectionError: HTTPSConnectionPool(host='index.commoncrawl.org', port=443): Max retries exceeded with url: /CC-MAIN-2024-38-index?url=globalshapers.org%2Falumni%2F%2A&output=json&filter=status%3A200&filter=mime%3Atext%2Fhtml&collapse=urlkey&fl=url (Caused by NewConnectionError(\"HTTPSConnection(host='index.commoncrawl.org', port=443): Failed to establish a new connection: [Errno 111] Connection refused\"))",
       "query": "globalshapers.org/alumni/*",
-      "source": "common-crawl:CC-MAIN-2024-33",
+      "source": "common-crawl:CC-MAIN-2024-38",
       "status": "failed",
       "urls": 0
     },
     {
-      "error": "HTTPError: 503 Server Error: Service Temporarily Unavailable for url: https://index.commoncrawl.org/CC-MAIN-2024-33-index?url=globalshapers.org%2Fmember-details%2F%2A&output=json&filter=status%3A200&filter=mime%3Atext%2Fhtml&collapse=urlkey&fl=url",
+      "error": "ConnectionError: HTTPSConnectionPool(host='index.commoncrawl.org', port=443): Max retries exceeded with url: /CC-MAIN-2024-38-index?url=globalshapers.org%2Fmember-details%2F%2A&output=json&filter=status%3A200&filter=mime%3Atext%2Fhtml&collapse=urlkey&fl=url (Caused by NewConnectionError(\"HTTPSConnection(host='index.commoncrawl.org', port=443): Failed to establish a new connection: [Errno 111] Connection refused\"))",
       "query": "globalshapers.org/member-details/*",
-      "source": "common-crawl:CC-MAIN-2024-33",
+      "source": "common-crawl:CC-MAIN-2024-38",
       "status": "failed",
       "urls": 0
     },
     {
-      "error": "HTTPError: 503 Server Error: Service Temporarily Unavailable for url: https://index.commoncrawl.org/CC-MAIN-2024-33-index?url=globalshapers.org%2Fshapers%2F%2A&output=json&filter=status%3A200&filter=mime%3Atext%2Fhtml&collapse=urlkey&fl=url",
+      "error": "ConnectionError: HTTPSConnectionPool(host='index.commoncrawl.org', port=443): Max retries exceeded with url: /CC-MAIN-2024-38-index?url=globalshapers.org%2Fshapers%2F%2A&output=json&filter=status%3A200&filter=mime%3Atext%2Fhtml&collapse=urlkey&fl=url (Caused by NewConnectionError(\"HTTPSConnection(host='index.commoncrawl.org', port=443): Failed to establish a new connection: [Errno 111] Connection refused\"))",
       "query": "globalshapers.org/shapers/*",
-      "source": "common-crawl:CC-MAIN-2024-33",
+      "source": "common-crawl:CC-MAIN-2024-38",
+      "status": "failed",
+      "urls": 0
+    },
+    {
+      "error": "ConnectionError: HTTPSConnectionPool(host='index.commoncrawl.org', port=443): Max retries exceeded with url: /CC-MAIN-2024-38-index?url=www.globalshapers.org%2Falumni%2F%2A&output=json&filter=status%3A200&filter=mime%3Atext%2Fhtml&collapse=urlkey&fl=url (Caused by NewConnectionError(\"HTTPSConnection(host='index.commoncrawl.org', port=443): Failed to establish a new connection: [Errno 111] Connection refused\"))",
+      "query": "www.globalshapers.org/alumni/*",
+      "source": "common-crawl:CC-MAIN-2024-38",
+      "status": "failed",
+      "urls": 0
+    },
+    {
+      "error": "ConnectionError: HTTPSConnectionPool(host='index.commoncrawl.org', port=443): Max retries exceeded with url: /CC-MAIN-2024-38-index?url=www.globalshapers.org%2Fmember-details%2F%2A&output=json&filter=status%3A200&filter=mime%3Atext%2Fhtml&collapse=urlkey&fl=url (Caused by NewConnectionError(\"HTTPSConnection(host='index.commoncrawl.org', port=443): Failed to establish a new connection: [Errno 111] Connection refused\"))",
+      "query": "www.globalshapers.org/member-details/*",
+      "source": "common-crawl:CC-MAIN-2024-38",
+      "status": "failed",
+      "urls": 0
+    },
+    {
+      "error": "ConnectionError: HTTPSConnectionPool(host='index.commoncrawl.org', port=443): Max retries exceeded with url: /CC-MAIN-2024-38-index?url=www.globalshapers.org%2Fshapers%2F%2A&output=json&filter=status%3A200&filter=mime%3Atext%2Fhtml&collapse=urlkey&fl=url (Caused by NewConnectionError(\"HTTPSConnection(host='index.commoncrawl.org', port=443): Failed to establish a new connection: [Errno 111] Connection refused\"))",
+      "query": "www.globalshapers.org/shapers/*",
+      "source": "common-crawl:CC-MAIN-2024-38",
+      "status": "failed",
+      "urls": 0
+    },
+    {
+      "error": "ConnectionError: HTTPSConnectionPool(host='index.commoncrawl.org', port=443): Max retries exceeded with url: /CC-MAIN-2024-42-index?url=globalshapers.org%2Falumni%2F%2A&output=json&filter=status%3A200&filter=mime%3Atext%2Fhtml&collapse=urlkey&fl=url (Caused by NewConnectionError(\"HTTPSConnection(host='index.commoncrawl.org', port=443): Failed to establish a new connection: [Errno 111] Connection refused\"))",
+      "query": "globalshapers.org/alumni/*",
+      "source": "common-crawl:CC-MAIN-2024-42",
+      "status": "failed",
+      "urls": 0
+    },
+    {
+      "error": "ConnectionError: HTTPSConnectionPool(host='index.commoncrawl.org', port=443): Max retries exceeded with url: /CC-MAIN-2024-42-index?url=globalshapers.org%2Fmember-details%2F%2A&output=json&filter=status%3A200&filter=mime%3Atext%2Fhtml&collapse=urlkey&fl=url (Caused by NewConnectionError(\"HTTPSConnection(host='index.commoncrawl.org', port=443): Failed to establish a new connection: [Errno 111] Connection refused\"))",
+      "query": "globalshapers.org/member-details/*",
+      "source": "common-crawl:CC-MAIN-2024-42",
+      "status": "failed",
+      "urls": 0
+    },
+    {
+      "error": "ConnectionError: HTTPSConnectionPool(host='index.commoncrawl.org', port=443): Max retries exceeded with url: /CC-MAIN-2024-42-index?url=globalshapers.org%2Fshapers%2F%2A&output=json&filter=status%3A200&filter=mime%3Atext%2Fhtml&collapse=urlkey&fl=url (Caused by NewConnectionError(\"HTTPSConnection(host='index.commoncrawl.org', port=443): Failed to establish a new connection: [Errno 111] Connection refused\"))",
+      "query": "globalshapers.org/shapers/*",
+      "source": "common-crawl:CC-MAIN-2024-42",
+      "status": "failed",
+      "urls": 0
+    },
+    {
+      "error": "ConnectionError: HTTPSConnectionPool(host='index.commoncrawl.org', port=443): Max retries exceeded with url: /CC-MAIN-2024-42-index?url=www.globalshapers.org%2Falumni%2F%2A&output=json&filter=status%3A200&filter=mime%3Atext%2Fhtml&collapse=urlkey&fl=url (Caused by NewConnectionError(\"HTTPSConnection(host='index.commoncrawl.org', port=443): Failed to establish a new connection: [Errno 111] Connection refused\"))",
+      "query": "www.globalshapers.org/alumni/*",
+      "source": "common-crawl:CC-MAIN-2024-42",
+      "status": "failed",
+      "urls": 0
+    },
+    {
+      "error": "ConnectionError: HTTPSConnectionPool(host='index.commoncrawl.org', port=443): Max retries exceeded with url: /CC-MAIN-2024-42-index?url=www.globalshapers.org%2Fmember-details%2F%2A&output=json&filter=status%3A200&filter=mime%3Atext%2Fhtml&collapse=urlkey&fl=url (Caused by NewConnectionError(\"HTTPSConnection(host='index.commoncrawl.org', port=443): Failed to establish a new connection: [Errno 111] Connection refused\"))",
+      "query": "www.globalshapers.org/member-details/*",
+      "source": "common-crawl:CC-MAIN-2024-42",
+      "status": "failed",
+      "urls": 0
+    },
+    {
+      "error": "ConnectionError: HTTPSConnectionPool(host='index.commoncrawl.org', port=443): Max retries exceeded with url: /CC-MAIN-2024-42-index?url=www.globalshapers.org%2Fshapers%2F%2A&output=json&filter=status%3A200&filter=mime%3Atext%2Fhtml&collapse=urlkey&fl=url (Caused by NewConnectionError(\"HTTPSConnection(host='index.commoncrawl.org', port=443): Failed to establish a new connection: [Errno 111] Connection refused\"))",
+      "query": "www.globalshapers.org/shapers/*",
+      "source": "common-crawl:CC-MAIN-2024-42",
+      "status": "failed",
+      "urls": 0
+    },
+    {
+      "error": "ConnectionError: HTTPSConnectionPool(host='index.commoncrawl.org', port=443): Max retries exceeded with url: /CC-MAIN-2024-46-index?url=globalshapers.org%2Falumni%2F%2A&output=json&filter=status%3A200&filter=mime%3Atext%2Fhtml&collapse=urlkey&fl=url (Caused by NewConnectionError(\"HTTPSConnection(host='index.commoncrawl.org', port=443): Failed to establish a new connection: [Errno 111] Connection refused\"))",
+      "query": "globalshapers.org/alumni/*",
+      "source": "common-crawl:CC-MAIN-2024-46",
+      "status": "failed",
+      "urls": 0
+    },
+    {
+      "error": "ConnectionError: HTTPSConnectionPool(host='index.commoncrawl.org', port=443): Max retries exceeded with url: /CC-MAIN-2024-46-index?url=globalshapers.org%2Fmember-details%2F%2A&output=json&filter=status%3A200&filter=mime%3Atext%2Fhtml&collapse=urlkey&fl=url (Caused by NewConnectionError(\"HTTPSConnection(host='index.commoncrawl.org', port=443): Failed to establish a new connection: [Errno 111] Connection refused\"))",
+      "query": "globalshapers.org/member-details/*",
+      "source": "common-crawl:CC-MAIN-2024-46",
+      "status": "failed",
+      "urls": 0
+    },
+    {
+      "error": "ConnectionError: HTTPSConnectionPool(host='index.commoncrawl.org', port=443): Max retries exceeded with url: /CC-MAIN-2024-46-index?url=globalshapers.org%2Fshapers%2F%2A&output=json&filter=status%3A200&filter=mime%3Atext%2Fhtml&collapse=urlkey&fl=url (Caused by NewConnectionError(\"HTTPSConnection(host='index.commoncrawl.org', port=443): Failed to establish a new connection: [Errno 111] Connection refused\"))",
+      "query": "globalshapers.org/shapers/*",
+      "source": "common-crawl:CC-MAIN-2024-46",
+      "status": "failed",
+      "urls": 0
+    },
+    {
+      "error": "ConnectionError: HTTPSConnectionPool(host='index.commoncrawl.org', port=443): Max retries exceeded with url: /CC-MAIN-2024-46-index?url=www.globalshapers.org%2Falumni%2F%2A&output=json&filter=status%3A200&filter=mime%3Atext%2Fhtml&collapse=urlkey&fl=url (Caused by NewConnectionError(\"HTTPSConnection(host='index.commoncrawl.org', port=443): Failed to establish a new connection: [Errno 111] Connection refused\"))",
+      "query": "www.globalshapers.org/alumni/*",
+      "source": "common-crawl:CC-MAIN-2024-46",
+      "status": "failed",
+      "urls": 0
+    },
+    {
+      "error": "ConnectionError: HTTPSConnectionPool(host='index.commoncrawl.org', port=443): Max retries exceeded with url: /CC-MAIN-2024-46-index?url=www.globalshapers.org%2Fmember-details%2F%2A&output=json&filter=status%3A200&filter=mime%3Atext%2Fhtml&collapse=urlkey&fl=url (Caused by NewConnectionError(\"HTTPSConnection(host='index.commoncrawl.org', port=443): Failed to establish a new connection: [Errno 111] Connection refused\"))",
+      "query": "www.globalshapers.org/member-details/*",
+      "source": "common-crawl:CC-MAIN-2024-46",
+      "status": "failed",
+      "urls": 0
+    },
+    {
+      "error": "ConnectionError: HTTPSConnectionPool(host='index.commoncrawl.org', port=443): Max retries exceeded with url: /CC-MAIN-2024-46-index?url=www.globalshapers.org%2Fshapers%2F%2A&output=json&filter=status%3A200&filter=mime%3Atext%2Fhtml&collapse=urlkey&fl=url (Caused by NewConnectionError(\"HTTPSConnection(host='index.commoncrawl.org', port=443): Failed to establish a new connection: [Errno 111] Connection refused\"))",
+      "query": "www.globalshapers.org/shapers/*",
+      "source": "common-crawl:CC-MAIN-2024-46",
+      "status": "failed",
+      "urls": 0
+    },
+    {
+      "error": "ConnectionError: HTTPSConnectionPool(host='index.commoncrawl.org', port=443): Max retries exceeded with url: /CC-MAIN-2024-51-index?url=globalshapers.org%2Falumni%2F%2A&output=json&filter=status%3A200&filter=mime%3Atext%2Fhtml&collapse=urlkey&fl=url (Caused by NewConnectionError(\"HTTPSConnection(host='index.commoncrawl.org', port=443): Failed to establish a new connection: [Errno 111] Connection refused\"))",
+      "query": "globalshapers.org/alumni/*",
+      "source": "common-crawl:CC-MAIN-2024-51",
+      "status": "failed",
+      "urls": 0
+    },
+    {
+      "error": "ConnectionError: HTTPSConnectionPool(host='index.commoncrawl.org', port=443): Max retries exceeded with url: /CC-MAIN-2024-51-index?url=globalshapers.org%2Fmember-details%2F%2A&output=json&filter=status%3A200&filter=mime%3Atext%2Fhtml&collapse=urlkey&fl=url (Caused by NewConnectionError(\"HTTPSConnection(host='index.commoncrawl.org', port=443): Failed to establish a new connection: [Errno 111] Connection refused\"))",
+      "query": "globalshapers.org/member-details/*",
+      "source": "common-crawl:CC-MAIN-2024-51",
+      "status": "failed",
+      "urls": 0
+    },
+    {
+      "error": "ConnectionError: HTTPSConnectionPool(host='index.commoncrawl.org', port=443): Max retries exceeded with url: /CC-MAIN-2024-51-index?url=globalshapers.org%2Fshapers%2F%2A&output=json&filter=status%3A200&filter=mime%3Atext%2Fhtml&collapse=urlkey&fl=url (Caused by NewConnectionError(\"HTTPSConnection(host='index.commoncrawl.org', port=443): Failed to establish a new connection: [Errno 111] Connection refused\"))",
+      "query": "globalshapers.org/shapers/*",
+      "source": "common-crawl:CC-MAIN-2024-51",
+      "status": "failed",
+      "urls": 0
+    },
+    {
+      "error": "ConnectionError: HTTPSConnectionPool(host='index.commoncrawl.org', port=443): Max retries exceeded with url: /CC-MAIN-2024-51-index?url=www.globalshapers.org%2Falumni%2F%2A&output=json&filter=status%3A200&filter=mime%3Atext%2Fhtml&collapse=urlkey&fl=url (Caused by NewConnectionError(\"HTTPSConnection(host='index.commoncrawl.org', port=443): Failed to establish a new connection: [Errno 111] Connection refused\"))",
+      "query": "www.globalshapers.org/alumni/*",
+      "source": "common-crawl:CC-MAIN-2024-51",
+      "status": "failed",
+      "urls": 0
+    },
+    {
+      "error": "ConnectionError: HTTPSConnectionPool(host='index.commoncrawl.org', port=443): Max retries exceeded with url: /CC-MAIN-2024-51-index?url=www.globalshapers.org%2Fmember-details%2F%2A&output=json&filter=status%3A200&filter=mime%3Atext%2Fhtml&collapse=urlkey&fl=url (Caused by NewConnectionError(\"HTTPSConnection(host='index.commoncrawl.org', port=443): Failed to establish a new connection: [Errno 111] Connection refused\"))",
+      "query": "www.globalshapers.org/member-details/*",
+      "source": "common-crawl:CC-MAIN-2024-51",
+      "status": "failed",
+      "urls": 0
+    },
+    {
+      "error": "ConnectionError: HTTPSConnectionPool(host='index.commoncrawl.org', port=443): Max retries exceeded with url: /CC-MAIN-2024-51-index?url=www.globalshapers.org%2Fshapers%2F%2A&output=json&filter=status%3A200&filter=mime%3Atext%2Fhtml&collapse=urlkey&fl=url (Caused by NewConnectionError(\"HTTPSConnection(host='index.commoncrawl.org', port=443): Failed to establish a new connection: [Errno 111] Connection refused\"))",
+      "query": "www.globalshapers.org/shapers/*",
+      "source": "common-crawl:CC-MAIN-2024-51",
+      "status": "failed",
+      "urls": 0
+    },
+    {
+      "error": "ConnectionError: HTTPSConnectionPool(host='index.commoncrawl.org', port=443): Max retries exceeded with url: /CC-MAIN-2025-05-index?url=globalshapers.org%2Falumni%2F%2A&output=json&filter=status%3A200&filter=mime%3Atext%2Fhtml&collapse=urlkey&fl=url (Caused by NewConnectionError(\"HTTPSConnection(host='index.commoncrawl.org', port=443): Failed to establish a new connection: [Errno 111] Connection refused\"))",
+      "query": "globalshapers.org/alumni/*",
+      "source": "common-crawl:CC-MAIN-2025-05",
+      "status": "failed",
+      "urls": 0
+    },
+    {
+      "error": "ConnectionError: HTTPSConnectionPool(host='index.commoncrawl.org', port=443): Max retries exceeded with url: /CC-MAIN-2025-05-index?url=globalshapers.org%2Fmember-details%2F%2A&output=json&filter=status%3A200&filter=mime%3Atext%2Fhtml&collapse=urlkey&fl=url (Caused by NewConnectionError(\"HTTPSConnection(host='index.commoncrawl.org', port=443): Failed to establish a new connection: [Errno 111] Connection refused\"))",
+      "query": "globalshapers.org/member-details/*",
+      "source": "common-crawl:CC-MAIN-2025-05",
+      "status": "failed",
+      "urls": 0
+    },
+    {
+      "error": "ConnectionError: HTTPSConnectionPool(host='index.commoncrawl.org', port=443): Max retries exceeded with url: /CC-MAIN-2025-05-index?url=globalshapers.org%2Fshapers%2F%2A&output=json&filter=status%3A200&filter=mime%3Atext%2Fhtml&collapse=urlkey&fl=url (Caused by NewConnectionError(\"HTTPSConnection(host='index.commoncrawl.org', port=443): Failed to establish a new connection: [Errno 111] Connection refused\"))",
+      "query": "globalshapers.org/shapers/*",
+      "source": "common-crawl:CC-MAIN-2025-05",
+      "status": "failed",
+      "urls": 0
+    },
+    {
+      "error": "ConnectionError: HTTPSConnectionPool(host='index.commoncrawl.org', port=443): Max retries exceeded with url: /CC-MAIN-2025-05-index?url=www.globalshapers.org%2Falumni%2F%2A&output=json&filter=status%3A200&filter=mime%3Atext%2Fhtml&collapse=urlkey&fl=url (Caused by NewConnectionError(\"HTTPSConnection(host='index.commoncrawl.org', port=443): Failed to establish a new connection: [Errno 111] Connection refused\"))",
+      "query": "www.globalshapers.org/alumni/*",
+      "source": "common-crawl:CC-MAIN-2025-05",
+      "status": "failed",
+      "urls": 0
+    },
+    {
+      "error": "ConnectionError: HTTPSConnectionPool(host='index.commoncrawl.org', port=443): Max retries exceeded with url: /CC-MAIN-2025-05-index?url=www.globalshapers.org%2Fmember-details%2F%2A&output=json&filter=status%3A200&filter=mime%3Atext%2Fhtml&collapse=urlkey&fl=url (Caused by NewConnectionError(\"HTTPSConnection(host='index.commoncrawl.org', port=443): Failed to establish a new connection: [Errno 111] Connection refused\"))",
+      "query": "www.globalshapers.org/member-details/*",
+      "source": "common-crawl:CC-MAIN-2025-05",
+      "status": "failed",
+      "urls": 0
+    },
+    {
+      "error": "ConnectionError: HTTPSConnectionPool(host='index.commoncrawl.org', port=443): Max retries exceeded with url: /CC-MAIN-2025-05-index?url=www.globalshapers.org%2Fshapers%2F%2A&output=json&filter=status%3A200&filter=mime%3Atext%2Fhtml&collapse=urlkey&fl=url (Caused by NewConnectionError(\"HTTPSConnection(host='index.commoncrawl.org', port=443): Failed to establish a new connection: [Errno 111] Connection refused\"))",
+      "query": "www.globalshapers.org/shapers/*",
+      "source": "common-crawl:CC-MAIN-2025-05",
+      "status": "failed",
+      "urls": 0
+    },
+    {
+      "error": "ConnectionError: HTTPSConnectionPool(host='index.commoncrawl.org', port=443): Max retries exceeded with url: /CC-MAIN-2025-08-index?url=globalshapers.org%2Falumni%2F%2A&output=json&filter=status%3A200&filter=mime%3Atext%2Fhtml&collapse=urlkey&fl=url (Caused by NewConnectionError(\"HTTPSConnection(host='index.commoncrawl.org', port=443): Failed to establish a new connection: [Errno 111] Connection refused\"))",
+      "query": "globalshapers.org/alumni/*",
+      "source": "common-crawl:CC-MAIN-2025-08",
+      "status": "failed",
+      "urls": 0
+    },
+    {
+      "error": "ConnectionError: HTTPSConnectionPool(host='index.commoncrawl.org', port=443): Max retries exceeded with url: /CC-MAIN-2025-08-index?url=globalshapers.org%2Fmember-details%2F%2A&output=json&filter=status%3A200&filter=mime%3Atext%2Fhtml&collapse=urlkey&fl=url (Caused by NewConnectionError(\"HTTPSConnection(host='index.commoncrawl.org', port=443): Failed to establish a new connection: [Errno 111] Connection refused\"))",
+      "query": "globalshapers.org/member-details/*",
+      "source": "common-crawl:CC-MAIN-2025-08",
+      "status": "failed",
+      "urls": 0
+    },
+    {
+      "error": "ConnectionError: HTTPSConnectionPool(host='index.commoncrawl.org', port=443): Max retries exceeded with url: /CC-MAIN-2025-08-index?url=globalshapers.org%2Fshapers%2F%2A&output=json&filter=status%3A200&filter=mime%3Atext%2Fhtml&collapse=urlkey&fl=url (Caused by NewConnectionError(\"HTTPSConnection(host='index.commoncrawl.org', port=443): Failed to establish a new connection: [Errno 111] Connection refused\"))",
+      "query": "globalshapers.org/shapers/*",
+      "source": "common-crawl:CC-MAIN-2025-08",
+      "status": "failed",
+      "urls": 0
+    },
+    {
+      "error": "ConnectionError: HTTPSConnectionPool(host='index.commoncrawl.org', port=443): Max retries exceeded with url: /CC-MAIN-2025-08-index?url=www.globalshapers.org%2Falumni%2F%2A&output=json&filter=status%3A200&filter=mime%3Atext%2Fhtml&collapse=urlkey&fl=url (Caused by NewConnectionError(\"HTTPSConnection(host='index.commoncrawl.org', port=443): Failed to establish a new connection: [Errno 111] Connection refused\"))",
+      "query": "www.globalshapers.org/alumni/*",
+      "source": "common-crawl:CC-MAIN-2025-08",
+      "status": "failed",
+      "urls": 0
+    },
+    {
+      "error": "ConnectionError: HTTPSConnectionPool(host='index.commoncrawl.org', port=443): Max retries exceeded with url: /CC-MAIN-2025-08-index?url=www.globalshapers.org%2Fmember-details%2F%2A&output=json&filter=status%3A200&filter=mime%3Atext%2Fhtml&collapse=urlkey&fl=url (Caused by NewConnectionError(\"HTTPSConnection(host='index.commoncrawl.org', port=443): Failed to establish a new connection: [Errno 111] Connection refused\"))",
+      "query": "www.globalshapers.org/member-details/*",
+      "source": "common-crawl:CC-MAIN-2025-08",
+      "status": "failed",
+      "urls": 0
+    },
+    {
+      "error": "ConnectionError: HTTPSConnectionPool(host='index.commoncrawl.org', port=443): Max retries exceeded with url: /CC-MAIN-2025-08-index?url=www.globalshapers.org%2Fshapers%2F%2A&output=json&filter=status%3A200&filter=mime%3Atext%2Fhtml&collapse=urlkey&fl=url (Caused by NewConnectionError(\"HTTPSConnection(host='index.commoncrawl.org', port=443): Failed to establish a new connection: [Errno 111] Connection refused\"))",
+      "query": "www.globalshapers.org/shapers/*",
+      "source": "common-crawl:CC-MAIN-2025-08",
+      "status": "failed",
+      "urls": 0
+    },
+    {
+      "error": "ConnectionError: HTTPSConnectionPool(host='index.commoncrawl.org', port=443): Max retries exceeded with url: /CC-MAIN-2025-13-index?url=globalshapers.org%2Falumni%2F%2A&output=json&filter=status%3A200&filter=mime%3Atext%2Fhtml&collapse=urlkey&fl=url (Caused by NewConnectionError(\"HTTPSConnection(host='index.commoncrawl.org', port=443): Failed to establish a new connection: [Errno 111] Connection refused\"))",
+      "query": "globalshapers.org/alumni/*",
+      "source": "common-crawl:CC-MAIN-2025-13",
+      "status": "failed",
+      "urls": 0
+    },
+    {
+      "error": "ConnectionError: HTTPSConnectionPool(host='index.commoncrawl.org', port=443): Max retries exceeded with url: /CC-MAIN-2025-13-index?url=globalshapers.org%2Fmember-details%2F%2A&output=json&filter=status%3A200&filter=mime%3Atext%2Fhtml&collapse=urlkey&fl=url (Caused by NewConnectionError(\"HTTPSConnection(host='index.commoncrawl.org', port=443): Failed to establish a new connection: [Errno 111] Connection refused\"))",
+      "query": "globalshapers.org/member-details/*",
+      "source": "common-crawl:CC-MAIN-2025-13",
+      "status": "failed",
+      "urls": 0
+    },
+    {
+      "error": "ConnectionError: HTTPSConnectionPool(host='index.commoncrawl.org', port=443): Max retries exceeded with url: /CC-MAIN-2025-13-index?url=globalshapers.org%2Fshapers%2F%2A&output=json&filter=status%3A200&filter=mime%3Atext%2Fhtml&collapse=urlkey&fl=url (Caused by NewConnectionError(\"HTTPSConnection(host='index.commoncrawl.org', port=443): Failed to establish a new connection: [Errno 111] Connection refused\"))",
+      "query": "globalshapers.org/shapers/*",
+      "source": "common-crawl:CC-MAIN-2025-13",
+      "status": "failed",
+      "urls": 0
+    },
+    {
+      "error": "ConnectionError: HTTPSConnectionPool(host='index.commoncrawl.org', port=443): Max retries exceeded with url: /CC-MAIN-2025-13-index?url=www.globalshapers.org%2Falumni%2F%2A&output=json&filter=status%3A200&filter=mime%3Atext%2Fhtml&collapse=urlkey&fl=url (Caused by NewConnectionError(\"HTTPSConnection(host='index.commoncrawl.org', port=443): Failed to establish a new connection: [Errno 111] Connection refused\"))",
+      "query": "www.globalshapers.org/alumni/*",
+      "source": "common-crawl:CC-MAIN-2025-13",
+      "status": "failed",
+      "urls": 0
+    },
+    {
+      "error": "ConnectionError: HTTPSConnectionPool(host='index.commoncrawl.org', port=443): Max retries exceeded with url: /CC-MAIN-2025-13-index?url=www.globalshapers.org%2Fmember-details%2F%2A&output=json&filter=status%3A200&filter=mime%3Atext%2Fhtml&collapse=urlkey&fl=url (Caused by NewConnectionError(\"HTTPSConnection(host='index.commoncrawl.org', port=443): Failed to establish a new connection: [Errno 111] Connection refused\"))",
+      "query": "www.globalshapers.org/member-details/*",
+      "source": "common-crawl:CC-MAIN-2025-13",
+      "status": "failed",
+      "urls": 0
+    },
+    {
+      "error": "ConnectionError: HTTPSConnectionPool(host='index.commoncrawl.org', port=443): Max retries exceeded with url: /CC-MAIN-2025-13-index?url=www.globalshapers.org%2Fshapers%2F%2A&output=json&filter=status%3A200&filter=mime%3Atext%2Fhtml&collapse=urlkey&fl=url (Caused by NewConnectionError(\"HTTPSConnection(host='index.commoncrawl.org', port=443): Failed to establish a new connection: [Errno 111] Connection refused\"))",
+      "query": "www.globalshapers.org/shapers/*",
+      "source": "common-crawl:CC-MAIN-2025-13",
+      "status": "failed",
+      "urls": 0
+    },
+    {
+      "error": "ConnectionError: HTTPSConnectionPool(host='index.commoncrawl.org', port=443): Max retries exceeded with url: /CC-MAIN-2025-18-index?url=globalshapers.org%2Falumni%2F%2A&output=json&filter=status%3A200&filter=mime%3Atext%2Fhtml&collapse=urlkey&fl=url (Caused by NewConnectionError(\"HTTPSConnection(host='index.commoncrawl.org', port=443): Failed to establish a new connection: [Errno 111] Connection refused\"))",
+      "query": "globalshapers.org/alumni/*",
+      "source": "common-crawl:CC-MAIN-2025-18",
+      "status": "failed",
+      "urls": 0
+    },
+    {
+      "error": "ConnectionError: HTTPSConnectionPool(host='index.commoncrawl.org', port=443): Max retries exceeded with url: /CC-MAIN-2025-18-index?url=globalshapers.org%2Fmember-details%2F%2A&output=json&filter=status%3A200&filter=mime%3Atext%2Fhtml&collapse=urlkey&fl=url (Caused by NewConnectionError(\"HTTPSConnection(host='index.commoncrawl.org', port=443): Failed to establish a new connection: [Errno 111] Connection refused\"))",
+      "query": "globalshapers.org/member-details/*",
+      "source": "common-crawl:CC-MAIN-2025-18",
+      "status": "failed",
+      "urls": 0
+    },
+    {
+      "error": "ConnectionError: HTTPSConnectionPool(host='index.commoncrawl.org', port=443): Max retries exceeded with url: /CC-MAIN-2025-18-index?url=globalshapers.org%2Fshapers%2F%2A&output=json&filter=status%3A200&filter=mime%3Atext%2Fhtml&collapse=urlkey&fl=url (Caused by NewConnectionError(\"HTTPSConnection(host='index.commoncrawl.org', port=443): Failed to establish a new connection: [Errno 111] Connection refused\"))",
+      "query": "globalshapers.org/shapers/*",
+      "source": "common-crawl:CC-MAIN-2025-18",
+      "status": "failed",
+      "urls": 0
+    },
+    {
+      "error": "ConnectionError: HTTPSConnectionPool(host='index.commoncrawl.org', port=443): Max retries exceeded with url: /CC-MAIN-2025-18-index?url=www.globalshapers.org%2Falumni%2F%2A&output=json&filter=status%3A200&filter=mime%3Atext%2Fhtml&collapse=urlkey&fl=url (Caused by NewConnectionError(\"HTTPSConnection(host='index.commoncrawl.org', port=443): Failed to establish a new connection: [Errno 111] Connection refused\"))",
+      "query": "www.globalshapers.org/alumni/*",
+      "source": "common-crawl:CC-MAIN-2025-18",
+      "status": "failed",
+      "urls": 0
+    },
+    {
+      "error": "ConnectionError: HTTPSConnectionPool(host='index.commoncrawl.org', port=443): Max retries exceeded with url: /CC-MAIN-2025-18-index?url=www.globalshapers.org%2Fmember-details%2F%2A&output=json&filter=status%3A200&filter=mime%3Atext%2Fhtml&collapse=urlkey&fl=url (Caused by NewConnectionError(\"HTTPSConnection(host='index.commoncrawl.org', port=443): Failed to establish a new connection: [Errno 111] Connection refused\"))",
+      "query": "www.globalshapers.org/member-details/*",
+      "source": "common-crawl:CC-MAIN-2025-18",
+      "status": "failed",
+      "urls": 0
+    },
+    {
+      "error": "ConnectionError: HTTPSConnectionPool(host='index.commoncrawl.org', port=443): Max retries exceeded with url: /CC-MAIN-2025-18-index?url=www.globalshapers.org%2Fshapers%2F%2A&output=json&filter=status%3A200&filter=mime%3Atext%2Fhtml&collapse=urlkey&fl=url (Caused by NewConnectionError(\"HTTPSConnection(host='index.commoncrawl.org', port=443): Failed to establish a new connection: [Errno 111] Connection refused\"))",
+      "query": "www.globalshapers.org/shapers/*",
+      "source": "common-crawl:CC-MAIN-2025-18",
+      "status": "failed",
+      "urls": 0
+    },
+    {
+      "error": "ConnectionError: HTTPSConnectionPool(host='index.commoncrawl.org', port=443): Max retries exceeded with url: /CC-MAIN-2025-21-index?url=globalshapers.org%2Falumni%2F%2A&output=json&filter=status%3A200&filter=mime%3Atext%2Fhtml&collapse=urlkey&fl=url (Caused by NewConnectionError(\"HTTPSConnection(host='index.commoncrawl.org', port=443): Failed to establish a new connection: [Errno 111] Connection refused\"))",
+      "query": "globalshapers.org/alumni/*",
+      "source": "common-crawl:CC-MAIN-2025-21",
+      "status": "failed",
+      "urls": 0
+    },
+    {
+      "error": "ConnectionError: HTTPSConnectionPool(host='index.commoncrawl.org', port=443): Max retries exceeded with url: /CC-MAIN-2025-21-index?url=globalshapers.org%2Fmember-details%2F%2A&output=json&filter=status%3A200&filter=mime%3Atext%2Fhtml&collapse=urlkey&fl=url (Caused by NewConnectionError(\"HTTPSConnection(host='index.commoncrawl.org', port=443): Failed to establish a new connection: [Errno 111] Connection refused\"))",
+      "query": "globalshapers.org/member-details/*",
+      "source": "common-crawl:CC-MAIN-2025-21",
+      "status": "failed",
+      "urls": 0
+    },
+    {
+      "error": "ConnectionError: HTTPSConnectionPool(host='index.commoncrawl.org', port=443): Max retries exceeded with url: /CC-MAIN-2025-21-index?url=globalshapers.org%2Fshapers%2F%2A&output=json&filter=status%3A200&filter=mime%3Atext%2Fhtml&collapse=urlkey&fl=url (Caused by NewConnectionError(\"HTTPSConnection(host='index.commoncrawl.org', port=443): Failed to establish a new connection: [Errno 111] Connection refused\"))",
+      "query": "globalshapers.org/shapers/*",
+      "source": "common-crawl:CC-MAIN-2025-21",
+      "status": "failed",
+      "urls": 0
+    },
+    {
+      "error": "ConnectionError: HTTPSConnectionPool(host='index.commoncrawl.org', port=443): Max retries exceeded with url: /CC-MAIN-2025-21-index?url=www.globalshapers.org%2Falumni%2F%2A&output=json&filter=status%3A200&filter=mime%3Atext%2Fhtml&collapse=urlkey&fl=url (Caused by NewConnectionError(\"HTTPSConnection(host='index.commoncrawl.org', port=443): Failed to establish a new connection: [Errno 111] Connection refused\"))",
+      "query": "www.globalshapers.org/alumni/*",
+      "source": "common-crawl:CC-MAIN-2025-21",
+      "status": "failed",
+      "urls": 0
+    },
+    {
+      "error": "ConnectionError: HTTPSConnectionPool(host='index.commoncrawl.org', port=443): Max retries exceeded with url: /CC-MAIN-2025-21-index?url=www.globalshapers.org%2Fmember-details%2F%2A&output=json&filter=status%3A200&filter=mime%3Atext%2Fhtml&collapse=urlkey&fl=url (Caused by NewConnectionError(\"HTTPSConnection(host='index.commoncrawl.org', port=443): Failed to establish a new connection: [Errno 111] Connection refused\"))",
+      "query": "www.globalshapers.org/member-details/*",
+      "source": "common-crawl:CC-MAIN-2025-21",
+      "status": "failed",
+      "urls": 0
+    },
+    {
+      "error": "ConnectionError: HTTPSConnectionPool(host='index.commoncrawl.org', port=443): Max retries exceeded with url: /CC-MAIN-2025-21-index?url=www.globalshapers.org%2Fshapers%2F%2A&output=json&filter=status%3A200&filter=mime%3Atext%2Fhtml&collapse=urlkey&fl=url (Caused by NewConnectionError(\"HTTPSConnection(host='index.commoncrawl.org', port=443): Failed to establish a new connection: [Errno 111] Connection refused\"))",
+      "query": "www.globalshapers.org/shapers/*",
+      "source": "common-crawl:CC-MAIN-2025-21",
+      "status": "failed",
+      "urls": 0
+    },
+    {
+      "error": "ConnectionError: HTTPSConnectionPool(host='index.commoncrawl.org', port=443): Max retries exceeded with url: /CC-MAIN-2025-26-index?url=globalshapers.org%2Falumni%2F%2A&output=json&filter=status%3A200&filter=mime%3Atext%2Fhtml&collapse=urlkey&fl=url (Caused by NewConnectionError(\"HTTPSConnection(host='index.commoncrawl.org', port=443): Failed to establish a new connection: [Errno 111] Connection refused\"))",
+      "query": "globalshapers.org/alumni/*",
+      "source": "common-crawl:CC-MAIN-2025-26",
+      "status": "failed",
+      "urls": 0
+    },
+    {
+      "error": "ConnectionError: HTTPSConnectionPool(host='index.commoncrawl.org', port=443): Max retries exceeded with url: /CC-MAIN-2025-26-index?url=globalshapers.org%2Fmember-details%2F%2A&output=json&filter=status%3A200&filter=mime%3Atext%2Fhtml&collapse=urlkey&fl=url (Caused by NewConnectionError(\"HTTPSConnection(host='index.commoncrawl.org', port=443): Failed to establish a new connection: [Errno 111] Connection refused\"))",
+      "query": "globalshapers.org/member-details/*",
+      "source": "common-crawl:CC-MAIN-2025-26",
+      "status": "failed",
+      "urls": 0
+    },
+    {
+      "error": "ConnectionError: HTTPSConnectionPool(host='index.commoncrawl.org', port=443): Max retries exceeded with url: /CC-MAIN-2025-26-index?url=globalshapers.org%2Fshapers%2F%2A&output=json&filter=status%3A200&filter=mime%3Atext%2Fhtml&collapse=urlkey&fl=url (Caused by NewConnectionError(\"HTTPSConnection(host='index.commoncrawl.org', port=443): Failed to establish a new connection: [Errno 111] Connection refused\"))",
+      "query": "globalshapers.org/shapers/*",
+      "source": "common-crawl:CC-MAIN-2025-26",
+      "status": "failed",
+      "urls": 0
+    },
+    {
+      "error": "ConnectionError: HTTPSConnectionPool(host='index.commoncrawl.org', port=443): Max retries exceeded with url: /CC-MAIN-2025-26-index?url=www.globalshapers.org%2Falumni%2F%2A&output=json&filter=status%3A200&filter=mime%3Atext%2Fhtml&collapse=urlkey&fl=url (Caused by NewConnectionError(\"HTTPSConnection(host='index.commoncrawl.org', port=443): Failed to establish a new connection: [Errno 111] Connection refused\"))",
+      "query": "www.globalshapers.org/alumni/*",
+      "source": "common-crawl:CC-MAIN-2025-26",
+      "status": "failed",
+      "urls": 0
+    },
+    {
+      "error": "ConnectionError: HTTPSConnectionPool(host='index.commoncrawl.org', port=443): Max retries exceeded with url: /CC-MAIN-2025-26-index?url=www.globalshapers.org%2Fmember-details%2F%2A&output=json&filter=status%3A200&filter=mime%3Atext%2Fhtml&collapse=urlkey&fl=url (Caused by NewConnectionError(\"HTTPSConnection(host='index.commoncrawl.org', port=443): Failed to establish a new connection: [Errno 111] Connection refused\"))",
+      "query": "www.globalshapers.org/member-details/*",
+      "source": "common-crawl:CC-MAIN-2025-26",
+      "status": "failed",
+      "urls": 0
+    },
+    {
+      "error": "ConnectionError: HTTPSConnectionPool(host='index.commoncrawl.org', port=443): Max retries exceeded with url: /CC-MAIN-2025-26-index?url=www.globalshapers.org%2Fshapers%2F%2A&output=json&filter=status%3A200&filter=mime%3Atext%2Fhtml&collapse=urlkey&fl=url (Caused by NewConnectionError(\"HTTPSConnection(host='index.commoncrawl.org', port=443): Failed to establish a new connection: [Errno 111] Connection refused\"))",
+      "query": "www.globalshapers.org/shapers/*",
+      "source": "common-crawl:CC-MAIN-2025-26",
+      "status": "failed",
+      "urls": 0
+    },
+    {
+      "error": "ConnectionError: HTTPSConnectionPool(host='index.commoncrawl.org', port=443): Max retries exceeded with url: /CC-MAIN-2025-30-index?url=globalshapers.org%2Falumni%2F%2A&output=json&filter=status%3A200&filter=mime%3Atext%2Fhtml&collapse=urlkey&fl=url (Caused by NewConnectionError(\"HTTPSConnection(host='index.commoncrawl.org', port=443): Failed to establish a new connection: [Errno 111] Connection refused\"))",
+      "query": "globalshapers.org/alumni/*",
+      "source": "common-crawl:CC-MAIN-2025-30",
+      "status": "failed",
+      "urls": 0
+    },
+    {
+      "error": "ConnectionError: HTTPSConnectionPool(host='index.commoncrawl.org', port=443): Max retries exceeded with url: /CC-MAIN-2025-30-index?url=globalshapers.org%2Fmember-details%2F%2A&output=json&filter=status%3A200&filter=mime%3Atext%2Fhtml&collapse=urlkey&fl=url (Caused by NewConnectionError(\"HTTPSConnection(host='index.commoncrawl.org', port=443): Failed to establish a new connection: [Errno 111] Connection refused\"))",
+      "query": "globalshapers.org/member-details/*",
+      "source": "common-crawl:CC-MAIN-2025-30",
+      "status": "failed",
+      "urls": 0
+    },
+    {
+      "error": "ConnectionError: HTTPSConnectionPool(host='index.commoncrawl.org', port=443): Max retries exceeded with url: /CC-MAIN-2025-30-index?url=globalshapers.org%2Fshapers%2F%2A&output=json&filter=status%3A200&filter=mime%3Atext%2Fhtml&collapse=urlkey&fl=url (Caused by NewConnectionError(\"HTTPSConnection(host='index.commoncrawl.org', port=443): Failed to establish a new connection: [Errno 111] Connection refused\"))",
+      "query": "globalshapers.org/shapers/*",
+      "source": "common-crawl:CC-MAIN-2025-30",
+      "status": "failed",
+      "urls": 0
+    },
+    {
+      "error": "ConnectionError: HTTPSConnectionPool(host='index.commoncrawl.org', port=443): Max retries exceeded with url: /CC-MAIN-2025-30-index?url=www.globalshapers.org%2Falumni%2F%2A&output=json&filter=status%3A200&filter=mime%3Atext%2Fhtml&collapse=urlkey&fl=url (Caused by NewConnectionError(\"HTTPSConnection(host='index.commoncrawl.org', port=443): Failed to establish a new connection: [Errno 111] Connection refused\"))",
+      "query": "www.globalshapers.org/alumni/*",
+      "source": "common-crawl:CC-MAIN-2025-30",
+      "status": "failed",
+      "urls": 0
+    },
+    {
+      "error": "ConnectionError: HTTPSConnectionPool(host='index.commoncrawl.org', port=443): Max retries exceeded with url: /CC-MAIN-2025-30-index?url=www.globalshapers.org%2Fmember-details%2F%2A&output=json&filter=status%3A200&filter=mime%3Atext%2Fhtml&collapse=urlkey&fl=url (Caused by NewConnectionError(\"HTTPSConnection(host='index.commoncrawl.org', port=443): Failed to establish a new connection: [Errno 111] Connection refused\"))",
+      "query": "www.globalshapers.org/member-details/*",
+      "source": "common-crawl:CC-MAIN-2025-30",
+      "status": "failed",
+      "urls": 0
+    },
+    {
+      "error": "ConnectionError: HTTPSConnectionPool(host='index.commoncrawl.org', port=443): Max retries exceeded with url: /CC-MAIN-2025-30-index?url=www.globalshapers.org%2Fshapers%2F%2A&output=json&filter=status%3A200&filter=mime%3Atext%2Fhtml&collapse=urlkey&fl=url (Caused by NewConnectionError(\"HTTPSConnection(host='index.commoncrawl.org', port=443): Failed to establish a new connection: [Errno 111] Connection refused\"))",
+      "query": "www.globalshapers.org/shapers/*",
+      "source": "common-crawl:CC-MAIN-2025-30",
+      "status": "failed",
+      "urls": 0
+    },
+    {
+      "error": "ConnectionError: HTTPSConnectionPool(host='index.commoncrawl.org', port=443): Max retries exceeded with url: /CC-MAIN-2025-33-index?url=globalshapers.org%2Falumni%2F%2A&output=json&filter=status%3A200&filter=mime%3Atext%2Fhtml&collapse=urlkey&fl=url (Caused by NewConnectionError(\"HTTPSConnection(host='index.commoncrawl.org', port=443): Failed to establish a new connection: [Errno 111] Connection refused\"))",
+      "query": "globalshapers.org/alumni/*",
+      "source": "common-crawl:CC-MAIN-2025-33",
+      "status": "failed",
+      "urls": 0
+    },
+    {
+      "error": "ConnectionError: HTTPSConnectionPool(host='index.commoncrawl.org', port=443): Max retries exceeded with url: /CC-MAIN-2025-33-index?url=globalshapers.org%2Fmember-details%2F%2A&output=json&filter=status%3A200&filter=mime%3Atext%2Fhtml&collapse=urlkey&fl=url (Caused by NewConnectionError(\"HTTPSConnection(host='index.commoncrawl.org', port=443): Failed to establish a new connection: [Errno 111] Connection refused\"))",
+      "query": "globalshapers.org/member-details/*",
+      "source": "common-crawl:CC-MAIN-2025-33",
+      "status": "failed",
+      "urls": 0
+    },
+    {
+      "error": "ConnectionError: HTTPSConnectionPool(host='index.commoncrawl.org', port=443): Max retries exceeded with url: /CC-MAIN-2025-33-index?url=globalshapers.org%2Fshapers%2F%2A&output=json&filter=status%3A200&filter=mime%3Atext%2Fhtml&collapse=urlkey&fl=url (Caused by NewConnectionError(\"HTTPSConnection(host='index.commoncrawl.org', port=443): Failed to establish a new connection: [Errno 111] Connection refused\"))",
+      "query": "globalshapers.org/shapers/*",
+      "source": "common-crawl:CC-MAIN-2025-33",
+      "status": "failed",
+      "urls": 0
+    },
+    {
+      "error": "ConnectionError: HTTPSConnectionPool(host='index.commoncrawl.org', port=443): Max retries exceeded with url: /CC-MAIN-2025-33-index?url=www.globalshapers.org%2Falumni%2F%2A&output=json&filter=status%3A200&filter=mime%3Atext%2Fhtml&collapse=urlkey&fl=url (Caused by NewConnectionError(\"HTTPSConnection(host='index.commoncrawl.org', port=443): Failed to establish a new connection: [Errno 111] Connection refused\"))",
+      "query": "www.globalshapers.org/alumni/*",
+      "source": "common-crawl:CC-MAIN-2025-33",
+      "status": "failed",
+      "urls": 0
+    },
+    {
+      "error": "ConnectionError: HTTPSConnectionPool(host='index.commoncrawl.org', port=443): Max retries exceeded with url: /CC-MAIN-2025-33-index?url=www.globalshapers.org%2Fmember-details%2F%2A&output=json&filter=status%3A200&filter=mime%3Atext%2Fhtml&collapse=urlkey&fl=url (Caused by NewConnectionError(\"HTTPSConnection(host='index.commoncrawl.org', port=443): Failed to establish a new connection: [Errno 111] Connection refused\"))",
+      "query": "www.globalshapers.org/member-details/*",
+      "source": "common-crawl:CC-MAIN-2025-33",
+      "status": "failed",
+      "urls": 0
+    },
+    {
+      "error": "ConnectionError: HTTPSConnectionPool(host='index.commoncrawl.org', port=443): Max retries exceeded with url: /CC-MAIN-2025-33-index?url=www.globalshapers.org%2Fshapers%2F%2A&output=json&filter=status%3A200&filter=mime%3Atext%2Fhtml&collapse=urlkey&fl=url (Caused by NewConnectionError(\"HTTPSConnection(host='index.commoncrawl.org', port=443): Failed to establish a new connection: [Errno 111] Connection refused\"))",
+      "query": "www.globalshapers.org/shapers/*",
+      "source": "common-crawl:CC-MAIN-2025-33",
+      "status": "failed",
+      "urls": 0
+    },
+    {
+      "error": "ConnectionError: HTTPSConnectionPool(host='index.commoncrawl.org', port=443): Max retries exceeded with url: /CC-MAIN-2025-38-index?url=globalshapers.org%2Falumni%2F%2A&output=json&filter=status%3A200&filter=mime%3Atext%2Fhtml&collapse=urlkey&fl=url (Caused by NewConnectionError(\"HTTPSConnection(host='index.commoncrawl.org', port=443): Failed to establish a new connection: [Errno 111] Connection refused\"))",
+      "query": "globalshapers.org/alumni/*",
+      "source": "common-crawl:CC-MAIN-2025-38",
+      "status": "failed",
+      "urls": 0
+    },
+    {
+      "error": "ConnectTimeout: HTTPSConnectionPool(host='index.commoncrawl.org', port=443): Max retries exceeded with url: /CC-MAIN-2025-38-index?url=globalshapers.org%2Fmember-details%2F%2A&output=json&filter=status%3A200&filter=mime%3Atext%2Fhtml&collapse=urlkey&fl=url (Caused by ConnectTimeoutError(<HTTPSConnection(host='index.commoncrawl.org', port=443) at 0x7d22ec0d2210>, 'Connection to index.commoncrawl.org timed out. (connect timeout=120.0)'))",
+      "query": "globalshapers.org/member-details/*",
+      "source": "common-crawl:CC-MAIN-2025-38",
+      "status": "failed",
+      "urls": 0
+    },
+    {
+      "error": "ConnectionError: HTTPSConnectionPool(host='index.commoncrawl.org', port=443): Max retries exceeded with url: /CC-MAIN-2025-38-index?url=globalshapers.org%2Fshapers%2F%2A&output=json&filter=status%3A200&filter=mime%3Atext%2Fhtml&collapse=urlkey&fl=url (Caused by NewConnectionError(\"HTTPSConnection(host='index.commoncrawl.org', port=443): Failed to establish a new connection: [Errno 111] Connection refused\"))",
+      "query": "globalshapers.org/shapers/*",
+      "source": "common-crawl:CC-MAIN-2025-38",
+      "status": "failed",
+      "urls": 0
+    },
+    {
+      "error": "ConnectionError: HTTPSConnectionPool(host='index.commoncrawl.org', port=443): Max retries exceeded with url: /CC-MAIN-2025-38-index?url=www.globalshapers.org%2Falumni%2F%2A&output=json&filter=status%3A200&filter=mime%3Atext%2Fhtml&collapse=urlkey&fl=url (Caused by NewConnectionError(\"HTTPSConnection(host='index.commoncrawl.org', port=443): Failed to establish a new connection: [Errno 111] Connection refused\"))",
+      "query": "www.globalshapers.org/alumni/*",
+      "source": "common-crawl:CC-MAIN-2025-38",
+      "status": "failed",
+      "urls": 0
+    },
+    {
+      "error": "ConnectionError: HTTPSConnectionPool(host='index.commoncrawl.org', port=443): Max retries exceeded with url: /CC-MAIN-2025-38-index?url=www.globalshapers.org%2Fmember-details%2F%2A&output=json&filter=status%3A200&filter=mime%3Atext%2Fhtml&collapse=urlkey&fl=url (Caused by NewConnectionError(\"HTTPSConnection(host='index.commoncrawl.org', port=443): Failed to establish a new connection: [Errno 111] Connection refused\"))",
+      "query": "www.globalshapers.org/member-details/*",
+      "source": "common-crawl:CC-MAIN-2025-38",
+      "status": "failed",
+      "urls": 0
+    },
+    {
+      "error": "ConnectionError: HTTPSConnectionPool(host='index.commoncrawl.org', port=443): Max retries exceeded with url: /CC-MAIN-2025-38-index?url=www.globalshapers.org%2Fshapers%2F%2A&output=json&filter=status%3A200&filter=mime%3Atext%2Fhtml&collapse=urlkey&fl=url (Caused by NewConnectionError(\"HTTPSConnection(host='index.commoncrawl.org', port=443): Failed to establish a new connection: [Errno 111] Connection refused\"))",
+      "query": "www.globalshapers.org/shapers/*",
+      "source": "common-crawl:CC-MAIN-2025-38",
+      "status": "failed",
+      "urls": 0
+    },
+    {
+      "error": "ConnectionError: HTTPSConnectionPool(host='index.commoncrawl.org', port=443): Max retries exceeded with url: /CC-MAIN-2025-43-index?url=globalshapers.org%2Falumni%2F%2A&output=json&filter=status%3A200&filter=mime%3Atext%2Fhtml&collapse=urlkey&fl=url (Caused by NewConnectionError(\"HTTPSConnection(host='index.commoncrawl.org', port=443): Failed to establish a new connection: [Errno 111] Connection refused\"))",
+      "query": "globalshapers.org/alumni/*",
+      "source": "common-crawl:CC-MAIN-2025-43",
+      "status": "failed",
+      "urls": 0
+    },
+    {
+      "error": "ConnectionError: HTTPSConnectionPool(host='index.commoncrawl.org', port=443): Max retries exceeded with url: /CC-MAIN-2025-43-index?url=globalshapers.org%2Fmember-details%2F%2A&output=json&filter=status%3A200&filter=mime%3Atext%2Fhtml&collapse=urlkey&fl=url (Caused by NewConnectionError(\"HTTPSConnection(host='index.commoncrawl.org', port=443): Failed to establish a new connection: [Errno 111] Connection refused\"))",
+      "query": "globalshapers.org/member-details/*",
+      "source": "common-crawl:CC-MAIN-2025-43",
+      "status": "failed",
+      "urls": 0
+    },
+    {
+      "error": "ConnectionError: HTTPSConnectionPool(host='index.commoncrawl.org', port=443): Max retries exceeded with url: /CC-MAIN-2025-43-index?url=globalshapers.org%2Fshapers%2F%2A&output=json&filter=status%3A200&filter=mime%3Atext%2Fhtml&collapse=urlkey&fl=url (Caused by NewConnectionError(\"HTTPSConnection(host='index.commoncrawl.org', port=443): Failed to establish a new connection: [Errno 111] Connection refused\"))",
+      "query": "globalshapers.org/shapers/*",
+      "source": "common-crawl:CC-MAIN-2025-43",
+      "status": "failed",
+      "urls": 0
+    },
+    {
+      "error": "ConnectionError: HTTPSConnectionPool(host='index.commoncrawl.org', port=443): Max retries exceeded with url: /CC-MAIN-2025-43-index?url=www.globalshapers.org%2Falumni%2F%2A&output=json&filter=status%3A200&filter=mime%3Atext%2Fhtml&collapse=urlkey&fl=url (Caused by NewConnectionError(\"HTTPSConnection(host='index.commoncrawl.org', port=443): Failed to establish a new connection: [Errno 111] Connection refused\"))",
+      "query": "www.globalshapers.org/alumni/*",
+      "source": "common-crawl:CC-MAIN-2025-43",
+      "status": "failed",
+      "urls": 0
+    },
+    {
+      "error": "ConnectionError: HTTPSConnectionPool(host='index.commoncrawl.org', port=443): Max retries exceeded with url: /CC-MAIN-2025-43-index?url=www.globalshapers.org%2Fmember-details%2F%2A&output=json&filter=status%3A200&filter=mime%3Atext%2Fhtml&collapse=urlkey&fl=url (Caused by NewConnectionError(\"HTTPSConnection(host='index.commoncrawl.org', port=443): Failed to establish a new connection: [Errno 111] Connection refused\"))",
+      "query": "www.globalshapers.org/member-details/*",
+      "source": "common-crawl:CC-MAIN-2025-43",
+      "status": "failed",
+      "urls": 0
+    },
+    {
+      "error": "ConnectionError: HTTPSConnectionPool(host='index.commoncrawl.org', port=443): Max retries exceeded with url: /CC-MAIN-2025-43-index?url=www.globalshapers.org%2Fshapers%2F%2A&output=json&filter=status%3A200&filter=mime%3Atext%2Fhtml&collapse=urlkey&fl=url (Caused by NewConnectionError(\"HTTPSConnection(host='index.commoncrawl.org', port=443): Failed to establish a new connection: [Errno 111] Connection refused\"))",
+      "query": "www.globalshapers.org/shapers/*",
+      "source": "common-crawl:CC-MAIN-2025-43",
+      "status": "failed",
+      "urls": 0
+    },
+    {
+      "error": "ConnectionError: HTTPSConnectionPool(host='index.commoncrawl.org', port=443): Max retries exceeded with url: /CC-MAIN-2025-47-index?url=globalshapers.org%2Falumni%2F%2A&output=json&filter=status%3A200&filter=mime%3Atext%2Fhtml&collapse=urlkey&fl=url (Caused by NewConnectionError(\"HTTPSConnection(host='index.commoncrawl.org', port=443): Failed to establish a new connection: [Errno 111] Connection refused\"))",
+      "query": "globalshapers.org/alumni/*",
+      "source": "common-crawl:CC-MAIN-2025-47",
+      "status": "failed",
+      "urls": 0
+    },
+    {
+      "error": "ConnectionError: HTTPSConnectionPool(host='index.commoncrawl.org', port=443): Max retries exceeded with url: /CC-MAIN-2025-47-index?url=globalshapers.org%2Fmember-details%2F%2A&output=json&filter=status%3A200&filter=mime%3Atext%2Fhtml&collapse=urlkey&fl=url (Caused by NewConnectionError(\"HTTPSConnection(host='index.commoncrawl.org', port=443): Failed to establish a new connection: [Errno 111] Connection refused\"))",
+      "query": "globalshapers.org/member-details/*",
+      "source": "common-crawl:CC-MAIN-2025-47",
+      "status": "failed",
+      "urls": 0
+    },
+    {
+      "error": "ConnectionError: HTTPSConnectionPool(host='index.commoncrawl.org', port=443): Max retries exceeded with url: /CC-MAIN-2025-47-index?url=globalshapers.org%2Fshapers%2F%2A&output=json&filter=status%3A200&filter=mime%3Atext%2Fhtml&collapse=urlkey&fl=url (Caused by NewConnectionError(\"HTTPSConnection(host='index.commoncrawl.org', port=443): Failed to establish a new connection: [Errno 111] Connection refused\"))",
+      "query": "globalshapers.org/shapers/*",
+      "source": "common-crawl:CC-MAIN-2025-47",
+      "status": "failed",
+      "urls": 0
+    },
+    {
+      "error": "ConnectTimeout: HTTPSConnectionPool(host='index.commoncrawl.org', port=443): Max retries exceeded with url: /CC-MAIN-2025-47-index?url=www.globalshapers.org%2Falumni%2F%2A&output=json&filter=status%3A200&filter=mime%3Atext%2Fhtml&collapse=urlkey&fl=url (Caused by ConnectTimeoutError(<HTTPSConnection(host='index.commoncrawl.org', port=443) at 0x7d22ec0d1090>, 'Connection to index.commoncrawl.org timed out. (connect timeout=120.0)'))",
+      "query": "www.globalshapers.org/alumni/*",
+      "source": "common-crawl:CC-MAIN-2025-47",
+      "status": "failed",
+      "urls": 0
+    },
+    {
+      "error": "ConnectionError: HTTPSConnectionPool(host='index.commoncrawl.org', port=443): Max retries exceeded with url: /CC-MAIN-2025-47-index?url=www.globalshapers.org%2Fmember-details%2F%2A&output=json&filter=status%3A200&filter=mime%3Atext%2Fhtml&collapse=urlkey&fl=url (Caused by NewConnectionError(\"HTTPSConnection(host='index.commoncrawl.org', port=443): Failed to establish a new connection: [Errno 111] Connection refused\"))",
+      "query": "www.globalshapers.org/member-details/*",
+      "source": "common-crawl:CC-MAIN-2025-47",
+      "status": "failed",
+      "urls": 0
+    },
+    {
+      "error": "ConnectionError: HTTPSConnectionPool(host='index.commoncrawl.org', port=443): Max retries exceeded with url: /CC-MAIN-2025-47-index?url=www.globalshapers.org%2Fshapers%2F%2A&output=json&filter=status%3A200&filter=mime%3Atext%2Fhtml&collapse=urlkey&fl=url (Caused by NewConnectionError(\"HTTPSConnection(host='index.commoncrawl.org', port=443): Failed to establish a new connection: [Errno 111] Connection refused\"))",
+      "query": "www.globalshapers.org/shapers/*",
+      "source": "common-crawl:CC-MAIN-2025-47",
+      "status": "failed",
+      "urls": 0
+    },
+    {
+      "error": "ConnectionError: HTTPSConnectionPool(host='index.commoncrawl.org', port=443): Max retries exceeded with url: /CC-MAIN-2025-51-index?url=globalshapers.org%2Falumni%2F%2A&output=json&filter=status%3A200&filter=mime%3Atext%2Fhtml&collapse=urlkey&fl=url (Caused by NewConnectionError(\"HTTPSConnection(host='index.commoncrawl.org', port=443): Failed to establish a new connection: [Errno 111] Connection refused\"))",
+      "query": "globalshapers.org/alumni/*",
+      "source": "common-crawl:CC-MAIN-2025-51",
+      "status": "failed",
+      "urls": 0
+    },
+    {
+      "error": "ConnectionError: HTTPSConnectionPool(host='index.commoncrawl.org', port=443): Max retries exceeded with url: /CC-MAIN-2025-51-index?url=globalshapers.org%2Fmember-details%2F%2A&output=json&filter=status%3A200&filter=mime%3Atext%2Fhtml&collapse=urlkey&fl=url (Caused by NewConnectionError(\"HTTPSConnection(host='index.commoncrawl.org', port=443): Failed to establish a new connection: [Errno 111] Connection refused\"))",
+      "query": "globalshapers.org/member-details/*",
+      "source": "common-crawl:CC-MAIN-2025-51",
+      "status": "failed",
+      "urls": 0
+    },
+    {
+      "error": "ConnectionError: HTTPSConnectionPool(host='index.commoncrawl.org', port=443): Max retries exceeded with url: /CC-MAIN-2025-51-index?url=globalshapers.org%2Fshapers%2F%2A&output=json&filter=status%3A200&filter=mime%3Atext%2Fhtml&collapse=urlkey&fl=url (Caused by NewConnectionError(\"HTTPSConnection(host='index.commoncrawl.org', port=443): Failed to establish a new connection: [Errno 111] Connection refused\"))",
+      "query": "globalshapers.org/shapers/*",
+      "source": "common-crawl:CC-MAIN-2025-51",
+      "status": "failed",
+      "urls": 0
+    },
+    {
+      "error": "ConnectionError: HTTPSConnectionPool(host='index.commoncrawl.org', port=443): Max retries exceeded with url: /CC-MAIN-2025-51-index?url=www.globalshapers.org%2Falumni%2F%2A&output=json&filter=status%3A200&filter=mime%3Atext%2Fhtml&collapse=urlkey&fl=url (Caused by NewConnectionError(\"HTTPSConnection(host='index.commoncrawl.org', port=443): Failed to establish a new connection: [Errno 111] Connection refused\"))",
+      "query": "www.globalshapers.org/alumni/*",
+      "source": "common-crawl:CC-MAIN-2025-51",
+      "status": "failed",
+      "urls": 0
+    },
+    {
+      "error": "ConnectionError: HTTPSConnectionPool(host='index.commoncrawl.org', port=443): Max retries exceeded with url: /CC-MAIN-2025-51-index?url=www.globalshapers.org%2Fmember-details%2F%2A&output=json&filter=status%3A200&filter=mime%3Atext%2Fhtml&collapse=urlkey&fl=url (Caused by NewConnectionError(\"HTTPSConnection(host='index.commoncrawl.org', port=443): Failed to establish a new connection: [Errno 111] Connection refused\"))",
+      "query": "www.globalshapers.org/member-details/*",
+      "source": "common-crawl:CC-MAIN-2025-51",
+      "status": "failed",
+      "urls": 0
+    },
+    {
+      "error": "ConnectionError: HTTPSConnectionPool(host='index.commoncrawl.org', port=443): Max retries exceeded with url: /CC-MAIN-2025-51-index?url=www.globalshapers.org%2Fshapers%2F%2A&output=json&filter=status%3A200&filter=mime%3Atext%2Fhtml&collapse=urlkey&fl=url (Caused by NewConnectionError(\"HTTPSConnection(host='index.commoncrawl.org', port=443): Failed to establish a new connection: [Errno 111] Connection refused\"))",
+      "query": "www.globalshapers.org/shapers/*",
+      "source": "common-crawl:CC-MAIN-2025-51",
+      "status": "failed",
+      "urls": 0
+    },
+    {
+      "error": "ConnectionError: HTTPSConnectionPool(host='index.commoncrawl.org', port=443): Max retries exceeded with url: /CC-MAIN-2026-04-index?url=globalshapers.org%2Falumni%2F%2A&output=json&filter=status%3A200&filter=mime%3Atext%2Fhtml&collapse=urlkey&fl=url (Caused by NewConnectionError(\"HTTPSConnection(host='index.commoncrawl.org', port=443): Failed to establish a new connection: [Errno 111] Connection refused\"))",
+      "query": "globalshapers.org/alumni/*",
+      "source": "common-crawl:CC-MAIN-2026-04",
+      "status": "failed",
+      "urls": 0
+    },
+    {
+      "error": "ConnectionError: HTTPSConnectionPool(host='index.commoncrawl.org', port=443): Max retries exceeded with url: /CC-MAIN-2026-04-index?url=globalshapers.org%2Fmember-details%2F%2A&output=json&filter=status%3A200&filter=mime%3Atext%2Fhtml&collapse=urlkey&fl=url (Caused by NewConnectionError(\"HTTPSConnection(host='index.commoncrawl.org', port=443): Failed to establish a new connection: [Errno 111] Connection refused\"))",
+      "query": "globalshapers.org/member-details/*",
+      "source": "common-crawl:CC-MAIN-2026-04",
+      "status": "failed",
+      "urls": 0
+    },
+    {
+      "error": "ConnectionError: HTTPSConnectionPool(host='index.commoncrawl.org', port=443): Max retries exceeded with url: /CC-MAIN-2026-04-index?url=globalshapers.org%2Fshapers%2F%2A&output=json&filter=status%3A200&filter=mime%3Atext%2Fhtml&collapse=urlkey&fl=url (Caused by NewConnectionError(\"HTTPSConnection(host='index.commoncrawl.org', port=443): Failed to establish a new connection: [Errno 111] Connection refused\"))",
+      "query": "globalshapers.org/shapers/*",
+      "source": "common-crawl:CC-MAIN-2026-04",
+      "status": "failed",
+      "urls": 0
+    },
+    {
+      "error": "ConnectionError: HTTPSConnectionPool(host='index.commoncrawl.org', port=443): Max retries exceeded with url: /CC-MAIN-2026-04-index?url=www.globalshapers.org%2Falumni%2F%2A&output=json&filter=status%3A200&filter=mime%3Atext%2Fhtml&collapse=urlkey&fl=url (Caused by NewConnectionError(\"HTTPSConnection(host='index.commoncrawl.org', port=443): Failed to establish a new connection: [Errno 111] Connection refused\"))",
+      "query": "www.globalshapers.org/alumni/*",
+      "source": "common-crawl:CC-MAIN-2026-04",
+      "status": "failed",
+      "urls": 0
+    },
+    {
+      "error": "ConnectionError: HTTPSConnectionPool(host='index.commoncrawl.org', port=443): Max retries exceeded with url: /CC-MAIN-2026-04-index?url=www.globalshapers.org%2Fmember-details%2F%2A&output=json&filter=status%3A200&filter=mime%3Atext%2Fhtml&collapse=urlkey&fl=url (Caused by NewConnectionError(\"HTTPSConnection(host='index.commoncrawl.org', port=443): Failed to establish a new connection: [Errno 111] Connection refused\"))",
+      "query": "www.globalshapers.org/member-details/*",
+      "source": "common-crawl:CC-MAIN-2026-04",
+      "status": "failed",
+      "urls": 0
+    },
+    {
+      "error": "ConnectionError: HTTPSConnectionPool(host='index.commoncrawl.org', port=443): Max retries exceeded with url: /CC-MAIN-2026-04-index?url=www.globalshapers.org%2Fshapers%2F%2A&output=json&filter=status%3A200&filter=mime%3Atext%2Fhtml&collapse=urlkey&fl=url (Caused by NewConnectionError(\"HTTPSConnection(host='index.commoncrawl.org', port=443): Failed to establish a new connection: [Errno 111] Connection refused\"))",
+      "query": "www.globalshapers.org/shapers/*",
+      "source": "common-crawl:CC-MAIN-2026-04",
+      "status": "failed",
+      "urls": 0
+    },
+    {
+      "error": "ConnectionError: HTTPSConnectionPool(host='index.commoncrawl.org', port=443): Max retries exceeded with url: /CC-MAIN-2026-08-index?url=globalshapers.org%2Falumni%2F%2A&output=json&filter=status%3A200&filter=mime%3Atext%2Fhtml&collapse=urlkey&fl=url (Caused by NewConnectionError(\"HTTPSConnection(host='index.commoncrawl.org', port=443): Failed to establish a new connection: [Errno 111] Connection refused\"))",
+      "query": "globalshapers.org/alumni/*",
+      "source": "common-crawl:CC-MAIN-2026-08",
+      "status": "failed",
+      "urls": 0
+    },
+    {
+      "error": "ConnectionError: HTTPSConnectionPool(host='index.commoncrawl.org', port=443): Max retries exceeded with url: /CC-MAIN-2026-08-index?url=globalshapers.org%2Fmember-details%2F%2A&output=json&filter=status%3A200&filter=mime%3Atext%2Fhtml&collapse=urlkey&fl=url (Caused by NewConnectionError(\"HTTPSConnection(host='index.commoncrawl.org', port=443): Failed to establish a new connection: [Errno 111] Connection refused\"))",
+      "query": "globalshapers.org/member-details/*",
+      "source": "common-crawl:CC-MAIN-2026-08",
+      "status": "failed",
+      "urls": 0
+    },
+    {
+      "error": "ConnectionError: HTTPSConnectionPool(host='index.commoncrawl.org', port=443): Max retries exceeded with url: /CC-MAIN-2026-08-index?url=globalshapers.org%2Fshapers%2F%2A&output=json&filter=status%3A200&filter=mime%3Atext%2Fhtml&collapse=urlkey&fl=url (Caused by NewConnectionError(\"HTTPSConnection(host='index.commoncrawl.org', port=443): Failed to establish a new connection: [Errno 111] Connection refused\"))",
+      "query": "globalshapers.org/shapers/*",
+      "source": "common-crawl:CC-MAIN-2026-08",
+      "status": "failed",
+      "urls": 0
+    },
+    {
+      "error": "ConnectionError: HTTPSConnectionPool(host='index.commoncrawl.org', port=443): Max retries exceeded with url: /CC-MAIN-2026-08-index?url=www.globalshapers.org%2Falumni%2F%2A&output=json&filter=status%3A200&filter=mime%3Atext%2Fhtml&collapse=urlkey&fl=url (Caused by NewConnectionError(\"HTTPSConnection(host='index.commoncrawl.org', port=443): Failed to establish a new connection: [Errno 111] Connection refused\"))",
+      "query": "www.globalshapers.org/alumni/*",
+      "source": "common-crawl:CC-MAIN-2026-08",
+      "status": "failed",
+      "urls": 0
+    },
+    {
+      "error": "ConnectionError: HTTPSConnectionPool(host='index.commoncrawl.org', port=443): Max retries exceeded with url: /CC-MAIN-2026-08-index?url=www.globalshapers.org%2Fmember-details%2F%2A&output=json&filter=status%3A200&filter=mime%3Atext%2Fhtml&collapse=urlkey&fl=url (Caused by NewConnectionError(\"HTTPSConnection(host='index.commoncrawl.org', port=443): Failed to establish a new connection: [Errno 111] Connection refused\"))",
+      "query": "www.globalshapers.org/member-details/*",
+      "source": "common-crawl:CC-MAIN-2026-08",
+      "status": "failed",
+      "urls": 0
+    },
+    {
+      "error": "ConnectionError: HTTPSConnectionPool(host='index.commoncrawl.org', port=443): Max retries exceeded with url: /CC-MAIN-2026-08-index?url=www.globalshapers.org%2Fshapers%2F%2A&output=json&filter=status%3A200&filter=mime%3Atext%2Fhtml&collapse=urlkey&fl=url (Caused by NewConnectionError(\"HTTPSConnection(host='index.commoncrawl.org', port=443): Failed to establish a new connection: [Errno 111] Connection refused\"))",
+      "query": "www.globalshapers.org/shapers/*",
+      "source": "common-crawl:CC-MAIN-2026-08",
+      "status": "failed",
+      "urls": 0
+    },
+    {
+      "error": "ConnectTimeout: HTTPSConnectionPool(host='index.commoncrawl.org', port=443): Max retries exceeded with url: /CC-MAIN-2026-12-index?url=globalshapers.org%2Falumni%2F%2A&output=json&filter=status%3A200&filter=mime%3Atext%2Fhtml&collapse=urlkey&fl=url (Caused by ConnectTimeoutError(<HTTPSConnection(host='index.commoncrawl.org', port=443) at 0x7d22f033f4d0>, 'Connection to index.commoncrawl.org timed out. (connect timeout=120.0)'))",
+      "query": "globalshapers.org/alumni/*",
+      "source": "common-crawl:CC-MAIN-2026-12",
+      "status": "failed",
+      "urls": 0
+    },
+    {
+      "error": "ConnectTimeout: HTTPSConnectionPool(host='index.commoncrawl.org', port=443): Max retries exceeded with url: /CC-MAIN-2026-12-index?url=globalshapers.org%2Fmember-details%2F%2A&output=json&filter=status%3A200&filter=mime%3Atext%2Fhtml&collapse=urlkey&fl=url (Caused by ConnectTimeoutError(<HTTPSConnection(host='index.commoncrawl.org', port=443) at 0x7d22f033f9d0>, 'Connection to index.commoncrawl.org timed out. (connect timeout=120.0)'))",
+      "query": "globalshapers.org/member-details/*",
+      "source": "common-crawl:CC-MAIN-2026-12",
+      "status": "failed",
+      "urls": 0
+    },
+    {
+      "error": "ConnectionError: HTTPSConnectionPool(host='index.commoncrawl.org', port=443): Max retries exceeded with url: /CC-MAIN-2026-12-index?url=globalshapers.org%2Fshapers%2F%2A&output=json&filter=status%3A200&filter=mime%3Atext%2Fhtml&collapse=urlkey&fl=url (Caused by NewConnectionError(\"HTTPSConnection(host='index.commoncrawl.org', port=443): Failed to establish a new connection: [Errno 111] Connection refused\"))",
+      "query": "globalshapers.org/shapers/*",
+      "source": "common-crawl:CC-MAIN-2026-12",
+      "status": "failed",
+      "urls": 0
+    },
+    {
+      "error": "ConnectTimeout: HTTPSConnectionPool(host='index.commoncrawl.org', port=443): Max retries exceeded with url: /CC-MAIN-2026-12-index?url=www.globalshapers.org%2Falumni%2F%2A&output=json&filter=status%3A200&filter=mime%3Atext%2Fhtml&collapse=urlkey&fl=url (Caused by ConnectTimeoutError(<HTTPSConnection(host='index.commoncrawl.org', port=443) at 0x7d22f033f390>, 'Connection to index.commoncrawl.org timed out. (connect timeout=120.0)'))",
+      "query": "www.globalshapers.org/alumni/*",
+      "source": "common-crawl:CC-MAIN-2026-12",
+      "status": "failed",
+      "urls": 0
+    },
+    {
+      "error": "ConnectTimeout: HTTPSConnectionPool(host='index.commoncrawl.org', port=443): Max retries exceeded with url: /CC-MAIN-2026-12-index?url=www.globalshapers.org%2Fmember-details%2F%2A&output=json&filter=status%3A200&filter=mime%3Atext%2Fhtml&collapse=urlkey&fl=url (Caused by ConnectTimeoutError(<HTTPSConnection(host='index.commoncrawl.org', port=443) at 0x7d22f033ee90>, 'Connection to index.commoncrawl.org timed out. (connect timeout=120.0)'))",
+      "query": "www.globalshapers.org/member-details/*",
+      "source": "common-crawl:CC-MAIN-2026-12",
+      "status": "failed",
+      "urls": 0
+    },
+    {
+      "error": "ConnectTimeout: HTTPSConnectionPool(host='index.commoncrawl.org', port=443): Max retries exceeded with url: /CC-MAIN-2026-12-index?url=www.globalshapers.org%2Fshapers%2F%2A&output=json&filter=status%3A200&filter=mime%3Atext%2Fhtml&collapse=urlkey&fl=url (Caused by ConnectTimeoutError(<HTTPSConnection(host='index.commoncrawl.org', port=443) at 0x7d22f033c190>, 'Connection to index.commoncrawl.org timed out. (connect timeout=120.0)'))",
+      "query": "www.globalshapers.org/shapers/*",
+      "source": "common-crawl:CC-MAIN-2026-12",
+      "status": "failed",
+      "urls": 0
+    },
+    {
+      "error": "ConnectTimeout: HTTPSConnectionPool(host='index.commoncrawl.org', port=443): Max retries exceeded with url: /CC-MAIN-2026-17-index?url=globalshapers.org%2Falumni%2F%2A&output=json&filter=status%3A200&filter=mime%3Atext%2Fhtml&collapse=urlkey&fl=url (Caused by ConnectTimeoutError(<HTTPSConnection(host='index.commoncrawl.org', port=443) at 0x7d22f033ed50>, 'Connection to index.commoncrawl.org timed out. (connect timeout=120.0)'))",
+      "query": "globalshapers.org/alumni/*",
+      "source": "common-crawl:CC-MAIN-2026-17",
+      "status": "failed",
+      "urls": 0
+    },
+    {
+      "error": "ReadTimeout: HTTPSConnectionPool(host='index.commoncrawl.org', port=443): Read timed out. (read timeout=120.0)",
+      "query": "globalshapers.org/member-details/*",
+      "source": "common-crawl:CC-MAIN-2026-17",
+      "status": "failed",
+      "urls": 0
+    },
+    {
+      "error": "ReadTimeout: HTTPSConnectionPool(host='index.commoncrawl.org', port=443): Read timed out. (read timeout=120.0)",
+      "query": "globalshapers.org/shapers/*",
+      "source": "common-crawl:CC-MAIN-2026-17",
+      "status": "failed",
+      "urls": 0
+    },
+    {
+      "error": "ConnectionError: HTTPSConnectionPool(host='index.commoncrawl.org', port=443): Max retries exceeded with url: /CC-MAIN-2026-17-index?url=www.globalshapers.org%2Falumni%2F%2A&output=json&filter=status%3A200&filter=mime%3Atext%2Fhtml&collapse=urlkey&fl=url (Caused by NewConnectionError(\"HTTPSConnection(host='index.commoncrawl.org', port=443): Failed to establish a new connection: [Errno 111] Connection refused\"))",
+      "query": "www.globalshapers.org/alumni/*",
+      "source": "common-crawl:CC-MAIN-2026-17",
+      "status": "failed",
+      "urls": 0
+    },
+    {
+      "error": "ConnectionError: HTTPSConnectionPool(host='index.commoncrawl.org', port=443): Max retries exceeded with url: /CC-MAIN-2026-17-index?url=www.globalshapers.org%2Fmember-details%2F%2A&output=json&filter=status%3A200&filter=mime%3Atext%2Fhtml&collapse=urlkey&fl=url (Caused by NewConnectionError(\"HTTPSConnection(host='index.commoncrawl.org', port=443): Failed to establish a new connection: [Errno 111] Connection refused\"))",
+      "query": "www.globalshapers.org/member-details/*",
+      "source": "common-crawl:CC-MAIN-2026-17",
+      "status": "failed",
+      "urls": 0
+    },
+    {
+      "error": "ConnectTimeout: HTTPSConnectionPool(host='index.commoncrawl.org', port=443): Max retries exceeded with url: /CC-MAIN-2026-17-index?url=www.globalshapers.org%2Fshapers%2F%2A&output=json&filter=status%3A200&filter=mime%3Atext%2Fhtml&collapse=urlkey&fl=url (Caused by ConnectTimeoutError(<HTTPSConnection(host='index.commoncrawl.org', port=443) at 0x7d22f033fb10>, 'Connection to index.commoncrawl.org timed out. (connect timeout=120.0)'))",
+      "query": "www.globalshapers.org/shapers/*",
+      "source": "common-crawl:CC-MAIN-2026-17",
+      "status": "failed",
+      "urls": 0
+    },
+    {
+      "error": "ReadTimeout: HTTPSConnectionPool(host='index.commoncrawl.org', port=443): Read timed out. (read timeout=120.0)",
+      "query": "globalshapers.org/alumni/*",
+      "source": "common-crawl:CC-MAIN-2026-21",
+      "status": "failed",
+      "urls": 0
+    },
+    {
+      "error": "ReadTimeout: HTTPSConnectionPool(host='index.commoncrawl.org', port=443): Read timed out. (read timeout=120.0)",
+      "query": "globalshapers.org/member-details/*",
+      "source": "common-crawl:CC-MAIN-2026-21",
+      "status": "failed",
+      "urls": 0
+    },
+    {
+      "error": "SSLError: HTTPSConnectionPool(host='index.commoncrawl.org', port=443): Max retries exceeded with url: /CC-MAIN-2026-21-index?url=globalshapers.org%2Fshapers%2F%2A&output=json&filter=status%3A200&filter=mime%3Atext%2Fhtml&collapse=urlkey&fl=url (Caused by SSLError(SSLEOFError(8, '[SSL: UNEXPECTED_EOF_WHILE_READING] EOF occurred in violation of protocol (_ssl.c:1032)')))",
+      "query": "globalshapers.org/shapers/*",
+      "source": "common-crawl:CC-MAIN-2026-21",
       "status": "failed",
       "urls": 0
     },
     {
       "error": "ReadTimeout: HTTPSConnectionPool(host='index.commoncrawl.org', port=443): Read timed out. (read timeout=120.0)",
       "query": "www.globalshapers.org/alumni/*",
-      "source": "common-crawl:CC-MAIN-2024-33",
-      "status": "failed",
-      "urls": 0
-    },
-    {
-      "error": "HTTPError: 503 Server Error: Service Temporarily Unavailable for url: https://index.commoncrawl.org/CC-MAIN-2024-33-index?url=www.globalshapers.org%2Fmember-details%2F%2A&output=json&filter=status%3A200&filter=mime%3Atext%2Fhtml&collapse=urlkey&fl=url",
-      "query": "www.globalshapers.org/member-details/*",
-      "source": "common-crawl:CC-MAIN-2024-33",
-      "status": "failed",
-      "urls": 0
-    },
-    {
-      "error": "HTTPError: 503 Server Error: Service Temporarily Unavailable for url: https://index.commoncrawl.org/CC-MAIN-2024-33-index?url=www.globalshapers.org%2Fshapers%2F%2A&output=json&filter=status%3A200&filter=mime%3Atext%2Fhtml&collapse=urlkey&fl=url",
-      "query": "www.globalshapers.org/shapers/*",
-      "source": "common-crawl:CC-MAIN-2024-33",
-      "status": "failed",
-      "urls": 0
-    },
-    {
-      "error": "HTTPError: 503 Server Error: Service Temporarily Unavailable for url: https://index.commoncrawl.org/CC-MAIN-2024-38-index?url=globalshapers.org%2Falumni%2F%2A&output=json&filter=status%3A200&filter=mime%3Atext%2Fhtml&collapse=urlkey&fl=url",
-      "query": "globalshapers.org/alumni/*",
-      "source": "common-crawl:CC-MAIN-2024-38",
-      "status": "failed",
-      "urls": 0
-    },
-    {
-      "error": "HTTPError: 503 Server Error: Service Temporarily Unavailable for url: https://index.commoncrawl.org/CC-MAIN-2024-38-index?url=globalshapers.org%2Fmember-details%2F%2A&output=json&filter=status%3A200&filter=mime%3Atext%2Fhtml&collapse=urlkey&fl=url",
-      "query": "globalshapers.org/member-details/*",
-      "source": "common-crawl:CC-MAIN-2024-38",
-      "status": "failed",
-      "urls": 0
-    },
-    {
-      "error": "HTTPError: 503 Server Error: Service Temporarily Unavailable for url: https://index.commoncrawl.org/CC-MAIN-2024-38-index?url=globalshapers.org%2Fshapers%2F%2A&output=json&filter=status%3A200&filter=mime%3Atext%2Fhtml&collapse=urlkey&fl=url",
-      "query": "globalshapers.org/shapers/*",
-      "source": "common-crawl:CC-MAIN-2024-38",
-      "status": "failed",
-      "urls": 0
-    },
-    {
-      "error": "HTTPError: 503 Server Error: Service Temporarily Unavailable for url: https://index.commoncrawl.org/CC-MAIN-2024-38-index?url=www.globalshapers.org%2Falumni%2F%2A&output=json&filter=status%3A200&filter=mime%3Atext%2Fhtml&collapse=urlkey&fl=url",
-      "query": "www.globalshapers.org/alumni/*",
-      "source": "common-crawl:CC-MAIN-2024-38",
-      "status": "failed",
-      "urls": 0
-    },
-    {
-      "error": "HTTPError: 503 Server Error: Service Temporarily Unavailable for url: https://index.commoncrawl.org/CC-MAIN-2024-38-index?url=www.globalshapers.org%2Fmember-details%2F%2A&output=json&filter=status%3A200&filter=mime%3Atext%2Fhtml&collapse=urlkey&fl=url",
-      "query": "www.globalshapers.org/member-details/*",
-      "source": "common-crawl:CC-MAIN-2024-38",
-      "status": "failed",
-      "urls": 0
-    },
-    {
-      "error": "HTTPError: 503 Server Error: Service Temporarily Unavailable for url: https://index.commoncrawl.org/CC-MAIN-2024-38-index?url=www.globalshapers.org%2Fshapers%2F%2A&output=json&filter=status%3A200&filter=mime%3Atext%2Fhtml&collapse=urlkey&fl=url",
-      "query": "www.globalshapers.org/shapers/*",
-      "source": "common-crawl:CC-MAIN-2024-38",
-      "status": "failed",
-      "urls": 0
-    },
-    {
-      "error": "HTTPError: 503 Server Error: Service Temporarily Unavailable for url: https://index.commoncrawl.org/CC-MAIN-2024-42-index?url=globalshapers.org%2Falumni%2F%2A&output=json&filter=status%3A200&filter=mime%3Atext%2Fhtml&collapse=urlkey&fl=url",
-      "query": "globalshapers.org/alumni/*",
-      "source": "common-crawl:CC-MAIN-2024-42",
-      "status": "failed",
-      "urls": 0
-    },
-    {
-      "error": "HTTPError: 503 Server Error: Service Temporarily Unavailable for url: https://index.commoncrawl.org/CC-MAIN-2024-42-index?url=globalshapers.org%2Fmember-details%2F%2A&output=json&filter=status%3A200&filter=mime%3Atext%2Fhtml&collapse=urlkey&fl=url",
-      "query": "globalshapers.org/member-details/*",
-      "source": "common-crawl:CC-MAIN-2024-42",
-      "status": "failed",
-      "urls": 0
-    },
-    {
-      "error": "HTTPError: 503 Server Error: Service Temporarily Unavailable for url: https://index.commoncrawl.org/CC-MAIN-2024-42-index?url=globalshapers.org%2Fshapers%2F%2A&output=json&filter=status%3A200&filter=mime%3Atext%2Fhtml&collapse=urlkey&fl=url",
-      "query": "globalshapers.org/shapers/*",
-      "source": "common-crawl:CC-MAIN-2024-42",
-      "status": "failed",
-      "urls": 0
-    },
-    {
-      "error": "HTTPError: 503 Server Error: Service Temporarily Unavailable for url: https://index.commoncrawl.org/CC-MAIN-2024-42-index?url=www.globalshapers.org%2Falumni%2F%2A&output=json&filter=status%3A200&filter=mime%3Atext%2Fhtml&collapse=urlkey&fl=url",
-      "query": "www.globalshapers.org/alumni/*",
-      "source": "common-crawl:CC-MAIN-2024-42",
-      "status": "failed",
-      "urls": 0
-    },
-    {
-      "error": "HTTPError: 503 Server Error: Service Temporarily Unavailable for url: https://index.commoncrawl.org/CC-MAIN-2024-42-index?url=www.globalshapers.org%2Fmember-details%2F%2A&output=json&filter=status%3A200&filter=mime%3Atext%2Fhtml&collapse=urlkey&fl=url",
-      "query": "www.globalshapers.org/member-details/*",
-      "source": "common-crawl:CC-MAIN-2024-42",
-      "status": "failed",
-      "urls": 0
-    },
-    {
-      "error": "HTTPError: 503 Server Error: Service Temporarily Unavailable for url: https://index.commoncrawl.org/CC-MAIN-2024-42-index?url=www.globalshapers.org%2Fshapers%2F%2A&output=json&filter=status%3A200&filter=mime%3Atext%2Fhtml&collapse=urlkey&fl=url",
-      "query": "www.globalshapers.org/shapers/*",
-      "source": "common-crawl:CC-MAIN-2024-42",
-      "status": "failed",
-      "urls": 0
-    },
-    {
-      "error": "HTTPError: 503 Server Error: Service Temporarily Unavailable for url: https://index.commoncrawl.org/CC-MAIN-2024-46-index?url=globalshapers.org%2Falumni%2F%2A&output=json&filter=status%3A200&filter=mime%3Atext%2Fhtml&collapse=urlkey&fl=url",
-      "query": "globalshapers.org/alumni/*",
-      "source": "common-crawl:CC-MAIN-2024-46",
-      "status": "failed",
-      "urls": 0
-    },
-    {
-      "error": "HTTPError: 503 Server Error: Service Temporarily Unavailable for url: https://index.commoncrawl.org/CC-MAIN-2024-46-index?url=globalshapers.org%2Fmember-details%2F%2A&output=json&filter=status%3A200&filter=mime%3Atext%2Fhtml&collapse=urlkey&fl=url",
-      "query": "globalshapers.org/member-details/*",
-      "source": "common-crawl:CC-MAIN-2024-46",
-      "status": "failed",
-      "urls": 0
-    },
-    {
-      "error": "HTTPError: 503 Server Error: Service Temporarily Unavailable for url: https://index.commoncrawl.org/CC-MAIN-2024-46-index?url=globalshapers.org%2Fshapers%2F%2A&output=json&filter=status%3A200&filter=mime%3Atext%2Fhtml&collapse=urlkey&fl=url",
-      "query": "globalshapers.org/shapers/*",
-      "source": "common-crawl:CC-MAIN-2024-46",
-      "status": "failed",
-      "urls": 0
-    },
-    {
-      "error": "HTTPError: 503 Server Error: Service Temporarily Unavailable for url: https://index.commoncrawl.org/CC-MAIN-2024-46-index?url=www.globalshapers.org%2Falumni%2F%2A&output=json&filter=status%3A200&filter=mime%3Atext%2Fhtml&collapse=urlkey&fl=url",
-      "query": "www.globalshapers.org/alumni/*",
-      "source": "common-crawl:CC-MAIN-2024-46",
-      "status": "failed",
-      "urls": 0
-    },
-    {
-      "error": "HTTPError: 503 Server Error: Service Temporarily Unavailable for url: https://index.commoncrawl.org/CC-MAIN-2024-46-index?url=www.globalshapers.org%2Fmember-details%2F%2A&output=json&filter=status%3A200&filter=mime%3Atext%2Fhtml&collapse=urlkey&fl=url",
-      "query": "www.globalshapers.org/member-details/*",
-      "source": "common-crawl:CC-MAIN-2024-46",
-      "status": "failed",
-      "urls": 0
-    },
-    {
-      "error": "HTTPError: 503 Server Error: Service Temporarily Unavailable for url: https://index.commoncrawl.org/CC-MAIN-2024-46-index?url=www.globalshapers.org%2Fshapers%2F%2A&output=json&filter=status%3A200&filter=mime%3Atext%2Fhtml&collapse=urlkey&fl=url",
-      "query": "www.globalshapers.org/shapers/*",
-      "source": "common-crawl:CC-MAIN-2024-46",
-      "status": "failed",
-      "urls": 0
-    },
-    {
-      "error": "HTTPError: 503 Server Error: Service Temporarily Unavailable for url: https://index.commoncrawl.org/CC-MAIN-2024-51-index?url=globalshapers.org%2Falumni%2F%2A&output=json&filter=status%3A200&filter=mime%3Atext%2Fhtml&collapse=urlkey&fl=url",
-      "query": "globalshapers.org/alumni/*",
-      "source": "common-crawl:CC-MAIN-2024-51",
-      "status": "failed",
-      "urls": 0
-    },
-    {
-      "error": "HTTPError: 503 Server Error: Service Temporarily Unavailable for url: https://index.commoncrawl.org/CC-MAIN-2024-51-index?url=globalshapers.org%2Fmember-details%2F%2A&output=json&filter=status%3A200&filter=mime%3Atext%2Fhtml&collapse=urlkey&fl=url",
-      "query": "globalshapers.org/member-details/*",
-      "source": "common-crawl:CC-MAIN-2024-51",
-      "status": "failed",
-      "urls": 0
-    },
-    {
-      "error": "HTTPError: 503 Server Error: Service Temporarily Unavailable for url: https://index.commoncrawl.org/CC-MAIN-2024-51-index?url=globalshapers.org%2Fshapers%2F%2A&output=json&filter=status%3A200&filter=mime%3Atext%2Fhtml&collapse=urlkey&fl=url",
-      "query": "globalshapers.org/shapers/*",
-      "source": "common-crawl:CC-MAIN-2024-51",
-      "status": "failed",
-      "urls": 0
-    },
-    {
-      "error": "HTTPError: 404 Client Error: Not Found for url: https://index.commoncrawl.org/CC-MAIN-2024-51-index?url=www.globalshapers.org%2Falumni%2F%2A&output=json&filter=status%3A200&filter=mime%3Atext%2Fhtml&collapse=urlkey&fl=url",
-      "query": "www.globalshapers.org/alumni/*",
-      "source": "common-crawl:CC-MAIN-2024-51",
-      "status": "failed",
-      "urls": 0
-    },
-    {
-      "error": "HTTPError: 404 Client Error: Not Found for url: https://index.commoncrawl.org/CC-MAIN-2024-51-index?url=www.globalshapers.org%2Fmember-details%2F%2A&output=json&filter=status%3A200&filter=mime%3Atext%2Fhtml&collapse=urlkey&fl=url",
-      "query": "www.globalshapers.org/member-details/*",
-      "source": "common-crawl:CC-MAIN-2024-51",
-      "status": "failed",
-      "urls": 0
-    },
-    {
-      "error": "HTTPError: 503 Server Error: Service Temporarily Unavailable for url: https://index.commoncrawl.org/CC-MAIN-2024-51-index?url=www.globalshapers.org%2Fshapers%2F%2A&output=json&filter=status%3A200&filter=mime%3Atext%2Fhtml&collapse=urlkey&fl=url",
-      "query": "www.globalshapers.org/shapers/*",
-      "source": "common-crawl:CC-MAIN-2024-51",
-      "status": "failed",
-      "urls": 0
-    },
-    {
-      "error": "ConnectTimeout: HTTPSConnectionPool(host='index.commoncrawl.org', port=443): Max retries exceeded with url: /CC-MAIN-2025-05-index?url=globalshapers.org%2Falumni%2F%2A&output=json&filter=status%3A200&filter=mime%3Atext%2Fhtml&collapse=urlkey&fl=url (Caused by ConnectTimeoutError(<HTTPSConnection(host='index.commoncrawl.org', port=443) at 0x7fe32574bb10>, 'Connection to index.commoncrawl.org timed out. (connect timeout=120.0)'))",
-      "query": "globalshapers.org/alumni/*",
-      "source": "common-crawl:CC-MAIN-2025-05",
-      "status": "failed",
-      "urls": 0
-    },
-    {
-      "error": "ConnectTimeout: HTTPSConnectionPool(host='index.commoncrawl.org', port=443): Max retries exceeded with url: /CC-MAIN-2025-05-index?url=globalshapers.org%2Fmember-details%2F%2A&output=json&filter=status%3A200&filter=mime%3Atext%2Fhtml&collapse=urlkey&fl=url (Caused by ConnectTimeoutError(<HTTPSConnection(host='index.commoncrawl.org', port=443) at 0x7fe32574b4d0>, 'Connection to index.commoncrawl.org timed out. (connect timeout=120.0)'))",
-      "query": "globalshapers.org/member-details/*",
-      "source": "common-crawl:CC-MAIN-2025-05",
-      "status": "failed",
-      "urls": 0
-    },
-    {
-      "error": "ConnectTimeout: HTTPSConnectionPool(host='index.commoncrawl.org', port=443): Max retries exceeded with url: /CC-MAIN-2025-05-index?url=globalshapers.org%2Fshapers%2F%2A&output=json&filter=status%3A200&filter=mime%3Atext%2Fhtml&collapse=urlkey&fl=url (Caused by ConnectTimeoutError(<HTTPSConnection(host='index.commoncrawl.org', port=443) at 0x7fe32574bed0>, 'Connection to index.commoncrawl.org timed out. (connect timeout=120.0)'))",
-      "query": "globalshapers.org/shapers/*",
-      "source": "common-crawl:CC-MAIN-2025-05",
-      "status": "failed",
-      "urls": 0
-    },
-    {
-      "error": "HTTPError: 503 Server Error: Service Temporarily Unavailable for url: https://index.commoncrawl.org/CC-MAIN-2025-05-index?url=www.globalshapers.org%2Falumni%2F%2A&output=json&filter=status%3A200&filter=mime%3Atext%2Fhtml&collapse=urlkey&fl=url",
-      "query": "www.globalshapers.org/alumni/*",
-      "source": "common-crawl:CC-MAIN-2025-05",
-      "status": "failed",
-      "urls": 0
-    },
-    {
-      "error": "HTTPError: 503 Server Error: Service Temporarily Unavailable for url: https://index.commoncrawl.org/CC-MAIN-2025-05-index?url=www.globalshapers.org%2Fmember-details%2F%2A&output=json&filter=status%3A200&filter=mime%3Atext%2Fhtml&collapse=urlkey&fl=url",
-      "query": "www.globalshapers.org/member-details/*",
-      "source": "common-crawl:CC-MAIN-2025-05",
-      "status": "failed",
-      "urls": 0
-    },
-    {
-      "error": "HTTPError: 503 Server Error: Service Temporarily Unavailable for url: https://index.commoncrawl.org/CC-MAIN-2025-05-index?url=www.globalshapers.org%2Fshapers%2F%2A&output=json&filter=status%3A200&filter=mime%3Atext%2Fhtml&collapse=urlkey&fl=url",
-      "query": "www.globalshapers.org/shapers/*",
-      "source": "common-crawl:CC-MAIN-2025-05",
-      "status": "failed",
-      "urls": 0
-    },
-    {
-      "error": "ConnectTimeout: HTTPSConnectionPool(host='index.commoncrawl.org', port=443): Max retries exceeded with url: /CC-MAIN-2025-08-index?url=globalshapers.org%2Falumni%2F%2A&output=json&filter=status%3A200&filter=mime%3Atext%2Fhtml&collapse=urlkey&fl=url (Caused by ConnectTimeoutError(<HTTPSConnection(host='index.commoncrawl.org', port=443) at 0x7fe324200f50>, 'Connection to index.commoncrawl.org timed out. (connect timeout=120.0)'))",
-      "query": "globalshapers.org/alumni/*",
-      "source": "common-crawl:CC-MAIN-2025-08",
-      "status": "failed",
-      "urls": 0
-    },
-    {
-      "error": "ConnectTimeout: HTTPSConnectionPool(host='index.commoncrawl.org', port=443): Max retries exceeded with url: /CC-MAIN-2025-08-index?url=globalshapers.org%2Fmember-details%2F%2A&output=json&filter=status%3A200&filter=mime%3Atext%2Fhtml&collapse=urlkey&fl=url (Caused by ConnectTimeoutError(<HTTPSConnection(host='index.commoncrawl.org', port=443) at 0x7fe324200b90>, 'Connection to index.commoncrawl.org timed out. (connect timeout=120.0)'))",
-      "query": "globalshapers.org/member-details/*",
-      "source": "common-crawl:CC-MAIN-2025-08",
-      "status": "failed",
-      "urls": 0
-    },
-    {
-      "error": "ConnectTimeout: HTTPSConnectionPool(host='index.commoncrawl.org', port=443): Max retries exceeded with url: /CC-MAIN-2025-08-index?url=globalshapers.org%2Fshapers%2F%2A&output=json&filter=status%3A200&filter=mime%3Atext%2Fhtml&collapse=urlkey&fl=url (Caused by ConnectTimeoutError(<HTTPSConnection(host='index.commoncrawl.org', port=443) at 0x7fe324200410>, 'Connection to index.commoncrawl.org timed out. (connect timeout=120.0)'))",
-      "query": "globalshapers.org/shapers/*",
-      "source": "common-crawl:CC-MAIN-2025-08",
-      "status": "failed",
-      "urls": 0
-    },
-    {
-      "error": "ConnectTimeout: HTTPSConnectionPool(host='index.commoncrawl.org', port=443): Max retries exceeded with url: /CC-MAIN-2025-08-index?url=www.globalshapers.org%2Falumni%2F%2A&output=json&filter=status%3A200&filter=mime%3Atext%2Fhtml&collapse=urlkey&fl=url (Caused by ConnectTimeoutError(<HTTPSConnection(host='index.commoncrawl.org', port=443) at 0x7fe3242016d0>, 'Connection to index.commoncrawl.org timed out. (connect timeout=120.0)'))",
-      "query": "www.globalshapers.org/alumni/*",
-      "source": "common-crawl:CC-MAIN-2025-08",
-      "status": "failed",
-      "urls": 0
-    },
-    {
-      "error": "ConnectTimeout: HTTPSConnectionPool(host='index.commoncrawl.org', port=443): Max retries exceeded with url: /CC-MAIN-2025-08-index?url=www.globalshapers.org%2Fmember-details%2F%2A&output=json&filter=status%3A200&filter=mime%3Atext%2Fhtml&collapse=urlkey&fl=url (Caused by ConnectTimeoutError(<HTTPSConnection(host='index.commoncrawl.org', port=443) at 0x7fe3242011d0>, 'Connection to index.commoncrawl.org timed out. (connect timeout=120.0)'))",
-      "query": "www.globalshapers.org/member-details/*",
-      "source": "common-crawl:CC-MAIN-2025-08",
-      "status": "failed",
-      "urls": 0
-    },
-    {
-      "error": "ConnectTimeout: HTTPSConnectionPool(host='index.commoncrawl.org', port=443): Max retries exceeded with url: /CC-MAIN-2025-08-index?url=www.globalshapers.org%2Fshapers%2F%2A&output=json&filter=status%3A200&filter=mime%3Atext%2Fhtml&collapse=urlkey&fl=url (Caused by ConnectTimeoutError(<HTTPSConnection(host='index.commoncrawl.org', port=443) at 0x7fe324201450>, 'Connection to index.commoncrawl.org timed out. (connect timeout=120.0)'))",
-      "query": "www.globalshapers.org/shapers/*",
-      "source": "common-crawl:CC-MAIN-2025-08",
-      "status": "failed",
-      "urls": 0
-    },
-    {
-      "error": "ConnectTimeout: HTTPSConnectionPool(host='index.commoncrawl.org', port=443): Max retries exceeded with url: /CC-MAIN-2025-13-index?url=globalshapers.org%2Falumni%2F%2A&output=json&filter=status%3A200&filter=mime%3Atext%2Fhtml&collapse=urlkey&fl=url (Caused by ConnectTimeoutError(<HTTPSConnection(host='index.commoncrawl.org', port=443) at 0x7fe3254a2210>, 'Connection to index.commoncrawl.org timed out. (connect timeout=120.0)'))",
-      "query": "globalshapers.org/alumni/*",
-      "source": "common-crawl:CC-MAIN-2025-13",
-      "status": "failed",
-      "urls": 0
-    },
-    {
-      "error": "ConnectTimeout: HTTPSConnectionPool(host='index.commoncrawl.org', port=443): Max retries exceeded with url: /CC-MAIN-2025-13-index?url=globalshapers.org%2Fmember-details%2F%2A&output=json&filter=status%3A200&filter=mime%3Atext%2Fhtml&collapse=urlkey&fl=url (Caused by ConnectTimeoutError(<HTTPSConnection(host='index.commoncrawl.org', port=443) at 0x7fe3254a1590>, 'Connection to index.commoncrawl.org timed out. (connect timeout=120.0)'))",
-      "query": "globalshapers.org/member-details/*",
-      "source": "common-crawl:CC-MAIN-2025-13",
-      "status": "failed",
-      "urls": 0
-    },
-    {
-      "error": "ConnectTimeout: HTTPSConnectionPool(host='index.commoncrawl.org', port=443): Max retries exceeded with url: /CC-MAIN-2025-13-index?url=globalshapers.org%2Fshapers%2F%2A&output=json&filter=status%3A200&filter=mime%3Atext%2Fhtml&collapse=urlkey&fl=url (Caused by ConnectTimeoutError(<HTTPSConnection(host='index.commoncrawl.org', port=443) at 0x7fe3254a20d0>, 'Connection to index.commoncrawl.org timed out. (connect timeout=120.0)'))",
-      "query": "globalshapers.org/shapers/*",
-      "source": "common-crawl:CC-MAIN-2025-13",
-      "status": "failed",
-      "urls": 0
-    },
-    {
-      "error": "ConnectTimeout: HTTPSConnectionPool(host='index.commoncrawl.org', port=443): Max retries exceeded with url: /CC-MAIN-2025-13-index?url=www.globalshapers.org%2Falumni%2F%2A&output=json&filter=status%3A200&filter=mime%3Atext%2Fhtml&collapse=urlkey&fl=url (Caused by ConnectTimeoutError(<HTTPSConnection(host='index.commoncrawl.org', port=443) at 0x7fe324200910>, 'Connection to index.commoncrawl.org timed out. (connect timeout=120.0)'))",
-      "query": "www.globalshapers.org/alumni/*",
-      "source": "common-crawl:CC-MAIN-2025-13",
-      "status": "failed",
-      "urls": 0
-    },
-    {
-      "error": "ConnectTimeout: HTTPSConnectionPool(host='index.commoncrawl.org', port=443): Max retries exceeded with url: /CC-MAIN-2025-13-index?url=www.globalshapers.org%2Fmember-details%2F%2A&output=json&filter=status%3A200&filter=mime%3Atext%2Fhtml&collapse=urlkey&fl=url (Caused by ConnectTimeoutError(<HTTPSConnection(host='index.commoncrawl.org', port=443) at 0x7fe3254a2710>, 'Connection to index.commoncrawl.org timed out. (connect timeout=120.0)'))",
-      "query": "www.globalshapers.org/member-details/*",
-      "source": "common-crawl:CC-MAIN-2025-13",
-      "status": "failed",
-      "urls": 0
-    },
-    {
-      "error": "ConnectTimeout: HTTPSConnectionPool(host='index.commoncrawl.org', port=443): Max retries exceeded with url: /CC-MAIN-2025-13-index?url=www.globalshapers.org%2Fshapers%2F%2A&output=json&filter=status%3A200&filter=mime%3Atext%2Fhtml&collapse=urlkey&fl=url (Caused by ConnectTimeoutError(<HTTPSConnection(host='index.commoncrawl.org', port=443) at 0x7fe3254a2350>, 'Connection to index.commoncrawl.org timed out. (connect timeout=120.0)'))",
-      "query": "www.globalshapers.org/shapers/*",
-      "source": "common-crawl:CC-MAIN-2025-13",
-      "status": "failed",
-      "urls": 0
-    },
-    {
-      "error": "ConnectTimeout: HTTPSConnectionPool(host='index.commoncrawl.org', port=443): Max retries exceeded with url: /CC-MAIN-2025-18-index?url=globalshapers.org%2Falumni%2F%2A&output=json&filter=status%3A200&filter=mime%3Atext%2Fhtml&collapse=urlkey&fl=url (Caused by ConnectTimeoutError(<HTTPSConnection(host='index.commoncrawl.org', port=443) at 0x7fe3254a1450>, 'Connection to index.commoncrawl.org timed out. (connect timeout=120.0)'))",
-      "query": "globalshapers.org/alumni/*",
-      "source": "common-crawl:CC-MAIN-2025-18",
-      "status": "failed",
-      "urls": 0
-    },
-    {
-      "error": "ConnectTimeout: HTTPSConnectionPool(host='index.commoncrawl.org', port=443): Max retries exceeded with url: /CC-MAIN-2025-18-index?url=globalshapers.org%2Fmember-details%2F%2A&output=json&filter=status%3A200&filter=mime%3Atext%2Fhtml&collapse=urlkey&fl=url (Caused by ConnectTimeoutError(<HTTPSConnection(host='index.commoncrawl.org', port=443) at 0x7fe3254a1a90>, 'Connection to index.commoncrawl.org timed out. (connect timeout=120.0)'))",
-      "query": "globalshapers.org/member-details/*",
-      "source": "common-crawl:CC-MAIN-2025-18",
-      "status": "failed",
-      "urls": 0
-    },
-    {
-      "error": "ConnectTimeout: HTTPSConnectionPool(host='index.commoncrawl.org', port=443): Max retries exceeded with url: /CC-MAIN-2025-18-index?url=globalshapers.org%2Fshapers%2F%2A&output=json&filter=status%3A200&filter=mime%3Atext%2Fhtml&collapse=urlkey&fl=url (Caused by ConnectTimeoutError(<HTTPSConnection(host='index.commoncrawl.org', port=443) at 0x7fe3254a1810>, 'Connection to index.commoncrawl.org timed out. (connect timeout=120.0)'))",
-      "query": "globalshapers.org/shapers/*",
-      "source": "common-crawl:CC-MAIN-2025-18",
-      "status": "failed",
-      "urls": 0
-    },
-    {
-      "error": "ConnectTimeout: HTTPSConnectionPool(host='index.commoncrawl.org', port=443): Max retries exceeded with url: /CC-MAIN-2025-18-index?url=www.globalshapers.org%2Falumni%2F%2A&output=json&filter=status%3A200&filter=mime%3Atext%2Fhtml&collapse=urlkey&fl=url (Caused by ConnectTimeoutError(<HTTPSConnection(host='index.commoncrawl.org', port=443) at 0x7fe3254a2d50>, 'Connection to index.commoncrawl.org timed out. (connect timeout=120.0)'))",
-      "query": "www.globalshapers.org/alumni/*",
-      "source": "common-crawl:CC-MAIN-2025-18",
-      "status": "failed",
-      "urls": 0
-    },
-    {
-      "error": "ConnectTimeout: HTTPSConnectionPool(host='index.commoncrawl.org', port=443): Max retries exceeded with url: /CC-MAIN-2025-18-index?url=www.globalshapers.org%2Fmember-details%2F%2A&output=json&filter=status%3A200&filter=mime%3Atext%2Fhtml&collapse=urlkey&fl=url (Caused by ConnectTimeoutError(<HTTPSConnection(host='index.commoncrawl.org', port=443) at 0x7fe3254a1950>, 'Connection to index.commoncrawl.org timed out. (connect timeout=120.0)'))",
-      "query": "www.globalshapers.org/member-details/*",
-      "source": "common-crawl:CC-MAIN-2025-18",
-      "status": "failed",
-      "urls": 0
-    },
-    {
-      "error": "ConnectTimeout: HTTPSConnectionPool(host='index.commoncrawl.org', port=443): Max retries exceeded with url: /CC-MAIN-2025-18-index?url=www.globalshapers.org%2Fshapers%2F%2A&output=json&filter=status%3A200&filter=mime%3Atext%2Fhtml&collapse=urlkey&fl=url (Caused by ConnectTimeoutError(<HTTPSConnection(host='index.commoncrawl.org', port=443) at 0x7fe3254a2850>, 'Connection to index.commoncrawl.org timed out. (connect timeout=120.0)'))",
-      "query": "www.globalshapers.org/shapers/*",
-      "source": "common-crawl:CC-MAIN-2025-18",
-      "status": "failed",
-      "urls": 0
-    },
-    {
-      "error": "ConnectTimeout: HTTPSConnectionPool(host='index.commoncrawl.org', port=443): Max retries exceeded with url: /CC-MAIN-2025-21-index?url=globalshapers.org%2Falumni%2F%2A&output=json&filter=status%3A200&filter=mime%3Atext%2Fhtml&collapse=urlkey&fl=url (Caused by ConnectTimeoutError(<HTTPSConnection(host='index.commoncrawl.org', port=443) at 0x7fe3254a0a50>, 'Connection to index.commoncrawl.org timed out. (connect timeout=120.0)'))",
-      "query": "globalshapers.org/alumni/*",
-      "source": "common-crawl:CC-MAIN-2025-21",
-      "status": "failed",
-      "urls": 0
-    },
-    {
-      "error": "ConnectTimeout: HTTPSConnectionPool(host='index.commoncrawl.org', port=443): Max retries exceeded with url: /CC-MAIN-2025-21-index?url=globalshapers.org%2Fmember-details%2F%2A&output=json&filter=status%3A200&filter=mime%3Atext%2Fhtml&collapse=urlkey&fl=url (Caused by ConnectTimeoutError(<HTTPSConnection(host='index.commoncrawl.org', port=443) at 0x7fe32574b9d0>, 'Connection to index.commoncrawl.org timed out. (connect timeout=120.0)'))",
-      "query": "globalshapers.org/member-details/*",
-      "source": "common-crawl:CC-MAIN-2025-21",
-      "status": "failed",
-      "urls": 0
-    },
-    {
-      "error": "ConnectTimeout: HTTPSConnectionPool(host='index.commoncrawl.org', port=443): Max retries exceeded with url: /CC-MAIN-2025-21-index?url=globalshapers.org%2Fshapers%2F%2A&output=json&filter=status%3A200&filter=mime%3Atext%2Fhtml&collapse=urlkey&fl=url (Caused by ConnectTimeoutError(<HTTPSConnection(host='index.commoncrawl.org', port=443) at 0x7fe32574b750>, 'Connection to index.commoncrawl.org timed out. (connect timeout=120.0)'))",
-      "query": "globalshapers.org/shapers/*",
-      "source": "common-crawl:CC-MAIN-2025-21",
-      "status": "failed",
-      "urls": 0
-    },
-    {
-      "error": "ConnectTimeout: HTTPSConnectionPool(host='index.commoncrawl.org', port=443): Max retries exceeded with url: /CC-MAIN-2025-21-index?url=www.globalshapers.org%2Falumni%2F%2A&output=json&filter=status%3A200&filter=mime%3Atext%2Fhtml&collapse=urlkey&fl=url (Caused by ConnectTimeoutError(<HTTPSConnection(host='index.commoncrawl.org', port=443) at 0x7fe3254a2ad0>, 'Connection to index.commoncrawl.org timed out. (connect timeout=120.0)'))",
-      "query": "www.globalshapers.org/alumni/*",
-      "source": "common-crawl:CC-MAIN-2025-21",
-      "status": "failed",
-      "urls": 0
-    },
-    {
-      "error": "ConnectTimeout: HTTPSConnectionPool(host='index.commoncrawl.org', port=443): Max retries exceeded with url: /CC-MAIN-2025-21-index?url=www.globalshapers.org%2Fmember-details%2F%2A&output=json&filter=status%3A200&filter=mime%3Atext%2Fhtml&collapse=urlkey&fl=url (Caused by ConnectTimeoutError(<HTTPSConnection(host='index.commoncrawl.org', port=443) at 0x7fe3254a11d0>, 'Connection to index.commoncrawl.org timed out. (connect timeout=120.0)'))",
-      "query": "www.globalshapers.org/member-details/*",
-      "source": "common-crawl:CC-MAIN-2025-21",
-      "status": "failed",
-      "urls": 0
-    },
-    {
-      "error": "ConnectTimeout: HTTPSConnectionPool(host='index.commoncrawl.org', port=443): Max retries exceeded with url: /CC-MAIN-2025-21-index?url=www.globalshapers.org%2Fshapers%2F%2A&output=json&filter=status%3A200&filter=mime%3Atext%2Fhtml&collapse=urlkey&fl=url (Caused by ConnectTimeoutError(<HTTPSConnection(host='index.commoncrawl.org', port=443) at 0x7fe3254a3ed0>, 'Connection to index.commoncrawl.org timed out. (connect timeout=120.0)'))",
-      "query": "www.globalshapers.org/shapers/*",
-      "source": "common-crawl:CC-MAIN-2025-21",
-      "status": "failed",
-      "urls": 0
-    },
-    {
-      "error": "ConnectTimeout: HTTPSConnectionPool(host='index.commoncrawl.org', port=443): Max retries exceeded with url: /CC-MAIN-2025-26-index?url=globalshapers.org%2Falumni%2F%2A&output=json&filter=status%3A200&filter=mime%3Atext%2Fhtml&collapse=urlkey&fl=url (Caused by ConnectTimeoutError(<HTTPSConnection(host='index.commoncrawl.org', port=443) at 0x7fe3242007d0>, 'Connection to index.commoncrawl.org timed out. (connect timeout=120.0)'))",
-      "query": "globalshapers.org/alumni/*",
-      "source": "common-crawl:CC-MAIN-2025-26",
-      "status": "failed",
-      "urls": 0
-    },
-    {
-      "error": "ConnectTimeout: HTTPSConnectionPool(host='index.commoncrawl.org', port=443): Max retries exceeded with url: /CC-MAIN-2025-26-index?url=globalshapers.org%2Fmember-details%2F%2A&output=json&filter=status%3A200&filter=mime%3Atext%2Fhtml&collapse=urlkey&fl=url (Caused by ConnectTimeoutError(<HTTPSConnection(host='index.commoncrawl.org', port=443) at 0x7fe324200190>, 'Connection to index.commoncrawl.org timed out. (connect timeout=120.0)'))",
-      "query": "globalshapers.org/member-details/*",
-      "source": "common-crawl:CC-MAIN-2025-26",
-      "status": "failed",
-      "urls": 0
-    },
-    {
-      "error": "ConnectTimeout: HTTPSConnectionPool(host='index.commoncrawl.org', port=443): Max retries exceeded with url: /CC-MAIN-2025-26-index?url=globalshapers.org%2Fshapers%2F%2A&output=json&filter=status%3A200&filter=mime%3Atext%2Fhtml&collapse=urlkey&fl=url (Caused by ConnectTimeoutError(<HTTPSConnection(host='index.commoncrawl.org', port=443) at 0x7fe324200550>, 'Connection to index.commoncrawl.org timed out. (connect timeout=120.0)'))",
-      "query": "globalshapers.org/shapers/*",
-      "source": "common-crawl:CC-MAIN-2025-26",
-      "status": "failed",
-      "urls": 0
-    },
-    {
-      "error": "ConnectTimeout: HTTPSConnectionPool(host='index.commoncrawl.org', port=443): Max retries exceeded with url: /CC-MAIN-2025-26-index?url=www.globalshapers.org%2Falumni%2F%2A&output=json&filter=status%3A200&filter=mime%3Atext%2Fhtml&collapse=urlkey&fl=url (Caused by ConnectTimeoutError(<HTTPSConnection(host='index.commoncrawl.org', port=443) at 0x7fe32574b4d0>, 'Connection to index.commoncrawl.org timed out. (connect timeout=120.0)'))",
-      "query": "www.globalshapers.org/alumni/*",
-      "source": "common-crawl:CC-MAIN-2025-26",
-      "status": "failed",
-      "urls": 0
-    },
-    {
-      "error": "ConnectTimeout: HTTPSConnectionPool(host='index.commoncrawl.org', port=443): Max retries exceeded with url: /CC-MAIN-2025-26-index?url=www.globalshapers.org%2Fmember-details%2F%2A&output=json&filter=status%3A200&filter=mime%3Atext%2Fhtml&collapse=urlkey&fl=url (Caused by ConnectTimeoutError(<HTTPSConnection(host='index.commoncrawl.org', port=443) at 0x7fe324200a50>, 'Connection to index.commoncrawl.org timed out. (connect timeout=120.0)'))",
-      "query": "www.globalshapers.org/member-details/*",
-      "source": "common-crawl:CC-MAIN-2025-26",
-      "status": "failed",
-      "urls": 0
-    },
-    {
-      "error": "ConnectTimeout: HTTPSConnectionPool(host='index.commoncrawl.org', port=443): Max retries exceeded with url: /CC-MAIN-2025-26-index?url=www.globalshapers.org%2Fshapers%2F%2A&output=json&filter=status%3A200&filter=mime%3Atext%2Fhtml&collapse=urlkey&fl=url (Caused by ConnectTimeoutError(<HTTPSConnection(host='index.commoncrawl.org', port=443) at 0x7fe324200cd0>, 'Connection to index.commoncrawl.org timed out. (connect timeout=120.0)'))",
-      "query": "www.globalshapers.org/shapers/*",
-      "source": "common-crawl:CC-MAIN-2025-26",
-      "status": "failed",
-      "urls": 0
-    },
-    {
-      "error": "ConnectTimeout: HTTPSConnectionPool(host='index.commoncrawl.org', port=443): Max retries exceeded with url: /CC-MAIN-2025-30-index?url=globalshapers.org%2Falumni%2F%2A&output=json&filter=status%3A200&filter=mime%3Atext%2Fhtml&collapse=urlkey&fl=url (Caused by ConnectTimeoutError(<HTTPSConnection(host='index.commoncrawl.org', port=443) at 0x7fe3254a3890>, 'Connection to index.commoncrawl.org timed out. (connect timeout=120.0)'))",
-      "query": "globalshapers.org/alumni/*",
-      "source": "common-crawl:CC-MAIN-2025-30",
-      "status": "failed",
-      "urls": 0
-    },
-    {
-      "error": "ConnectTimeout: HTTPSConnectionPool(host='index.commoncrawl.org', port=443): Max retries exceeded with url: /CC-MAIN-2025-30-index?url=globalshapers.org%2Fmember-details%2F%2A&output=json&filter=status%3A200&filter=mime%3Atext%2Fhtml&collapse=urlkey&fl=url (Caused by ConnectTimeoutError(<HTTPSConnection(host='index.commoncrawl.org', port=443) at 0x7fe3254a3390>, 'Connection to index.commoncrawl.org timed out. (connect timeout=120.0)'))",
-      "query": "globalshapers.org/member-details/*",
-      "source": "common-crawl:CC-MAIN-2025-30",
-      "status": "failed",
-      "urls": 0
-    },
-    {
-      "error": "ConnectTimeout: HTTPSConnectionPool(host='index.commoncrawl.org', port=443): Max retries exceeded with url: /CC-MAIN-2025-30-index?url=globalshapers.org%2Fshapers%2F%2A&output=json&filter=status%3A200&filter=mime%3Atext%2Fhtml&collapse=urlkey&fl=url (Caused by ConnectTimeoutError(<HTTPSConnection(host='index.commoncrawl.org', port=443) at 0x7fe3254a3610>, 'Connection to index.commoncrawl.org timed out. (connect timeout=120.0)'))",
-      "query": "globalshapers.org/shapers/*",
-      "source": "common-crawl:CC-MAIN-2025-30",
-      "status": "failed",
-      "urls": 0
-    },
-    {
-      "error": "ConnectTimeout: HTTPSConnectionPool(host='index.commoncrawl.org', port=443): Max retries exceeded with url: /CC-MAIN-2025-30-index?url=www.globalshapers.org%2Falumni%2F%2A&output=json&filter=status%3A200&filter=mime%3Atext%2Fhtml&collapse=urlkey&fl=url (Caused by ConnectTimeoutError(<HTTPSConnection(host='index.commoncrawl.org', port=443) at 0x7fe3242002d0>, 'Connection to index.commoncrawl.org timed out. (connect timeout=120.0)'))",
-      "query": "www.globalshapers.org/alumni/*",
-      "source": "common-crawl:CC-MAIN-2025-30",
-      "status": "failed",
-      "urls": 0
-    },
-    {
-      "error": "ConnectTimeout: HTTPSConnectionPool(host='index.commoncrawl.org', port=443): Max retries exceeded with url: /CC-MAIN-2025-30-index?url=www.globalshapers.org%2Fmember-details%2F%2A&output=json&filter=status%3A200&filter=mime%3Atext%2Fhtml&collapse=urlkey&fl=url (Caused by ConnectTimeoutError(<HTTPSConnection(host='index.commoncrawl.org', port=443) at 0x7fe3254a3b10>, 'Connection to index.commoncrawl.org timed out. (connect timeout=120.0)'))",
-      "query": "www.globalshapers.org/member-details/*",
-      "source": "common-crawl:CC-MAIN-2025-30",
-      "status": "failed",
-      "urls": 0
-    },
-    {
-      "error": "ConnectTimeout: HTTPSConnectionPool(host='index.commoncrawl.org', port=443): Max retries exceeded with url: /CC-MAIN-2025-30-index?url=www.globalshapers.org%2Fshapers%2F%2A&output=json&filter=status%3A200&filter=mime%3Atext%2Fhtml&collapse=urlkey&fl=url (Caused by ConnectTimeoutError(<HTTPSConnection(host='index.commoncrawl.org', port=443) at 0x7fe3254a3d90>, 'Connection to index.commoncrawl.org timed out. (connect timeout=120.0)'))",
-      "query": "www.globalshapers.org/shapers/*",
-      "source": "common-crawl:CC-MAIN-2025-30",
-      "status": "failed",
-      "urls": 0
-    },
-    {
-      "error": "ConnectTimeout: HTTPSConnectionPool(host='index.commoncrawl.org', port=443): Max retries exceeded with url: /CC-MAIN-2025-33-index?url=globalshapers.org%2Falumni%2F%2A&output=json&filter=status%3A200&filter=mime%3Atext%2Fhtml&collapse=urlkey&fl=url (Caused by ConnectTimeoutError(<HTTPSConnection(host='index.commoncrawl.org', port=443) at 0x7fe3254a0190>, 'Connection to index.commoncrawl.org timed out. (connect timeout=120.0)'))",
-      "query": "globalshapers.org/alumni/*",
-      "source": "common-crawl:CC-MAIN-2025-33",
-      "status": "failed",
-      "urls": 0
-    },
-    {
-      "error": "ConnectTimeout: HTTPSConnectionPool(host='index.commoncrawl.org', port=443): Max retries exceeded with url: /CC-MAIN-2025-33-index?url=globalshapers.org%2Fmember-details%2F%2A&output=json&filter=status%3A200&filter=mime%3Atext%2Fhtml&collapse=urlkey&fl=url (Caused by ConnectTimeoutError(<HTTPSConnection(host='index.commoncrawl.org', port=443) at 0x7fe3254a0690>, 'Connection to index.commoncrawl.org timed out. (connect timeout=120.0)'))",
-      "query": "globalshapers.org/member-details/*",
-      "source": "common-crawl:CC-MAIN-2025-33",
-      "status": "failed",
-      "urls": 0
-    },
-    {
-      "error": "ConnectTimeout: HTTPSConnectionPool(host='index.commoncrawl.org', port=443): Max retries exceeded with url: /CC-MAIN-2025-33-index?url=globalshapers.org%2Fshapers%2F%2A&output=json&filter=status%3A200&filter=mime%3Atext%2Fhtml&collapse=urlkey&fl=url (Caused by ConnectTimeoutError(<HTTPSConnection(host='index.commoncrawl.org', port=443) at 0x7fe3254a0cd0>, 'Connection to index.commoncrawl.org timed out. (connect timeout=120.0)'))",
-      "query": "globalshapers.org/shapers/*",
-      "source": "common-crawl:CC-MAIN-2025-33",
-      "status": "failed",
-      "urls": 0
-    },
-    {
-      "error": "ConnectTimeout: HTTPSConnectionPool(host='index.commoncrawl.org', port=443): Max retries exceeded with url: /CC-MAIN-2025-33-index?url=www.globalshapers.org%2Falumni%2F%2A&output=json&filter=status%3A200&filter=mime%3Atext%2Fhtml&collapse=urlkey&fl=url (Caused by ConnectTimeoutError(<HTTPSConnection(host='index.commoncrawl.org', port=443) at 0x7fe3254a3110>, 'Connection to index.commoncrawl.org timed out. (connect timeout=120.0)'))",
-      "query": "www.globalshapers.org/alumni/*",
-      "source": "common-crawl:CC-MAIN-2025-33",
-      "status": "failed",
-      "urls": 0
-    },
-    {
-      "error": "ConnectTimeout: HTTPSConnectionPool(host='index.commoncrawl.org', port=443): Max retries exceeded with url: /CC-MAIN-2025-33-index?url=www.globalshapers.org%2Fmember-details%2F%2A&output=json&filter=status%3A200&filter=mime%3Atext%2Fhtml&collapse=urlkey&fl=url (Caused by ConnectTimeoutError(<HTTPSConnection(host='index.commoncrawl.org', port=443) at 0x7fe3254a0e10>, 'Connection to index.commoncrawl.org timed out. (connect timeout=120.0)'))",
-      "query": "www.globalshapers.org/member-details/*",
-      "source": "common-crawl:CC-MAIN-2025-33",
-      "status": "failed",
-      "urls": 0
-    },
-    {
-      "error": "ConnectTimeout: HTTPSConnectionPool(host='index.commoncrawl.org', port=443): Max retries exceeded with url: /CC-MAIN-2025-33-index?url=www.globalshapers.org%2Fshapers%2F%2A&output=json&filter=status%3A200&filter=mime%3Atext%2Fhtml&collapse=urlkey&fl=url (Caused by ConnectTimeoutError(<HTTPSConnection(host='index.commoncrawl.org', port=443) at 0x7fe3254a2e90>, 'Connection to index.commoncrawl.org timed out. (connect timeout=120.0)'))",
-      "query": "www.globalshapers.org/shapers/*",
-      "source": "common-crawl:CC-MAIN-2025-33",
-      "status": "failed",
-      "urls": 0
-    },
-    {
-      "error": "ConnectTimeout: HTTPSConnectionPool(host='index.commoncrawl.org', port=443): Max retries exceeded with url: /CC-MAIN-2025-38-index?url=globalshapers.org%2Falumni%2F%2A&output=json&filter=status%3A200&filter=mime%3Atext%2Fhtml&collapse=urlkey&fl=url (Caused by ConnectTimeoutError(<HTTPSConnection(host='index.commoncrawl.org', port=443) at 0x7fe32574bb10>, 'Connection to index.commoncrawl.org timed out. (connect timeout=120.0)'))",
-      "query": "globalshapers.org/alumni/*",
-      "source": "common-crawl:CC-MAIN-2025-38",
-      "status": "failed",
-      "urls": 0
-    },
-    {
-      "error": "ConnectTimeout: HTTPSConnectionPool(host='index.commoncrawl.org', port=443): Max retries exceeded with url: /CC-MAIN-2025-38-index?url=globalshapers.org%2Fmember-details%2F%2A&output=json&filter=status%3A200&filter=mime%3Atext%2Fhtml&collapse=urlkey&fl=url (Caused by ConnectTimeoutError(<HTTPSConnection(host='index.commoncrawl.org', port=443) at 0x7fe3254a1310>, 'Connection to index.commoncrawl.org timed out. (connect timeout=120.0)'))",
-      "query": "globalshapers.org/member-details/*",
-      "source": "common-crawl:CC-MAIN-2025-38",
-      "status": "failed",
-      "urls": 0
-    },
-    {
-      "error": "ConnectTimeout: HTTPSConnectionPool(host='index.commoncrawl.org', port=443): Max retries exceeded with url: /CC-MAIN-2025-38-index?url=globalshapers.org%2Fshapers%2F%2A&output=json&filter=status%3A200&filter=mime%3Atext%2Fhtml&collapse=urlkey&fl=url (Caused by ConnectTimeoutError(<HTTPSConnection(host='index.commoncrawl.org', port=443) at 0x7fe32574b890>, 'Connection to index.commoncrawl.org timed out. (connect timeout=120.0)'))",
-      "query": "globalshapers.org/shapers/*",
-      "source": "common-crawl:CC-MAIN-2025-38",
-      "status": "failed",
-      "urls": 0
-    },
-    {
-      "error": "ConnectTimeout: HTTPSConnectionPool(host='index.commoncrawl.org', port=443): Max retries exceeded with url: /CC-MAIN-2025-38-index?url=www.globalshapers.org%2Falumni%2F%2A&output=json&filter=status%3A200&filter=mime%3Atext%2Fhtml&collapse=urlkey&fl=url (Caused by ConnectTimeoutError(<HTTPSConnection(host='index.commoncrawl.org', port=443) at 0x7fe3254a0f50>, 'Connection to index.commoncrawl.org timed out. (connect timeout=120.0)'))",
-      "query": "www.globalshapers.org/alumni/*",
-      "source": "common-crawl:CC-MAIN-2025-38",
-      "status": "failed",
-      "urls": 0
-    },
-    {
-      "error": "ConnectTimeout: HTTPSConnectionPool(host='index.commoncrawl.org', port=443): Max retries exceeded with url: /CC-MAIN-2025-38-index?url=www.globalshapers.org%2Fmember-details%2F%2A&output=json&filter=status%3A200&filter=mime%3Atext%2Fhtml&collapse=urlkey&fl=url (Caused by ConnectTimeoutError(<HTTPSConnection(host='index.commoncrawl.org', port=443) at 0x7fe32574bed0>, 'Connection to index.commoncrawl.org timed out. (connect timeout=120.0)'))",
-      "query": "www.globalshapers.org/member-details/*",
-      "source": "common-crawl:CC-MAIN-2025-38",
-      "status": "failed",
-      "urls": 0
-    },
-    {
-      "error": "ConnectTimeout: HTTPSConnectionPool(host='index.commoncrawl.org', port=443): Max retries exceeded with url: /CC-MAIN-2025-38-index?url=www.globalshapers.org%2Fshapers%2F%2A&output=json&filter=status%3A200&filter=mime%3Atext%2Fhtml&collapse=urlkey&fl=url (Caused by ConnectTimeoutError(<HTTPSConnection(host='index.commoncrawl.org', port=443) at 0x7fe32574b610>, 'Connection to index.commoncrawl.org timed out. (connect timeout=120.0)'))",
-      "query": "www.globalshapers.org/shapers/*",
-      "source": "common-crawl:CC-MAIN-2025-38",
-      "status": "failed",
-      "urls": 0
-    },
-    {
-      "error": "ConnectTimeout: HTTPSConnectionPool(host='index.commoncrawl.org', port=443): Max retries exceeded with url: /CC-MAIN-2025-43-index?url=globalshapers.org%2Falumni%2F%2A&output=json&filter=status%3A200&filter=mime%3Atext%2Fhtml&collapse=urlkey&fl=url (Caused by ConnectTimeoutError(<HTTPSConnection(host='index.commoncrawl.org', port=443) at 0x7fe3254a0a50>, 'Connection to index.commoncrawl.org timed out. (connect timeout=120.0)'))",
-      "query": "globalshapers.org/alumni/*",
-      "source": "common-crawl:CC-MAIN-2025-43",
-      "status": "failed",
-      "urls": 0
-    },
-    {
-      "error": "ConnectTimeout: HTTPSConnectionPool(host='index.commoncrawl.org', port=443): Max retries exceeded with url: /CC-MAIN-2025-43-index?url=globalshapers.org%2Fmember-details%2F%2A&output=json&filter=status%3A200&filter=mime%3Atext%2Fhtml&collapse=urlkey&fl=url (Caused by ConnectTimeoutError(<HTTPSConnection(host='index.commoncrawl.org', port=443) at 0x7fe3254a2490>, 'Connection to index.commoncrawl.org timed out. (connect timeout=120.0)'))",
-      "query": "globalshapers.org/member-details/*",
-      "source": "common-crawl:CC-MAIN-2025-43",
-      "status": "failed",
-      "urls": 0
-    },
-    {
-      "error": "ConnectTimeout: HTTPSConnectionPool(host='index.commoncrawl.org', port=443): Max retries exceeded with url: /CC-MAIN-2025-43-index?url=globalshapers.org%2Fshapers%2F%2A&output=json&filter=status%3A200&filter=mime%3Atext%2Fhtml&collapse=urlkey&fl=url (Caused by ConnectTimeoutError(<HTTPSConnection(host='index.commoncrawl.org', port=443) at 0x7fe3254a1a90>, 'Connection to index.commoncrawl.org timed out. (connect timeout=120.0)'))",
-      "query": "globalshapers.org/shapers/*",
-      "source": "common-crawl:CC-MAIN-2025-43",
-      "status": "failed",
-      "urls": 0
-    },
-    {
-      "error": "ConnectTimeout: HTTPSConnectionPool(host='index.commoncrawl.org', port=443): Max retries exceeded with url: /CC-MAIN-2025-43-index?url=www.globalshapers.org%2Falumni%2F%2A&output=json&filter=status%3A200&filter=mime%3Atext%2Fhtml&collapse=urlkey&fl=url (Caused by ConnectTimeoutError(<HTTPSConnection(host='index.commoncrawl.org', port=443) at 0x7fe32574b4d0>, 'Connection to index.commoncrawl.org timed out. (connect timeout=120.0)'))",
-      "query": "www.globalshapers.org/alumni/*",
-      "source": "common-crawl:CC-MAIN-2025-43",
-      "status": "failed",
-      "urls": 0
-    },
-    {
-      "error": "ConnectTimeout: HTTPSConnectionPool(host='index.commoncrawl.org', port=443): Max retries exceeded with url: /CC-MAIN-2025-43-index?url=www.globalshapers.org%2Fmember-details%2F%2A&output=json&filter=status%3A200&filter=mime%3Atext%2Fhtml&collapse=urlkey&fl=url (Caused by ConnectTimeoutError(<HTTPSConnection(host='index.commoncrawl.org', port=443) at 0x7fe3254a1090>, 'Connection to index.commoncrawl.org timed out. (connect timeout=120.0)'))",
-      "query": "www.globalshapers.org/member-details/*",
-      "source": "common-crawl:CC-MAIN-2025-43",
-      "status": "failed",
-      "urls": 0
-    },
-    {
-      "error": "ConnectTimeout: HTTPSConnectionPool(host='index.commoncrawl.org', port=443): Max retries exceeded with url: /CC-MAIN-2025-43-index?url=www.globalshapers.org%2Fshapers%2F%2A&output=json&filter=status%3A200&filter=mime%3Atext%2Fhtml&collapse=urlkey&fl=url (Caused by ConnectTimeoutError(<HTTPSConnection(host='index.commoncrawl.org', port=443) at 0x7fe32574a850>, 'Connection to index.commoncrawl.org timed out. (connect timeout=120.0)'))",
-      "query": "www.globalshapers.org/shapers/*",
-      "source": "common-crawl:CC-MAIN-2025-43",
-      "status": "failed",
-      "urls": 0
-    },
-    {
-      "error": "ConnectTimeout: HTTPSConnectionPool(host='index.commoncrawl.org', port=443): Max retries exceeded with url: /CC-MAIN-2025-47-index?url=globalshapers.org%2Falumni%2F%2A&output=json&filter=status%3A200&filter=mime%3Atext%2Fhtml&collapse=urlkey&fl=url (Caused by ConnectTimeoutError(<HTTPSConnection(host='index.commoncrawl.org', port=443) at 0x7fe3254a11d0>, 'Connection to index.commoncrawl.org timed out. (connect timeout=120.0)'))",
-      "query": "globalshapers.org/alumni/*",
-      "source": "common-crawl:CC-MAIN-2025-47",
-      "status": "failed",
-      "urls": 0
-    },
-    {
-      "error": "SSLError: HTTPSConnectionPool(host='index.commoncrawl.org', port=443): Max retries exceeded with url: /CC-MAIN-2025-47-index?url=globalshapers.org%2Fmember-details%2F%2A&output=json&filter=status%3A200&filter=mime%3Atext%2Fhtml&collapse=urlkey&fl=url (Caused by SSLError(SSLEOFError(8, '[SSL: UNEXPECTED_EOF_WHILE_READING] EOF occurred in violation of protocol (_ssl.c:1032)')))",
-      "query": "globalshapers.org/member-details/*",
-      "source": "common-crawl:CC-MAIN-2025-47",
-      "status": "failed",
-      "urls": 0
-    },
-    {
-      "error": "SSLError: HTTPSConnectionPool(host='index.commoncrawl.org', port=443): Max retries exceeded with url: /CC-MAIN-2025-47-index?url=globalshapers.org%2Fshapers%2F%2A&output=json&filter=status%3A200&filter=mime%3Atext%2Fhtml&collapse=urlkey&fl=url (Caused by SSLError(SSLEOFError(8, '[SSL: UNEXPECTED_EOF_WHILE_READING] EOF occurred in violation of protocol (_ssl.c:1032)')))",
-      "query": "globalshapers.org/shapers/*",
-      "source": "common-crawl:CC-MAIN-2025-47",
-      "status": "failed",
-      "urls": 0
-    },
-    {
-      "error": "ConnectTimeout: HTTPSConnectionPool(host='index.commoncrawl.org', port=443): Max retries exceeded with url: /CC-MAIN-2025-47-index?url=www.globalshapers.org%2Falumni%2F%2A&output=json&filter=status%3A200&filter=mime%3Atext%2Fhtml&collapse=urlkey&fl=url (Caused by ConnectTimeoutError(<HTTPSConnection(host='index.commoncrawl.org', port=443) at 0x7fe3254a2ad0>, 'Connection to index.commoncrawl.org timed out. (connect timeout=120.0)'))",
-      "query": "www.globalshapers.org/alumni/*",
-      "source": "common-crawl:CC-MAIN-2025-47",
-      "status": "failed",
-      "urls": 0
-    },
-    {
-      "error": "ConnectTimeout: HTTPSConnectionPool(host='index.commoncrawl.org', port=443): Max retries exceeded with url: /CC-MAIN-2025-47-index?url=www.globalshapers.org%2Fmember-details%2F%2A&output=json&filter=status%3A200&filter=mime%3Atext%2Fhtml&collapse=urlkey&fl=url (Caused by ConnectTimeoutError(<HTTPSConnection(host='index.commoncrawl.org', port=443) at 0x7fe3254a1810>, 'Connection to index.commoncrawl.org timed out. (connect timeout=120.0)'))",
-      "query": "www.globalshapers.org/member-details/*",
-      "source": "common-crawl:CC-MAIN-2025-47",
-      "status": "failed",
-      "urls": 0
-    },
-    {
-      "error": "ConnectTimeout: HTTPSConnectionPool(host='index.commoncrawl.org', port=443): Max retries exceeded with url: /CC-MAIN-2025-47-index?url=www.globalshapers.org%2Fshapers%2F%2A&output=json&filter=status%3A200&filter=mime%3Atext%2Fhtml&collapse=urlkey&fl=url (Caused by ConnectTimeoutError(<HTTPSConnection(host='index.commoncrawl.org', port=443) at 0x7fe3254a16d0>, 'Connection to index.commoncrawl.org timed out. (connect timeout=120.0)'))",
-      "query": "www.globalshapers.org/shapers/*",
-      "source": "common-crawl:CC-MAIN-2025-47",
-      "status": "failed",
-      "urls": 0
-    },
-    {
-      "error": "SSLError: HTTPSConnectionPool(host='index.commoncrawl.org', port=443): Max retries exceeded with url: /CC-MAIN-2025-51-index?url=globalshapers.org%2Falumni%2F%2A&output=json&filter=status%3A200&filter=mime%3Atext%2Fhtml&collapse=urlkey&fl=url (Caused by SSLError(SSLEOFError(8, '[SSL: UNEXPECTED_EOF_WHILE_READING] EOF occurred in violation of protocol (_ssl.c:1032)')))",
-      "query": "globalshapers.org/alumni/*",
-      "source": "common-crawl:CC-MAIN-2025-51",
-      "status": "failed",
-      "urls": 0
-    },
-    {
-      "error": "SSLError: HTTPSConnectionPool(host='index.commoncrawl.org', port=443): Max retries exceeded with url: /CC-MAIN-2025-51-index?url=globalshapers.org%2Fmember-details%2F%2A&output=json&filter=status%3A200&filter=mime%3Atext%2Fhtml&collapse=urlkey&fl=url (Caused by SSLError(SSLEOFError(8, '[SSL: UNEXPECTED_EOF_WHILE_READING] EOF occurred in violation of protocol (_ssl.c:1032)')))",
-      "query": "globalshapers.org/member-details/*",
-      "source": "common-crawl:CC-MAIN-2025-51",
-      "status": "failed",
-      "urls": 0
-    },
-    {
-      "error": "SSLError: HTTPSConnectionPool(host='index.commoncrawl.org', port=443): Max retries exceeded with url: /CC-MAIN-2025-51-index?url=globalshapers.org%2Fshapers%2F%2A&output=json&filter=status%3A200&filter=mime%3Atext%2Fhtml&collapse=urlkey&fl=url (Caused by SSLError(SSLEOFError(8, '[SSL: UNEXPECTED_EOF_WHILE_READING] EOF occurred in violation of protocol (_ssl.c:1032)')))",
-      "query": "globalshapers.org/shapers/*",
-      "source": "common-crawl:CC-MAIN-2025-51",
-      "status": "failed",
-      "urls": 0
-    },
-    {
-      "error": "SSLError: HTTPSConnectionPool(host='index.commoncrawl.org', port=443): Max retries exceeded with url: /CC-MAIN-2025-51-index?url=www.globalshapers.org%2Falumni%2F%2A&output=json&filter=status%3A200&filter=mime%3Atext%2Fhtml&collapse=urlkey&fl=url (Caused by SSLError(SSLEOFError(8, '[SSL: UNEXPECTED_EOF_WHILE_READING] EOF occurred in violation of protocol (_ssl.c:1032)')))",
-      "query": "www.globalshapers.org/alumni/*",
-      "source": "common-crawl:CC-MAIN-2025-51",
-      "status": "failed",
-      "urls": 0
-    },
-    {
-      "error": "SSLError: HTTPSConnectionPool(host='index.commoncrawl.org', port=443): Max retries exceeded with url: /CC-MAIN-2025-51-index?url=www.globalshapers.org%2Fmember-details%2F%2A&output=json&filter=status%3A200&filter=mime%3Atext%2Fhtml&collapse=urlkey&fl=url (Caused by SSLError(SSLEOFError(8, '[SSL: UNEXPECTED_EOF_WHILE_READING] EOF occurred in violation of protocol (_ssl.c:1032)')))",
-      "query": "www.globalshapers.org/member-details/*",
-      "source": "common-crawl:CC-MAIN-2025-51",
-      "status": "failed",
-      "urls": 0
-    },
-    {
-      "error": "SSLError: HTTPSConnectionPool(host='index.commoncrawl.org', port=443): Max retries exceeded with url: /CC-MAIN-2025-51-index?url=www.globalshapers.org%2Fshapers%2F%2A&output=json&filter=status%3A200&filter=mime%3Atext%2Fhtml&collapse=urlkey&fl=url (Caused by SSLError(SSLEOFError(8, '[SSL: UNEXPECTED_EOF_WHILE_READING] EOF occurred in violation of protocol (_ssl.c:1032)')))",
-      "query": "www.globalshapers.org/shapers/*",
-      "source": "common-crawl:CC-MAIN-2025-51",
-      "status": "failed",
-      "urls": 0
-    },
-    {
-      "error": "HTTPError: 503 Server Error: Service Temporarily Unavailable for url: https://index.commoncrawl.org/CC-MAIN-2026-04-index?url=globalshapers.org%2Falumni%2F%2A&output=json&filter=status%3A200&filter=mime%3Atext%2Fhtml&collapse=urlkey&fl=url",
-      "query": "globalshapers.org/alumni/*",
-      "source": "common-crawl:CC-MAIN-2026-04",
-      "status": "failed",
-      "urls": 0
-    },
-    {
-      "error": "HTTPError: 503 Server Error: Service Temporarily Unavailable for url: https://index.commoncrawl.org/CC-MAIN-2026-04-index?url=globalshapers.org%2Fmember-details%2F%2A&output=json&filter=status%3A200&filter=mime%3Atext%2Fhtml&collapse=urlkey&fl=url",
-      "query": "globalshapers.org/member-details/*",
-      "source": "common-crawl:CC-MAIN-2026-04",
-      "status": "failed",
-      "urls": 0
-    },
-    {
-      "error": "HTTPError: 503 Server Error: Service Temporarily Unavailable for url: https://index.commoncrawl.org/CC-MAIN-2026-04-index?url=globalshapers.org%2Fshapers%2F%2A&output=json&filter=status%3A200&filter=mime%3Atext%2Fhtml&collapse=urlkey&fl=url",
-      "query": "globalshapers.org/shapers/*",
-      "source": "common-crawl:CC-MAIN-2026-04",
-      "status": "failed",
-      "urls": 0
-    },
-    {
-      "error": "SSLError: HTTPSConnectionPool(host='index.commoncrawl.org', port=443): Max retries exceeded with url: /CC-MAIN-2026-04-index?url=www.globalshapers.org%2Falumni%2F%2A&output=json&filter=status%3A200&filter=mime%3Atext%2Fhtml&collapse=urlkey&fl=url (Caused by SSLError(SSLEOFError(8, '[SSL: UNEXPECTED_EOF_WHILE_READING] EOF occurred in violation of protocol (_ssl.c:1032)')))",
-      "query": "www.globalshapers.org/alumni/*",
-      "source": "common-crawl:CC-MAIN-2026-04",
-      "status": "failed",
-      "urls": 0
-    },
-    {
-      "error": "SSLError: HTTPSConnectionPool(host='index.commoncrawl.org', port=443): Max retries exceeded with url: /CC-MAIN-2026-04-index?url=www.globalshapers.org%2Fmember-details%2F%2A&output=json&filter=status%3A200&filter=mime%3Atext%2Fhtml&collapse=urlkey&fl=url (Caused by SSLError(SSLEOFError(8, '[SSL: UNEXPECTED_EOF_WHILE_READING] EOF occurred in violation of protocol (_ssl.c:1032)')))",
-      "query": "www.globalshapers.org/member-details/*",
-      "source": "common-crawl:CC-MAIN-2026-04",
-      "status": "failed",
-      "urls": 0
-    },
-    {
-      "error": "SSLError: HTTPSConnectionPool(host='index.commoncrawl.org', port=443): Max retries exceeded with url: /CC-MAIN-2026-04-index?url=www.globalshapers.org%2Fshapers%2F%2A&output=json&filter=status%3A200&filter=mime%3Atext%2Fhtml&collapse=urlkey&fl=url (Caused by SSLError(SSLEOFError(8, '[SSL: UNEXPECTED_EOF_WHILE_READING] EOF occurred in violation of protocol (_ssl.c:1032)')))",
-      "query": "www.globalshapers.org/shapers/*",
-      "source": "common-crawl:CC-MAIN-2026-04",
-      "status": "failed",
-      "urls": 0
-    },
-    {
-      "error": "HTTPError: 503 Server Error: Service Temporarily Unavailable for url: https://index.commoncrawl.org/CC-MAIN-2026-08-index?url=globalshapers.org%2Falumni%2F%2A&output=json&filter=status%3A200&filter=mime%3Atext%2Fhtml&collapse=urlkey&fl=url",
-      "query": "globalshapers.org/alumni/*",
-      "source": "common-crawl:CC-MAIN-2026-08",
-      "status": "failed",
-      "urls": 0
-    },
-    {
-      "error": "HTTPError: 503 Server Error: Service Temporarily Unavailable for url: https://index.commoncrawl.org/CC-MAIN-2026-08-index?url=globalshapers.org%2Fmember-details%2F%2A&output=json&filter=status%3A200&filter=mime%3Atext%2Fhtml&collapse=urlkey&fl=url",
-      "query": "globalshapers.org/member-details/*",
-      "source": "common-crawl:CC-MAIN-2026-08",
-      "status": "failed",
-      "urls": 0
-    },
-    {
-      "error": "HTTPError: 503 Server Error: Service Temporarily Unavailable for url: https://index.commoncrawl.org/CC-MAIN-2026-08-index?url=globalshapers.org%2Fshapers%2F%2A&output=json&filter=status%3A200&filter=mime%3Atext%2Fhtml&collapse=urlkey&fl=url",
-      "query": "globalshapers.org/shapers/*",
-      "source": "common-crawl:CC-MAIN-2026-08",
-      "status": "failed",
-      "urls": 0
-    },
-    {
-      "error": "HTTPError: 503 Server Error: Service Temporarily Unavailable for url: https://index.commoncrawl.org/CC-MAIN-2026-08-index?url=www.globalshapers.org%2Falumni%2F%2A&output=json&filter=status%3A200&filter=mime%3Atext%2Fhtml&collapse=urlkey&fl=url",
-      "query": "www.globalshapers.org/alumni/*",
-      "source": "common-crawl:CC-MAIN-2026-08",
-      "status": "failed",
-      "urls": 0
-    },
-    {
-      "error": "HTTPError: 503 Server Error: Service Temporarily Unavailable for url: https://index.commoncrawl.org/CC-MAIN-2026-08-index?url=www.globalshapers.org%2Fmember-details%2F%2A&output=json&filter=status%3A200&filter=mime%3Atext%2Fhtml&collapse=urlkey&fl=url",
-      "query": "www.globalshapers.org/member-details/*",
-      "source": "common-crawl:CC-MAIN-2026-08",
-      "status": "failed",
-      "urls": 0
-    },
-    {
-      "error": "HTTPError: 503 Server Error: Service Temporarily Unavailable for url: https://index.commoncrawl.org/CC-MAIN-2026-08-index?url=www.globalshapers.org%2Fshapers%2F%2A&output=json&filter=status%3A200&filter=mime%3Atext%2Fhtml&collapse=urlkey&fl=url",
-      "query": "www.globalshapers.org/shapers/*",
-      "source": "common-crawl:CC-MAIN-2026-08",
-      "status": "failed",
-      "urls": 0
-    },
-    {
-      "error": "HTTPError: 503 Server Error: Service Temporarily Unavailable for url: https://index.commoncrawl.org/CC-MAIN-2026-12-index?url=globalshapers.org%2Falumni%2F%2A&output=json&filter=status%3A200&filter=mime%3Atext%2Fhtml&collapse=urlkey&fl=url",
-      "query": "globalshapers.org/alumni/*",
-      "source": "common-crawl:CC-MAIN-2026-12",
-      "status": "failed",
-      "urls": 0
-    },
-    {
-      "error": "HTTPError: 503 Server Error: Service Temporarily Unavailable for url: https://index.commoncrawl.org/CC-MAIN-2026-12-index?url=globalshapers.org%2Fmember-details%2F%2A&output=json&filter=status%3A200&filter=mime%3Atext%2Fhtml&collapse=urlkey&fl=url",
-      "query": "globalshapers.org/member-details/*",
-      "source": "common-crawl:CC-MAIN-2026-12",
-      "status": "failed",
-      "urls": 0
-    },
-    {
-      "error": "HTTPError: 503 Server Error: Service Temporarily Unavailable for url: https://index.commoncrawl.org/CC-MAIN-2026-12-index?url=globalshapers.org%2Fshapers%2F%2A&output=json&filter=status%3A200&filter=mime%3Atext%2Fhtml&collapse=urlkey&fl=url",
-      "query": "globalshapers.org/shapers/*",
-      "source": "common-crawl:CC-MAIN-2026-12",
-      "status": "failed",
-      "urls": 0
-    },
-    {
-      "error": "HTTPError: 503 Server Error: Service Temporarily Unavailable for url: https://index.commoncrawl.org/CC-MAIN-2026-12-index?url=www.globalshapers.org%2Falumni%2F%2A&output=json&filter=status%3A200&filter=mime%3Atext%2Fhtml&collapse=urlkey&fl=url",
-      "query": "www.globalshapers.org/alumni/*",
-      "source": "common-crawl:CC-MAIN-2026-12",
-      "status": "failed",
-      "urls": 0
-    },
-    {
-      "error": "HTTPError: 503 Server Error: Service Temporarily Unavailable for url: https://index.commoncrawl.org/CC-MAIN-2026-12-index?url=www.globalshapers.org%2Fmember-details%2F%2A&output=json&filter=status%3A200&filter=mime%3Atext%2Fhtml&collapse=urlkey&fl=url",
-      "query": "www.globalshapers.org/member-details/*",
-      "source": "common-crawl:CC-MAIN-2026-12",
-      "status": "failed",
-      "urls": 0
-    },
-    {
-      "error": "HTTPError: 503 Server Error: Service Temporarily Unavailable for url: https://index.commoncrawl.org/CC-MAIN-2026-12-index?url=www.globalshapers.org%2Fshapers%2F%2A&output=json&filter=status%3A200&filter=mime%3Atext%2Fhtml&collapse=urlkey&fl=url",
-      "query": "www.globalshapers.org/shapers/*",
-      "source": "common-crawl:CC-MAIN-2026-12",
-      "status": "failed",
-      "urls": 0
-    },
-    {
-      "error": "HTTPError: 503 Server Error: Service Temporarily Unavailable for url: https://index.commoncrawl.org/CC-MAIN-2026-17-index?url=globalshapers.org%2Falumni%2F%2A&output=json&filter=status%3A200&filter=mime%3Atext%2Fhtml&collapse=urlkey&fl=url",
-      "query": "globalshapers.org/alumni/*",
-      "source": "common-crawl:CC-MAIN-2026-17",
-      "status": "failed",
-      "urls": 0
-    },
-    {
-      "error": "HTTPError: 503 Server Error: Service Temporarily Unavailable for url: https://index.commoncrawl.org/CC-MAIN-2026-17-index?url=globalshapers.org%2Fmember-details%2F%2A&output=json&filter=status%3A200&filter=mime%3Atext%2Fhtml&collapse=urlkey&fl=url",
-      "query": "globalshapers.org/member-details/*",
-      "source": "common-crawl:CC-MAIN-2026-17",
-      "status": "failed",
-      "urls": 0
-    },
-    {
-      "error": "HTTPError: 503 Server Error: Service Temporarily Unavailable for url: https://index.commoncrawl.org/CC-MAIN-2026-17-index?url=globalshapers.org%2Fshapers%2F%2A&output=json&filter=status%3A200&filter=mime%3Atext%2Fhtml&collapse=urlkey&fl=url",
-      "query": "globalshapers.org/shapers/*",
-      "source": "common-crawl:CC-MAIN-2026-17",
-      "status": "failed",
-      "urls": 0
-    },
-    {
-      "error": "HTTPError: 503 Server Error: Service Temporarily Unavailable for url: https://index.commoncrawl.org/CC-MAIN-2026-17-index?url=www.globalshapers.org%2Falumni%2F%2A&output=json&filter=status%3A200&filter=mime%3Atext%2Fhtml&collapse=urlkey&fl=url",
-      "query": "www.globalshapers.org/alumni/*",
-      "source": "common-crawl:CC-MAIN-2026-17",
-      "status": "failed",
-      "urls": 0
-    },
-    {
-      "error": "HTTPError: 503 Server Error: Service Temporarily Unavailable for url: https://index.commoncrawl.org/CC-MAIN-2026-17-index?url=www.globalshapers.org%2Fmember-details%2F%2A&output=json&filter=status%3A200&filter=mime%3Atext%2Fhtml&collapse=urlkey&fl=url",
-      "query": "www.globalshapers.org/member-details/*",
-      "source": "common-crawl:CC-MAIN-2026-17",
-      "status": "failed",
-      "urls": 0
-    },
-    {
-      "error": "HTTPError: 503 Server Error: Service Temporarily Unavailable for url: https://index.commoncrawl.org/CC-MAIN-2026-17-index?url=www.globalshapers.org%2Fshapers%2F%2A&output=json&filter=status%3A200&filter=mime%3Atext%2Fhtml&collapse=urlkey&fl=url",
-      "query": "www.globalshapers.org/shapers/*",
-      "source": "common-crawl:CC-MAIN-2026-17",
-      "status": "failed",
-      "urls": 0
-    },
-    {
-      "error": "HTTPError: 503 Server Error: Service Temporarily Unavailable for url: https://index.commoncrawl.org/CC-MAIN-2026-21-index?url=globalshapers.org%2Falumni%2F%2A&output=json&filter=status%3A200&filter=mime%3Atext%2Fhtml&collapse=urlkey&fl=url",
-      "query": "globalshapers.org/alumni/*",
       "source": "common-crawl:CC-MAIN-2026-21",
       "status": "failed",
       "urls": 0
     },
     {
-      "error": "HTTPError: 503 Server Error: Service Temporarily Unavailable for url: https://index.commoncrawl.org/CC-MAIN-2026-21-index?url=globalshapers.org%2Fmember-details%2F%2A&output=json&filter=status%3A200&filter=mime%3Atext%2Fhtml&collapse=urlkey&fl=url",
-      "query": "globalshapers.org/member-details/*",
-      "source": "common-crawl:CC-MAIN-2026-21",
-      "status": "failed",
-      "urls": 0
-    },
-    {
-      "error": "HTTPError: 503 Server Error: Service Temporarily Unavailable for url: https://index.commoncrawl.org/CC-MAIN-2026-21-index?url=globalshapers.org%2Fshapers%2F%2A&output=json&filter=status%3A200&filter=mime%3Atext%2Fhtml&collapse=urlkey&fl=url",
-      "query": "globalshapers.org/shapers/*",
-      "source": "common-crawl:CC-MAIN-2026-21",
-      "status": "failed",
-      "urls": 0
-    },
-    {
-      "error": "HTTPError: 503 Server Error: Service Temporarily Unavailable for url: https://index.commoncrawl.org/CC-MAIN-2026-21-index?url=www.globalshapers.org%2Falumni%2F%2A&output=json&filter=status%3A200&filter=mime%3Atext%2Fhtml&collapse=urlkey&fl=url",
-      "query": "www.globalshapers.org/alumni/*",
-      "source": "common-crawl:CC-MAIN-2026-21",
-      "status": "failed",
-      "urls": 0
-    },
-    {
-      "error": "HTTPError: 503 Server Error: Service Temporarily Unavailable for url: https://index.commoncrawl.org/CC-MAIN-2026-21-index?url=www.globalshapers.org%2Fmember-details%2F%2A&output=json&filter=status%3A200&filter=mime%3Atext%2Fhtml&collapse=urlkey&fl=url",
+      "error": "ReadTimeout: HTTPSConnectionPool(host='index.commoncrawl.org', port=443): Read timed out. (read timeout=120.0)",
       "query": "www.globalshapers.org/member-details/*",
       "source": "common-crawl:CC-MAIN-2026-21",
       "status": "failed",
       "urls": 0
     },
     {
-      "error": "HTTPError: 503 Server Error: Service Temporarily Unavailable for url: https://index.commoncrawl.org/CC-MAIN-2026-21-index?url=www.globalshapers.org%2Fshapers%2F%2A&output=json&filter=status%3A200&filter=mime%3Atext%2Fhtml&collapse=urlkey&fl=url",
+      "error": "ReadTimeout: HTTPSConnectionPool(host='index.commoncrawl.org', port=443): Read timed out. (read timeout=120.0)",
       "query": "www.globalshapers.org/shapers/*",
       "source": "common-crawl:CC-MAIN-2026-21",
       "status": "failed",
@@ -935,18 +893,18 @@
       "urls": 0
     },
     {
-      "error": "HTTPError: 503 Server Error: Service Temporarily Unavailable for url: https://index.commoncrawl.org/CC-MAIN-2026-25-index?url=globalshapers.org%2Fmember-details%2F%2A&output=json&filter=status%3A200&filter=mime%3Atext%2Fhtml&collapse=urlkey&fl=url",
+      "error": "HTTPError: 404 Client Error: Not Found for url: https://index.commoncrawl.org/CC-MAIN-2026-25-index?url=globalshapers.org%2Fmember-details%2F%2A&output=json&filter=status%3A200&filter=mime%3Atext%2Fhtml&collapse=urlkey&fl=url",
       "query": "globalshapers.org/member-details/*",
       "source": "common-crawl:CC-MAIN-2026-25",
       "status": "failed",
       "urls": 0
     },
     {
-      "error": "",
+      "error": "HTTPError: 503 Server Error: Service Temporarily Unavailable for url: https://index.commoncrawl.org/CC-MAIN-2026-25-index?url=globalshapers.org%2Fshapers%2F%2A&output=json&filter=status%3A200&filter=mime%3Atext%2Fhtml&collapse=urlkey&fl=url",
       "query": "globalshapers.org/shapers/*",
       "source": "common-crawl:CC-MAIN-2026-25",
-      "status": "complete",
-      "urls": 6
+      "status": "failed",
+      "urls": 0
     },
     {
       "error": "HTTPError: 503 Server Error: Service Temporarily Unavailable for url: https://index.commoncrawl.org/CC-MAIN-2026-25-index?url=www.globalshapers.org%2Falumni%2F%2A&output=json&filter=status%3A200&filter=mime%3Atext%2Fhtml&collapse=urlkey&fl=url",
@@ -956,7 +914,7 @@
       "urls": 0
     },
     {
-      "error": "HTTPError: 503 Server Error: Service Temporarily Unavailable for url: https://index.commoncrawl.org/CC-MAIN-2026-25-index?url=www.globalshapers.org%2Fmember-details%2F%2A&output=json&filter=status%3A200&filter=mime%3Atext%2Fhtml&collapse=urlkey&fl=url",
+      "error": "HTTPError: 404 Client Error: Not Found for url: https://index.commoncrawl.org/CC-MAIN-2026-25-index?url=www.globalshapers.org%2Fmember-details%2F%2A&output=json&filter=status%3A200&filter=mime%3Atext%2Fhtml&collapse=urlkey&fl=url",
       "query": "www.globalshapers.org/member-details/*",
       "source": "common-crawl:CC-MAIN-2026-25",
       "status": "failed",
@@ -1008,6 +966,48 @@
       "error": "HTTPError: 503 Server Error: Service Temporarily Unavailable for url: https://index.commoncrawl.org/CC-MAIN-2026-30-index?url=www.globalshapers.org%2Fshapers%2F%2A&output=json&filter=status%3A200&filter=mime%3Atext%2Fhtml&collapse=urlkey&fl=url",
       "query": "www.globalshapers.org/shapers/*",
       "source": "common-crawl:CC-MAIN-2026-30",
+      "status": "failed",
+      "urls": 0
+    },
+    {
+      "error": "HTTPError: 503 Server Error: Service Temporarily Unavailable for url: https://index.commoncrawl.org/CC-MAIN-2026-34-index?url=globalshapers.org%2Falumni%2F%2A&output=json&filter=status%3A200&filter=mime%3Atext%2Fhtml&collapse=urlkey&fl=url",
+      "query": "globalshapers.org/alumni/*",
+      "source": "common-crawl:CC-MAIN-2026-34",
+      "status": "failed",
+      "urls": 0
+    },
+    {
+      "error": "HTTPError: 503 Server Error: Service Temporarily Unavailable for url: https://index.commoncrawl.org/CC-MAIN-2026-34-index?url=globalshapers.org%2Fmember-details%2F%2A&output=json&filter=status%3A200&filter=mime%3Atext%2Fhtml&collapse=urlkey&fl=url",
+      "query": "globalshapers.org/member-details/*",
+      "source": "common-crawl:CC-MAIN-2026-34",
+      "status": "failed",
+      "urls": 0
+    },
+    {
+      "error": "HTTPError: 503 Server Error: Service Temporarily Unavailable for url: https://index.commoncrawl.org/CC-MAIN-2026-34-index?url=globalshapers.org%2Fshapers%2F%2A&output=json&filter=status%3A200&filter=mime%3Atext%2Fhtml&collapse=urlkey&fl=url",
+      "query": "globalshapers.org/shapers/*",
+      "source": "common-crawl:CC-MAIN-2026-34",
+      "status": "failed",
+      "urls": 0
+    },
+    {
+      "error": "HTTPError: 503 Server Error: Service Temporarily Unavailable for url: https://index.commoncrawl.org/CC-MAIN-2026-34-index?url=www.globalshapers.org%2Falumni%2F%2A&output=json&filter=status%3A200&filter=mime%3Atext%2Fhtml&collapse=urlkey&fl=url",
+      "query": "www.globalshapers.org/alumni/*",
+      "source": "common-crawl:CC-MAIN-2026-34",
+      "status": "failed",
+      "urls": 0
+    },
+    {
+      "error": "HTTPError: 503 Server Error: Service Temporarily Unavailable for url: https://index.commoncrawl.org/CC-MAIN-2026-34-index?url=www.globalshapers.org%2Fmember-details%2F%2A&output=json&filter=status%3A200&filter=mime%3Atext%2Fhtml&collapse=urlkey&fl=url",
+      "query": "www.globalshapers.org/member-details/*",
+      "source": "common-crawl:CC-MAIN-2026-34",
+      "status": "failed",
+      "urls": 0
+    },
+    {
+      "error": "HTTPError: 503 Server Error: Service Temporarily Unavailable for url: https://index.commoncrawl.org/CC-MAIN-2026-34-index?url=www.globalshapers.org%2Fshapers%2F%2A&output=json&filter=status%3A200&filter=mime%3Atext%2Fhtml&collapse=urlkey&fl=url",
+      "query": "www.globalshapers.org/shapers/*",
+      "source": "common-crawl:CC-MAIN-2026-34",
       "status": "failed",
       "urls": 0
     },
