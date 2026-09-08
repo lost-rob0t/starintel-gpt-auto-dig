@@ -1,0 +1,117 @@
+{
+  "dataset": "religious-courts",
+  "run_id": "religious-courts-beth-din-corruption-2026-08-28",
+  "generated_at": "2026-08-28T06:10:00Z",
+  "schema_version": "0.9.0",
+  "targets": [
+    {
+      "target_id": "starintel:target:religious-courts:beth-din-major-cases",
+      "priority": 1.0,
+      "status": "queued",
+      "question": "Enumerate the major publicly documented Beth Din corruption, misconduct, coercion, conflict-of-interest, retaliation, financial-abuse, procedural-abuse, and cover-up cases across multiple jurisdictions, with each claim separated into proven/adjudicated, documented, alleged, disputed, or unverified status.",
+      "required_evidence": [
+        "court opinions and dockets",
+        "criminal and disciplinary records",
+        "official tribunal records",
+        "primary documentary exhibits"
+      ],
+      "avoid": "No collective blame, no race framing, and no allegation may be promoted to fact without supporting records."
+    },
+    {
+      "target_id": "starintel:target:religious-courts:beth-din-institution-map",
+      "priority": 0.98,
+      "status": "queued",
+      "question": "Resolve exact Beth Din institutions, aliases, jurisdictions, affiliations, judges/dayanim, administrators, parent organizations, governance structures, and civil courts that review or enforce their decisions.",
+      "required_evidence": [
+        "official Beth Din pages and rules",
+        "corporate and nonprofit registries",
+        "court filings",
+        "archived institutional pages"
+      ],
+      "avoid": "Do not merge unrelated tribunals merely because they use the generic label Beth Din."
+    },
+    {
+      "target_id": "starintel:target:religious-courts:beth-din-money-conflicts",
+      "priority": 0.99,
+      "status": "queued",
+      "question": "Trace documented fee flows, undisclosed financial relationships, self-dealing, repeat-player relationships, governance conflicts, recusal failures, and other conflicts of interest tied to Beth Din proceedings or administration.",
+      "required_evidence": [
+        "fee schedules",
+        "financial or nonprofit records",
+        "court exhibits",
+        "sworn declarations",
+        "disciplinary findings"
+      ],
+      "avoid": "Do not infer corruption from ordinary fees, donations, professional relationships, or communal affiliation alone."
+    },
+    {
+      "target_id": "starintel:target:religious-courts:beth-din-get-coercion",
+      "priority": 0.99,
+      "status": "queued",
+      "question": "Enumerate documented cases involving coercion, retaliation, extortionate conduct, blacklisting, threats, or abuse of communal leverage connected to Beth Din get/divorce proceedings, and distinguish lawful pressure, disputed conduct, civil findings, and criminal findings.",
+      "required_evidence": [
+        "criminal cases",
+        "civil cases",
+        "appellate opinions",
+        "sworn testimony",
+        "official rabbinical-court materials"
+      ],
+      "avoid": "Do not characterize coercion as proven where the record only contains an accusation."
+    },
+    {
+      "target_id": "starintel:target:religious-courts:beth-din-civil-review",
+      "priority": 0.97,
+      "status": "queued",
+      "question": "Enumerate civil-court decisions enforcing, vacating, limiting, criticizing, sanctioning, or otherwise reviewing Beth Din arbitration awards and procedures, then classify the exact basis for each outcome.",
+      "required_evidence": [
+        "trial and appellate opinions",
+        "arbitration-vacatur filings",
+        "orders and judgments",
+        "sanctions and contempt records"
+      ],
+      "avoid": "Do not treat routine vacatur or jurisdictional rulings as proof of corruption unless the court actually found misconduct."
+    },
+    {
+      "target_id": "starintel:target:religious-courts:beth-din-repeat-actors",
+      "priority": 0.96,
+      "status": "queued",
+      "question": "Identify recurring judges/dayanim, administrators, attorneys, intermediaries, organizations, and complainants across independent Beth Din misconduct cases and test whether the recurrence reflects an actual documented pattern rather than simple institutional prominence.",
+      "required_evidence": [
+        "case dockets",
+        "tribunal rosters",
+        "professional biographies",
+        "organizational records",
+        "multiple independent primary-source cases"
+      ],
+      "avoid": "Do not infer wrongdoing from repeated appearance alone."
+    },
+    {
+      "target_id": "starintel:target:religious-courts:beth-din-governance-risk",
+      "priority": 0.95,
+      "status": "queued",
+      "question": "Compare Beth Din appointment, recusal, appeal, complaint, transparency, fee, evidence, publication, and oversight rules against the misconduct case ledger to identify governance weaknesses actually supported by multiple cases.",
+      "required_evidence": [
+        "official procedural rules",
+        "recusal and appeals policies",
+        "complaint procedures",
+        "case outcomes",
+        "governance documents"
+      ],
+      "avoid": "Do not claim systemic corruption from structural weakness alone; separate corruption risk from proven corruption."
+    },
+    {
+      "target_id": "starintel:target:religious-courts:comparative-faith-tribunals",
+      "priority": 0.7,
+      "status": "queued",
+      "question": "After the Beth Din corpus is mature, enumerate comparable documented corruption or abuse cases in Islamic/Sharia councils, Christian ecclesiastical courts, canon-law tribunals, and other faith-based arbitration bodies to identify recurring governance patterns.",
+      "required_evidence": [
+        "court opinions",
+        "official disciplinary records",
+        "criminal records",
+        "tribunal rules",
+        "high-quality investigative reporting linked to primary documents"
+      ],
+      "avoid": "Keep this a secondary governance comparison. Do not turn the dig into generic criticism of religion or demographic groups."
+    }
+  ]
+}
