@@ -35,6 +35,80 @@
     "last_success_at": {
       "type": ["string", "null"],
       "format": "date-time"
+    },
+    "coverage": {
+      "type": "object",
+      "additionalProperties": {
+        "$ref": "#/$defs/coverageLedger"
+      }
+    }
+  },
+  "$defs": {
+    "coverageItems": {
+      "type": "array",
+      "items": {
+        "type": "integer",
+        "minimum": 0
+      },
+      "uniqueItems": true
+    },
+    "coverageLedger": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schema",
+        "corpus",
+        "seed_kind",
+        "authority",
+        "shard",
+        "shard_count",
+        "shard_index",
+        "ordering",
+        "completed",
+        "in_progress",
+        "failed_retryable"
+      ],
+      "properties": {
+        "schema": {
+          "const": "auto-dig-coverage-ledger.v1"
+        },
+        "corpus": {
+          "type": "string",
+          "minLength": 1
+        },
+        "seed_kind": {
+          "type": "string",
+          "minLength": 1
+        },
+        "authority": {
+          "type": "string",
+          "minLength": 1
+        },
+        "shard": {
+          "type": "string",
+          "minLength": 1
+        },
+        "shard_count": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "shard_index": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "ordering": {
+          "const": "numeric_ascending"
+        },
+        "completed": {
+          "$ref": "#/$defs/coverageItems"
+        },
+        "in_progress": {
+          "$ref": "#/$defs/coverageItems"
+        },
+        "failed_retryable": {
+          "$ref": "#/$defs/coverageItems"
+        }
+      }
     }
   }
 }
