@@ -72,8 +72,7 @@ ensure_ledger(State0, Corpus0, SeedKind0, Authority0, Shard0,
     nonempty_string(SeedKind0, SeedKind),
     nonempty_string(Authority0, Authority),
     nonempty_string(Shard0, Shard),
-    atomic_list_concat([Corpus, SeedKind, Shard], '/', KeyAtom),
-    atom_string(KeyAtom, Key),
+    atomic_list_concat([Corpus, SeedKind, Shard], '/', Key),
     (   get_dict(coverage, State0, Coverage0)
     ->  must_be(dict, Coverage0)
     ;   Coverage0 = json{}
