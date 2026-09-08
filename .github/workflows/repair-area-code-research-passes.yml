@@ -1,0 +1,35 @@
+name: One-shot area-code research-pass repair
+
+on:
+  push:
+    branches:
+      - area-code-hunt/b-313-316-319-2026-09-08
+
+permissions:
+  contents: write
+
+jobs:
+  repair:
+    if: ${{ !contains(github.event.head_commit.message, '[skip-area-code-repair]') }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: area-code-hunt/b-313-316-319-2026-09-08
+      - uses: jiro4989/setup-nim-action@v2
+        with:
+          nim-version: '2.2.4'
+      - name: Repair research-pass packet records
+        run: nim r -d:release scripts/repair-area-code-research-passes.nim
+      - name: Commit repaired packets if changed
+        shell: bash
+        run: |
+          set -euo pipefail
+          if git diff --quiet -- digs/anarchist-violence; then
+            exit 0
+          fi
+          git config user.name 'area-code-hunt[bot]'
+          git config user.email 'area-code-hunt@users.noreply.github.com'
+          git add digs/anarchist-violence
+          git commit -m 'fix(area-code-hunt): normalize research-pass data [skip-area-code-repair]'
+          git push origin HEAD:area-code-hunt/b-313-316-319-2026-09-08
