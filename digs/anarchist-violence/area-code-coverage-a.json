@@ -3,13 +3,17 @@
   "worker": "area-codes-a",
   "shard_rule": "For in-service U.S. geographic NPAs from the current NANPA NPA reports, shard A owns codes where integer(area_code) % 3 == 0; shard B owns remainder 1; shard C owns remainder 2.",
   "authority": "https://www.nanpa.com/reports/npa-reports",
-  "last_updated": "2026-09-08T13:03:28Z",
+  "last_updated": "2026-09-08T20:03:21Z",
   "processed": [
     {"area_code":"207","region":"Maine","status":"complete","organizations":["starintel:org:food-not-bombs-portland-maine","starintel:org:midcoast-solidarity"]},
     {"area_code":"210","region":"San Antonio, Texas","status":"complete","organizations":["starintel:org:mootual-aid-san-antonio","starintel:org:black-rose-san-antonio-local"]},
     {"area_code":"213","region":"Los Angeles, California","status":"complete","organizations":["starintel:org:black-rose-los-angeles-local","starintel:org:los-angeles-abcf"]},
-    {"area_code":"216","region":"Cleveland, Ohio","status":"complete","organizations":["starintel:org:cleveland-pandemic-response","starintel:org:food-not-bombs-cleveland"]}
+    {"area_code":"216","region":"Cleveland, Ohio","status":"complete","organizations":["starintel:org:cleveland-pandemic-response","starintel:org:food-not-bombs-cleveland"]},
+    {"area_code":"219","region":"Northwest Indiana","status":"complete","organizations":["starintel:org:joy-bomb-social-center","starintel:org:hammond-community-garden"]},
+    {"area_code":"225","region":"Baton Rouge, Louisiana","status":"complete","organizations":["starintel:org:baton-rouge-community-fridges"]},
+    {"area_code":"228","region":"Mississippi Gulf Coast","status":"complete","organizations":["starintel:org:mississippi-gulf-coast-mutual-aid-collective"]},
+    {"area_code":"231","region":"Northwest Michigan","status":"complete","organizations":[],"notes":"No organization met the pass inclusion threshold; one-off mutual-aid events and generic charities were not promoted to targets."}
   ],
-  "next_scan_start": "219",
+  "next_scan_start": "234",
   "notes": "Only public organization-level material is in scope. No private membership inference. Recheck completed NPAs only when a source is stale or materially changed."
 }
