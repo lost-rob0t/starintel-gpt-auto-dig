@@ -2,9 +2,9 @@
   "schema": "auto-dig-prolog-state.v1",
   "last_issue": null,
   "last_priority": null,
-  "last_branch": "area-code-hunt/b-325-331-334-2026-09-09",
-  "last_run_id": "area-code-hunt-b-325-331-334-2026-09-08",
-  "last_success_at": "2026-09-08T20:16:37Z",
+  "last_branch": "area-code-hunt/b-337-346-352-2026-09-08",
+  "last_run_id": "area-code-hunt-b-337-346-352-2026-09-08",
+  "last_success_at": "2026-09-08T21:17:30Z",
   "coverage": {
     "anarchist-violence/us-geographic-npa/B": {
       "schema": "auto-dig-coverage-ledger.v1",
@@ -15,7 +15,7 @@
       "shard_count": 3,
       "shard_index": 1,
       "ordering": "numeric_ascending",
-      "completed": [202, 205, 208, 214, 217, 220, 223, 229, 235, 253, 256, 262, 274, 283, 301, 304, 307, 310, 313, 316, 319, 325, 331, 334],
+      "completed": [202, 205, 208, 214, 217, 220, 223, 229, 235, 253, 256, 262, 274, 283, 301, 304, 307, 310, 313, 316, 319, 325, 331, 334, 337, 346, 352],
       "in_progress": [],
       "failed_retryable": []
     }
