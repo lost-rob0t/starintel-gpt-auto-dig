@@ -20,3 +20,7 @@ A complaint, OCE referral, notification, official-capacity respondent listing or
 5. any penalty, dismissal, closure, reversal or later correction.
 
 This packet is intentionally separate from actual adverse dispositions such as the Gavin Newsom FPPC fines.
+
+## 2026-09-01 corpus correction
+
+This packet previously re-emitted `starintel:person:dnc-current-leader-virginia-mcgregor` at version 1 with packet-local timestamps, summary, tags, and a different source-record identifier. The canonical person record already exists in the DNC current-leadership packet and the MUR 7863 relation can reference that stable ID directly. The redundant person definition was removed rather than weakening same-version duplicate detection or choosing one packet by ordering.
