@@ -3,6 +3,9 @@ name = "starintel-doc-auto-dig"
 version = "0.9.0"
 description = "Canonical StarIntel v0.9.0 document fork and auto-dig tooling"
 requires-python = ">=3.11"
+dependencies = [
+  "websocket-client>=1.9,<2",
+]
 
 [project.scripts]
 starintel = "starintel_doc.cli:main"

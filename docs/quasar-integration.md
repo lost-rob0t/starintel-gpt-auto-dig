@@ -15,6 +15,30 @@ AutoDig no longer ships or exposes a second graph interface. Every generated `gr
 
 The AutoDig adapter activates only when the iframe URL contains `?host=auto-dig`. Normal standalone and CLOG-hosted Quasar sessions do not start the AutoDig protocol.
 
+## Durable Auto-Dig lifecycle
+
+The browser host protocol above is presentation-only and is **not** Auto-Dig lifecycle authority. Durable run identity and lifecycle control belong to Quasar's typed `quasar.control.v1` control plane.
+
+The lifecycle contract being realized under `lost-rob0t/quasar#41` is:
+
+- `autodig.status`
+- `autodig.run.get`
+- `autodig.run.list`
+- `autodig.run.start`
+- `autodig.run.pause`
+- `autodig.run.resume`
+- `autodig.run.stop`
+
+`autodig.run.start` returns a durable workspace-scoped `runId` immediately while research continues asynchronously. Stable request IDs make transport retry idempotent. User pause, resume, and stop transitions remain owned by Quasar rather than GitHub issue text, the browser UI, or a scheduled worker's local state.
+
+The scheduled research worker consumes a separate worker-only lifecycle surface with a fenced `workerId` + `leaseId` claim. Claim, heartbeat, completion, and failure updates must go through Quasar. A stale worker may not overwrite a newer user transition or worker claim. Worker lease material is internal control-plane state and must never appear in Bixby-facing run/status responses or research output.
+
+The worker bridge under `lost-rob0t/starintel-gpt-auto-dig#2293` owns no lifecycle database. It uses the existing Auto-Dig research, validation, merge, and publication pipeline as the executor. A run can become `completed` only after the existing validation and publication gates actually succeed; merely running tools or producing a draft is insufficient.
+
+Existing GitHub `investigation-target` requests remain a supported research intake. When a Quasar run is linked to or materializes such an issue, the durable Quasar `runId`/workspace and an explicit issue/request linkage are identity; issue title or body text are not lifecycle identity.
+
+Service transport must remain least-privilege. Normal Quasar browser sessions must not receive worker claim/heartbeat/complete/fail capability. Gateway-facing sessions may receive only the public Auto-Dig lifecycle commands required by the frozen Bixby contract, while scheduled workers receive only the bounded read/claim/report commands required to execute runs.
+
 ## Dataset mapping
 
 The complete canonical corpus is too large to inject into a browser workspace and no longer lives as an uncompressed JSONL file under GitHub Pages. Canonical bulk payloads remain in immutable Release shards.
