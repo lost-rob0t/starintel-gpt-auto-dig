@@ -38,7 +38,7 @@ jobs:
                  ".forgejo/workflows directory; see the guard workflow comment." >&2
             exit 1
           fi
-          echo "no .forgejo/workflows shadow; Forgejo and GitHub both read .github/workflows"
+          echo "no .forgejo shadow; Forgejo and GitHub both read .github/workflows"
 
       - name: Validate every workflow file parses
         shell: bash
