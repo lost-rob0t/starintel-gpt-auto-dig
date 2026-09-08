@@ -1,0 +1,69 @@
+name: CI workflow directory guard
+
+# Forgejo's Actions workflow detection (modules/actions/workflows.go
+# ListWorkflows, identical in v14 and v15) scans .forgejo/workflows,
+# .gitea/workflows, and .github/workflows and stops at the FIRST directory
+# that exists, even if it is empty. While .forgejo/workflows existed in this
+# repository, every push, pull_request, and workflow_dispatch event could
+# only ever see the single file inside it, so all .github/workflows CI was
+# silently dead (and workflow_dispatch answered "workflow not found").
+#
+# This repository keeps its workflows in .github/workflows so that both
+# Forgejo Actions (git.starintel.actor) and GitHub Actions (the mirror)
+# see the same set. Reintroducing .forgejo/workflows would shadow all of
+# them again; this guard fails fast if that ever happens.
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  guard:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Fail if .forgejo/workflows shadows .github/workflows
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [ -d .forgejo/workflows ]; then
+            echo "::error::.forgejo/workflows exists and shadows .github/workflows" \
+                 "for Forgejo Actions (ListWorkflows is first-match-wins)." \
+                 "Move every workflow into .github/workflows and delete the" \
+                 ".forgejo/workflows directory; see the guard workflow comment." >&2
+            exit 1
+          fi
+          echo "no .forgejo/workflows shadow; Forgejo and GitHub both read .github/workflows"
+
+      - name: Validate every workflow file parses
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m pip install --quiet pyyaml
+          python3 - <<'PY'
+          import glob
+          import sys
+
+          import yaml
+
+          failures = []
+          for path in sorted(
+              glob.glob(".github/workflows/*.yml")
+              + glob.glob(".github/workflows/*.yaml")
+          ):
+              try:
+                  with open(path, encoding="utf-8") as handle:
+                      yaml.safe_load(handle)
+                  print(f"ok: {path}")
+              except Exception as exc:  # noqa: BLE001 - report every offender
+                  failures.append(path)
+                  print(f"::error::{path}: {exc}")
+          if failures:
+              print(f"invalid workflow files: {', '.join(failures)}")
+              sys.exit(1)
+          PY
