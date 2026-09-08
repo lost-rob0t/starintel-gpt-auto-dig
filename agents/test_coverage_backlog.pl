@@ -20,10 +20,10 @@ test(shard_uses_only_authoritative_items) :-
 
 test(completed_items_do_not_repeat) :-
     base_state(State), ledger(State, L0),
-    claim_batch(L0, [202,205,208,211], 2, L1-B1),
+    claim_batch(L0, [202,205,208,212], 2, L1-B1),
     assertion(B1 == [202,205]),
     complete_batch(L1, B1, L2),
-    claim_batch(L2, [202,205,208,211], 3, _L3-B2),
+    claim_batch(L2, [202,205,208,212], 3, _L3-B2),
     assertion(B2 == [208]).
 
 test(failed_items_become_retryable) :-
