@@ -3,7 +3,7 @@
   "worker": "area-codes-a",
   "shard_rule": "For in-service U.S. geographic NPAs from the current NANPA NPA reports, shard A owns codes where integer(area_code) % 3 == 0; shard B owns remainder 1; shard C owns remainder 2.",
   "authority": "https://www.nanpa.com/reports/npa-reports",
-  "last_updated": "2026-09-09T11:30:00Z",
+  "last_updated": "2026-09-09T13:00:00Z",
   "processed": [
     {"area_code":"207","region":"Maine","status":"complete","organizations":["starintel:org:food-not-bombs-portland-maine","starintel:org:midcoast-solidarity"]},
     {"area_code":"210","region":"San Antonio, Texas","status":"complete","organizations":["starintel:org:mootual-aid-san-antonio","starintel:org:black-rose-san-antonio-local"]},
@@ -64,8 +64,12 @@
     {"area_code":"585","region":"Rochester, New York and surrounding 585 region","status":"complete","organizations":["starintel:org:rochester-food-not-bombs","starintel:org:rochester-mutual-aid-network","starintel:org:flying-squirrel-community-space","starintel:org:free-the-people-rochester"]},
     {"area_code":"603","region":"New Hampshire statewide NPA including Manchester, Concord, Keene and Littleton","status":"complete","organizations":["starintel:org:nh-mutual-aid-relief-fund","starintel:org:keene-mutual-aid","starintel:org:littleton-area-mutual-aid"]},
     {"area_code":"606","region":"Eastern Kentucky including Ashland, Morehead and Appalachian counties","status":"complete","organizations":["starintel:org:kentucky-peoples-union"]},
-    {"area_code":"609","region":"Central and southern New Jersey including Trenton, Princeton and Atlantic City","status":"complete","organizations":["starintel:org:princeton-mutual-aid"]}
+    {"area_code":"609","region":"Central and southern New Jersey including Trenton, Princeton and Atlantic City","status":"complete","organizations":["starintel:org:princeton-mutual-aid"]},
+    {"area_code":"612","region":"Minneapolis, Minnesota","status":"complete","organizations":["starintel:org:community-aid-network-mn","starintel:org:sisters-camelot"]},
+    {"area_code":"615","region":"Nashville and Middle Tennessee","status":"complete","organizations":["starintel:org:middle-tennessee-dsa","starintel:org:drkmttr-collective"]},
+    {"area_code":"618","region":"Southern Illinois including Carbondale","status":"complete","organizations":["starintel:org:carbondale-assembly-for-radical-equity","starintel:org:southern-illinois-dsa"]},
+    {"area_code":"621","region":"Greater Houston overlay of 281/346/713/832","status":"complete","organizations":["starintel:org:houston-food-not-bombs","starintel:org:space-city-anarchist-organization"]}
   ],
-  "next_scan_start": "612",
+  "next_scan_start": "630",
   "notes": "Only public organization-level material is in scope. No private membership inference. Recheck completed NPAs only when a source is stale or materially changed. Historical directory leads are not labeled active without current-status evidence. Area-code locality edges do not assert phone-number ownership."
 }
