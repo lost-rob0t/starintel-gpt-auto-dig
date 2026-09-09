@@ -4,6 +4,7 @@ import copy
 import unittest
 
 from starintel_doc import Document, ValidationError, document_schema, validate_document
+from starintel_doc.schema_org import schema_org_types
 
 
 class OperationDocumentTests(unittest.TestCase):
@@ -125,6 +126,9 @@ class OperationDocumentTests(unittest.TestCase):
         self.assertEqual(operation["dtype"], "operation")
         self.assertEqual(operation["schema_org"]["@type"], "Action")
         self.assertIn("operation", document_schema()["properties"]["dtype"]["enum"])
+
+    def test_research_node_schema_org_mapping_is_unambiguous_action(self) -> None:
+        self.assertEqual(schema_org_types("research-node"), ("Action",))
 
     def test_operation_can_reference_both_target_dtypes(self) -> None:
         operation = self.operation()
