@@ -3,7 +3,7 @@
   "worker": "area-codes-a",
   "shard_rule": "For in-service U.S. geographic NPAs from the current NANPA NPA reports, shard A owns codes where integer(area_code) % 3 == 0; shard B owns remainder 1; shard C owns remainder 2.",
   "authority": "https://www.nanpa.com/reports/npa-reports",
-  "last_updated": "2026-09-08T23:13:30Z",
+  "last_updated": "2026-09-09T00:03:01Z",
   "processed": [
     {"area_code":"207","region":"Maine","status":"complete","organizations":["starintel:org:food-not-bombs-portland-maine","starintel:org:midcoast-solidarity"]},
     {"area_code":"210","region":"San Antonio, Texas","status":"complete","organizations":["starintel:org:mootual-aid-san-antonio","starintel:org:black-rose-san-antonio-local"]},
@@ -16,8 +16,12 @@
     {"area_code":"234","region":"Akron-Canton-Youngstown, Ohio overlay","status":"complete","organizations":["starintel:org:canton-food-not-bombs"]},
     {"area_code":"240","region":"Western and suburban Maryland overlay","status":"complete","organizations":["starintel:org:frederick-food-not-bombs"]},
     {"area_code":"252","region":"Eastern North Carolina","status":"complete-zero-hit","organizations":[]},
-    {"area_code":"267","region":"Philadelphia, Pennsylvania overlay","status":"complete","organizations":["starintel:org:wooden-shoe-books","starintel:org:food-not-bombs-west-philly"]}
+    {"area_code":"267","region":"Philadelphia, Pennsylvania overlay","status":"complete","organizations":["starintel:org:wooden-shoe-books","starintel:org:food-not-bombs-west-philly"]},
+    {"area_code":"270","region":"Western Kentucky","status":"complete-zero-hit","organizations":[]},
+    {"area_code":"276","region":"Southwest Virginia","status":"complete-zero-hit","organizations":[]},
+    {"area_code":"279","region":"Sacramento, California overlay","status":"complete","organizations":["starintel:org:sacramento-free-school","starintel:org:sacramento-punks-with-lunch"]},
+    {"area_code":"303","region":"Denver, Colorado","status":"complete","organizations":["starintel:org:denver-community-fridges","starintel:org:mutual-aid-monday-denver"]}
   ],
-  "next_scan_start": "270",
+  "next_scan_start": "309",
   "notes": "Only public organization-level material is in scope. No private membership inference. Recheck completed NPAs only when a source is stale or materially changed."
 }
