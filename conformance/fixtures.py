@@ -63,6 +63,20 @@ def minimal_data(dtype: str) -> dict[str, Any]:
             "objective": "Run a bounded investigation.",
             "status": "draft",
         },
+        "operation": {
+            "mission": "Exercise the 0.9.1 operation control-plane contract.",
+            "status": "planned",
+            "phases": [
+                {
+                    "phase_id": "plan",
+                    "objective": "Exercise cross-language operation round-trip.",
+                    "state": "planned",
+                    "depends_on": [],
+                    "dataset_binding_ids": [],
+                    "required_capability_ids": [],
+                }
+            ],
+        },
     }
     return deepcopy(required.get(dtype, {}))
 
