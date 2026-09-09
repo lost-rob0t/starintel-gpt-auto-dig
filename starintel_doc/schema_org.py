@@ -3,6 +3,7 @@ from __future__ import annotations
 from copy import deepcopy
 from typing import Any
 
+from .operation_spec import install_operation_spec
 from .spec import (
     JSON_MAP,
     JSON_VALUE,
@@ -13,6 +14,10 @@ from .spec import (
     document_schema as core_document_schema,
     obj,
 )
+
+# Transitional registration for starintel-server#151.  The semantic authority
+# moves to the canonical JSON-LD ontology system when that ontology pass lands.
+install_operation_spec()
 
 SCHEMA_ORG_CONTEXT = "https://schema.org/"
 
@@ -51,6 +56,7 @@ DTYPE_SCHEMA_ORG_TYPES: dict[str, tuple[str, ...]] = {
     "message": ("Message",),
     "network": ("Thing",),
     "observation": ("CreativeWork",),
+    "operation": ("Action",),
     "org": ("Organization",),
     "ownership": ("Role",),
     "person": ("Person",),
