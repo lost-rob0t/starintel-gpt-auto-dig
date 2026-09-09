@@ -3,7 +3,7 @@
   "worker": "area-codes-a",
   "shard_rule": "For in-service U.S. geographic NPAs from the current NANPA NPA reports, shard A owns codes where integer(area_code) % 3 == 0; shard B owns remainder 1; shard C owns remainder 2.",
   "authority": "https://www.nanpa.com/reports/npa-reports",
-  "last_updated": "2026-09-09T05:02:00Z",
+  "last_updated": "2026-09-09T05:45:00Z",
   "processed": [
     {"area_code":"207","region":"Maine","status":"complete","organizations":["starintel:org:food-not-bombs-portland-maine","starintel:org:midcoast-solidarity"]},
     {"area_code":"210","region":"San Antonio, Texas","status":"complete","organizations":["starintel:org:mootual-aid-san-antonio","starintel:org:black-rose-san-antonio-local"]},
@@ -40,8 +40,12 @@
     {"area_code":"408","region":"San Jose / Santa Clara County, California","status":"complete","organizations":["starintel:org:san-jose-food-not-bombs","starintel:org:apoyate-south-bay"]},
     {"area_code":"414","region":"Milwaukee, Wisconsin","status":"complete","organizations":["starintel:org:cooperation-milwaukee","starintel:org:riverwest-food-not-bombs"]},
     {"area_code":"417","region":"Springfield and southwest Missouri","status":"complete","organizations":["starintel:org:swmo-solidarity-network"]},
-    {"area_code":"423","region":"Chattanooga and eastern Tennessee","status":"complete","organizations":["starintel:org:chattanooga-free-store","starintel:org:chattanooga-queer-empowerment-collective"]}
+    {"area_code":"423","region":"Chattanooga and eastern Tennessee","status":"complete","organizations":["starintel:org:chattanooga-free-store","starintel:org:chattanooga-queer-empowerment-collective"]},
+    {"area_code":"432","region":"West Texas including Midland, Odessa, Big Spring and Alpine","status":"complete-zero-current-hit","organizations":[],"notes":"Literal and locality-derived searches found no standing current anarchist/anti-authoritarian/mutual-aid/collective organization meeting the inclusion threshold; generic charities and unverified community-fridge summaries were not promoted."},
+    {"area_code":"435","region":"Utah outside the Wasatch Front, including Logan / Cache Valley and St. George","status":"complete","organizations":["starintel:org:cache-valley-mutual-aid"]},
+    {"area_code":"447","region":"217 overlay across central Illinois including Urbana-Champaign and Springfield","status":"complete","organizations":["starintel:org:urbana-champaign-independent-media-center","starintel:org:ucimc-zine-library"]},
+    {"area_code":"480","region":"Phoenix metropolitan 480/602/623 boundary-elimination overlay complex","status":"complete","organizations":["starintel:org:mutual-aid-phoenix"]}
   ],
-  "next_scan_start": "432",
+  "next_scan_start": "483",
   "notes": "Only public organization-level material is in scope. No private membership inference. Recheck completed NPAs only when a source is stale or materially changed. Historical directory leads are not labeled active without current-status evidence."
 }
