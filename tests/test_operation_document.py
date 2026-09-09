@@ -139,6 +139,18 @@ class OperationDocumentTests(unittest.TestCase):
         )
         validate_document(operation)
 
+    def test_empty_operation_mission_is_rejected(self) -> None:
+        operation = self.operation()
+        operation["data"]["mission"] = "   "
+        with self.assertRaisesRegex(ValidationError, "non-empty mission"):
+            validate_document(operation)
+
+    def test_operation_requires_at_least_one_phase(self) -> None:
+        operation = self.operation()
+        operation["data"]["phases"] = []
+        with self.assertRaisesRegex(ValidationError, "at least one phase"):
+            validate_document(operation)
+
     def test_unknown_phase_dependency_is_rejected(self) -> None:
         operation = self.operation()
         operation["data"]["phases"][1]["depends_on"] = ["does-not-exist"]
