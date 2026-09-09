@@ -1,0 +1,18 @@
+{
+  "dataset": "anarchist-violence",
+  "worker": "area-codes-a",
+  "workflow": "area-code-hunt",
+  "shard_rule": "For in-service U.S. geographic NPAs from the current NANPA NPA reports, shard A owns codes where integer(area_code) % 3 == 0; shard B owns remainder 1; shard C owns remainder 2.",
+  "authority": "https://www.nanpa.com/reports/npa-reports",
+  "base_state_commit": "d4fb5dbe9f4c9d9ad6bcda5b414a27b72fc7a04f",
+  "previous_next_scan_start": "717",
+  "last_updated": "2026-09-09T17:00:54Z",
+  "processed": [
+    {"area_code":"717","region":"South-central Pennsylvania including Harrisburg, Lancaster and York / 717/223 overlay","status":"complete","organizations":["starintel:org:harrisburg-food-not-bombs","starintel:org:harrisburg-free-store"]},
+    {"area_code":"720","region":"Denver metropolitan Colorado / 303/720/983 overlay","status":"complete","organizations":["starintel:org:denver-food-not-bombs","starintel:org:little-read-books","starintel:org:denver-community-fridges","starintel:org:mutual-aid-monday-denver"]},
+    {"area_code":"726","region":"San Antonio, Texas / 210/726 overlay","status":"complete","organizations":["starintel:org:bread-and-blankets-mutual-aid","starintel:org:mootual-aid-san-antonio","starintel:org:black-rose-san-antonio-local"]},
+    {"area_code":"729","region":"Eastern Tennessee / 423/729 overlay including Chattanooga","status":"complete","organizations":["starintel:org:chattanooga-dsa","starintel:org:chattanooga-trans-liberation-collective","starintel:org:chattanooga-pride-food-coalition","starintel:org:chattanooga-free-store","starintel:org:chattanooga-queer-empowerment-collective"]}
+  ],
+  "next_scan_start": "732",
+  "notes": "Durable connector-safe coverage delta for shard-A pass 24. Apply after canonical area-code-coverage-a.json state at base_state_commit; completed NPAs must not be repeated absent new evidence. Area-code relations are locality/discovery edges, not assertions of telephone ownership. No private membership inference or person-level political/ideological affiliation profiling."
+}
