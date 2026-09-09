@@ -14,7 +14,7 @@ The primary pivots were checked against current repository search before materia
 
 ## Yield
 
-- 22 typed StarIntel v0.9 records
+- 26 typed StarIntel v0.9 records
 - 7 source / public communications / information surfaces
 - 5 organization nodes
 - 4 public people
