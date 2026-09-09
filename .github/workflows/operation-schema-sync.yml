@@ -1,0 +1,41 @@
+name: Operation schema sync
+
+on:
+  push:
+    branches:
+      - feat/operation-dtype-151
+
+permissions:
+  contents: write
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          ref: feat/operation-dtype-151
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.13"
+      - name: Regenerate canonical v0.9 schema
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          from starintel_doc.schema_org import document_schema
+          Path("schemas/starintel-doc-v0.9.0.schema.json").write_text(
+              json.dumps(document_schema(), ensure_ascii=False, indent=2, sort_keys=True) + "\n",
+              encoding="utf-8",
+          )
+          PY
+      - name: Commit generated schema if changed
+        run: |
+          if git diff --quiet -- schemas/starintel-doc-v0.9.0.schema.json; then
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add schemas/starintel-doc-v0.9.0.schema.json
+          git commit -m "chore(schema): regenerate operation contract"
+          git push origin HEAD:feat/operation-dtype-151
