@@ -7,10 +7,12 @@ on:
       - "db/**"
       - "digs/**"
       - "schemas/**"
+      - "starintel_doc/**"
       - "scripts/starintel_legacy.nim"
       - "scripts/starintel_transport.nim"
       - "scripts/starintel_validate.nim"
       - "tests/test_canonical_dataset_roots.py"
+      - "tests/test_operation_document.py"
       - "tests/test_starintel_legacy.nim"
       - "tests/test_starintel_transport.nim"
       - ".github/workflows/validate-db.yml"
@@ -19,10 +21,12 @@ on:
       - "db/**"
       - "digs/**"
       - "schemas/**"
+      - "starintel_doc/**"
       - "scripts/starintel_legacy.nim"
       - "scripts/starintel_transport.nim"
       - "scripts/starintel_validate.nim"
       - "tests/test_canonical_dataset_roots.py"
+      - "tests/test_operation_document.py"
       - "tests/test_starintel_legacy.nim"
       - "tests/test_starintel_transport.nim"
       - ".github/workflows/validate-db.yml"
@@ -42,7 +46,7 @@ env:
 jobs:
   validate-documents:
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 30
     steps:
       - uses: actions/checkout@v6
 
@@ -72,8 +76,10 @@ jobs:
             --out:bin/starintel-validate \
             scripts/starintel_validate.nim
 
-      - name: Test canonical dataset roots
-        run: python -m unittest tests.test_canonical_dataset_roots
+      - name: Test canonical Python schema contracts
+        run: |
+          python -m unittest tests.test_canonical_dataset_roots -v
+          python -m unittest tests.test_operation_document -v
 
       - name: Test Nim validator compatibility
         run: |
@@ -98,6 +104,12 @@ jobs:
           echo "source-less documents: $(grep -vc '^#' unverifed || true)"
           echo "validation errors: $(grep -vc '^#' validation-errors || true)"
           exit "$status"
+
+      - name: Build canonical merge gate and site tools
+        run: nimble buildFast
+
+      - name: Run complete canonical merge gate
+        run: bin/validate-for-merge --site
 
       - name: Upload validation diagnostics
         if: always()
