@@ -14,12 +14,12 @@ jobs:
     steps:
       - uses: actions/checkout@v6
         with:
-          ref: 35ff1191529531a234748b9285b0e932cb7e6709
+          ref: 6479c0a9dc88ce9fed183515fc4df5d245de0b3a
           path: conformance-source
       - uses: actions/checkout@v6
         with:
           repository: lost-rob0t/starintel-doc
-          ref: cecb5af99a03c42e29b5004b85a0f43944bd4cba
+          ref: 62902a3de1571d33dbeed2a86aafea877ce9c6b0
           path: python-binding
       - uses: actions/setup-python@v6
         with:
@@ -27,7 +27,7 @@ jobs:
       - name: Verify exact schema lock
         working-directory: python-binding
         run: |
-          test "$(jq -r .canonical_commit schema/starintel-schema.lock.json)" = "35ff1191529531a234748b9285b0e932cb7e6709"
+          test "$(jq -r .canonical_commit schema/starintel-schema.lock.json)" = "6479c0a9dc88ce9fed183515fc4df5d245de0b3a"
           test "$(jq -r .release_version schema/starintel-schema.lock.json)" = "0.9.1"
           jq -e '.required_dtypes | index("operation") != null' schema/starintel-schema.lock.json >/dev/null
       - name: Install Python binding
