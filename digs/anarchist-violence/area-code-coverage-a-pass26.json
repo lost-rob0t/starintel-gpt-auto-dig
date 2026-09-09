@@ -1,0 +1,16 @@
+{
+  "dataset": "anarchist-violence",
+  "worker": "area-codes-a",
+  "pass": 26,
+  "base_main": "599ed98104c11bdecbdc3be648c354402c37400c",
+  "shard_rule": "Current in-service U.S. geographic NPAs where integer(area_code) % 3 == 0.",
+  "processed": [
+    {"area_code":"765","status":"complete","organizations":["starintel:org:muncie-food-not-bombs","starintel:org:ayuda-mutua-lafayette"]},
+    {"area_code":"771","status":"complete","organizations":["starintel:org:east-of-the-river-mutual-aid","starintel:org:ward-4-mutual-aid-dc","starintel:org:dc-fair-food"]},
+    {"area_code":"774","status":"complete","organizations":["starintel:org:worcester-food-not-bombs","starintel:org:the-village-worcester"]},
+    {"area_code":"786","status":"complete","organizations":["starintel:org:miami-food-not-bombs","starintel:org:south-florida-abcf"]}
+  ],
+  "next_scan_start": "801",
+  "last_updated": "2026-09-09T19:00:00Z",
+  "notes": "Connector-safe durable coverage delta for pass 26. Organization-level public material only; no person-level political affiliation profiling."
+}
