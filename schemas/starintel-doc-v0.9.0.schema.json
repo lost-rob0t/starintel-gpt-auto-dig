@@ -3321,6 +3321,564 @@
       "if": {
         "properties": {
           "dtype": {
+            "const": "operation"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "data": {
+            "additionalProperties": false,
+            "properties": {
+              "assignments": {
+                "items": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "actor_id": {
+                      "type": "string"
+                    },
+                    "agent_id": {
+                      "type": "string"
+                    },
+                    "assignment_id": {
+                      "type": "string"
+                    },
+                    "metadata": {
+                      "additionalProperties": true,
+                      "type": "object"
+                    },
+                    "phase_ids": {
+                      "items": {
+                        "type": "string"
+                      },
+                      "type": "array"
+                    },
+                    "role": {
+                      "type": "string"
+                    },
+                    "status": {
+                      "enum": [
+                        "planned",
+                        "assigned",
+                        "active",
+                        "completed",
+                        "blocked",
+                        "released"
+                      ],
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "assignment_id",
+                    "phase_ids",
+                    "status"
+                  ],
+                  "type": "object"
+                },
+                "type": "array"
+              },
+              "capability_gaps": {
+                "items": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "blocking": {
+                      "type": "boolean"
+                    },
+                    "capability_id": {
+                      "type": "string"
+                    },
+                    "capability_ref": {
+                      "type": "string"
+                    },
+                    "category": {
+                      "enum": [
+                        "actor",
+                        "software",
+                        "hardware",
+                        "device",
+                        "source",
+                        "dataset",
+                        "schema",
+                        "protocol",
+                        "infrastructure",
+                        "research"
+                      ],
+                      "type": "string"
+                    },
+                    "description": {
+                      "type": "string"
+                    },
+                    "metadata": {
+                      "additionalProperties": true,
+                      "type": "object"
+                    },
+                    "owner": {
+                      "type": "string"
+                    },
+                    "required_by": {
+                      "items": {
+                        "type": "string"
+                      },
+                      "type": "array"
+                    },
+                    "resolution_ref": {
+                      "type": "string"
+                    },
+                    "status": {
+                      "enum": [
+                        "required",
+                        "missing",
+                        "planned",
+                        "in-progress",
+                        "available",
+                        "resolved",
+                        "waived"
+                      ],
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "capability_id",
+                    "category",
+                    "description",
+                    "blocking",
+                    "status"
+                  ],
+                  "type": "object"
+                },
+                "type": "array"
+              },
+              "datasets": {
+                "items": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "access": {
+                      "enum": [
+                        "read",
+                        "append",
+                        "write",
+                        "read-write"
+                      ],
+                      "type": "string"
+                    },
+                    "binding_id": {
+                      "type": "string"
+                    },
+                    "dataset": {
+                      "type": "string"
+                    },
+                    "phases": {
+                      "items": {
+                        "type": "string"
+                      },
+                      "type": "array"
+                    },
+                    "purpose": {
+                      "type": "string"
+                    },
+                    "role": {
+                      "enum": [
+                        "collection",
+                        "working",
+                        "derived",
+                        "publication",
+                        "reference",
+                        "archive"
+                      ],
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "binding_id",
+                    "dataset",
+                    "role",
+                    "access"
+                  ],
+                  "type": "object"
+                },
+                "type": "array"
+              },
+              "in_scope": {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              "mission": {
+                "type": "string"
+              },
+              "objectives": {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              "out_of_scope": {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              "phases": {
+                "items": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "completion_evidence": {
+                      "items": {
+                        "type": "string"
+                      },
+                      "type": "array"
+                    },
+                    "dataset_binding_ids": {
+                      "items": {
+                        "type": "string"
+                      },
+                      "type": "array"
+                    },
+                    "deliverable_ids": {
+                      "items": {
+                        "type": "string"
+                      },
+                      "type": "array"
+                    },
+                    "depends_on": {
+                      "items": {
+                        "type": "string"
+                      },
+                      "type": "array"
+                    },
+                    "entry_conditions": {
+                      "items": {
+                        "additionalProperties": false,
+                        "properties": {
+                          "condition_id": {
+                            "type": "string"
+                          },
+                          "expression": {
+                            "type": "string"
+                          },
+                          "kind": {
+                            "type": "string"
+                          },
+                          "metadata": {
+                            "additionalProperties": true,
+                            "type": "object"
+                          },
+                          "object": {
+                            "type": "string"
+                          },
+                          "predicate": {
+                            "type": "string"
+                          },
+                          "required": {
+                            "type": "boolean"
+                          },
+                          "subject": {
+                            "type": "string"
+                          }
+                        },
+                        "required": [
+                          "kind"
+                        ],
+                        "type": "object"
+                      },
+                      "type": "array"
+                    },
+                    "exit_conditions": {
+                      "items": {
+                        "additionalProperties": false,
+                        "properties": {
+                          "condition_id": {
+                            "type": "string"
+                          },
+                          "expression": {
+                            "type": "string"
+                          },
+                          "kind": {
+                            "type": "string"
+                          },
+                          "metadata": {
+                            "additionalProperties": true,
+                            "type": "object"
+                          },
+                          "object": {
+                            "type": "string"
+                          },
+                          "predicate": {
+                            "type": "string"
+                          },
+                          "required": {
+                            "type": "boolean"
+                          },
+                          "subject": {
+                            "type": "string"
+                          }
+                        },
+                        "required": [
+                          "kind"
+                        ],
+                        "type": "object"
+                      },
+                      "type": "array"
+                    },
+                    "in_scope": {
+                      "items": {
+                        "type": "string"
+                      },
+                      "type": "array"
+                    },
+                    "objective": {
+                      "type": "string"
+                    },
+                    "out_of_scope": {
+                      "items": {
+                        "type": "string"
+                      },
+                      "type": "array"
+                    },
+                    "phase_id": {
+                      "type": "string"
+                    },
+                    "required_capability_ids": {
+                      "items": {
+                        "type": "string"
+                      },
+                      "type": "array"
+                    },
+                    "state": {
+                      "enum": [
+                        "planned",
+                        "ready",
+                        "active",
+                        "blocked",
+                        "awaiting-review",
+                        "completed",
+                        "skipped",
+                        "failed",
+                        "aborted"
+                      ],
+                      "type": "string"
+                    },
+                    "target_ids": {
+                      "items": {
+                        "type": "string"
+                      },
+                      "type": "array"
+                    },
+                    "target_policy": {
+                      "additionalProperties": false,
+                      "properties": {
+                        "allowed_dtypes": {
+                          "items": {
+                            "type": "string"
+                          },
+                          "type": "array"
+                        },
+                        "allowed_roles": {
+                          "items": {
+                            "type": "string"
+                          },
+                          "type": "array"
+                        },
+                        "allowed_target_types": {
+                          "items": {
+                            "type": "string"
+                          },
+                          "type": "array"
+                        },
+                        "selectors": {
+                          "items": {
+                            "additionalProperties": true,
+                            "type": "object"
+                          },
+                          "type": "array"
+                        }
+                      },
+                      "type": "object"
+                    },
+                    "title": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "phase_id",
+                    "objective",
+                    "state"
+                  ],
+                  "type": "object"
+                },
+                "type": "array"
+              },
+              "post_actions": {
+                "items": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "action_id": {
+                      "type": "string"
+                    },
+                    "action_type": {
+                      "type": "string"
+                    },
+                    "condition": {
+                      "additionalProperties": false,
+                      "properties": {
+                        "condition_id": {
+                          "type": "string"
+                        },
+                        "expression": {
+                          "type": "string"
+                        },
+                        "kind": {
+                          "type": "string"
+                        },
+                        "metadata": {
+                          "additionalProperties": true,
+                          "type": "object"
+                        },
+                        "object": {
+                          "type": "string"
+                        },
+                        "predicate": {
+                          "type": "string"
+                        },
+                        "required": {
+                          "type": "boolean"
+                        },
+                        "subject": {
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "kind"
+                      ],
+                      "type": "object"
+                    },
+                    "config": {
+                      "additionalProperties": true,
+                      "type": "object"
+                    },
+                    "dataset_binding_ids": {
+                      "items": {
+                        "type": "string"
+                      },
+                      "type": "array"
+                    },
+                    "status": {
+                      "enum": [
+                        "planned",
+                        "ready",
+                        "running",
+                        "completed",
+                        "failed",
+                        "skipped"
+                      ],
+                      "type": "string"
+                    },
+                    "target_ids": {
+                      "items": {
+                        "type": "string"
+                      },
+                      "type": "array"
+                    }
+                  },
+                  "required": [
+                    "action_id",
+                    "action_type",
+                    "status"
+                  ],
+                  "type": "object"
+                },
+                "type": "array"
+              },
+              "status": {
+                "enum": [
+                  "draft",
+                  "planned",
+                  "active",
+                  "blocked",
+                  "suspended",
+                  "completed",
+                  "aborted",
+                  "archived"
+                ],
+                "type": "string"
+              },
+              "target_policy": {
+                "additionalProperties": false,
+                "properties": {
+                  "allowed_dtypes": {
+                    "items": {
+                      "type": "string"
+                    },
+                    "type": "array"
+                  },
+                  "allowed_roles": {
+                    "items": {
+                      "type": "string"
+                    },
+                    "type": "array"
+                  },
+                  "allowed_target_types": {
+                    "items": {
+                      "type": "string"
+                    },
+                    "type": "array"
+                  },
+                  "selectors": {
+                    "items": {
+                      "additionalProperties": true,
+                      "type": "object"
+                    },
+                    "type": "array"
+                  }
+                },
+                "type": "object"
+              },
+              "targets": {
+                "additionalProperties": false,
+                "properties": {
+                  "derived": {
+                    "items": {
+                      "type": "string"
+                    },
+                    "type": "array"
+                  },
+                  "excluded": {
+                    "items": {
+                      "type": "string"
+                    },
+                    "type": "array"
+                  },
+                  "primary": {
+                    "items": {
+                      "type": "string"
+                    },
+                    "type": "array"
+                  },
+                  "supporting": {
+                    "items": {
+                      "type": "string"
+                    },
+                    "type": "array"
+                  }
+                },
+                "type": "object"
+              }
+            },
+            "required": [
+              "mission",
+              "status",
+              "phases"
+            ],
+            "type": "object"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "dtype": {
             "const": "org"
           }
         }
@@ -6355,6 +6913,7 @@
         "message",
         "network",
         "observation",
+        "operation",
         "org",
         "ownership",
         "person",
