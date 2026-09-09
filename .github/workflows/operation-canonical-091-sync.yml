@@ -1,0 +1,139 @@
+name: Operation canonical 0.9.1 sync
+
+on:
+  push:
+    branches:
+      - feat/operation-dtype-151
+
+permissions:
+  contents: write
+
+jobs:
+  sync:
+    if: ${{ !contains(github.event.head_commit.message, '[operation-091-sync]') }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          ref: feat/operation-dtype-151
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.13"
+      - name: Make operation registration canonical for direct spec consumers
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          path = Path("starintel_doc/spec.py")
+          text = path.read_text()
+          marker = "# Transitional extension registration: operation 0.9.1"
+          if marker not in text:
+              text += '''\n\n# Transitional extension registration: operation 0.9.1\n# Direct spec consumers (including conformance) must see the same dtype set as\n# schema_org/document generation. JSON-LD replaces this registration mechanism\n# as the canonical semantic authority.\nfrom .operation_spec import install_operation_spec as _install_operation_spec\n\n_install_operation_spec()\ndel _install_operation_spec\n'''
+              path.write_text(text)
+          PY
+      - name: Regenerate operation schema/profile/manifest
+        run: |
+          python - <<'PY'
+          import hashlib
+          import json
+          from pathlib import Path
+
+          from starintel_doc.operation_spec import OPERATION_FIELDS
+          from starintel_doc.schema_org import document_schema
+          from starintel_doc.spec import TYPE_FIELDS
+
+          assert "operation" in TYPE_FIELDS, "direct spec import did not register operation"
+
+          schema_path = Path("schemas/starintel-doc-v0.9.0.schema.json")
+          expansion_path = Path("schemas/starintel-doc-v0.9.0.expansion.json")
+          manifest_path = Path("schemas/starintel-doc-v0.9.0.manifest.json")
+
+          schema_path.write_text(
+              json.dumps(document_schema(), ensure_ascii=False, indent=2, sort_keys=True) + "\n"
+          )
+
+          expansion = json.loads(expansion_path.read_text())
+          expansion.setdefault("dtype_fields", {})["operation"] = list(OPERATION_FIELDS)
+          expansion["schema_revision"] = "0.9.0+fields.20260909.1"
+          expansion["profile_version"] = "0.9.1"
+          expansion_path.write_text(
+              json.dumps(expansion, ensure_ascii=False, indent=2, sort_keys=True) + "\n"
+          )
+
+          canonical = json.dumps(
+              expansion,
+              ensure_ascii=False,
+              sort_keys=True,
+              separators=(",", ":"),
+          ).encode("utf-8")
+          digest = hashlib.sha256(canonical).hexdigest()
+
+          manifest = json.loads(manifest_path.read_text())
+          manifest["dtype_count"] = len(expansion["dtype_fields"])
+          manifest["expansion_content_hash"] = digest
+          manifest["profile_version"] = "0.9.1"
+          manifest["schema_revision"] = expansion["schema_revision"]
+          manifest["release_version"] = "0.9.1"
+          manifest_path.write_text(
+              json.dumps(manifest, ensure_ascii=False, indent=2, sort_keys=True) + "\n"
+          )
+
+          assert manifest["dtype_count"] == 51
+          assert "operation" in expansion["dtype_fields"]
+          PY
+      - name: Add canonical registry regression test
+        run: |
+          cat > tests/test_operation_registry.py <<'PY'
+          from __future__ import annotations
+
+          import json
+          import unittest
+          from pathlib import Path
+
+          from conformance.fixtures import all_fixtures
+          from starintel_doc.spec import TYPE_FIELDS, document_schema
+
+          ROOT = Path(__file__).resolve().parents[1]
+
+
+          class OperationRegistryTests(unittest.TestCase):
+              def test_direct_spec_import_registers_operation(self) -> None:
+                  self.assertIn("operation", TYPE_FIELDS)
+                  schema = document_schema()
+                  self.assertIn("operation", schema["properties"]["dtype"]["enum"])
+
+              def test_release_profile_and_conformance_include_every_dtype(self) -> None:
+                  expansion = json.loads(
+                      (ROOT / "schemas" / "starintel-doc-v0.9.0.expansion.json").read_text()
+                  )
+                  self.assertEqual(set(expansion["dtype_fields"]), set(TYPE_FIELDS))
+                  fixture_types = {
+                      item["object_type"]
+                      for item in all_fixtures()
+                      if item.get("expected_valid")
+                  }
+                  self.assertTrue(set(TYPE_FIELDS).issubset(fixture_types))
+                  self.assertIn("operation", fixture_types)
+
+              def test_release_manifest_is_091(self) -> None:
+                  manifest = json.loads(
+                      (ROOT / "schemas" / "starintel-doc-v0.9.0.manifest.json").read_text()
+                  )
+                  self.assertEqual(manifest["release_version"], "0.9.1")
+                  self.assertEqual(manifest["profile_version"], "0.9.1")
+                  self.assertEqual(manifest["dtype_count"], len(TYPE_FIELDS))
+
+
+          if __name__ == "__main__":
+              unittest.main()
+          PY
+      - name: Commit synchronized canonical release files
+        run: |
+          if git diff --quiet -- starintel_doc/spec.py schemas tests/test_operation_registry.py; then
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add starintel_doc/spec.py schemas tests/test_operation_registry.py
+          git commit -m "fix(schema): register operation in canonical 0.9.1 profile [operation-091-sync]"
+          git push origin HEAD:feat/operation-dtype-151
