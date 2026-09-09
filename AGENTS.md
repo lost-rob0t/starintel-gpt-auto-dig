@@ -99,6 +99,24 @@ When a displayed name cannot be resolved safely, create a source-scoped unresolv
 
 An email import is not complete when it contains only an image, source record, generic `message`, summary, or investigation target.
 
+## Social-content entity and relation invariant
+
+Social, forum, chat, comment, feed, and other authored-content collection must preserve the graph represented by the source. Collecting content while leaving stable actors and directly observed relationships only as embedded strings is incomplete normalization.
+
+For every collected artifact:
+
+1. every stable observable account, handle, username, platform identifier, author identifier, or other source-backed actor identifier must be materialized as the canonical StarIntel entity/account/persona dtype that the executable schema provides;
+2. every collected post, comment, reply, message, or equivalent authored object must link to its observed author entity through stable IDs;
+3. every directly observed relationship supported by the source — including authorship, reply/parent relationships, mentions, links, membership/participation, source/community association, and dataset observation — must be materialized as canonical relation records when the executable schema provides a representation;
+4. repeated observations of the same stable source identifier must resolve to the same canonical source-scoped entity rather than creating duplicate actors;
+5. every entity and relation must preserve the exact source observation, collection provenance, timestamp/run lineage, and uncertainty needed to reproduce why the graph edge or node exists.
+
+A collector must not keep `comment.author = "foo"` or an equivalent scalar while omitting the corresponding canonical entity and authorship relation when the schema supports them. Source-visible identifiers are observations; canonicalizing those observations into entity and relation records is part of ingestion, not a separate optional analysis step.
+
+Entity creation does not by itself assert that two identifiers across different sources belong to the same real-world person. Cross-source candidate links must preserve evidence, confidence, contradictions, and alternate hypotheses, and ambiguous candidates must not be force-merged. When later enrichment confirms additional identity or entity relations, update the graph through the same canonical write/import and provenance path.
+
+A social-content import is not complete when it contains only posts/comments/messages plus embedded usernames but omits the canonical actor/entity nodes or directly observed relations needed to reconstruct the source graph.
+
 ## Search and recursive target selection
 
 Use the repository search engine rather than grepping individual records:
