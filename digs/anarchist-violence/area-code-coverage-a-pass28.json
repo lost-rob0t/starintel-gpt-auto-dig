@@ -1,0 +1,27 @@
+{
+  "dataset": "anarchist-violence",
+  "worker": "area-codes-a",
+  "pass": 28,
+  "base_main": "6e4bc6b7c5078f83379602265a1c8576fe325a12",
+  "shard_rule": "Current in-service U.S. geographic NPAs where integer(area_code) % 3 == 0.",
+  "coverage_reconciliation": {
+    "canonical_ledger_observed_sha": "3bb5a66124fcf7df1e234bc3125a51381efe0531",
+    "canonical_ledger_observed_next_scan_start": "717",
+    "later_merged_passes_used_for_effective_state": [
+      {"pr":2538,"codes":["717","720","726","729"],"next_scan_start":"732"},
+      {"pr":2540,"codes":["732","738","747","762"],"next_scan_start":"765"},
+      {"pr":2544,"codes":["765","771","774","786"],"next_scan_start":"801"},
+      {"pr":2546,"codes":["801","804","810","813"],"next_scan_start":"816"}
+    ],
+    "effective_start_for_this_pass": "816"
+  },
+  "processed": [
+    {"area_code":"816","region":"Kansas City and northwestern Missouri","status":"complete","organizations":["starintel:org:kansas-city-food-not-bombs","starintel:org:kansas-city-mutual-aid"]},
+    {"area_code":"828","region":"Western North Carolina including Asheville and Boone / High Country","status":"complete","organizations":["starintel:org:firestorm-books","starintel:org:asheville-survival-program","starintel:org:high-country-mutual-aid"]},
+    {"area_code":"831","region":"Santa Cruz, Monterey, Salinas and Monterey Bay, California","status":"complete","organizations":["starintel:org:subrosa-santa-cruz","starintel:org:santa-cruz-food-not-bombs"]},
+    {"area_code":"837","region":"530 overlay region in northeastern/northern California including Chico and Butte County","status":"complete","organizations":["starintel:org:530-food-rescue-coalition"]}
+  ],
+  "next_scan_start": "840",
+  "last_updated": "2026-09-09T20:58:00Z",
+  "notes": "Connector-safe durable coverage delta and reconciliation for pass 28. The older canonical cumulative ledger was observed stale at 717, so effective coverage is derived from merged shard-A passes 24-27 plus this pass. Area-code associations represent public locality/discovery geography, not phone ownership. Organization-level public material only; no person-level political or ideological affiliation profiling."
+}
