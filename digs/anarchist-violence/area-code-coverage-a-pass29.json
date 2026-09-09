@@ -1,0 +1,21 @@
+{
+  "dataset": "anarchist-violence",
+  "worker": "area-codes-a",
+  "pass": 29,
+  "base_main": "91dab220484bf30471f9acaa40a77a0dc15adb17",
+  "shard_rule": "Current in-service U.S. geographic NPAs where integer(area_code) % 3 == 0.",
+  "coverage_reconciliation": {
+    "prior_effective_state_file": "digs/anarchist-violence/area-code-coverage-a-pass28.json",
+    "prior_effective_next_scan_start": "840",
+    "effective_start_for_this_pass": "840"
+  },
+  "processed": [
+    {"area_code":"840","region":"909/840 overlay geography including San Bernardino and western Inland Empire, California","status":"complete","organizations":["starintel:org:inland-empire-abcf","starintel:org:mutual-rise","starintel:org:inland-empire-anarchist-book-fair"]},
+    {"area_code":"843","region":"South Carolina Lowcountry/coast including Charleston and North Charleston","status":"complete","organizations":["starintel:org:charleston-food-not-bombs","starintel:org:lowcountry-action-committee"]},
+    {"area_code":"858","region":"619/858 overlay geography covering central and northern San Diego County, California","status":"complete","organizations":["starintel:org:mutual-aid-san-diego","starintel:org:general-strike-san-diego"]},
+    {"area_code":"864","region":"Upstate South Carolina including Greenville, Spartanburg and Anderson","status":"complete","organizations":["starintel:org:upstate-food-not-bombs","starintel:org:gvl-sc-mask-bloc","starintel:org:usda-mutual-aid-project-greenville"]}
+  ],
+  "next_scan_start": "870",
+  "last_updated": "2026-09-09T22:02:23Z",
+  "notes": "Connector-safe durable coverage delta for pass 29. Area-code associations represent public locality/discovery geography, not phone ownership. Organization-level public material only; no person-level political or ideological affiliation profiling."
+}
