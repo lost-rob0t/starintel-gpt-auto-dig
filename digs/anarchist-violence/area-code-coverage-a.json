@@ -3,7 +3,7 @@
   "worker": "area-codes-a",
   "shard_rule": "For in-service U.S. geographic NPAs from the current NANPA NPA reports, shard A owns codes where integer(area_code) % 3 == 0; shard B owns remainder 1; shard C owns remainder 2.",
   "authority": "https://www.nanpa.com/reports/npa-reports",
-  "last_updated": "2026-09-09T13:00:00Z",
+  "last_updated": "2026-09-09T14:03:45Z",
   "processed": [
     {"area_code":"207","region":"Maine","status":"complete","organizations":["starintel:org:food-not-bombs-portland-maine","starintel:org:midcoast-solidarity"]},
     {"area_code":"210","region":"San Antonio, Texas","status":"complete","organizations":["starintel:org:mootual-aid-san-antonio","starintel:org:black-rose-san-antonio-local"]},
@@ -68,8 +68,12 @@
     {"area_code":"612","region":"Minneapolis, Minnesota","status":"complete","organizations":["starintel:org:community-aid-network-mn","starintel:org:sisters-camelot"]},
     {"area_code":"615","region":"Nashville and Middle Tennessee","status":"complete","organizations":["starintel:org:middle-tennessee-dsa","starintel:org:drkmttr-collective"]},
     {"area_code":"618","region":"Southern Illinois including Carbondale","status":"complete","organizations":["starintel:org:carbondale-assembly-for-radical-equity","starintel:org:southern-illinois-dsa"]},
-    {"area_code":"621","region":"Greater Houston overlay of 281/346/713/832","status":"complete","organizations":["starintel:org:houston-food-not-bombs","starintel:org:space-city-anarchist-organization"]}
+    {"area_code":"621","region":"Greater Houston overlay of 281/346/713/832","status":"complete","organizations":["starintel:org:houston-food-not-bombs","starintel:org:space-city-anarchist-organization"]},
+    {"area_code":"630","region":"Aurora, Naperville and western Chicago suburbs, Illinois","status":"complete","organizations":["starintel:org:aurora-mutual-aid"]},
+    {"area_code":"636","region":"St. Charles County and outer western St. Louis region, Missouri","status":"complete-zero-current-hit","organizations":[]},
+    {"area_code":"645","region":"Miami-Dade and Florida Keys overlay of 305/786","status":"complete","organizations":["starintel:org:miami-food-not-bombs","starintel:org:homestead-food-not-bombs"]},
+    {"area_code":"651","region":"Saint Paul and eastern Twin Cities, Minnesota","status":"complete","organizations":["starintel:org:mnisota-community-action-network","starintel:org:saint-paul-community-action-network"]}
   ],
-  "next_scan_start": "630",
+  "next_scan_start": "657",
   "notes": "Only public organization-level material is in scope. No private membership inference. Recheck completed NPAs only when a source is stale or materially changed. Historical directory leads are not labeled active without current-status evidence. Area-code locality edges do not assert phone-number ownership."
 }
