@@ -239,7 +239,7 @@ def install_operation_spec() -> None:
 def _require_unique(items: list[dict[str, Any]], key: str, path: str) -> set[str]:
     values: set[str] = set()
     for index, item in enumerate(items):
-        value = str(item.get(key) or "")
+        value = str(item.get(key) or "").strip()
         if not value:
             raise ValueError(f"{path}[{index}].{key}: non-empty identifier required")
         if value in values:
@@ -255,7 +255,7 @@ def _require_refs(refs: list[str], known: set[str], path: str) -> None:
 
 
 def _assert_phase_dag(phases: list[dict[str, Any]], phase_ids: set[str]) -> None:
-    graph = {str(phase["phase_id"]): list(phase.get("depends_on") or []) for phase in phases}
+    graph = {str(phase["phase_id"]).strip(): list(phase.get("depends_on") or []) for phase in phases}
     for phase_id, dependencies in graph.items():
         _require_refs(dependencies, phase_ids, f"$.data.phases[{phase_id}].depends_on")
         if phase_id in dependencies:
@@ -289,7 +289,14 @@ def validate_operation_semantics(document: dict[str, Any]) -> None:
     if not isinstance(data, dict):
         return
 
+    mission = data.get("mission")
+    if not isinstance(mission, str) or not mission.strip():
+        raise ValueError("$.data.mission: non-empty mission required")
+
     phases = data.get("phases") or []
+    if not phases:
+        raise ValueError("$.data.phases: at least one phase required")
+
     datasets = data.get("datasets") or []
     capabilities = data.get("capability_gaps") or []
     assignments = data.get("assignments") or []
@@ -305,7 +312,10 @@ def validate_operation_semantics(document: dict[str, Any]) -> None:
 
     operation_excluded = set(data.get("out_of_scope") or [])
     for phase in phases:
-        phase_id = str(phase["phase_id"])
+        phase_id = str(phase["phase_id"]).strip()
+        objective = phase.get("objective")
+        if not isinstance(objective, str) or not objective.strip():
+            raise ValueError(f"$.data.phases[{phase_id}].objective: non-empty objective required")
         _require_refs(
             list(phase.get("dataset_binding_ids") or []),
             dataset_ids,
