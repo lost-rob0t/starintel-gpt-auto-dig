@@ -1,0 +1,21 @@
+{
+  "dataset": "anarchist-violence",
+  "worker": "area-codes-a",
+  "pass": 30,
+  "base_main": "57d8e4058db408e03518e4a3a8680324da78a939",
+  "shard_rule": "Current in-service U.S. geographic NPAs where integer(area_code) % 3 == 0.",
+  "coverage_reconciliation": {
+    "prior_effective_state_file": "digs/anarchist-violence/area-code-coverage-a-pass29.json",
+    "prior_effective_next_scan_start": "870",
+    "effective_start_for_this_pass": "870"
+  },
+  "processed": [
+    {"area_code":"870","region":"Northeast and southern Arkansas including Jonesboro, Pine Bluff and Texarkana Arkansas side","status":"complete","organizations":["starintel:org:northeast-arkansas-mutual-aid-society"]},
+    {"area_code":"903","region":"East and northeast Texas including Tyler, Longview and Texarkana Texas side","status":"complete","organizations":["starintel:org:hope-for-texarkana"]},
+    {"area_code":"906","region":"Michigan Upper Peninsula including Marquette, Houghton and Hancock","status":"complete","organizations":["starintel:org:keweenaw-socialists","starintel:org:keweenaw-mutual-aid-collective"]},
+    {"area_code":"909","region":"909/840 overlay geography including San Bernardino, Upland and western Inland Empire, California","status":"complete","organizations":["starintel:org:inland-empire-abcf","starintel:org:mutual-rise","starintel:org:inland-empire-anarchist-book-fair"]}
+  ],
+  "next_scan_start": "912",
+  "last_updated": "2026-09-09T22:57:57Z",
+  "notes": "Connector-safe durable coverage delta for pass 30. Area-code associations represent public locality/discovery geography, not phone ownership. Organization-level public material only; no person-level political or ideological affiliation profiling."
+}
