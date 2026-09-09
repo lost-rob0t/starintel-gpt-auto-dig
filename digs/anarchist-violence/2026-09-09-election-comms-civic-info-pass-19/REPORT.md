@@ -6,12 +6,12 @@ Fresh breadth-first PUBLIC POLITICAL-DISCOURSE / COMMUNICATIONS + ELECTION-ECOSY
 
 ## Materialized graph
 
-`starintel-documents.jsonl` contains 29 typed StarIntel v0.9 records:
+`starintel-documents.jsonl` contains 30 typed StarIntel v0.9 records:
 
 - 11 `source`
 - 9 `org`
 - 3 `person`
-- 6 explicit `relation`
+- 7 explicit `relation`
 - 0 inferred relations promoted as direct observation
 - 0 normalized `db/` hand edits
 
