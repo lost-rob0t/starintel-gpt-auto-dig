@@ -1,0 +1,45 @@
+{
+  "dataset": "anarchist-violence",
+  "worker": "area-codes-a",
+  "pass": 25,
+  "base_main": "2faaf480214d974614ebbf2e402f2e1fa97d8790",
+  "shard_rule": "Current in-service U.S. geographic NPAs where integer(area_code) % 3 == 0.",
+  "processed": [
+    {
+      "area_code": "732",
+      "status": "complete",
+      "organizations": [
+        "starintel:org:central-nj-dsa",
+        "starintel:org:asbury-park-mutual-aid-network",
+        "starintel:org:asbury-park-beach-badge-fund"
+      ]
+    },
+    {
+      "area_code": "738",
+      "status": "complete",
+      "organizations": [
+        "starintel:org:black-rose-los-angeles-local",
+        "starintel:org:los-angeles-food-not-bombs",
+        "starintel:org:los-angeles-abcf"
+      ]
+    },
+    {
+      "area_code": "747",
+      "status": "complete",
+      "organizations": [
+        "starintel:org:aetna-street-solidarity",
+        "starintel:org:dsa-la-san-fernando-valley-branch"
+      ]
+    },
+    {
+      "area_code": "762",
+      "status": "complete",
+      "organizations": [
+        "starintel:org:athens-mutual-aid-network"
+      ]
+    }
+  ],
+  "next_scan_start": "765",
+  "last_updated": "2026-09-09T18:12:19Z",
+  "notes": "Connector-safe durable coverage delta for pass 25. Organization-level public material only; no person-level political affiliation profiling."
+}
