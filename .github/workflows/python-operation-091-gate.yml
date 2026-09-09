@@ -1,0 +1,47 @@
+name: Python operation 0.9.1 release gate
+
+on:
+  push:
+    branches: [ci/python-operation-091-gate-20260909]
+
+permissions:
+  contents: read
+
+jobs:
+  python:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          ref: 35ff1191529531a234748b9285b0e932cb7e6709
+          path: conformance-source
+      - uses: actions/checkout@v6
+        with:
+          repository: lost-rob0t/starintel-doc
+          ref: cecb5af99a03c42e29b5004b85a0f43944bd4cba
+          path: python-binding
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.13"
+      - name: Verify exact schema lock
+        working-directory: python-binding
+        run: |
+          test "$(jq -r .canonical_commit schema/starintel-schema.lock.json)" = "35ff1191529531a234748b9285b0e932cb7e6709"
+          test "$(jq -r .release_version schema/starintel-schema.lock.json)" = "0.9.1"
+          jq -e '.required_dtypes | index("operation") != null' schema/starintel-schema.lock.json >/dev/null
+      - name: Install Python binding
+        working-directory: python-binding
+        run: python -m pip install --editable .
+      - name: Run native Python tests
+        working-directory: python-binding
+        env:
+          STARINTEL_CONFORMANCE_ROOT: ${{ github.workspace }}/conformance-source
+        run: python -m unittest discover -s tests -v
+      - name: Run shared operation conformance
+        working-directory: conformance-source
+        run: |
+          python -m conformance.runner test \
+            --producer python \
+            --consumer python \
+            --adapter "python=sh -c 'cd $GITHUB_WORKSPACE/python-binding && python -m starintel_doc.conformance_adapter'"
