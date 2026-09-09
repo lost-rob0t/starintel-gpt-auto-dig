@@ -3,7 +3,7 @@
   "worker": "area-codes-a",
   "shard_rule": "For in-service U.S. geographic NPAs from the current NANPA NPA reports, shard A owns codes where integer(area_code) % 3 == 0; shard B owns remainder 1; shard C owns remainder 2.",
   "authority": "https://www.nanpa.com/reports/npa-reports",
-  "last_updated": "2026-09-09T00:03:01Z",
+  "last_updated": "2026-09-09T00:59:49Z",
   "processed": [
     {"area_code":"207","region":"Maine","status":"complete","organizations":["starintel:org:food-not-bombs-portland-maine","starintel:org:midcoast-solidarity"]},
     {"area_code":"210","region":"San Antonio, Texas","status":"complete","organizations":["starintel:org:mootual-aid-san-antonio","starintel:org:black-rose-san-antonio-local"]},
@@ -20,8 +20,12 @@
     {"area_code":"270","region":"Western Kentucky","status":"complete-zero-hit","organizations":[]},
     {"area_code":"276","region":"Southwest Virginia","status":"complete-zero-hit","organizations":[]},
     {"area_code":"279","region":"Sacramento, California overlay","status":"complete","organizations":["starintel:org:sacramento-free-school","starintel:org:sacramento-punks-with-lunch"]},
-    {"area_code":"303","region":"Denver, Colorado","status":"complete","organizations":["starintel:org:denver-community-fridges","starintel:org:mutual-aid-monday-denver"]}
+    {"area_code":"303","region":"Denver, Colorado","status":"complete","organizations":["starintel:org:denver-community-fridges","starintel:org:mutual-aid-monday-denver"]},
+    {"area_code":"309","region":"Peoria-Bloomington-Normal, Illinois","status":"complete-zero-current-hit","organizations":[],"notes":"Bloomington-Normal Really Really FREE Market activity was found through 2025 and BloNo Mutual Aid as a historical discovery seed, but neither had enough 2026 current-status evidence to be promoted."},
+    {"area_code":"312","region":"Chicago, Illinois","status":"complete","organizations":["starintel:org:south-chicago-anarchist-black-cross","starintel:org:chicago-anarchist-black-cross"]},
+    {"area_code":"315","region":"Syracuse and north-central New York","status":"complete","organizations":["starintel:org:syracuse-peace-council","starintel:org:bread-and-roses-collective-syracuse"]},
+    {"area_code":"318","region":"Northern and central Louisiana","status":"complete","organizations":["starintel:org:asap-shreveport"]}
   ],
-  "next_scan_start": "309",
-  "notes": "Only public organization-level material is in scope. No private membership inference. Recheck completed NPAs only when a source is stale or materially changed."
+  "next_scan_start": "321",
+  "notes": "Only public organization-level material is in scope. No private membership inference. Recheck completed NPAs only when a source is stale or materially changed. Historical directory leads are not labeled active without current-status evidence."
 }
