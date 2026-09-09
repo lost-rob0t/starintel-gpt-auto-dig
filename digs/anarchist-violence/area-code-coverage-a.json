@@ -3,7 +3,7 @@
   "worker": "area-codes-a",
   "shard_rule": "For in-service U.S. geographic NPAs from the current NANPA NPA reports, shard A owns codes where integer(area_code) % 3 == 0; shard B owns remainder 1; shard C owns remainder 2.",
   "authority": "https://www.nanpa.com/reports/npa-reports",
-  "last_updated": "2026-09-09T15:05:00Z",
+  "last_updated": "2026-09-09T16:14:20Z",
   "processed": [
     {"area_code":"207","region":"Maine","status":"complete","organizations":["starintel:org:food-not-bombs-portland-maine","starintel:org:midcoast-solidarity"]},
     {"area_code":"210","region":"San Antonio, Texas","status":"complete","organizations":["starintel:org:mootual-aid-san-antonio","starintel:org:black-rose-san-antonio-local"]},
@@ -76,8 +76,12 @@
     {"area_code":"657","region":"Orange County / 714 overlay including Santa Ana and Anaheim, California","status":"complete","organizations":["starintel:org:orange-county-abcf","starintel:org:collective-aid-oc"]},
     {"area_code":"660","region":"North-central and west-central Missouri including Kirksville, Sedalia and Warrensburg","status":"complete-zero-current-hit","organizations":[]},
     {"area_code":"669","region":"408 overlay covering San Jose and Santa Clara County, California","status":"complete","organizations":["starintel:org:apoyate-south-bay"]},
-    {"area_code":"678","region":"Metro Atlanta distributed overlay complex in Georgia","status":"complete","organizations":["starintel:org:atlanta-food-not-bombs","starintel:org:metro-atlanta-mutual-aid-fund"]}
+    {"area_code":"678","region":"Metro Atlanta distributed overlay complex in Georgia","status":"complete","organizations":["starintel:org:atlanta-food-not-bombs","starintel:org:metro-atlanta-mutual-aid-fund"]},
+    {"area_code":"681","region":"West Virginia statewide 304/681 overlay","status":"complete","organizations":["starintel:org:morgantown-mutual-aid","starintel:org:morgantown-food-not-bombs","starintel:org:freedom-farmers-morgantown","starintel:org:west-virginia-fights-back"]},
+    {"area_code":"684","region":"American Samoa","status":"complete-zero-current-hit","organizations":[]},
+    {"area_code":"702","region":"Las Vegas metropolitan Nevada / 702/725 overlay","status":"complete","organizations":["starintel:org:food-not-bombs-las-vegas","starintel:org:new-leaf-community-las-vegas"]},
+    {"area_code":"708","region":"South and west suburban Chicago, Illinois / 464/708 overlay","status":"complete","organizations":["starintel:org:south-suburban-mutual-aid"]}
   ],
-  "next_scan_start": "681",
+  "next_scan_start": "717",
   "notes": "Only public organization-level material is in scope. No private membership inference. Recheck completed NPAs only when a source is stale or materially changed. Historical directory leads are not labeled active without current-status evidence. Area-code locality edges do not assert phone-number ownership."
 }
