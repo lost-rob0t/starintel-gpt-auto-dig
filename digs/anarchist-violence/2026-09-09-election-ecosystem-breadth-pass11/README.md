@@ -43,8 +43,8 @@ This pass records only public organizational, professional-role, election-progra
 
 High-value recursive targets include Election Reformers Network's current election-governance partners and National Association of Nonpartisan Reformers links; Unite America's state campaign, investment, and partner portfolio; Issue One's Faces of Democracy and campaign-finance research networks; and BridgeUSA's chapter, campus, podcast, workshop, and partner graph.
 
-## Canonical path
+## Canonical packet
 
-`digs/anarchist-violence/2026-09-09-election-ecosystem-breadth-pass11/starintel-documents.jsonl`
+The validated packet is split across `starintel-documents-part-001.jsonl` through `starintel-documents-part-005.jsonl` in this directory.
 
 No generated normalized `db/` file was hand-edited. This connector-created packet is submitted to exact-head repository CI under the documented GitHub fallback path.
