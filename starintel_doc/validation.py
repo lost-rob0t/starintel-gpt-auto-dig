@@ -4,6 +4,7 @@ import re
 from datetime import datetime
 from typing import Any
 
+from .operation_spec import validate_operation_semantics
 from .schema_org import document_schema
 from .spec import DTYPE_ALIASES, SCHEMA_VERSION, TYPE_FIELDS
 
@@ -146,4 +147,9 @@ def validate_document(document: dict[str, Any]) -> dict[str, Any]:
             f"$.schema_version: expected {SCHEMA_VERSION!r}, got {document.get('schema_version')!r}"
         )
     validate_value(document, document_schema(dtype))
+    if dtype == "operation":
+        try:
+            validate_operation_semantics(document)
+        except ValueError as exc:
+            raise ValidationError(str(exc)) from exc
     return document
