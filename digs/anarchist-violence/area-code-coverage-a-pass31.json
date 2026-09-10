@@ -1,0 +1,21 @@
+{
+  "dataset": "anarchist-violence",
+  "worker": "area-codes-a",
+  "pass": 31,
+  "base_main": "7e3e1dfd25393812a3bdcd8ccca8f1aaca7f1e10",
+  "shard_rule": "Current in-service U.S. geographic NPAs where integer(area_code) % 3 == 0.",
+  "coverage_reconciliation": {
+    "prior_effective_state_file": "digs/anarchist-violence/area-code-coverage-a-pass30.json",
+    "prior_effective_next_scan_start": "912",
+    "effective_start_for_this_pass": "912"
+  },
+  "processed": [
+    {"area_code":"912","region":"Savannah and coastal southeast Georgia","status":"complete","organizations":["starintel:org:912-mutual-aid-fund","starintel:org:savannah-food-not-bombs","starintel:org:hostess-city-mutual-aid"]},
+    {"area_code":"915","region":"El Paso and far west Texas","status":"complete","organizations":["starintel:org:el-paso-food-not-bombs"]},
+    {"area_code":"918","region":"Tulsa and northeastern Oklahoma / 918-539 overlay geography","status":"complete","organizations":["starintel:org:tulsa-food-not-bombs","starintel:org:tulsa-really-really-free-market","starintel:org:green-country-collective"]},
+    {"area_code":"924","region":"Southern Minnesota 507/924 overlay including Rochester, Mankato, Winona and surrounding region","status":"complete","organizations":["starintel:org:mask-bloc-507","starintel:org:scmn-mask-bloc"]}
+  ],
+  "next_scan_start": "930",
+  "last_updated": "2026-09-10T00:05:00Z",
+  "notes": "Connector-safe durable coverage delta for pass 31. Area-code associations represent public locality/discovery geography, not phone ownership. Organization-level public material only; no person-level political or ideological affiliation profiling."
+}
