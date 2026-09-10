@@ -1,0 +1,31 @@
+{
+  "dataset": "anarchist-violence",
+  "worker": "area-codes-a",
+  "pass": 35,
+  "shard_rule": "For in-service U.S. geographic NPAs from the current NANPA NPA reports, shard A owns codes where integer(area_code) % 3 == 0; shard B owns remainder 1; shard C owns remainder 2.",
+  "authority": "https://www.nanpa.com/area-code-search",
+  "base_main": "25213eb05abf852a2a4f25ace5d3b7305a0ae6e2",
+  "coverage_reconciliation": {
+    "prior_merged_pass": 34,
+    "prior_merged_pr": 2568,
+    "prior_claimed_next_scan_start": "1000",
+    "correction": "Pass 34 skipped active in-service U.S. geographic NPA 978 even though 978 is divisible by 3. This pass closes that omitted shard-A code without changing the already-completed 984 findings."
+  },
+  "processed": [
+    {
+      "area_code": "978",
+      "region": "978/351 overlay in north-central and northeastern Massachusetts including Lowell, Lawrence, Haverhill, Fitchburg and Gloucester",
+      "status": "complete",
+      "organizations": [
+        "starintel:org:lowell-lawrence-abcf",
+        "starintel:org:llama-lowell-mutual-aid",
+        "starintel:org:lawrence-community-fridge"
+      ]
+    }
+  ],
+  "higher_checked_non_geographic_or_unassigned_candidates": ["981", "987", "990", "993", "996", "999"],
+  "next_scan_start": "1000",
+  "shard_numeric_space_exhausted": true,
+  "last_updated": "2026-09-10T03:29:00Z",
+  "notes": "Corrective durable coverage delta. NPA 978 is current, geographic, U.S., and shard-A eligible; it was omitted by pass 34. Existing canonical organization identities from earlier 351-overlay work were re-verified and reused. Area-code associations represent locality/discovery geography, not phone ownership. Person-level political or ideological affiliation profiling is not materialized."
+}
