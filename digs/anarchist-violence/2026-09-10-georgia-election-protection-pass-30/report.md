@@ -10,17 +10,17 @@ The pass opens the Election Protectors United of Georgia (EPUG) cluster from a J
 
 Current first-party pages add organization/leadership context for Georgia Equality, Fair Districts GA, 50501 Georgia and GLAHR Action Network. The current EPUG Linktree is materialized as a public URL/distribution surface because it links EPUG social accounts, volunteer intake, ACLU-GA poll-observer/LEADer recruitment, Indivisible election training, voter-protection hotline resources, Branch.Vote, and 5 Calls.
 
-The packet records only public/professional identities. Where the June launch merely names `Person, Organization`, the relation is limited to event representation and does not silently promote that observation into a broader employment or leadership claim.
+The packet records only public/professional identities. Where the June launch merely names `Person, Organization`, the person record preserves only that public event representation unless a current first-party role page exists.
 
 ## Coverage
 
 - Candidate nodes checked: 30+
-- Canonical records in packet: 29
+- Canonical records in packet: 28
 - Sources: 6
 - Organizations: 7
 - Public professional people: 5
 - Public communications / URL surfaces: 1
-- Explicit relations: 9
+- Explicit relations: 8
 - Recursive investigation targets: 1
 - Inferred relations promoted to fact: 0
 - Identity collisions force-merged: 0
