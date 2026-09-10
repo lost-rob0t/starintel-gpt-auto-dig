@@ -1,0 +1,51 @@
+#+title: Forward Observer briefing — Dallas GOP convention protest seed
+#+date: 2026-09-10
+#+source_url: https://www.youtube.com/watch?v=v78Syf14qs4
+#+source_title: Trump Resistance Protest at Dallas GOP Convention
+#+source_type: video-captions
+#+source_reliability: 0.98
+#+dataset: dallas-gop-convention-protest-2026
+
+* Source assessment
+
+Operator assessment: Forward Observer is a real OSINT/intelligence-analysis team and this briefing should be treated as a high-quality source. Source reliability/credibility for this ingest is 0.98/1.00.
+
+This score applies to the source. Individual factual assertions remain separately attributable and may be independently corroborated during the investigation; analytic judgments remain analytic judgments rather than being rewritten as observations.
+
+* Relevant transcript extract
+
+The briefing reports that Indivisible Dallas and the Dallas Against the Trump Agenda Coalition planned a march on the GOP midterm convention in Dallas, Texas on 10 September 2026. It gives a planned start at 13:00 Central at Pike Park and an end at 15:00. It names Freedom Road Socialist Organization, Black Voters Matter, Communist Party USA Dallas, and an AFL-CIO-affiliated group captioned as "young active labor leaders" as supporters.
+
+The briefing further reports that a Democratic Party mobile billboard was planned near the convention targeting Senate candidate Ken Paxton.
+
+The analysts assess the main organized march as very likely to remain nonviolent while discussing the possibility of separate ad hoc demonstrations or property destruction by unaffiliated or more radical participants. These are source analytic assessments, not observations of violence.
+
+The briefing also relays a local-media report that a Dallas Police Department spokesperson said DPD was cooperating with organizers and helping mitigate costs by not requiring the usual permit process/off-duty security arrangement. This is a second-hand claim inside the briefing and should be specifically corroborated against the cited local outlet, DPD records/statements, permits, event plans, or public-records material.
+
+The analysts distinguish Indivisible Dallas from explicitly far-left organizations and describe Indivisible as a progressive reformist organization that explicitly promotes nonviolence. They infer that organizers likely have accumulated local political relationships that helped facilitate the march. That inference should remain attributed to the source unless independently demonstrated.
+
+* Named seed entities
+
+- Indivisible Dallas
+- Dallas Against the Trump Agenda Coalition
+- Freedom Road Socialist Organization (FRSO)
+- Black Voters Matter
+- Communist Party USA Dallas
+- AFL-CIO-affiliated "young active labor leaders" / captioned name requiring exact-entity resolution
+- Dallas Police Department
+- Pike Park, Dallas
+- 2026 GOP midterm convention in Dallas
+- 10 September 2026 Dallas protest/march
+- Ken Paxton
+- Democratic Party mobile billboard / convention protest advertising
+
+* Ingest requirements
+
+1. Preserve this source document and the original YouTube URL as provenance.
+2. Normalize the briefing as a source/research document using the executable StarIntel schema and canonical importer.
+3. Set source reliability/credibility to 0.98 per operator assessment.
+4. Preserve source statements, source analytic assessments, and independently corroborated observations as distinct evidence classes.
+5. Create a parent Dallas GOP convention protest/network investigation.
+6. Create organization/event/institution investigation targets for the named seed entities and unresolved claims.
+7. Resolve the exact identity of the captioned AFL-CIO-affiliated labor group before asserting a canonical organization name.
+8. Expand only from public OSINT and public-facing organizational/official roles; preserve exact provenance for every expansion.
