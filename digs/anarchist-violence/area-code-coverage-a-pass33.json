@@ -1,0 +1,56 @@
+{
+  "dataset": "anarchist-violence",
+  "worker": "area-codes-a",
+  "pass": 33,
+  "base_main": "ded77550df9fb2c47288bf7a1d11054ae0db9bfa",
+  "shard_rule": "Current in-service U.S. geographic NPAs where integer(area_code) % 3 == 0.",
+  "coverage_reconciliation": {
+    "effective_start_for_this_pass": "948",
+    "prior_merged_pass": 32,
+    "prior_merged_pr": 2563,
+    "prior_next_scan_start": "948"
+  },
+  "processed": [
+    {
+      "area_code": "948",
+      "region": "Virginia 757/948 overlay region including Virginia Beach, Norfolk, Chesapeake and Hampton Roads",
+      "status": "complete",
+      "organizations": [
+        "starintel:org:bhav-brigade"
+      ]
+    },
+    {
+      "area_code": "951",
+      "region": "Western Riverside County, California",
+      "status": "complete",
+      "organizations": [
+        "starintel:org:riverside-mutual-aid-network",
+        "starintel:org:inland-empire-dsa"
+      ]
+    },
+    {
+      "area_code": "954",
+      "region": "Broward County / Fort Lauderdale, Florida",
+      "status": "complete",
+      "organizations": [
+        "starintel:org:broward-county-dsa",
+        "starintel:org:fort-lauderdale-food-not-bombs",
+        "starintel:org:elevate-bc"
+      ]
+    },
+    {
+      "area_code": "975",
+      "region": "Kansas City / northwestern Missouri 816/975 overlay region",
+      "status": "complete",
+      "organizations": [
+        "starintel:org:kansas-city-food-not-bombs",
+        "starintel:org:kansas-city-mutual-aid",
+        "starintel:org:chosen-family-mutual-aid-kc",
+        "starintel:org:workers-solidarity-fund-kansas-city"
+      ]
+    }
+  ],
+  "next_scan_start": "978",
+  "last_updated": "2026-09-10T02:03:00Z",
+  "notes": "Connector-safe durable coverage delta for shard-A pass 33. 957 was checked and skipped because it is not an active U.S. geographic NPA. Area-code associations represent public locality/discovery geography, not phone ownership. Historical leads require fresh continuity evidence. Organization-level public material only; no person-level political or ideological affiliation profiling."
+}
