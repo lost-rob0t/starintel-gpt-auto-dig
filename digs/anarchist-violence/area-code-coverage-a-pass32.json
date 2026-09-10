@@ -1,0 +1,22 @@
+{
+  "dataset": "anarchist-violence",
+  "worker": "area-codes-a",
+  "pass": 32,
+  "base_main": "b8605c2f9b0579a7cc19360114800466bc8fbc8c",
+  "shard_rule": "Current in-service U.S. geographic NPAs where integer(area_code) % 3 == 0.",
+  "coverage_reconciliation": {
+    "effective_start_for_this_pass": "930",
+    "prior_merged_pass": 31,
+    "prior_merged_pr": 2554,
+    "prior_next_scan_start": "930"
+  },
+  "processed": [
+    {"area_code":"930","region":"Southern Indiana overlay region including Bloomington and Evansville","status":"complete","organizations":["starintel:org:bloomington-anarchist-black-cross","starintel:org:mask-bloc-btown","starintel:org:peoples-cooperative-market-bloomington","starintel:org:bloomington-chapter-national-union-homeless"]},
+    {"area_code":"936","region":"East and Southeast Texas including Deep East Texas","status":"complete","organizations":["starintel:org:molo-deep-east-texas-mutual-aid"]},
+    {"area_code":"939","region":"Puerto Rico overlay region","status":"complete","organizations":["starintel:org:comedores-sociales-puerto-rico","starintel:org:centro-apoyo-mutuo-caguas","starintel:org:jornada-se-acabaron-las-promesas"]},
+    {"area_code":"945","region":"Dallas-Fort Worth overlay region","status":"complete","organizations":["starintel:org:dfw-mutual-aid","starintel:org:say-it-with-your-chest-dtx","starintel:org:taabir-dallas"]}
+  ],
+  "next_scan_start": "948",
+  "last_updated": "2026-09-10T01:01:00Z",
+  "notes": "Connector-safe durable coverage delta for shard-A pass 32. Area-code associations represent public locality/discovery geography, not phone ownership. Molo Deep East Texas Mutual Aid is current-directory-listed with historical network corroboration but has a weaker independent current footprint. Organization-level public material only; no person-level political or ideological affiliation profiling."
+}
