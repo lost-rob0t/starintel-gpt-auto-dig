@@ -1,0 +1,29 @@
+{
+  "dataset": "anarchist-violence",
+  "worker": "area-codes-a",
+  "shard_rule": "For in-service U.S. geographic NPAs from the current NANPA NPA reports, shard A owns codes where integer(area_code) % 3 == 0; shard B owns remainder 1; shard C owns remainder 2.",
+  "authority": "https://www.nanpa.com/area-code-search",
+  "base_main": "424c0bf31052a223ea499d1e0fe5b0c3e69fa4c9",
+  "processed": [
+    {
+      "area_code": "984",
+      "region": "919/984 overlay across Raleigh, Durham, Chapel Hill/Carrboro and surrounding Triangle communities, North Carolina",
+      "status": "complete",
+      "organizations": [
+        "starintel:org:raleigh-united-mutual-aid-hub",
+        "starintel:org:food-not-bombs-raleigh",
+        "starintel:org:triangle-mutual-aid",
+        "starintel:org:durham-community-fridges",
+        "starintel:org:chapel-hill-community-fridges",
+        "starintel:org:mutual-aid-triangle-community-hub",
+        "starintel:org:raleigh-really-really-free-market",
+        "starintel:org:food-not-bombs-siler-city"
+      ]
+    }
+  ],
+  "checked_non_geographic_or_unassigned_candidates": ["987", "990", "993", "996", "999"],
+  "next_scan_start": "1000",
+  "shard_numeric_space_exhausted": true,
+  "last_updated": "2026-09-10T02:58:11Z",
+  "notes": "Connector-safe durable coverage delta for shard-A pass 34. NPA 984 is the final verified in-service U.S. geographic shard-A code at or above the prior next_scan_start 978. Higher divisible-by-3 numeric candidates through 999 were checked and not promoted as active U.S. geographic NPAs. Area-code associations represent public locality/discovery geography, not phone ownership. Historical or weak-current leads require fresh continuity evidence. Organization-level public material only; no person-level political or ideological affiliation profiling."
+}
