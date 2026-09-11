@@ -6,7 +6,7 @@ Bounded public-web enumeration pass for the `anarchist-violence` corpus. This pa
 
 ## Materialized graph
 
-The packet contains 31 StarIntel v0.9 records: 7 source records, 2 organizations, 7 products, 3 public professional people, 1 public URL/status surface, 10 explicit relations, and 1 recursive investigation target.
+The packet contains 32 StarIntel v0.9 records: 7 source records, 2 organizations, 8 products, 3 public professional people, 1 public URL/status surface, 10 explicit relations, and 1 recursive investigation target.
 
 ### PDI platform
 
