@@ -6,7 +6,7 @@ Bounded public-web enumeration pass for the `anarchist-violence` corpus focused 
 
 ## Materialized graph
 
-The packet contains 26 canonical StarIntel v0.9 records: 9 sources, 3 organizations, 4 products, 4 public professional people, 5 explicit professional/governance/partnership relations, 1 explicit infrastructure relation, and 1 recursive investigation target.
+The packet contains 29 canonical StarIntel v0.9 records: 9 sources, 3 organizations, 4 products, 4 public professional people, 8 explicit relations, and 1 recursive investigation target.
 
 ## Shared infrastructure
 
