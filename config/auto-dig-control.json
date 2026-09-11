@@ -1,16 +1,16 @@
 {
   "schema": "auto-dig-control.v1",
-  "enabled": false,
-  "state": "paused",
-  "reason": "Machine Spirit worker reallocation",
+  "enabled": true,
+  "state": "running",
+  "reason": "Operator resume: Auto-Dig worker fleet activation",
   "operator_issue": "https://github.com/lost-rob0t/starintel-gpt-auto-dig/issues/2616",
   "machine_spirit_issue": "https://github.com/lost-rob0t/prolog-rlm/issues/411",
-  "effective_at": "2026-09-11T04:48:54Z",
-  "resume_requires": "explicit operator instruction",
+  "effective_at": "2026-09-11T15:40:00Z",
+  "resume_requires": null,
   "preserve_existing_work": true,
-  "allow_new_claims": false,
-  "allow_new_passes": false,
-  "allow_new_branches": false,
-  "allow_new_pull_requests": false,
-  "allow_state_advance": false
+  "allow_new_claims": true,
+  "allow_new_passes": true,
+  "allow_new_branches": true,
+  "allow_new_pull_requests": true,
+  "allow_state_advance": true
 }
