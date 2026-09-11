@@ -28,18 +28,81 @@ main_run(Argv) :-
     resolve_force_issue(ExplicitForceIssue, ForceIssue),
     read_json_file(QueuePath, Queue),
     read_json_file(StatePath, State),
-    setup_call_cleanup(
-        agent_runtime_create(
-            [ max_agents(4),
-              mailbox_size(8),
-              worker_count(1),
-              worker_backlog(1)
-            ],
-            Runtime),
-        run_actor(Runtime, Queue, State, ForceIssue, Decision, Trace),
-        agent_runtime_destroy(Runtime)),
+    read_auto_dig_control(Control),
+    (   auto_dig_paused(Control)
+    ->  length(Queue, QueueSize),
+        Decision = _{
+            action:"idle",
+            reason:"operator-paused by config/auto-dig-control.json",
+            queue_size:QueueSize,
+            next_state:State
+        },
+        Trace = []
+    ;   auto_dig_enabled(Control)
+    ->  setup_call_cleanup(
+            agent_runtime_create(
+                [ max_agents(4),
+                  mailbox_size(8),
+                  worker_count(1),
+                  worker_backlog(1)
+                ],
+                Runtime),
+            run_actor(Runtime, Queue, State, ForceIssue, Decision, Trace),
+            agent_runtime_destroy(Runtime))
+    ;   throw(error(domain_error(auto_dig_control_state, Control),
+                    context(auto_dig_prolog_actor:main/1,
+                            'Auto-Dig control must be enabled/running or disabled/paused')))
+    ),
     write_json_file(OutputPath, Decision),
     maybe_write_trace(TracePath, Trace).
+
+read_auto_dig_control(Control) :-
+    auto_dig_control_path(Path),
+    (   exists_file(Path)
+    ->  read_json_file(Path, Control0),
+        validate_auto_dig_control(Control0),
+        Control = Control0
+    ;   throw(error(existence_error(auto_dig_control_file, Path),
+                    context(auto_dig_prolog_actor:main/1,
+                            'missing Auto-Dig control file; failing closed')))
+    ).
+
+auto_dig_control_path(Path) :-
+    (   getenv('AUTO_DIG_CONTROL_FILE', Override),
+        Override \== ''
+    ->  Path = Override
+    ;   source_file(auto_dig_prolog_actor:main(_), Source),
+        file_directory_name(Source, AgentDir),
+        directory_file_path(AgentDir, '../config/auto-dig-control.json', Relative),
+        absolute_file_name(Relative,
+                           Path,
+                           [ access(read),
+                             file_errors(fail)
+                           ])
+    ).
+
+validate_auto_dig_control(Control) :-
+    must_be(dict, Control),
+    get_dict(schema, Control, "auto-dig-control.v1"),
+    get_dict(enabled, Control, Enabled),
+    memberchk(Enabled, [true, false]),
+    get_dict(state, Control, State),
+    memberchk(State, ["running", "paused"]),
+    !.
+validate_auto_dig_control(Control) :-
+    throw(error(domain_error(auto_dig_control_v1, Control),
+                context(auto_dig_prolog_actor:main/1,
+                        'invalid Auto-Dig control file; failing closed'))).
+
+auto_dig_paused(Control) :-
+    (   get_dict(enabled, Control, false)
+    ;   get_dict(state, Control, "paused")
+    ),
+    !.
+
+auto_dig_enabled(Control) :-
+    get_dict(enabled, Control, true),
+    get_dict(state, Control, "running").
 
 run_actor(Runtime, Queue, State, ForceIssue, Decision, Trace) :-
     agent_spawn(Runtime,

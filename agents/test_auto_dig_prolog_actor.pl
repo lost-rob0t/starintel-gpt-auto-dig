@@ -25,6 +25,29 @@ test(json_dict_tags_are_grounded_recursively) :-
     assertion(ground(Ground)),
     assertion(Ground.outer.items = [json{value:1}, json{value:2}]).
 
+test(paused_control_is_valid_and_blocks_execution) :-
+    Control = json{schema:"auto-dig-control.v1", enabled:false, state:"paused"},
+    auto_dig_prolog_actor:validate_auto_dig_control(Control),
+    assertion(auto_dig_prolog_actor:auto_dig_paused(Control)),
+    assertion(\+ auto_dig_prolog_actor:auto_dig_enabled(Control)).
+
+test(enabled_running_control_is_valid_and_allows_execution) :-
+    Control = json{schema:"auto-dig-control.v1", enabled:true, state:"running"},
+    auto_dig_prolog_actor:validate_auto_dig_control(Control),
+    assertion(auto_dig_prolog_actor:auto_dig_enabled(Control)),
+    assertion(\+ auto_dig_prolog_actor:auto_dig_paused(Control)).
+
+test(inconsistent_control_fails_closed) :-
+    Control = json{schema:"auto-dig-control.v1", enabled:true, state:"paused"},
+    auto_dig_prolog_actor:validate_auto_dig_control(Control),
+    assertion(auto_dig_prolog_actor:auto_dig_paused(Control)),
+    assertion(\+ auto_dig_prolog_actor:auto_dig_enabled(Control)).
+
+test(invalid_control_schema_fails_closed,
+     [throws(error(domain_error(auto_dig_control_v1, _), _))]) :-
+    auto_dig_prolog_actor:validate_auto_dig_control(
+        json{schema:"wrong", enabled:true, state:"running"}).
+
 test(high_priority_may_repeat_when_uniquely_highest) :-
     issue(10, high, High),
     issue(11, normal, Normal),
