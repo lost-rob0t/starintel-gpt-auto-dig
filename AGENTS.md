@@ -1,5 +1,26 @@
 # StarIntel GPT Auto-Dig Agent Instructions
 
+## P0 control-plane gate — read before doing anything
+
+Every Auto-Dig worker, researcher, coding agent, scheduled actor, and issue consumer MUST inspect `config/auto-dig-control.json` before claiming work, starting a pass, creating a branch, creating a pull request, advancing durable queue/coverage state, or invoking live research.
+
+The control file is authoritative repository-local operator state.
+
+If `enabled` is `false` or `state` is `paused`:
+
+- STOP before claiming any new Auto-Dig work;
+- do not start a new bounded research pass;
+- do not create a new Auto-Dig branch or pull request;
+- do not advance queue, coverage, or actor state as if work ran;
+- preserve existing worktrees, branches, draft PRs, artifacts, findings, and failure evidence;
+- validation already running for an existing checkpoint may finish, but it does not authorize another pass or merge;
+- do not treat backlog pressure, schedules, recursive targets, green CI, or an open `investigation-target` as permission to resume;
+- only an explicit operator resume instruction may change the control file back to enabled.
+
+A worker that cannot read or validate the control file must fail closed and perform no Auto-Dig work.
+
+This gate outranks every lower section of this file while paused.
+
 ## Non-negotiable authority
 
 The repository-local `starintel_doc/` package and generated `schemas/starintel-doc-v0.9.0.schema.json` are the StarIntel document specification. Never create a parallel JSON shape, a prompt-only “StarIntel style,” a renderer-specific schema, or undocumented fields. The Nim runtime is an implementation of this contract, not an independent schema.
