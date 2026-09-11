@@ -245,3 +245,27 @@ Auto-Dig agents MUST, on every successful pass:
 4. record the importer summary (`created/replaced/unchanged/rejected`)
    in the pass report. A validation pass without a subsequent import is
    an incomplete pass.
+
+## Mandatory worktree isolation for workers
+
+Auto-Dig workers and agents MUST NOT research, write, or validate inside the
+primary checkout. Every worker runs in its own git worktree:
+
+```bash
+python3 /a0/usr/skills/git-worktrees/scripts/worktree.py add <branch> --base origin/main
+```
+
+- Worktree layout: one directory per branch/PR under the shared root
+  (`/a0/usr/worktrees`, override with `GIT_WORKTREE_ROOT`); path format
+  `<project-slug>-<branch-name>` as printed by `worktree.py add`.
+- The primary checkout (`/a0/usr/projects/starintel-labs/starintel-auto-dig`)
+  stays on `main` and is reserved for fetch/merge/PR bookkeeping only.
+- Each worker creates its feature branch worktree from `origin/main`, does
+  collection + document creation + validation there, imports with
+  `bin/fast_import --corpus` inside its worktree, commits, pushes, and opens
+  its PR — without touching any other worker's tree.
+- Never create a second worktree for a branch already checked out, never
+  delete branches as a side effect of cleanup, and remove + prune the
+  worktree when the PR is merged.
+- Parallel fleet workers are isolated by construction: one worktree per
+  worker per issue branch.
