@@ -220,3 +220,28 @@ Canonical StarIntel writes, write-capable tools, and final publication remain se
 The workflow exercises a pinned real Prolog-RLM checkout. Failures preserve diagnostics as GitHub Actions artifacts. If the optional `PROLOG_RLM_BUG_TOKEN` repository secret is configured, a failed run also opens a cross-repository integration issue in `lost-rob0t/prolog-rlm` with the pinned runtime SHA and workflow reproduction link.
 
 The bug filer deliberately does not call every consumer failure a core bug: the issue instructs triage to distinguish Prolog-RLM defects from Auto-Dig configuration/integration failures.
+
+## Fast corpus import
+
+`bin/fast_import` (`scripts/fast_import.nim`, compile with
+`nim c -d:release --threads:on -o:bin/fast_import scripts/fast_import.nim`)
+is the high-speed parallel importer for canonical v0.9.0 JSONL into `db/`.
+It mirrors `scripts/starintel.py import` semantics: batch duplicate-`_id`
+refusal, byte-identical idempotency (`unchanged`), and no overwrite
+without `--replace`. It supports `--corpus` (all
+`digs/*/*/starintel-documents.jsonl(.gz)`), `--root`, and `--dry-run`.
+
+## Mandatory post-validation import rule
+
+Auto-Dig agents MUST, on every successful pass:
+
+1. finish git work (validated documents committed on a feature branch);
+2. run the full validation gate
+   (`python3 scripts/validate-for-merge.py --site` or
+   `python3 scripts/starintel.py validate`);
+3. when validation passes, immediately import the produced corpus into
+   the normalized DB with `bin/fast_import --corpus` (or
+   `bin/fast_import records.jsonl` for a single batch) before publishing;
+4. record the importer summary (`created/replaced/unchanged/rejected`)
+   in the pass report. A validation pass without a subsequent import is
+   an incomplete pass.
