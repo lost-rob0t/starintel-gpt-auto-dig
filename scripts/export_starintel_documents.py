@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 """Resolve canonical Auto-Dig documents and stream them as JSONL.
 
-The merge path is intentionally diff-first: only logical documents introduced or
-version-bumped since the supplied base are emitted. Existing identical logical
-IDs are skipped so merge ingest is idempotent and does not resend duplicates.
+Merge ingestion is intentionally diff-first: only logical documents introduced or
+version-bumped since the supplied base are emitted. Manual ingestion can select
+explicit logical document IDs or the full canonical corpus.
 """
 
 from __future__ import annotations
@@ -32,6 +32,15 @@ def load_importer():
     return module
 
 
+def parse_document_ids(raw: str) -> set[str]:
+    document_ids = {item for item in re.split(r"[\s,]+", raw.strip()) if item}
+    if not document_ids:
+        raise ValueError("--ids requires at least one document ID")
+    if "all" in {document_id.lower() for document_id in document_ids}:
+        raise ValueError("use --all by itself instead of including 'all' in --ids")
+    return document_ids
+
+
 def parse_args(argv: list[str]) -> argparse.Namespace:
     parser = argparse.ArgumentParser(
         description="Resolve canonical Auto-Dig documents and emit JSONL for the Nim ingest core."
@@ -42,6 +51,11 @@ def parse_args(argv: list[str]) -> argparse.Namespace:
         metavar="BASE",
         help="Emit only new logical IDs and valid version bumps since BASE.",
     )
+    mode.add_argument(
+        "--ids",
+        metavar="IDS",
+        help="Emit explicit logical document IDs (comma or whitespace separated).",
+    )
     mode.add_argument("--all", action="store_true", help="Emit the full canonical corpus.")
     return parser.parse_args(argv)
 
@@ -51,10 +65,10 @@ def ere_escape(value: str) -> str:
 
 
 def records_at_ref_for_ids(importer, root: Path, ref: str, document_ids: set[str]):
-    """Read only documents with candidate `_id`s from a historical tree.
+    """Read only documents with candidate `_id`s from a git tree.
 
-    `git grep` searches exact `_id` fields, so references to the same ID in relation
-    bodies do not make an existing logical document look present.
+    `git grep -z` NUL-separates the ref/path, line number, and matching text.
+    This avoids ambiguity because canonical StarIntel DB filenames contain ':'.
     """
     if not document_ids:
         return []
@@ -68,7 +82,7 @@ def records_at_ref_for_ids(importer, root: Path, ref: str, document_ids: set[str
         alternatives = "|".join(ere_escape(document_id) for document_id in batch)
         pattern = rf'"_id"[[:space:]]*:[[:space:]]*"({alternatives})"'
         result = subprocess.run(
-            ["git", "grep", "-n", "-E", pattern, ref, "--", "db", "digs"],
+            ["git", "grep", "-n", "-z", "-E", pattern, ref, "--", "db", "digs"],
             cwd=root,
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
@@ -82,7 +96,8 @@ def records_at_ref_for_ids(importer, root: Path, ref: str, document_ids: set[str
 
         for raw_line in result.stdout.splitlines():
             try:
-                _tree, path, line_number, text = raw_line.split(":", 3)
+                prefix, line_number, text = raw_line.split("\0", 2)
+                _tree, path = prefix.split(":", 1)
             except ValueError as exc:
                 raise ValueError(f"unexpected git grep line: {raw_line!r}") from exc
             parsed = importer.parse_jsonl(text, f"{path}@{ref}:{line_number}")
@@ -91,6 +106,15 @@ def records_at_ref_for_ids(importer, root: Path, ref: str, document_ids: set[str
                     records.append(record)
 
     return records
+
+
+def resolve_id_records(importer, root: Path, document_ids: set[str]):
+    records = records_at_ref_for_ids(importer, root, "HEAD", document_ids)
+    by_id = importer.merge_records(records, prefer_db=True)
+    missing = sorted(document_ids - set(by_id))
+    if missing:
+        raise ValueError("document IDs not found: " + ", ".join(missing))
+    return [by_id[document_id] for document_id in sorted(document_ids)]
 
 
 def resolve_diff_records(importer, root: Path, base: str):
@@ -155,6 +179,10 @@ def main(argv: list[str] | None = None) -> int:
     if args.diff:
         records = resolve_diff_records(importer, root, args.diff)
         mode = f"diff:{args.diff}"
+    elif args.ids:
+        document_ids = parse_document_ids(args.ids)
+        records = resolve_id_records(importer, root, document_ids)
+        mode = "ids"
     else:
         records = importer.collect_all_documents(root)
         mode = "all"
