@@ -133,8 +133,18 @@ jobs:
           }
           JSON
 
-          # Repository default is intentionally paused. A real CLI invocation
-          # must idle before queue selection and must not mutate next_state.
+          # Pause behavior must remain fail-closed independent of the repository's
+          # current operator-selected default state.
+          cat > "$RUNNER_TEMP/control-paused.json" <<'JSON'
+          {
+            "schema": "auto-dig-control.v1",
+            "enabled": false,
+            "state": "paused",
+            "reason": "e2e pause-control fixture"
+          }
+          JSON
+
+          AUTO_DIG_CONTROL_FILE="$RUNNER_TEMP/control-paused.json" \
           swipl \
             -q \
             -p "library=$GITHUB_WORKSPACE/.prolog-rlm/prolog" \
@@ -153,7 +163,10 @@ jobs:
           ' "$RUNNER_TEMP/paused-decision.json" >/dev/null
 
           set +e
-          python3 scripts/check-auto-dig-control.py > "$RUNNER_TEMP/pause-gate.out" 2> "$RUNNER_TEMP/pause-gate.err"
+          AUTO_DIG_CONTROL_FILE="$RUNNER_TEMP/control-paused.json" \
+            python3 scripts/check-auto-dig-control.py \
+            > "$RUNNER_TEMP/pause-gate.out" \
+            2> "$RUNNER_TEMP/pause-gate.err"
           pause_status=$?
           set -e
           test "$pause_status" -eq 75
@@ -193,6 +206,10 @@ jobs:
           AUTO_DIG_CONTROL_FILE="$RUNNER_TEMP/control-running.json" \
             python3 scripts/check-auto-dig-control.py \
             | grep -F 'AUTO-DIG ENABLED'
+
+          # The checked-out repository control itself must agree with the
+          # operator-selected state under review.
+          python3 scripts/check-auto-dig-control.py | grep -F 'AUTO-DIG ENABLED'
 
           cat > "$RUNNER_TEMP/model-profile.json" <<'JSON'
           {
