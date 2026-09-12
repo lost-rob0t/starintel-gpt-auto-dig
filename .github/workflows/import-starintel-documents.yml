@@ -1,1 +1,160 @@
 name: Import StarIntel documents
+
+on:
+  push:
+    branches:
+      - main
+      - testing-debug
+    paths:
+      - "db/**/*.ndjson"
+      - "digs/**/starintel-documents.jsonl"
+      - "scripts/export_starintel_documents.py"
+      - "scripts/import-starintel-documents.py"
+      - "scripts/starintel_ingest_core.nim"
+      - "starintel_auto_dig.nimble"
+      - "tests/test_export_starintel_documents.py"
+      - "tests/test_import_starintel_documents.py"
+      - "tests/test_starintel_ingest_core.py"
+      - ".github/workflows/import-starintel-documents.yml"
+  pull_request:
+    paths:
+      - "db/**/*.ndjson"
+      - "digs/**/starintel-documents.jsonl"
+      - "scripts/export_starintel_documents.py"
+      - "scripts/import-starintel-documents.py"
+      - "scripts/starintel_ingest_core.nim"
+      - "starintel_auto_dig.nimble"
+      - "tests/test_export_starintel_documents.py"
+      - "tests/test_import_starintel_documents.py"
+      - "tests/test_starintel_ingest_core.py"
+      - ".github/workflows/import-starintel-documents.yml"
+  workflow_dispatch:
+    inputs:
+      ids:
+        description: "Document IDs (comma/whitespace separated)"
+        required: true
+        type: string
+      workers:
+        description: "Concurrent Nim workers (0 = auto: useful CPU cores up to server per-principal concurrency)"
+        required: true
+        default: 0
+        type: number
+      batch_size:
+        description: "Documents per bulk request (1-500)"
+        required: true
+        default: 500
+        type: number
+
+permissions:
+  contents: read
+
+concurrency:
+  group: starintel-ingest-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  NIM_VERSION: 2.2.4
+  STAR_INGEST_URL: https://ingest.starintel.actor
+
+jobs:
+  ingest-documents:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Checkout full history
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - name: Set up Nim
+        uses: jiro4989/setup-nim-action@v2
+        with:
+          nim-version: ${{ env.NIM_VERSION }}
+
+      - name: Build threaded ingest core
+        run: nimble buildIngest
+
+      - name: Test ingest resolver and threaded core
+        run: |
+          python3 -m unittest \
+            tests.test_export_starintel_documents \
+            tests.test_import_starintel_documents \
+            tests.test_starintel_ingest_core
+
+      - name: Preflight ingest credential
+        if: github.event_name == 'workflow_dispatch' || (github.event_name == 'push' && github.ref == 'refs/heads/main')
+        env:
+          STAR_SERVER_API_KEY: ${{ secrets.STAR_SERVER_API_KEY }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [[ -z "${STAR_SERVER_API_KEY:-}" ]]; then
+            echo "STAR_SERVER_API_KEY is missing." >&2
+            exit 2
+          fi
+          response_file="$(mktemp)"
+          code="$(curl --silent --show-error \
+            --output "$response_file" \
+            --write-out '%{http_code}' \
+            --header "Accept: application/json" \
+            --header "Authorization: Bearer ${STAR_SERVER_API_KEY}" \
+            "${STAR_INGEST_URL}/auth/context")"
+          if [[ "$code" != "200" ]]; then
+            safe_code="$(python3 - "$response_file" <<'PY'
+import json, sys
+try:
+    body = json.load(open(sys.argv[1], encoding="utf-8"))
+except Exception:
+    print("unknown")
+else:
+    print(body.get("code", "unknown"))
+PY
+)"
+            echo "Ingest credential preflight failed: HTTP ${code}, server code ${safe_code}." >&2
+            exit 3
+          fi
+          python3 - "$response_file" <<'PY'
+import json, sys
+body = json.load(open(sys.argv[1], encoding="utf-8"))
+print(json.dumps({
+    "status": "credential-ok",
+    "principal_type": body.get("principal_type"),
+    "credential_id": body.get("credential_id"),
+    "scopes": body.get("scopes", []),
+}, separators=(",", ":")))
+PY
+
+      - name: Import selected documents
+        if: github.event_name == 'workflow_dispatch' || (github.event_name == 'push' && github.ref == 'refs/heads/main')
+        env:
+          STAR_SERVER_API_KEY: ${{ secrets.STAR_SERVER_API_KEY }}
+          EVENT_NAME: ${{ github.event_name }}
+          PUSH_BASE: ${{ github.event.before }}
+          MANUAL_IDS: ${{ inputs.ids }}
+          MANUAL_WORKERS: ${{ inputs.workers }}
+          MANUAL_BATCH_SIZE: ${{ inputs.batch_size }}
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          workers="${MANUAL_WORKERS:-0}"
+          batch_size="${MANUAL_BATCH_SIZE:-500}"
+          core=(bin/starintel-ingest-core --workers "$workers" --batch-size "$batch_size")
+
+          if [[ "$EVENT_NAME" == "workflow_dispatch" ]]; then
+            selection="${MANUAL_IDS:-}"
+            if [[ -z "$(printf '%s' "$selection" | xargs)" ]]; then
+              echo "workflow_dispatch requires one or more document IDs." >&2
+              exit 2
+            fi
+            python3 scripts/export_starintel_documents.py --ids "$selection" | "${core[@]}"
+            exit 0
+          fi
+
+          base="$PUSH_BASE"
+          if [[ -z "$base" || "$base" =~ ^0+$ ]]; then
+            echo "A usable push base SHA is required for merge diff ingest." >&2
+            exit 2
+          fi
+
+          python3 scripts/export_starintel_documents.py --diff "$base" | "${core[@]}"
