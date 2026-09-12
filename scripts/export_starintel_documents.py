@@ -67,8 +67,8 @@ def ere_escape(value: str) -> str:
 def records_at_ref_for_ids(importer, root: Path, ref: str, document_ids: set[str]):
     """Read only documents with candidate `_id`s from a git tree.
 
-    `git grep -z` terminates the ref/path prefix with NUL. That matters because
-    canonical StarIntel DB filenames contain ':' as part of logical IDs.
+    `git grep -z` NUL-separates the ref/path, line number, and matching text.
+    This avoids ambiguity because canonical StarIntel DB filenames contain ':'.
     """
     if not document_ids:
         return []
@@ -96,9 +96,8 @@ def records_at_ref_for_ids(importer, root: Path, ref: str, document_ids: set[str
 
         for raw_line in result.stdout.splitlines():
             try:
-                prefix, numbered_text = raw_line.split("\0", 1)
+                prefix, line_number, text = raw_line.split("\0", 2)
                 _tree, path = prefix.split(":", 1)
-                line_number, text = numbered_text.split(":", 1)
             except ValueError as exc:
                 raise ValueError(f"unexpected git grep line: {raw_line!r}") from exc
             parsed = importer.parse_jsonl(text, f"{path}@{ref}:{line_number}")
