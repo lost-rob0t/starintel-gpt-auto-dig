@@ -65,7 +65,11 @@ def ere_escape(value: str) -> str:
 
 
 def records_at_ref_for_ids(importer, root: Path, ref: str, document_ids: set[str]):
-    """Read only documents with candidate `_id`s from a git tree."""
+    """Read only documents with candidate `_id`s from a git tree.
+
+    `git grep -z` terminates the ref/path prefix with NUL. That matters because
+    canonical StarIntel DB filenames contain ':' as part of logical IDs.
+    """
     if not document_ids:
         return []
 
@@ -78,7 +82,7 @@ def records_at_ref_for_ids(importer, root: Path, ref: str, document_ids: set[str
         alternatives = "|".join(ere_escape(document_id) for document_id in batch)
         pattern = rf'"_id"[[:space:]]*:[[:space:]]*"({alternatives})"'
         result = subprocess.run(
-            ["git", "grep", "-n", "-E", pattern, ref, "--", "db", "digs"],
+            ["git", "grep", "-n", "-z", "-E", pattern, ref, "--", "db", "digs"],
             cwd=root,
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
@@ -92,7 +96,9 @@ def records_at_ref_for_ids(importer, root: Path, ref: str, document_ids: set[str
 
         for raw_line in result.stdout.splitlines():
             try:
-                _tree, path, line_number, text = raw_line.split(":", 3)
+                prefix, numbered_text = raw_line.split("\0", 1)
+                _tree, path = prefix.split(":", 1)
+                line_number, text = numbered_text.split(":", 1)
             except ValueError as exc:
                 raise ValueError(f"unexpected git grep line: {raw_line!r}") from exc
             parsed = importer.parse_jsonl(text, f"{path}@{ref}:{line_number}")
