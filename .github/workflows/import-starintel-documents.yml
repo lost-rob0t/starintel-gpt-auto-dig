@@ -8,34 +8,26 @@ on:
       - "db/**/*.ndjson"
       - "digs/**/starintel-documents.jsonl"
       - "scripts/export_starintel_documents.py"
+      - "scripts/import-starintel-documents.py"
       - "scripts/starintel_ingest_core.nim"
       - "starintel_auto_dig.nimble"
       - "tests/test_import_starintel_documents.py"
       - "tests/test_starintel_ingest_core.py"
       - ".github/workflows/import-starintel-documents.yml"
-      - ".github/full-import-trigger"
   pull_request:
     paths:
       - "scripts/export_starintel_documents.py"
+      - "scripts/import-starintel-documents.py"
       - "scripts/starintel_ingest_core.nim"
       - "starintel_auto_dig.nimble"
       - "tests/test_import_starintel_documents.py"
       - "tests/test_starintel_ingest_core.py"
       - ".github/workflows/import-starintel-documents.yml"
-      - ".github/full-import-trigger"
   workflow_dispatch:
     inputs:
-      mode:
-        description: "Import mode"
-        required: true
-        default: all
-        type: choice
-        options:
-          - all
-          - diff
       base:
         description: "Base commit for diff mode"
-        required: false
+        required: true
         type: string
       workers:
         description: "Concurrent Nim workers (0 = auto: useful CPU cores up to server per-principal concurrency)"
@@ -53,7 +45,7 @@ permissions:
 
 concurrency:
   group: starintel-ingest-${{ github.ref }}
-  cancel-in-progress: false
+  cancel-in-progress: true
 
 env:
   NIM_VERSION: 2.2.4
@@ -82,13 +74,12 @@ jobs:
             tests.test_import_starintel_documents \
             tests.test_starintel_ingest_core
 
-      - name: Import documents
+      - name: Import changed documents only
         if: github.event_name != 'pull_request'
         env:
           STAR_SERVER_API_KEY: ${{ secrets.STAR_SERVER_API_KEY }}
           EVENT_NAME: ${{ github.event_name }}
           PUSH_BASE: ${{ github.event.before }}
-          MANUAL_MODE: ${{ inputs.mode }}
           MANUAL_BASE: ${{ inputs.base }}
           MANUAL_WORKERS: ${{ inputs.workers }}
           MANUAL_BATCH_SIZE: ${{ inputs.batch_size }}
@@ -101,29 +92,14 @@ jobs:
           core=(bin/starintel-ingest-core --workers "$workers" --batch-size "$batch_size")
 
           if [[ "$EVENT_NAME" == "workflow_dispatch" ]]; then
-            if [[ "$MANUAL_MODE" == "all" ]]; then
-              python3 scripts/export_starintel_documents.py --all | "${core[@]}"
-              exit 0
-            fi
-
-            if [[ -z "$MANUAL_BASE" ]]; then
-              echo "base is required when manual mode is diff" >&2
-              exit 2
-            fi
-
-            python3 scripts/export_starintel_documents.py --diff "$MANUAL_BASE" | "${core[@]}"
-            exit 0
+            base="$MANUAL_BASE"
+          else
+            base="$PUSH_BASE"
           fi
 
-          if [[ -z "$PUSH_BASE" || "$PUSH_BASE" =~ ^0+$ ]]; then
-            echo "No usable pre-push base SHA; refusing to turn diff CI into a full backfill."
-            exit 0
+          if [[ -z "$base" || "$base" =~ ^0+$ ]]; then
+            echo "A usable base SHA is required for diff-only ingest." >&2
+            exit 2
           fi
 
-          if git diff --quiet "$PUSH_BASE" "$GITHUB_SHA" -- .github/full-import-trigger; then
-            python3 scripts/export_starintel_documents.py --diff "$PUSH_BASE" | "${core[@]}"
-            exit 0
-          fi
-
-          echo "Full-import trigger changed; importing the full canonical corpus."
-          python3 scripts/export_starintel_documents.py --all | "${core[@]}"
+          python3 scripts/export_starintel_documents.py --diff "$base" | "${core[@]}"
