@@ -51,7 +51,7 @@ class DiffResolverTests(unittest.TestCase):
             root = Path(tmp)
             init_repo(root)
             document = {"_id": "starintel:test:existing", "dtype": "note", "version": 1}
-            write_packet(root / "db" / "note" / "existing.ndjson", [document])
+            write_packet(root / "db" / "note" / "starintel:test:existing.ndjson", [document])
             git(root, "add", ".")
             git(root, "commit", "-m", "base")
             base = git(root, "rev-parse", "HEAD")
@@ -154,7 +154,7 @@ class ExplicitIdResolverTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "use --all"):
             EXPORTER.parse_document_ids("starintel:test:a,all")
 
-    def test_explicit_ids_emit_only_requested_documents(self) -> None:
+    def test_explicit_ids_emit_only_requested_documents_with_colon_filename(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
             init_repo(root)
@@ -163,7 +163,7 @@ class ExplicitIdResolverTests(unittest.TestCase):
                 {"_id": "starintel:test:b", "dtype": "note", "version": 1},
                 {"_id": "starintel:test:c", "dtype": "note", "version": 1},
             ]
-            write_packet(root / "db" / "note" / "fixture.ndjson", documents)
+            write_packet(root / "db" / "note" / "starintel:test:fixture.ndjson", documents)
             git(root, "add", ".")
             git(root, "commit", "-m", "fixture")
 
@@ -182,7 +182,7 @@ class ExplicitIdResolverTests(unittest.TestCase):
             root = Path(tmp)
             init_repo(root)
             write_packet(
-                root / "db" / "note" / "fixture.ndjson",
+                root / "db" / "note" / "starintel:test:a.ndjson",
                 [{"_id": "starintel:test:a", "dtype": "note", "version": 1}],
             )
             git(root, "add", ".")
