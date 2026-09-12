@@ -13,6 +13,7 @@ on:
       - "tests/test_import_starintel_documents.py"
       - "tests/test_starintel_ingest_core.py"
       - ".github/workflows/import-starintel-documents.yml"
+      - ".github/full-import-trigger"
   pull_request:
     paths:
       - "scripts/export_starintel_documents.py"
@@ -21,6 +22,7 @@ on:
       - "tests/test_import_starintel_documents.py"
       - "tests/test_starintel_ingest_core.py"
       - ".github/workflows/import-starintel-documents.yml"
+      - ".github/full-import-trigger"
   workflow_dispatch:
     inputs:
       mode:
@@ -118,4 +120,10 @@ jobs:
             exit 0
           fi
 
-          python3 scripts/export_starintel_documents.py --diff "$PUSH_BASE" | "${core[@]}"
+          if git diff --quiet "$PUSH_BASE" "$GITHUB_SHA" -- .github/full-import-trigger; then
+            python3 scripts/export_starintel_documents.py --diff "$PUSH_BASE" | "${core[@]}"
+            exit 0
+          fi
+
+          echo "Full-import trigger changed; importing the full canonical corpus."
+          python3 scripts/export_starintel_documents.py --all | "${core[@]}"
