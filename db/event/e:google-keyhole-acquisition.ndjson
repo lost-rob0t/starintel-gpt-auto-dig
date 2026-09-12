@@ -1,0 +1,1 @@
+{"_id":"e:google-keyhole-acquisition","dataset":"cia","dtype":"event","schema_version":"0.9.0","version":1,"date_added":"2026-07-31T03:03:00-04:00","date_updated":"2026-07-31T03:03:00-04:00","sources":[{"source_id":"s:cia-keyhole"}],"evidence":[],"data":{"event_kind":"acquisition","name":"Google acquisition of Keyhole","participant_ids":["o:google","o:keyhole"]}}

@@ -1,0 +1,1 @@
+{"_id":"r:scopely-acquired-games","dataset":"cia","dtype":"relation","schema_version":"0.9.0","version":1,"date_added":"2026-07-31T03:03:00-04:00","date_updated":"2026-07-31T03:03:00-04:00","sources":[{"source_id":"s:niantic-next-chapter"}],"evidence":[],"data":{"subject":"o:scopely","predicate":"agreed_to_acquire_game_business_from","object":"o:niantic"}}

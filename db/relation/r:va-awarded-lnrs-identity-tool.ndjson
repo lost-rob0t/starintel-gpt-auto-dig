@@ -1,0 +1,1 @@
+{"_id":"r:va-awarded-lnrs-identity-tool","data":{"object":"o:lnrs","predicate":"awarded_contract_to","subject":"o:va"},"dataset":"lexisnexis-risk-state-surveillance","date_added":"2026-07-31T03:13:00-04:00","date_updated":"2026-07-31T03:13:00-04:00","dtype":"relation","evidence":[],"schema_version":"0.9.0","sources":[{"source_id":"s:usaspending-va-identity-2022"}],"version":1}

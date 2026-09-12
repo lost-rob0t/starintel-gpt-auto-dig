@@ -1,0 +1,1 @@
+{"_id":"e:prism-section702","dataset":"cia","dtype":"event","schema_version":"0.9.0","version":1,"date_added":"2026-07-31T03:03:00-04:00","date_updated":"2026-07-31T03:03:00-04:00","sources":[{"source_id":"s:pclob-702"}],"evidence":[],"data":{"event_kind":"surveillance-program","name":"FISA Section 702 PRISM/downstream collection","participant_ids":["o:nsa","o:fbi","o:cia"]}}

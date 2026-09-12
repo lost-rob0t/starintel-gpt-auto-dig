@@ -1,0 +1,1 @@
+{"_id":"r:iqt-autonomous-aerial","dataset":"cia","dtype":"relation","schema_version":"0.9.0","version":1,"date_added":"2026-07-31T03:03:00-04:00","date_updated":"2026-07-31T03:03:00-04:00","sources":[{"source_id":"s:iqt-manufacturing"}],"evidence":[],"data":{"subject":"o:iqt","predicate":"invests_in_autonomous_aerial_systems_including","object":"o:skydio"}}

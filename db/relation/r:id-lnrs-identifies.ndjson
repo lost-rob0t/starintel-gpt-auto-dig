@@ -1,0 +1,1 @@
+{"_id":"r:id-lnrs-identifies","data":{"object":"o:lnrs","predicate":"identifies","subject":"id:uei:lnrs"},"dataset":"lexisnexis-risk-state-surveillance","date_added":"2026-07-31T03:48:00-04:00","date_updated":"2026-07-31T03:48:00-04:00","dtype":"relation","evidence":[],"schema_version":"0.9.0","sources":[{"source_id":"s:usaspending-ice-lnrs-2021"}],"version":1}

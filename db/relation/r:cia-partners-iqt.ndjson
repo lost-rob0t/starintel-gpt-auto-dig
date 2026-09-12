@@ -1,0 +1,1 @@
+{"_id":"r:cia-partners-iqt","dataset":"cia","dtype":"relation","schema_version":"0.9.0","version":1,"date_added":"2026-07-31T03:03:00-04:00","date_updated":"2026-07-31T03:03:00-04:00","sources":[{"source_id":"s:cia-tech-collaboration"}],"evidence":[],"data":{"subject":"o:cia","predicate":"partners_with","object":"o:iqt"}}

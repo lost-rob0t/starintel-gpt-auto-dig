@@ -1,0 +1,1 @@
+{"_id":"e:iqt-anduril-investment","dataset":"cia","dtype":"event","schema_version":"0.9.0","version":1,"date_added":"2026-07-31T03:03:00-04:00","date_updated":"2026-07-31T03:03:00-04:00","sources":[{"source_id":"s:iqt-anduril"}],"evidence":[],"data":{"event_kind":"strategic-investment","name":"In-Q-Tel investment in Anduril","participant_ids":["o:iqt","o:anduril"]}}

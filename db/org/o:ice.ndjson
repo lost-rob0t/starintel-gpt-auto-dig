@@ -1,0 +1,1 @@
+{"_id":"o:ice","dataset":"lexisnexis-risk-state-surveillance","dtype":"org","schema_version":"0.9.0","version":1,"date_added":"2026-07-31T02:42:00-04:00","date_updated":"2026-07-31T02:42:00-04:00","sources":[{"source_id":"s:usaspending-ice-leids"}],"evidence":[],"data":{"name":"U.S. Immigration and Customs Enforcement","org_type":"government-agency"}}

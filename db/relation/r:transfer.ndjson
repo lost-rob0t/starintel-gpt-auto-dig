@@ -1,0 +1,1 @@
+{"_id":"r:transfer","dataset":"usaid-doge-mortality-accountability","dtype":"relation","schema_version":"0.9.0","version":1,"date_added":"2026-07-30T23:30:00-04:00","date_updated":"2026-07-30T23:30:00-04:00","sources":[],"evidence":[],"data":{"subject":"o:usaid","predicate":"transferred_selected_functions_to","object":"o:state"}}

@@ -1,0 +1,1 @@
+{"_id":"r:uscis-order-customer","data":{"object":"o:uscis","predicate":"customer","subject":"ct:uscis-ln-research-2025"},"dataset":"lexisnexis-risk-state-surveillance","date_added":"2026-07-31T03:13:00-04:00","date_updated":"2026-07-31T03:13:00-04:00","dtype":"relation","evidence":[],"schema_version":"0.9.0","sources":[{"source_id":"s:usaspending-uscis-lnrs-2025"}],"version":1}

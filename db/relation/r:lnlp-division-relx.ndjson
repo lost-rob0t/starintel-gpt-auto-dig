@@ -1,0 +1,1 @@
+{"_id":"r:lnlp-division-relx","data":{"object":"o:relx-plc","predicate":"division_of","subject":"o:lexisnexis-legal-professional"},"dataset":"lexisnexis-risk-state-surveillance","date_added":"2026-07-31T04:02:00-04:00","date_updated":"2026-07-31T04:02:00-04:00","dtype":"relation","evidence":[],"schema_version":"0.9.0","sources":[{"source_id":"s:lnlp-about"}],"version":1}
