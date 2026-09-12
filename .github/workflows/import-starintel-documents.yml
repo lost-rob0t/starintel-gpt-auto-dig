@@ -7,6 +7,20 @@ on:
     paths:
       - "db/**/*.ndjson"
       - "digs/**/starintel-documents.jsonl"
+      - "scripts/export_starintel_documents.py"
+      - "scripts/starintel_ingest_core.nim"
+      - "starintel_auto_dig.nimble"
+      - "tests/test_import_starintel_documents.py"
+      - "tests/test_starintel_ingest_core.py"
+      - ".github/workflows/import-starintel-documents.yml"
+  pull_request:
+    paths:
+      - "scripts/export_starintel_documents.py"
+      - "scripts/starintel_ingest_core.nim"
+      - "starintel_auto_dig.nimble"
+      - "tests/test_import_starintel_documents.py"
+      - "tests/test_starintel_ingest_core.py"
+      - ".github/workflows/import-starintel-documents.yml"
   workflow_dispatch:
     inputs:
       mode:
@@ -21,38 +35,72 @@ on:
         description: "Base commit for diff mode"
         required: false
         type: string
+      workers:
+        description: "Concurrent Nim workers (0 = auto: useful CPU cores up to server per-principal concurrency)"
+        required: true
+        default: 0
+        type: number
+      batch_size:
+        description: "Documents per bulk request (1-500)"
+        required: true
+        default: 500
+        type: number
 
 permissions:
   contents: read
 
 concurrency:
-  group: starintel-ingest-main
+  group: starintel-ingest-${{ github.ref }}
   cancel-in-progress: false
+
+env:
+  NIM_VERSION: 2.2.4
 
 jobs:
   ingest-documents:
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 30
     steps:
       - name: Checkout full history
         uses: actions/checkout@v6
         with:
           fetch-depth: 0
 
+      - name: Set up Nim
+        uses: jiro4989/setup-nim-action@v2
+        with:
+          nim-version: ${{ env.NIM_VERSION }}
+
+      - name: Build threaded ingest core
+        run: nimble buildIngest
+
+      - name: Test ingest resolver and threaded core
+        run: |
+          python3 -m unittest \
+            tests.test_import_starintel_documents \
+            tests.test_starintel_ingest_core
+
       - name: Import documents
+        if: github.event_name != 'pull_request'
         env:
           STAR_SERVER_API_KEY: ${{ secrets.STAR_SERVER_API_KEY }}
           EVENT_NAME: ${{ github.event_name }}
           PUSH_BASE: ${{ github.event.before }}
           MANUAL_MODE: ${{ inputs.mode }}
           MANUAL_BASE: ${{ inputs.base }}
+          MANUAL_WORKERS: ${{ inputs.workers }}
+          MANUAL_BATCH_SIZE: ${{ inputs.batch_size }}
         shell: bash
         run: |
           set -euo pipefail
 
+          workers="${MANUAL_WORKERS:-0}"
+          batch_size="${MANUAL_BATCH_SIZE:-500}"
+          core=(bin/starintel-ingest-core --workers "$workers" --batch-size "$batch_size")
+
           if [[ "$EVENT_NAME" == "workflow_dispatch" ]]; then
             if [[ "$MANUAL_MODE" == "all" ]]; then
-              python3 scripts/import-starintel-documents.py --all
+              python3 scripts/export_starintel_documents.py --all | "${core[@]}"
               exit 0
             fi
 
@@ -61,7 +109,7 @@ jobs:
               exit 2
             fi
 
-            python3 scripts/import-starintel-documents.py --diff "$MANUAL_BASE"
+            python3 scripts/export_starintel_documents.py --diff "$MANUAL_BASE" | "${core[@]}"
             exit 0
           fi
 
@@ -70,4 +118,4 @@ jobs:
             exit 0
           fi
 
-          python3 scripts/import-starintel-documents.py --diff "$PUSH_BASE"
+          python3 scripts/export_starintel_documents.py --diff "$PUSH_BASE" | "${core[@]}"
