@@ -1,8 +1,0 @@
-{
-  "_id": "urn:starintel:test:e2e-diff-ingest-2630",
-  "type": "test",
-  "name": "E2E diff ingest canary 2630",
-  "version": 1,
-  "source": "synthetic-e2e-test",
-  "description": "Synthetic canary document for issue #2630. Safe to retain as test provenance."
-}
