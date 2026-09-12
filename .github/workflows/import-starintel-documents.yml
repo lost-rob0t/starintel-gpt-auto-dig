@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - main
+      - testing-debug
     paths:
       - "db/**/*.ndjson"
       - "digs/**/starintel-documents.jsonl"
@@ -17,6 +18,8 @@ on:
       - ".github/workflows/import-starintel-documents.yml"
   pull_request:
     paths:
+      - "db/**/*.ndjson"
+      - "digs/**/starintel-documents.jsonl"
       - "scripts/export_starintel_documents.py"
       - "scripts/import-starintel-documents.py"
       - "scripts/starintel_ingest_core.nim"
@@ -27,8 +30,8 @@ on:
       - ".github/workflows/import-starintel-documents.yml"
   workflow_dispatch:
     inputs:
-      base:
-        description: "Base commit for diff mode"
+      ids:
+        description: "Document IDs (comma/whitespace separated), or exactly 'all'"
         required: true
         type: string
       workers:
@@ -77,13 +80,13 @@ jobs:
             tests.test_import_starintel_documents \
             tests.test_starintel_ingest_core
 
-      - name: Import changed documents only
-        if: github.event_name != 'pull_request'
+      - name: Import selected documents
+        if: github.event_name == 'workflow_dispatch' || (github.event_name == 'push' && github.ref == 'refs/heads/main')
         env:
           STAR_SERVER_API_KEY: ${{ secrets.STAR_SERVER_API_KEY }}
           EVENT_NAME: ${{ github.event_name }}
           PUSH_BASE: ${{ github.event.before }}
-          MANUAL_BASE: ${{ inputs.base }}
+          MANUAL_IDS: ${{ inputs.ids }}
           MANUAL_WORKERS: ${{ inputs.workers }}
           MANUAL_BATCH_SIZE: ${{ inputs.batch_size }}
         shell: bash
@@ -95,13 +98,22 @@ jobs:
           core=(bin/starintel-ingest-core --workers "$workers" --batch-size "$batch_size")
 
           if [[ "$EVENT_NAME" == "workflow_dispatch" ]]; then
-            base="$MANUAL_BASE"
-          else
-            base="$PUSH_BASE"
+            selection="${MANUAL_IDS:-}"
+            normalized="$(printf '%s' "$selection" | tr '[:upper:]' '[:lower:]' | xargs)"
+            if [[ "$normalized" == "all" ]]; then
+              python3 scripts/export_starintel_documents.py --all | "${core[@]}"
+            elif [[ -n "$selection" ]]; then
+              python3 scripts/export_starintel_documents.py --ids "$selection" | "${core[@]}"
+            else
+              echo "workflow_dispatch requires document IDs or exactly 'all'." >&2
+              exit 2
+            fi
+            exit 0
           fi
 
+          base="$PUSH_BASE"
           if [[ -z "$base" || "$base" =~ ^0+$ ]]; then
-            echo "A usable base SHA is required for diff-only ingest." >&2
+            echo "A usable push base SHA is required for merge diff ingest." >&2
             exit 2
           fi
 
