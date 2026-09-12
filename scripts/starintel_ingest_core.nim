@@ -1,9 +1,10 @@
 ## Threaded StarIntel bulk ingest core.
 ##
 ## Reads canonical StarIntel documents as JSONL from stdin and submits bounded
-## /documents/bulk jobs in parallel.  Network workers are Nim threadpool workers;
+## /documents/bulk jobs in parallel. Network workers are Nim threadpool workers;
 ## each worker owns its HTTP requests and no credential is passed on the command
-## line.
+## line. POST retries are deliberately conservative: without a server-side
+## idempotency key, an ambiguous retry can publish the same batch twice.
 
 import std/[cpuinfo, httpclient, json, os, strutils, threadpool, times]
 
@@ -91,7 +92,7 @@ proc parseArgs(): Options =
       stdout.writeLine("  --workers N            concurrent Nim workers; 0=auto")
       stdout.writeLine("  --timeout-ms N         HTTP socket timeout")
       stdout.writeLine("  --poll-timeout-ms N    async bulk-job deadline")
-      stdout.writeLine("  --retries N            transient HTTP/network retries")
+      stdout.writeLine("  --retries N            safe transient retries")
       quit(QuitSuccess)
     else:
       fail("unknown argument: " & arg)
@@ -128,12 +129,25 @@ proc jsonInt(node: JsonNode; key: string): int =
   0
 
 
+proc requireJsonInt(node: JsonNode; key: string): int =
+  if node.kind != JObject or not node.hasKey(key) or node[key].kind != JInt:
+    raise newException(TerminalRequestError, "bulk ingest response is missing integer " & key)
+  int(node[key].getInt())
+
+
 proc transientStatus(code: int): bool =
   case code
   of 429, 502, 503, 504:
     true
   else:
     false
+
+
+proc safeToRetryResponse(httpMethod: HttpMethod; code: int): bool =
+  # A returned 429 means the server rejected this submission before accepting a
+  # bulk job, so retrying the POST is safe. Gateway/server failures for POST are
+  # ambiguous: the server may already have accepted the job.
+  code == 429 or (httpMethod == HttpGet and transientStatus(code))
 
 
 proc retryDelayMs(attempt: int): int =
@@ -163,24 +177,43 @@ proc requestJson(
       if code >= 200 and code < 300:
         if raw.strip().len == 0:
           return newJObject()
-        let parsed = parseJson(raw)
-        if parsed.kind != JObject:
-          raise newException(TerminalRequestError, $httpMethod & " " & url & " returned non-object JSON")
-        return parsed
+        try:
+          let parsed = parseJson(raw)
+          if parsed.kind != JObject:
+            raise newException(
+              TerminalRequestError,
+              $httpMethod & " " & url & " returned non-object JSON",
+            )
+          return parsed
+        except JsonParsingError as exc:
+          raise newException(
+            TerminalRequestError,
+            $httpMethod & " " & url & " returned invalid JSON: " & exc.msg,
+          )
 
-      if transientStatus(code) and attempt < retries:
+      if safeToRetryResponse(httpMethod, code) and attempt < retries:
         sleep(retryDelayMs(attempt))
         inc attempt
         continue
 
       let detail = if raw.len > 1000: raw[0 ..< 1000] else: raw
+      let retryNote =
+        if httpMethod == HttpPost and transientStatus(code) and code != 429:
+          " (POST not retried because acceptance is ambiguous without idempotency)"
+        else:
+          ""
       raise newException(
         TerminalRequestError,
-        $httpMethod & " " & url & " failed with HTTP " & $code & ": " & detail,
+        $httpMethod & " " & url & " failed with HTTP " & $code & ": " & detail & retryNote,
       )
     except TerminalRequestError:
       raise
     except CatchableError as exc:
+      if httpMethod == HttpPost:
+        raise newException(
+          IOError,
+          $httpMethod & " " & url & " failed ambiguously and was not retried to avoid duplicate ingestion: " & exc.msg,
+        )
       if attempt >= retries:
         raise newException(IOError, $httpMethod & " " & url & " failed: " & exc.msg)
       sleep(retryDelayMs(attempt))
@@ -211,6 +244,27 @@ proc waitForJob(
     sleep(DefaultPollIntervalMs)
 
 
+proc validateCompletedBatch(response: JsonNode; expectedDocuments: int): string =
+  let status = jsonString(response, "status").toLowerAscii()
+  if status == "failed" or status == "completed-with-errors" or status == "accepted":
+    raise newException(TerminalRequestError, "bulk ingest did not complete successfully: " & $response)
+  if status.len > 0 and status != "completed":
+    raise newException(TerminalRequestError, "unexpected bulk ingest status " & status & ": " & $response)
+
+  let total = requireJsonInt(response, "total")
+  let succeeded = requireJsonInt(response, "succeeded")
+  let failed = requireJsonInt(response, "failed")
+  if total != expectedDocuments:
+    raise newException(
+      TerminalRequestError,
+      "bulk ingest total mismatch: expected " & $expectedDocuments & ", got " & $total,
+    )
+  if failed != 0 or succeeded != expectedDocuments:
+    raise newException(TerminalRequestError, "bulk ingest reported incomplete success: " & $response)
+
+  if status.len > 0: status else: "inline"
+
+
 proc uploadBatch(
     batchNo, documentCount: int,
     payload, serverUrl, apiKey: string,
@@ -231,7 +285,12 @@ proc uploadBatch(
       let status = jsonString(response, "status").toLowerAscii()
       let statusUrl = jsonString(response, "status_url")
       var completed = response
-      if status == "accepted" and statusUrl.len > 0:
+      if status == "accepted":
+        if statusUrl.len == 0:
+          raise newException(
+            TerminalRequestError,
+            "bulk ingest was accepted without status_url; refusing to resubmit an ambiguous batch",
+          )
         completed = waitForJob(
           serverUrl,
           apiKey,
@@ -241,13 +300,8 @@ proc uploadBatch(
           retries,
         )
 
-      let failed = jsonInt(completed, "failed")
-      let finalStatus = jsonString(completed, "status")
-      if failed != 0:
-        raise newException(TerminalRequestError, "bulk ingest reported failures: " & $completed)
-
+      result.status = validateCompletedBatch(completed, documentCount)
       result.ok = true
-      result.status = if finalStatus.len > 0: finalStatus else: "inline"
     except CatchableError as exc:
       result.ok = false
       result.error = exc.msg
