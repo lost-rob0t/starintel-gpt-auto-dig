@@ -11,6 +11,7 @@ on:
       - "scripts/import-starintel-documents.py"
       - "scripts/starintel_ingest_core.nim"
       - "starintel_auto_dig.nimble"
+      - "tests/test_export_starintel_documents.py"
       - "tests/test_import_starintel_documents.py"
       - "tests/test_starintel_ingest_core.py"
       - ".github/workflows/import-starintel-documents.yml"
@@ -20,6 +21,7 @@ on:
       - "scripts/import-starintel-documents.py"
       - "scripts/starintel_ingest_core.nim"
       - "starintel_auto_dig.nimble"
+      - "tests/test_export_starintel_documents.py"
       - "tests/test_import_starintel_documents.py"
       - "tests/test_starintel_ingest_core.py"
       - ".github/workflows/import-starintel-documents.yml"
@@ -71,6 +73,7 @@ jobs:
       - name: Test ingest resolver and threaded core
         run: |
           python3 -m unittest \
+            tests.test_export_starintel_documents \
             tests.test_import_starintel_documents \
             tests.test_starintel_ingest_core
 
