@@ -100,29 +100,11 @@ jobs:
             --header "Authorization: Bearer ${STAR_SERVER_API_KEY}" \
             "${STAR_INGEST_URL}/auth/context")"
           if [[ "$code" != "200" ]]; then
-            safe_code="$(python3 - "$response_file" <<'PY'
-import json, sys
-try:
-    body = json.load(open(sys.argv[1], encoding="utf-8"))
-except Exception:
-    print("unknown")
-else:
-    print(body.get("code", "unknown"))
-PY
-)"
+            safe_code="$(jq -r '.code // "unknown"' "$response_file" 2>/dev/null || printf '%s' unknown)"
             echo "Ingest credential preflight failed: HTTP ${code}, server code ${safe_code}." >&2
             exit 3
           fi
-          python3 - "$response_file" <<'PY'
-import json, sys
-body = json.load(open(sys.argv[1], encoding="utf-8"))
-print(json.dumps({
-    "status": "credential-ok",
-    "principal_type": body.get("principal_type"),
-    "credential_id": body.get("credential_id"),
-    "scopes": body.get("scopes", []),
-}, separators=(",", ":")))
-PY
+          jq -c '{status:"credential-ok",principal_type,credential_id,scopes}' "$response_file"
 
       - name: Import selected documents
         if: github.event_name == 'workflow_dispatch' || (github.event_name == 'push' && github.ref == 'refs/heads/main')
