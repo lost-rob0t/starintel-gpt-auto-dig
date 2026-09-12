@@ -143,5 +143,58 @@ class DiffResolverTests(unittest.TestCase):
                 EXPORTER.resolve_diff_records(IMPORTER, root, base)
 
 
+class ExplicitIdResolverTests(unittest.TestCase):
+    def test_id_list_accepts_commas_and_whitespace(self) -> None:
+        self.assertEqual(
+            EXPORTER.parse_document_ids("starintel:test:a, starintel:test:b\nstarintel:test:a"),
+            {"starintel:test:a", "starintel:test:b"},
+        )
+
+    def test_all_is_not_a_document_id(self) -> None:
+        with self.assertRaisesRegex(ValueError, "use --all"):
+            EXPORTER.parse_document_ids("starintel:test:a,all")
+
+    def test_explicit_ids_emit_only_requested_documents(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            init_repo(root)
+            documents = [
+                {"_id": "starintel:test:a", "dtype": "note", "version": 1},
+                {"_id": "starintel:test:b", "dtype": "note", "version": 1},
+                {"_id": "starintel:test:c", "dtype": "note", "version": 1},
+            ]
+            write_packet(root / "db" / "note" / "fixture.ndjson", documents)
+            git(root, "add", ".")
+            git(root, "commit", "-m", "fixture")
+
+            records = EXPORTER.resolve_id_records(
+                IMPORTER,
+                root,
+                {"starintel:test:c", "starintel:test:a"},
+            )
+            self.assertEqual(
+                [record.document_id for record in records],
+                ["starintel:test:a", "starintel:test:c"],
+            )
+
+    def test_explicit_ids_fail_closed_when_any_id_is_missing(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            init_repo(root)
+            write_packet(
+                root / "db" / "note" / "fixture.ndjson",
+                [{"_id": "starintel:test:a", "dtype": "note", "version": 1}],
+            )
+            git(root, "add", ".")
+            git(root, "commit", "-m", "fixture")
+
+            with self.assertRaisesRegex(ValueError, "starintel:test:missing"):
+                EXPORTER.resolve_id_records(
+                    IMPORTER,
+                    root,
+                    {"starintel:test:a", "starintel:test:missing"},
+                )
+
+
 if __name__ == "__main__":
     unittest.main()
