@@ -92,12 +92,24 @@ jobs:
             echo "STAR_SERVER_API_KEY is missing." >&2
             exit 2
           fi
+
+          credential="$STAR_SERVER_API_KEY"
+          format=v1
+          if [[ "$credential" == "Bearer "* ]]; then
+            credential="${credential#Bearer }"
+            format=bearer-prefixed-v1
+          fi
+          if [[ "$credential" != star_sk_v1_* ]]; then
+            format=legacy-or-invalid
+          fi
+          echo "Ingest credential format: ${format}."
+
           response_file="$(mktemp)"
           code="$(curl --silent --show-error \
             --output "$response_file" \
             --write-out '%{http_code}' \
             --header "Accept: application/json" \
-            --header "Authorization: Bearer ${STAR_SERVER_API_KEY}" \
+            --header "Authorization: Bearer ${credential}" \
             "${STAR_INGEST_URL}/auth/context")"
           if [[ "$code" != "200" ]]; then
             safe_code="$(jq -r '.code // "unknown"' "$response_file" 2>/dev/null || printf '%s' unknown)"
@@ -119,6 +131,7 @@ jobs:
         run: |
           set -euo pipefail
 
+          export STAR_SERVER_API_KEY="${STAR_SERVER_API_KEY#Bearer }"
           workers="${MANUAL_WORKERS:-0}"
           batch_size="${MANUAL_BATCH_SIZE:-500}"
           core=(bin/starintel-ingest-core --workers "$workers" --batch-size "$batch_size")
