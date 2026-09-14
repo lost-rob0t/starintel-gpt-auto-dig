@@ -1,6 +1,10 @@
 name: TEMP import StarIntel backlog
 
 on:
+  pull_request:
+    paths:
+      - "scripts/import-starintel-backlog.py"
+      - ".github/workflows/temp-backlog-import.yml"
   push:
     branches:
       - main
@@ -29,7 +33,7 @@ permissions:
   contents: read
 
 concurrency:
-  group: temp-starintel-backlog-import
+  group: temp-starintel-backlog-import-${{ github.ref }}
   cancel-in-progress: false
 
 env:
@@ -71,6 +75,18 @@ jobs:
           touch "$RUNNER_TEMP/backlog-import/canonical-import.jsonl"
           touch "$RUNNER_TEMP/backlog-import/failed-import.jsonl"
 
+      - name: Dry-run canonical backlog plan
+        if: github.event_name == 'pull_request'
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/import-starintel-backlog.py \
+            --chunk-size "$OUTER_CHUNK_SIZE" \
+            --batch-size "$SERVER_BATCH_SIZE" \
+            --log-dir "$RUNNER_TEMP/backlog-import" \
+            --dry-run \
+            2> >(tee "$RUNNER_TEMP/backlog-import/console.jsonl" >&2)
+
       - name: Restore prior ledger for resume
         if: github.event_name == 'workflow_dispatch' && inputs.resume_run_id != ''
         env:
@@ -89,6 +105,7 @@ jobs:
           touch "$RUNNER_TEMP/backlog-import/failed-import.jsonl"
 
       - name: Preflight ingest credential
+        if: github.event_name != 'pull_request'
         env:
           STAR_SERVER_API_KEY: ${{ secrets.STAR_SERVER_API_KEY }}
         shell: bash
@@ -114,6 +131,7 @@ jobs:
           jq -c '{status:"credential-ok",principal_type,credential_id,scopes}' "$response_file"
 
       - name: Import canonical backlog
+        if: github.event_name != 'pull_request'
         env:
           STAR_SERVER_API_KEY: ${{ secrets.STAR_SERVER_API_KEY }}
           START_OFFSET: ${{ github.event_name == 'workflow_dispatch' && inputs.start_offset || '0' }}
