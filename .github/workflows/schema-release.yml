@@ -1,0 +1,46 @@
+name: Schema release tooling
+
+on:
+  pull_request:
+    paths:
+      - ".github/workflows/schema-release.yml"
+      - "scripts/schema-release.py"
+      - "tests/test_schema_release.py"
+      - "schemas/starintel-doc-v0.9.0.expansion.json"
+      - "schemas/starintel-doc-v0.9.0.manifest.json"
+      - "conformance/__init__.py"
+      - "conformance/implementations.json"
+      - "conformance/fixtures.py"
+      - "starintel_auto_dig.nimble"
+      - "tests/test_operation_registry.py"
+  push:
+    branches:
+      - main
+    paths:
+      - ".github/workflows/schema-release.yml"
+      - "scripts/schema-release.py"
+      - "tests/test_schema_release.py"
+      - "schemas/starintel-doc-v0.9.0.expansion.json"
+      - "schemas/starintel-doc-v0.9.0.manifest.json"
+      - "conformance/__init__.py"
+      - "conformance/implementations.json"
+      - "conformance/fixtures.py"
+      - "starintel_auto_dig.nimble"
+      - "tests/test_operation_registry.py"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  release-metadata:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.13"
+      - name: Check current release authority
+        run: python3 scripts/schema-release.py check
+      - name: Test release resolver and bump dry-run
+        run: python3 -m unittest tests.test_schema_release -v
