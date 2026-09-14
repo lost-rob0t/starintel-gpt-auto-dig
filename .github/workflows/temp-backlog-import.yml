@@ -4,6 +4,7 @@ on:
   pull_request:
     paths:
       - "scripts/import-starintel-backlog.py"
+      - "tests/test_import_starintel_backlog.py"
       - ".github/workflows/temp-backlog-import.yml"
   push:
     branches:
@@ -60,11 +61,12 @@ jobs:
       - name: Build threaded ingest core
         run: nimble buildIngest
 
-      - name: Test ingest resolver and threaded core
+      - name: Test ingest resolver, adaptive backlog importer, and threaded core
         run: |
           python3 -m unittest \
             tests.test_export_starintel_documents \
             tests.test_import_starintel_documents \
+            tests.test_import_starintel_backlog \
             tests.test_starintel_ingest_core
 
       - name: Prepare canonical ledgers

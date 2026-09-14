@@ -1,24 +1,19 @@
 #!/usr/bin/env python3
 """Import the canonical Auto-Dig corpus in resumable 10k outer chunks.
 
-Each outer chunk is subdivided into server-safe batches. The server currently
-caps /documents/bulk at 500 documents, so the default 10,000-document chunk is
-20 confirmed 500-document submissions.
+The server accepts at most 500 documents per /documents/bulk request, but the
+live ingest host also has an nginx request-body ceiling. Initial batches start
+at --batch-size (default 500). A clean HTTP 413 rejection is safe to retry, so
+this wrapper bisects only that rejected range until it fits.
 
-The importer writes two append-only JSONL ledgers:
-- canonical-import.jsonl records the exact source commit and every confirmed ID.
-- failed-import.jsonl records corpus conflicts and failed/ambiguous server batches.
+Two append-only ledgers are authoritative:
+- canonical-import.jsonl: exact source commit and every confirmed imported ID.
+- failed-import.jsonl: corpus conflicts, recovered 413 splits, and terminal or
+  ambiguous failures with exact IDs.
 
-Canonical resolution is fail-soft by logical ID. Existing repository precedence
-rules still apply (canonical db/ wins over a differing dig packet; comparable
-integer versions select the newest version). If same-precedence candidates for
-one logical ID still conflict, only that ID is quarantined in failed-import.jsonl
-and the rest of the corpus continues. Nothing is chosen arbitrarily.
-
-The last confirmed offset in canonical-import.jsonl is safe to use as
---start-offset for a later continuation. Resume offsets are accepted only for
-the same source commit. Failed POSTs are logged separately because a transport
-or server failure can be ambiguous and must not be blindly replayed.
+Canonical resolution is fail-soft by logical ID. Existing repository
+precedence rules apply; unresolved same-precedence conflicts are quarantined
+rather than chosen arbitrarily.
 """
 
 from __future__ import annotations
@@ -42,7 +37,7 @@ DEFAULT_CHUNK_SIZE = 10_000
 DEFAULT_BATCH_SIZE = 500
 MAX_BATCH_SIZE = 500
 DEFAULT_LOG_DIR = ROOT / ".artifacts" / "backlog-import"
-LEDGER_VERSION = 1
+LEDGER_VERSION = 2
 
 
 def load_importer():
@@ -135,7 +130,14 @@ def emit(payload: dict) -> None:
 def append_jsonl(path: Path, payload: dict) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     with path.open("a", encoding="utf-8") as handle:
-        handle.write(json.dumps(payload, ensure_ascii=False, sort_keys=True, separators=(",", ":")))
+        handle.write(
+            json.dumps(
+                payload,
+                ensure_ascii=False,
+                sort_keys=True,
+                separators=(",", ":"),
+            )
+        )
         handle.write("\n")
         handle.flush()
         os.fsync(handle.fileno())
@@ -144,6 +146,7 @@ def append_jsonl(path: Path, payload: dict) -> None:
 def highest_confirmed_offset(path: Path, source_commit: str) -> int | None:
     if not path.is_file():
         return None
+
     confirmed: int | None = None
     for line_no, raw in enumerate(path.read_text(encoding="utf-8").splitlines(), start=1):
         if not raw.strip():
@@ -180,6 +183,7 @@ def resolve_backlog_records(importer, root: Path):
                 }
             )
             continue
+
         raw_records += len(parsed)
         for record in parsed:
             candidates[record.document_id].append(record)
@@ -211,24 +215,234 @@ def resolve_backlog_records(importer, root: Path):
     return resolved, conflicts, raw_records, len(candidates)
 
 
-def run_batch(core: Path, records, first: int, past_last: int, batch_size: int) -> int:
-    command = [str(core), "--workers", "1", "--batch-size", str(batch_size)]
-    process = subprocess.Popen(
+def batch_input(records, first: int, past_last: int) -> str:
+    return "".join(
+        json.dumps(
+            record.document,
+            ensure_ascii=False,
+            separators=(",", ":"),
+        )
+        + "\n"
+        for record in records[first:past_last]
+    )
+
+
+def run_batch(core: Path, records, first: int, past_last: int) -> tuple[int, str]:
+    """Run one core invocation containing exactly one server batch."""
+    count = past_last - first
+    command = [
+        str(core),
+        "--workers",
+        "1",
+        "--batch-size",
+        str(count),
+    ]
+    result = subprocess.run(
         command,
         cwd=ROOT,
         env=os.environ.copy(),
-        stdin=subprocess.PIPE,
+        input=batch_input(records, first, past_last),
         text=True,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+        check=False,
     )
-    assert process.stdin is not None
-    try:
-        for record in records[first:past_last]:
-            process.stdin.write(
-                json.dumps(record.document, ensure_ascii=False, separators=(",", ":")) + "\n"
+
+    if result.stdout:
+        print(result.stdout, end="", flush=True)
+    if result.stderr:
+        print(result.stderr, end="", file=sys.stderr, flush=True)
+
+    return result.returncode, result.stdout + "\n" + result.stderr
+
+
+def request_too_large(output: str) -> bool:
+    lowered = output.lower()
+    return (
+        "http 413" in lowered
+        or "413 request entity too large" in lowered
+        or "request entity too large" in lowered
+    )
+
+
+def common_event(run_id: str, source_commit: str) -> dict:
+    return {
+        "ledger_version": LEDGER_VERSION,
+        "timestamp": utc_now(),
+        "run_id": run_id,
+        "source_commit": source_commit,
+    }
+
+
+def record_confirmed_batch(
+    *,
+    import_log: Path,
+    records,
+    first: int,
+    past_last: int,
+    chunk_no: int,
+    run_id: str,
+    source_commit: str,
+    adaptive_depth: int,
+) -> None:
+    append_jsonl(
+        import_log,
+        {
+            **common_event(run_id, source_commit),
+            "record_type": "batch-import",
+            "status": "confirmed",
+            "chunk": chunk_no,
+            "batch_start_offset": first,
+            "batch_stop_offset": past_last,
+            "confirmed_offset": past_last,
+            "document_count": past_last - first,
+            "document_ids": [record.document_id for record in records[first:past_last]],
+            "adaptive_depth": adaptive_depth,
+        },
+    )
+
+
+def ingest_range(
+    *,
+    core: Path,
+    records,
+    first: int,
+    past_last: int,
+    chunk_no: int,
+    import_log: Path,
+    failed_log: Path,
+    run_id: str,
+    source_commit: str,
+    state: dict[str, int],
+    adaptive_depth: int = 0,
+) -> bool:
+    """Ingest a contiguous range, bisecting only clean 413 rejections."""
+    rc, output = run_batch(core, records, first, past_last)
+    document_ids = [record.document_id for record in records[first:past_last]]
+
+    if rc == 0:
+        record_confirmed_batch(
+            import_log=import_log,
+            records=records,
+            first=first,
+            past_last=past_last,
+            chunk_no=chunk_no,
+            run_id=run_id,
+            source_commit=source_commit,
+            adaptive_depth=adaptive_depth,
+        )
+        state["confirmed_offset"] = past_last
+        state["completed_batches"] += 1
+        state["imported_documents"] += past_last - first
+        emit(
+            {
+                "status": "checkpoint",
+                "confirmed_offset": past_last,
+                "completed_server_batches": state["completed_batches"],
+                "imported_documents": state["imported_documents"],
+                "last_batch_documents": past_last - first,
+                "adaptive_depth": adaptive_depth,
+            }
+        )
+        return True
+
+    if request_too_large(output):
+        append_jsonl(
+            failed_log,
+            {
+                **common_event(run_id, source_commit),
+                "record_type": "ingress-413",
+                "status": "recovered-by-split" if past_last - first > 1 else "terminal",
+                "chunk": chunk_no,
+                "http_status": 413,
+                "failed_start_offset": first,
+                "failed_stop_offset": past_last,
+                "document_count": past_last - first,
+                "document_ids": document_ids,
+                "replay_requires_review": False,
+                "adaptive_depth": adaptive_depth,
+            },
+        )
+
+        if past_last - first == 1:
+            emit(
+                {
+                    "status": "failed",
+                    "reason": "single-document-http-413",
+                    "document_id": document_ids[0],
+                    "confirmed_offset": state["confirmed_offset"],
+                }
             )
-    finally:
-        process.stdin.close()
-    return process.wait()
+            return False
+
+        midpoint = first + ((past_last - first) // 2)
+        emit(
+            {
+                "status": "batch-splitting",
+                "reason": "http-413",
+                "start_offset": first,
+                "stop_offset": past_last,
+                "documents": past_last - first,
+                "split_at": midpoint,
+                "left_documents": midpoint - first,
+                "right_documents": past_last - midpoint,
+                "adaptive_depth": adaptive_depth,
+            }
+        )
+        if not ingest_range(
+            core=core,
+            records=records,
+            first=first,
+            past_last=midpoint,
+            chunk_no=chunk_no,
+            import_log=import_log,
+            failed_log=failed_log,
+            run_id=run_id,
+            source_commit=source_commit,
+            state=state,
+            adaptive_depth=adaptive_depth + 1,
+        ):
+            return False
+        return ingest_range(
+            core=core,
+            records=records,
+            first=midpoint,
+            past_last=past_last,
+            chunk_no=chunk_no,
+            import_log=import_log,
+            failed_log=failed_log,
+            run_id=run_id,
+            source_commit=source_commit,
+            state=state,
+            adaptive_depth=adaptive_depth + 1,
+        )
+
+    failure = {
+        **common_event(run_id, source_commit),
+        "record_type": "batch-failure",
+        "status": "failed-or-ambiguous",
+        "chunk": chunk_no,
+        "exit_code": rc,
+        "confirmed_offset": state["confirmed_offset"],
+        "failed_start_offset": first,
+        "failed_stop_offset": past_last,
+        "document_count": past_last - first,
+        "document_ids": document_ids,
+        "replay_requires_review": True,
+        "adaptive_depth": adaptive_depth,
+        "note": "Non-413 POST failures can be ambiguous; inspect the ingest-core log before replaying this range.",
+    }
+    append_jsonl(failed_log, failure)
+    emit(
+        {
+            "status": "failed-or-ambiguous",
+            "confirmed_offset": state["confirmed_offset"],
+            "failed_start_offset": first,
+            "failed_stop_offset": past_last,
+            "documents": past_last - first,
+        }
+    )
+    return False
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -242,13 +456,7 @@ def main(argv: list[str] | None = None) -> int:
 
     records, conflicts, raw_records, raw_unique_ids = resolve_backlog_records(importer, root)
     for conflict in conflicts:
-        event = {
-            "ledger_version": LEDGER_VERSION,
-            "timestamp": utc_now(),
-            "run_id": run_id,
-            "source_commit": source_commit,
-            **conflict,
-        }
+        event = {**common_event(run_id, source_commit), **conflict}
         append_jsonl(failed_log, event)
         emit(
             {
@@ -267,18 +475,15 @@ def main(argv: list[str] | None = None) -> int:
 
     start, stop = selected_window(len(records), start_offset, args.max_documents)
     chunks = list(chunk_bounds(start, stop, args.chunk_size))
-    total_batches = sum(
+    nominal_batches = sum(
         (chunk_stop - chunk_start + args.batch_size - 1) // args.batch_size
         for _chunk_no, chunk_start, chunk_stop in chunks
     )
 
     plan = {
-        "ledger_version": LEDGER_VERSION,
+        **common_event(run_id, source_commit),
         "record_type": "run-plan",
         "status": "planned",
-        "timestamp": utc_now(),
-        "run_id": run_id,
-        "source_commit": source_commit,
         "raw_candidate_records": raw_records,
         "raw_unique_ids": raw_unique_ids,
         "canonical_documents": len(records),
@@ -288,8 +493,10 @@ def main(argv: list[str] | None = None) -> int:
         "selected_documents": stop - start,
         "chunk_size": args.chunk_size,
         "chunks": len(chunks),
-        "batch_size": args.batch_size,
-        "server_batches": total_batches,
+        "initial_batch_size": args.batch_size,
+        "max_batch_size": MAX_BATCH_SIZE,
+        "nominal_server_batches": nominal_batches,
+        "adaptive_http_413_split": True,
         "dry_run": args.dry_run,
     }
     emit(plan)
@@ -300,26 +507,21 @@ def main(argv: list[str] | None = None) -> int:
 
     if not args.core.is_file():
         failure = {
-            "ledger_version": LEDGER_VERSION,
+            **common_event(run_id, source_commit),
             "record_type": "run-failure",
             "status": "failed",
-            "timestamp": utc_now(),
-            "run_id": run_id,
-            "source_commit": source_commit,
             "confirmed_offset": start,
             "error": f"ingest core not found: {args.core}",
         }
         emit(failure)
         append_jsonl(failed_log, failure)
         return 2
+
     if not os.environ.get("STAR_SERVER_API_KEY", "").strip():
         failure = {
-            "ledger_version": LEDGER_VERSION,
+            **common_event(run_id, source_commit),
             "record_type": "run-failure",
             "status": "failed",
-            "timestamp": utc_now(),
-            "run_id": run_id,
-            "source_commit": source_commit,
             "confirmed_offset": start,
             "error": "STAR_SERVER_API_KEY is required",
         }
@@ -327,8 +529,8 @@ def main(argv: list[str] | None = None) -> int:
         append_jsonl(failed_log, failure)
         return 2
 
-    confirmed_offset = start
-    completed_batches = 0
+    state = {"confirmed_offset": start, "completed_batches": 0, "imported_documents": 0}
+
     for chunk_no, chunk_start, chunk_stop in chunks:
         emit(
             {
@@ -339,69 +541,39 @@ def main(argv: list[str] | None = None) -> int:
                 "documents": chunk_stop - chunk_start,
             }
         )
-        for batch_start, batch_stop in batch_bounds(chunk_start, chunk_stop, args.batch_size):
-            document_ids = [record.document_id for record in records[batch_start:batch_stop]]
-            rc = run_batch(args.core, records, batch_start, batch_stop, args.batch_size)
-            if rc != 0:
-                failure = {
-                    "ledger_version": LEDGER_VERSION,
-                    "record_type": "batch-failure",
-                    "status": "failed-or-ambiguous",
-                    "timestamp": utc_now(),
-                    "run_id": run_id,
-                    "source_commit": source_commit,
-                    "chunk": chunk_no,
-                    "exit_code": rc,
-                    "confirmed_offset": confirmed_offset,
-                    "failed_start_offset": batch_start,
-                    "failed_stop_offset": batch_stop,
-                    "document_ids": document_ids,
-                    "replay_requires_review": True,
-                    "note": "A failed POST can be ambiguous; inspect the ingest-core log before replaying this batch.",
-                }
-                emit(failure)
-                append_jsonl(failed_log, failure)
-                return rc
+        for first, past_last in batch_bounds(chunk_start, chunk_stop, args.batch_size):
+            if not ingest_range(
+                core=args.core,
+                records=records,
+                first=first,
+                past_last=past_last,
+                chunk_no=chunk_no,
+                import_log=import_log,
+                failed_log=failed_log,
+                run_id=run_id,
+                source_commit=source_commit,
+                state=state,
+            ):
+                return 1
 
-            confirmed_offset = batch_stop
-            completed_batches += 1
-            imported = {
-                "ledger_version": LEDGER_VERSION,
-                "record_type": "batch-import",
-                "status": "confirmed",
-                "timestamp": utc_now(),
-                "run_id": run_id,
-                "source_commit": source_commit,
+        emit(
+            {
+                "status": "chunk-completed",
                 "chunk": chunk_no,
-                "batch_start_offset": batch_start,
-                "batch_stop_offset": batch_stop,
-                "confirmed_offset": confirmed_offset,
-                "document_count": batch_stop - batch_start,
-                "document_ids": document_ids,
+                "confirmed_offset": state["confirmed_offset"],
+                "imported_documents": state["imported_documents"],
             }
-            append_jsonl(import_log, imported)
-            emit(
-                {
-                    "status": "checkpoint",
-                    "confirmed_offset": confirmed_offset,
-                    "completed_server_batches": completed_batches,
-                    "total_server_batches": total_batches,
-                }
-            )
-        emit({"status": "chunk-completed", "chunk": chunk_no, "confirmed_offset": confirmed_offset})
+        )
 
     completed = {
-        "ledger_version": LEDGER_VERSION,
+        **common_event(run_id, source_commit),
         "record_type": "run-complete",
         "status": "completed",
-        "timestamp": utc_now(),
-        "run_id": run_id,
-        "source_commit": source_commit,
         "start_offset": start,
-        "confirmed_offset": confirmed_offset,
-        "imported_documents": confirmed_offset - start,
+        "confirmed_offset": state["confirmed_offset"],
+        "imported_documents": state["imported_documents"],
         "quarantined_conflicts": len(conflicts),
-        "server_batches": completed_batches,
+        "server_batches": state["completed_batches"],
     }
     append_jsonl(import_log, completed)
     emit(completed)
