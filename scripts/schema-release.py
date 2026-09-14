@@ -92,8 +92,8 @@ def check(root: Path) -> dict[str, str]:
         fail(f"manifest release/profile mismatch: {release} != {profile}")
 
     expansion = load_json(root, EXPANSION)
-    if expansion.get("release_version") != release:
-        fail("expansion release_version does not match manifest")
+    if "release_version" in expansion:
+        fail("expansion registry must not duplicate release_version; release authority belongs to the manifest")
     if expansion.get("profile_version") != profile:
         fail("expansion profile_version does not match manifest")
     if expansion.get("schema_version") != state["schema_version"]:
@@ -161,7 +161,6 @@ def bump(root: Path, target: str, *, dry_run: bool) -> list[str]:
         return planned
 
     expansion = load_json(root, EXPANSION)
-    expansion["release_version"] = target
     expansion["profile_version"] = target
     write_json(root / EXPANSION, expansion)
 
