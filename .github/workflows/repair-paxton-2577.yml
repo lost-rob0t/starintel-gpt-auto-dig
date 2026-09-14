@@ -19,6 +19,12 @@ jobs:
         with:
           ref: osint/2577-paxton-billboard-comms
           fetch-depth: 0
+      - name: Refresh from current main because the stale branch lacks current repository tooling
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git fetch origin main
+          git merge --no-edit origin/main
       - uses: actions/setup-python@v6
         with:
           python-version: '3.12'
@@ -76,8 +82,6 @@ jobs:
           python3 scripts/starintel.py import digs/paxton/2026-09-11-paxton-billboard-comms/recursive-targets.jsonl --replace
       - name: Commit canonical importer output and remove one-shot repair workflow
         run: |
-          git config user.name 'github-actions[bot]'
-          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           git rm .github/workflows/repair-paxton-2577.yml
           git add digs/paxton/2026-09-11-paxton-billboard-comms/batch.jsonl db/
           git diff --cached --check
