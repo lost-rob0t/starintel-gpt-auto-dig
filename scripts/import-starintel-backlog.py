@@ -7,12 +7,18 @@ caps /documents/bulk at 500 documents, so the default 10,000-document chunk is
 
 The importer writes two append-only JSONL ledgers:
 - canonical-import.jsonl records the exact source commit and every confirmed ID.
-- failed-import.jsonl records any failed/ambiguous batch and its exact IDs.
+- failed-import.jsonl records corpus conflicts and failed/ambiguous server batches.
+
+Canonical resolution is fail-soft by logical ID. Existing repository precedence
+rules still apply (canonical db/ wins over a differing dig packet; comparable
+integer versions select the newest version). If same-precedence candidates for
+one logical ID still conflict, only that ID is quarantined in failed-import.jsonl
+and the rest of the corpus continues. Nothing is chosen arbitrarily.
 
 The last confirmed offset in canonical-import.jsonl is safe to use as
---start-offset for a later continuation. Failed POSTs are logged separately
-because a transport/server failure can be ambiguous and must not be blindly
-replayed.
+--start-offset for a later continuation. Resume offsets are accepted only for
+the same source commit. Failed POSTs are logged separately because a transport
+or server failure can be ambiguous and must not be blindly replayed.
 """
 
 from __future__ import annotations
@@ -23,6 +29,7 @@ import json
 import os
 import subprocess
 import sys
+from collections import defaultdict
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Iterator
@@ -153,6 +160,57 @@ def highest_confirmed_offset(path: Path, source_commit: str) -> int | None:
     return confirmed
 
 
+def resolve_backlog_records(importer, root: Path):
+    """Resolve every logical ID independently and quarantine only conflicts."""
+    candidates = defaultdict(list)
+    carrier_errors: list[dict] = []
+    raw_records = 0
+
+    for path in importer.current_document_paths(root):
+        relative = path.relative_to(root).as_posix()
+        try:
+            parsed = importer.parse_jsonl(path.read_text(encoding="utf-8"), relative)
+        except (OSError, UnicodeError, ValueError) as exc:
+            carrier_errors.append(
+                {
+                    "record_type": "source-read-error",
+                    "status": "skipped-source",
+                    "source": relative,
+                    "error": str(exc),
+                }
+            )
+            continue
+        raw_records += len(parsed)
+        for record in parsed:
+            candidates[record.document_id].append(record)
+
+    resolved = []
+    conflicts: list[dict] = list(carrier_errors)
+    for document_id in sorted(candidates):
+        records = candidates[document_id]
+        try:
+            merged = importer.merge_records(records, prefer_db=True)
+            selected = merged.get(document_id)
+            if selected is None:
+                raise ValueError("canonical resolver returned no record")
+            resolved.append(selected)
+        except ValueError as exc:
+            conflicts.append(
+                {
+                    "record_type": "canonical-conflict",
+                    "status": "skipped-conflict",
+                    "document_id": document_id,
+                    "sources": sorted(record.source for record in records),
+                    "candidate_count": len(records),
+                    "error": str(exc),
+                    "replay_requires_review": True,
+                }
+            )
+
+    resolved.sort(key=lambda record: record.document_id)
+    return resolved, conflicts, raw_records, len(candidates)
+
+
 def run_batch(core: Path, records, first: int, past_last: int, batch_size: int) -> int:
     command = [str(core), "--workers", "1", "--batch-size", str(batch_size)]
     process = subprocess.Popen(
@@ -182,8 +240,24 @@ def main(argv: list[str] | None = None) -> int:
     import_log = args.log_dir / "canonical-import.jsonl"
     failed_log = args.log_dir / "failed-import.jsonl"
 
-    records = importer.collect_all_documents(root)
-    records.sort(key=lambda record: record.document_id)
+    records, conflicts, raw_records, raw_unique_ids = resolve_backlog_records(importer, root)
+    for conflict in conflicts:
+        event = {
+            "ledger_version": LEDGER_VERSION,
+            "timestamp": utc_now(),
+            "run_id": run_id,
+            "source_commit": source_commit,
+            **conflict,
+        }
+        append_jsonl(failed_log, event)
+        emit(
+            {
+                "status": event["status"],
+                "record_type": event["record_type"],
+                "document_id": event.get("document_id"),
+                "source": event.get("source"),
+            }
+        )
 
     start_offset = args.start_offset
     if args.resume_from_log:
@@ -205,7 +279,10 @@ def main(argv: list[str] | None = None) -> int:
         "timestamp": utc_now(),
         "run_id": run_id,
         "source_commit": source_commit,
-        "corpus_documents": len(records),
+        "raw_candidate_records": raw_records,
+        "raw_unique_ids": raw_unique_ids,
+        "canonical_documents": len(records),
+        "quarantined_conflicts": len(conflicts),
         "start_offset": start,
         "stop_offset": stop,
         "selected_documents": stop - start,
@@ -323,6 +400,7 @@ def main(argv: list[str] | None = None) -> int:
         "start_offset": start,
         "confirmed_offset": confirmed_offset,
         "imported_documents": confirmed_offset - start,
+        "quarantined_conflicts": len(conflicts),
         "server_batches": completed_batches,
     }
     append_jsonl(import_log, completed)
