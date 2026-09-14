@@ -41,7 +41,7 @@ env:
   NIM_VERSION: 2.2.4
   STAR_INGEST_URL: https://ingest.starintel.actor
   OUTER_CHUNK_SIZE: "10000"
-  SERVER_BATCH_SIZE: "1"
+  SERVER_BATCH_SIZE: "250"
 
 jobs:
   import-backlog:
@@ -154,7 +154,7 @@ jobs:
         env:
           STAR_SERVER_API_KEY: ${{ secrets.STAR_SERVER_API_KEY }}
           START_OFFSET: ${{ github.event_name == 'workflow_dispatch' && inputs.start_offset || '0' }}
-          MAX_DOCUMENTS: ${{ github.event_name == 'workflow_dispatch' && inputs.max_documents || '250' }}
+          MAX_DOCUMENTS: ${{ github.event_name == 'workflow_dispatch' && inputs.max_documents || '0' }}
           RESUME_RUN_ID: ${{ github.event_name == 'workflow_dispatch' && inputs.resume_run_id || '' }}
         shell: bash
         run: |
@@ -185,4 +185,4 @@ jobs:
           if-no-files-found: warn
           retention-days: 90
 
-# diagnostic: isolate first denied canonical document one-by-one
+# full retry after verifying tenant_id is absent from corpus
