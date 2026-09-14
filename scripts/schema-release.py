@@ -2,7 +2,7 @@
 """Resolve, validate, and bump the StarIntel release/profile version.
 
 The StarIntel wire/base schema version is deliberately independent from the
-release/profile version.  In the current additive v0.9 line the immutable base
+release/profile version. In the current additive v0.9 line the immutable base
 schema remains 0.9.0 while release/profile versions advance (0.9.1, 0.9.2, ...).
 
 Agents and humans must use this script instead of editing release version fields
@@ -12,14 +12,15 @@ by hand.
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import re
-import sys
 from pathlib import Path
 from typing import Any
 
 ROOT = Path(__file__).resolve().parents[1]
 MANIFEST = Path("schemas/starintel-doc-v0.9.0.manifest.json")
+EXPANSION = Path("schemas/starintel-doc-v0.9.0.expansion.json")
 IMPLEMENTATIONS = Path("conformance/implementations.json")
 CONFORMANCE_INIT = Path("conformance/__init__.py")
 NIMBLE = Path("starintel_auto_dig.nimble")
@@ -39,6 +40,11 @@ def load_json(root: Path, relative: Path) -> dict[str, Any]:
 
 def write_json(path: Path, value: dict[str, Any]) -> None:
     path.write_text(json.dumps(value, indent=2, sort_keys=False) + "\n", encoding="utf-8")
+
+
+def canonical_hash(value: Any) -> str:
+    payload = json.dumps(value, sort_keys=True, separators=(",", ":"), ensure_ascii=False)
+    return hashlib.sha256(payload.encode("utf-8")).hexdigest()
 
 
 def parse_version(value: str) -> tuple[int, int, int]:
@@ -85,6 +91,22 @@ def check(root: Path) -> dict[str, str]:
     if release != profile:
         fail(f"manifest release/profile mismatch: {release} != {profile}")
 
+    expansion = load_json(root, EXPANSION)
+    if expansion.get("release_version") != release:
+        fail("expansion release_version does not match manifest")
+    if expansion.get("profile_version") != profile:
+        fail("expansion profile_version does not match manifest")
+    if expansion.get("schema_version") != state["schema_version"]:
+        fail("expansion schema_version does not match immutable base schema_version")
+    if expansion.get("schema_revision") != state["schema_revision"]:
+        fail("expansion schema_revision does not match manifest")
+
+    manifest = load_json(root, MANIFEST)
+    if manifest.get("expansion_hash_algorithm") != "sha256-canonical-json":
+        fail("unsupported expansion hash algorithm")
+    if manifest.get("expansion_content_hash") != canonical_hash(expansion):
+        fail("manifest expansion_content_hash does not match expansion registry")
+
     implementations = load_json(root, IMPLEMENTATIONS)
     if implementations.get("release_version") != release:
         fail("conformance inventory release_version does not match manifest")
@@ -127,6 +149,7 @@ def bump(root: Path, target: str, *, dry_run: bool) -> list[str]:
         )
 
     planned = [
+        str(EXPANSION),
         str(MANIFEST),
         str(IMPLEMENTATIONS),
         str(CONFORMANCE_INIT),
@@ -137,9 +160,15 @@ def bump(root: Path, target: str, *, dry_run: bool) -> list[str]:
     if dry_run:
         return planned
 
+    expansion = load_json(root, EXPANSION)
+    expansion["release_version"] = target
+    expansion["profile_version"] = target
+    write_json(root / EXPANSION, expansion)
+
     manifest = load_json(root, MANIFEST)
     manifest["release_version"] = target
     manifest["profile_version"] = target
+    manifest["expansion_content_hash"] = canonical_hash(expansion)
     write_json(root / MANIFEST, manifest)
 
     implementations = load_json(root, IMPLEMENTATIONS)
