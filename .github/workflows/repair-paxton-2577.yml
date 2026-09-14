@@ -1,0 +1,85 @@
+name: Repair Paxton 2577 packet through canonical importer
+
+on:
+  push:
+    branches:
+      - osint/2577-paxton-billboard-comms
+    paths:
+      - .github/workflows/repair-paxton-2577.yml
+
+permissions:
+  contents: write
+
+jobs:
+  repair:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          ref: osint/2577-paxton-billboard-comms
+          fetch-depth: 0
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+      - name: Inspect live release and dtype contracts
+        run: |
+          python3 scripts/schema-release.py current
+          python3 scripts/schema-release.py check
+          python3 scripts/starintel.py schema --dtype source >/dev/null
+          python3 scripts/starintel.py schema --dtype social-media-post >/dev/null
+      - name: Correct date-only values without inventing timestamps
+        run: |
+          python3 - <<'PY'
+          import json
+          import re
+          from pathlib import Path
+
+          path = Path('digs/paxton/2026-09-11-paxton-billboard-comms/batch.jsonl')
+          date_only = re.compile(r'^\d{4}-\d{2}-\d{2}$')
+          records = []
+          changed = 0
+          for raw in path.read_text(encoding='utf-8').splitlines():
+              if not raw.strip():
+                  continue
+              doc = json.loads(raw)
+              data = doc.get('data', {})
+              if doc.get('dtype') == 'source':
+                  value = data.get('retrieved_at')
+                  if isinstance(value, str) and date_only.fullmatch(value):
+                      prior = value
+                      data['retrieved_at'] = None
+                      note = f'Retrieval calendar date recorded as {prior}; exact retrieval timestamp was not captured.'
+                      existing = data.get('notes') or ''
+                      if note not in existing:
+                          data['notes'] = (existing + '; ' + note).strip('; ')
+                      changed += 1
+              if doc.get('dtype') == 'social-media-post':
+                  value = data.get('posted_at')
+                  if isinstance(value, str) and date_only.fullmatch(value):
+                      prior = value
+                      data['posted_at'] = None
+                      note = f'Source records the post calendar date as {prior}; exact posting timestamp was not captured.'
+                      notes = doc.setdefault('notes', [])
+                      if note not in notes:
+                          notes.append(note)
+                      changed += 1
+              records.append(doc)
+          if changed != 6:
+              raise SystemExit(f'expected 6 datetime corrections, got {changed}')
+          path.write_text(''.join(json.dumps(doc, separators=(',', ':'), ensure_ascii=False) + '\n' for doc in records), encoding='utf-8')
+          PY
+      - name: Regenerate normalized DB records through required transactional importer
+        run: |
+          python3 scripts/starintel.py import digs/paxton/2026-09-11-paxton-billboard-comms/batch.jsonl --replace
+          python3 scripts/starintel.py import digs/paxton/2026-09-11-paxton-billboard-comms/pass.jsonl --replace
+          python3 scripts/starintel.py import digs/paxton/2026-09-11-paxton-billboard-comms/recursive-targets.jsonl --replace
+      - name: Commit canonical importer output and remove one-shot repair workflow
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git rm .github/workflows/repair-paxton-2577.yml
+          git add digs/paxton/2026-09-11-paxton-billboard-comms/batch.jsonl db/
+          git diff --cached --check
+          git commit -m 'fix(osint/2577): normalize nullable datetimes via importer'
+          git push origin HEAD:osint/2577-paxton-billboard-comms
