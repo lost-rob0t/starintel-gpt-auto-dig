@@ -104,6 +104,23 @@ jobs:
           touch "$RUNNER_TEMP/backlog-import/canonical-import.jsonl"
           touch "$RUNNER_TEMP/backlog-import/failed-import.jsonl"
 
+      - name: Restore exact corpus commit for resume
+        if: github.event_name == 'workflow_dispatch' && inputs.resume_run_id != ''
+        shell: bash
+        run: |
+          set -euo pipefail
+          source_commit="$(jq -r 'select(.source_commit != null) | .source_commit' \
+            "$RUNNER_TEMP/backlog-import/canonical-import.jsonl" | tail -n 1)"
+          if [[ -z "$source_commit" || "$source_commit" == "null" ]]; then
+            echo "Prior canonical ledger has no source_commit; refusing an unsafe offset resume." >&2
+            exit 4
+          fi
+          if ! git cat-file -e "${source_commit}^{commit}" 2>/dev/null; then
+            git fetch --no-tags origin "$source_commit"
+          fi
+          git checkout --detach "$source_commit"
+          echo "Resuming the exact canonical corpus at $source_commit"
+
       - name: Preflight ingest credential
         if: github.event_name != 'pull_request'
         env:
@@ -164,4 +181,4 @@ jobs:
             ${{ runner.temp }}/backlog-import/failed-import.jsonl
             ${{ runner.temp }}/backlog-import/console.jsonl
           if-no-files-found: warn
-          retention-days: 30
+          retention-days: 90
