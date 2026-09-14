@@ -23,7 +23,27 @@ This gate outranks every lower section of this file while paused.
 
 ## Non-negotiable authority
 
-The repository-local `starintel_doc/` package and generated `schemas/starintel-doc-v0.9.0.schema.json` are the StarIntel document specification. Never create a parallel JSON shape, a prompt-only “StarIntel style,” a renderer-specific schema, or undocumented fields. The Nim runtime is an implementation of this contract, not an independent schema.
+The repository-local `starintel_doc/` package and generated `schemas/starintel-doc-v0.9.0.schema.json` are the StarIntel document **base/wire schema** specification. Never create a parallel JSON shape, a prompt-only “StarIntel style,” a renderer-specific schema, or undocumented fields. The Nim runtime is an implementation of this contract, not an independent schema.
+
+The active StarIntel **release/profile version is a separate authority from the immutable base schema version and filename**. Before relying on a StarIntel version number or changing schema/profile metadata, every agent must run:
+
+```bash
+python3 scripts/schema-release.py current
+python3 scripts/schema-release.py check
+```
+
+Rules:
+
+- use the reported `release_version` as the active StarIntel release;
+- do not infer the active release from `schema_version`, `schemas/starintel-doc-v0.9.0.schema.json`, issue prose, research notes, README text, or memory;
+- the additive v0.9 line may legitimately have `schema_version = 0.9.0` while `release_version` and `profile_version` are `0.9.1`, `0.9.2`, or later;
+- release/profile bumps MUST use `python3 scripts/schema-release.py bump --to <next-patch>`; never update version fields with `sed`, editor search/replace, or an ad hoc script;
+- the bump helper updates canonical release/profile metadata and its expansion hash while preserving the immutable base schema identity;
+- creating a new base schema version requires an explicit compatibility/migration decision and is not implied by an additive release bump;
+- after a canonical release changes, consumers must repin their schema locks through their repository-owned sync/lock workflow and pass conformance before claiming support;
+- any disagreement among manifest, expansion registry, conformance metadata, package metadata, or a consumer lock is a hard blocker. Fix the authority chain instead of guessing.
+
+At the time this rule was written the canonical release/profile is `0.9.1`, the immutable base schema is `0.9.0`, and the next additive release is `0.9.2`. Those literals are historical context only; `scripts/schema-release.py current` is authoritative after any bump.
 
 Before creating or changing a document, every agent must inspect the executable schema:
 

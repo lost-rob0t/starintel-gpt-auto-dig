@@ -1,0 +1,188 @@
+name: TEMP import StarIntel backlog
+
+on:
+  pull_request:
+    paths:
+      - "scripts/import-starintel-backlog.py"
+      - "tests/test_import_starintel_backlog.py"
+      - ".github/workflows/temp-backlog-import.yml"
+  push:
+    branches:
+      - main
+    paths:
+      - ".github/workflows/temp-backlog-import.yml"
+  workflow_dispatch:
+    inputs:
+      start_offset:
+        description: "Canonical sorted-document offset to start from"
+        required: true
+        default: "0"
+        type: string
+      max_documents:
+        description: "Maximum documents this run; 0 means through end of corpus"
+        required: true
+        default: "0"
+        type: string
+      resume_run_id:
+        description: "Optional prior workflow run ID whose ledger artifact should be downloaded and resumed"
+        required: false
+        default: ""
+        type: string
+
+permissions:
+  actions: read
+  contents: read
+
+concurrency:
+  group: temp-starintel-backlog-import-${{ github.ref }}
+  cancel-in-progress: false
+
+env:
+  NIM_VERSION: 2.2.4
+  STAR_INGEST_URL: https://ingest.starintel.actor
+  OUTER_CHUNK_SIZE: "10000"
+  SERVER_BATCH_SIZE: "250"
+
+jobs:
+  import-backlog:
+    runs-on: ubuntu-latest
+    timeout-minutes: 180
+    steps:
+      - name: Checkout canonical source commit
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - name: Set up Nim
+        uses: jiro4989/setup-nim-action@v2
+        with:
+          nim-version: ${{ env.NIM_VERSION }}
+
+      - name: Build threaded ingest core
+        run: nimble buildIngest
+
+      - name: Test ingest resolver, adaptive backlog importer, and threaded core
+        run: |
+          python3 -m unittest \
+            tests.test_export_starintel_documents \
+            tests.test_import_starintel_documents \
+            tests.test_import_starintel_backlog \
+            tests.test_starintel_ingest_core
+
+      - name: Prepare canonical ledgers
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/backlog-import"
+          touch "$RUNNER_TEMP/backlog-import/canonical-import.jsonl"
+          touch "$RUNNER_TEMP/backlog-import/failed-import.jsonl"
+
+      - name: Dry-run canonical backlog plan
+        if: github.event_name == 'pull_request'
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/import-starintel-backlog.py \
+            --chunk-size "$OUTER_CHUNK_SIZE" \
+            --batch-size "$SERVER_BATCH_SIZE" \
+            --log-dir "$RUNNER_TEMP/backlog-import" \
+            --dry-run \
+            2> >(tee "$RUNNER_TEMP/backlog-import/console.jsonl" >&2)
+
+      - name: Restore prior ledger for resume
+        if: github.event_name == 'workflow_dispatch' && inputs.resume_run_id != ''
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RESUME_RUN_ID: ${{ inputs.resume_run_id }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -f "$RUNNER_TEMP/backlog-import/canonical-import.jsonl" \
+                "$RUNNER_TEMP/backlog-import/failed-import.jsonl"
+          gh run download "$RESUME_RUN_ID" \
+            --repo "$GITHUB_REPOSITORY" \
+            --name starintel-backlog-import-ledgers \
+            --dir "$RUNNER_TEMP/backlog-import"
+          touch "$RUNNER_TEMP/backlog-import/canonical-import.jsonl"
+          touch "$RUNNER_TEMP/backlog-import/failed-import.jsonl"
+
+      - name: Restore exact corpus commit for resume
+        if: github.event_name == 'workflow_dispatch' && inputs.resume_run_id != ''
+        shell: bash
+        run: |
+          set -euo pipefail
+          source_commit="$(jq -r 'select(.source_commit != null) | .source_commit' \
+            "$RUNNER_TEMP/backlog-import/canonical-import.jsonl" | tail -n 1)"
+          if [[ -z "$source_commit" || "$source_commit" == "null" ]]; then
+            echo "Prior canonical ledger has no source_commit; refusing an unsafe offset resume." >&2
+            exit 4
+          fi
+          if ! git cat-file -e "${source_commit}^{commit}" 2>/dev/null; then
+            git fetch --no-tags origin "$source_commit"
+          fi
+          git checkout --detach "$source_commit"
+          echo "Resuming the exact canonical corpus at $source_commit"
+
+      - name: Preflight ingest credential
+        if: github.event_name != 'pull_request'
+        env:
+          STAR_SERVER_API_KEY: ${{ secrets.STAR_SERVER_API_KEY }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          credential="${STAR_SERVER_API_KEY#Bearer }"
+          if [[ -z "$credential" ]]; then
+            echo "STAR_SERVER_API_KEY is missing." >&2
+            exit 2
+          fi
+          response_file="$(mktemp)"
+          code="$(curl --silent --show-error \
+            --output "$response_file" \
+            --write-out '%{http_code}' \
+            --header "Accept: application/json" \
+            --header "Authorization: Bearer ${credential}" \
+            "${STAR_INGEST_URL}/auth/context")"
+          if [[ "$code" != "200" ]]; then
+            safe_code="$(jq -r '.code // "unknown"' "$response_file" 2>/dev/null || printf '%s' unknown)"
+            echo "Ingest credential preflight failed: HTTP ${code}, server code ${safe_code}." >&2
+            exit 3
+          fi
+          jq -c '{status:"credential-ok",principal_type,credential_id,scopes}' "$response_file"
+
+      - name: Import canonical backlog
+        if: github.event_name != 'pull_request'
+        env:
+          STAR_SERVER_API_KEY: ${{ secrets.STAR_SERVER_API_KEY }}
+          START_OFFSET: ${{ github.event_name == 'workflow_dispatch' && inputs.start_offset || '0' }}
+          MAX_DOCUMENTS: ${{ github.event_name == 'workflow_dispatch' && inputs.max_documents || '0' }}
+          RESUME_RUN_ID: ${{ github.event_name == 'workflow_dispatch' && inputs.resume_run_id || '' }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          export STAR_SERVER_API_KEY="${STAR_SERVER_API_KEY#Bearer }"
+          args=(
+            --chunk-size "$OUTER_CHUNK_SIZE"
+            --batch-size "$SERVER_BATCH_SIZE"
+            --start-offset "$START_OFFSET"
+            --max-documents "$MAX_DOCUMENTS"
+            --log-dir "$RUNNER_TEMP/backlog-import"
+          )
+          if [[ -n "$RESUME_RUN_ID" ]]; then
+            args+=(--resume-from-log)
+          fi
+          python3 scripts/import-starintel-backlog.py "${args[@]}" \
+            2> >(tee "$RUNNER_TEMP/backlog-import/console.jsonl" >&2)
+
+      - name: Upload canonical and failed ledgers
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: starintel-backlog-import-ledgers
+          path: |
+            ${{ runner.temp }}/backlog-import/canonical-import.jsonl
+            ${{ runner.temp }}/backlog-import/failed-import.jsonl
+            ${{ runner.temp }}/backlog-import/console.jsonl
+          if-no-files-found: warn
+          retention-days: 90
+
+# full retry with validated target routing fix

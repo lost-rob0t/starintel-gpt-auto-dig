@@ -4,70 +4,152 @@ on:
   push:
     branches:
       - main
+      - testing-debug
     paths:
       - "db/**/*.ndjson"
       - "digs/**/starintel-documents.jsonl"
+      - "scripts/export_starintel_documents.py"
+      - "scripts/import-starintel-documents.py"
+      - "scripts/starintel_ingest_core.nim"
+      - "starintel_auto_dig.nimble"
+      - "tests/test_export_starintel_documents.py"
+      - "tests/test_import_starintel_documents.py"
+      - "tests/test_starintel_ingest_core.py"
+      - ".github/workflows/import-starintel-documents.yml"
+  pull_request:
+    paths:
+      - "db/**/*.ndjson"
+      - "digs/**/starintel-documents.jsonl"
+      - "scripts/export_starintel_documents.py"
+      - "scripts/import-starintel-documents.py"
+      - "scripts/starintel_ingest_core.nim"
+      - "starintel_auto_dig.nimble"
+      - "tests/test_export_starintel_documents.py"
+      - "tests/test_import_starintel_documents.py"
+      - "tests/test_starintel_ingest_core.py"
+      - ".github/workflows/import-starintel-documents.yml"
   workflow_dispatch:
     inputs:
-      mode:
-        description: "Import mode"
+      ids:
+        description: "Document IDs (comma/whitespace separated)"
         required: true
-        default: all
-        type: choice
-        options:
-          - all
-          - diff
-      base:
-        description: "Base commit for diff mode"
-        required: false
         type: string
+      workers:
+        description: "Concurrent Nim workers (0 = auto: useful CPU cores up to server per-principal concurrency)"
+        required: true
+        default: 0
+        type: number
+      batch_size:
+        description: "Documents per bulk request (1-500)"
+        required: true
+        default: 500
+        type: number
 
 permissions:
   contents: read
 
 concurrency:
-  group: starintel-ingest-main
-  cancel-in-progress: false
+  group: starintel-ingest-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  NIM_VERSION: 2.2.4
+  STAR_INGEST_URL: https://ingest.starintel.actor
 
 jobs:
   ingest-documents:
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 30
     steps:
       - name: Checkout full history
         uses: actions/checkout@v6
         with:
           fetch-depth: 0
 
-      - name: Import documents
+      - name: Set up Nim
+        uses: jiro4989/setup-nim-action@v2
+        with:
+          nim-version: ${{ env.NIM_VERSION }}
+
+      - name: Build threaded ingest core
+        run: nimble buildIngest
+
+      - name: Test ingest resolver and threaded core
+        run: |
+          python3 -m unittest \
+            tests.test_export_starintel_documents \
+            tests.test_import_starintel_documents \
+            tests.test_starintel_ingest_core
+
+      - name: Preflight ingest credential
+        if: github.event_name == 'workflow_dispatch' || (github.event_name == 'push' && github.ref == 'refs/heads/main')
+        env:
+          STAR_SERVER_API_KEY: ${{ secrets.STAR_SERVER_API_KEY }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [[ -z "${STAR_SERVER_API_KEY:-}" ]]; then
+            echo "STAR_SERVER_API_KEY is missing." >&2
+            exit 2
+          fi
+
+          credential="$STAR_SERVER_API_KEY"
+          format=v1
+          if [[ "$credential" == "Bearer "* ]]; then
+            credential="${credential#Bearer }"
+            format=bearer-prefixed-v1
+          fi
+          if [[ "$credential" != star_sk_v1_* ]]; then
+            format=legacy-or-invalid
+          fi
+          echo "Ingest credential format: ${format}."
+
+          response_file="$(mktemp)"
+          code="$(curl --silent --show-error \
+            --output "$response_file" \
+            --write-out '%{http_code}' \
+            --header "Accept: application/json" \
+            --header "Authorization: Bearer ${credential}" \
+            "${STAR_INGEST_URL}/auth/context")"
+          if [[ "$code" != "200" ]]; then
+            safe_code="$(jq -r '.code // "unknown"' "$response_file" 2>/dev/null || printf '%s' unknown)"
+            echo "Ingest credential preflight failed: HTTP ${code}, server code ${safe_code}." >&2
+            exit 3
+          fi
+          jq -c '{status:"credential-ok",principal_type,credential_id,scopes}' "$response_file"
+
+      - name: Import selected documents
+        if: github.event_name == 'workflow_dispatch' || (github.event_name == 'push' && github.ref == 'refs/heads/main')
         env:
           STAR_SERVER_API_KEY: ${{ secrets.STAR_SERVER_API_KEY }}
           EVENT_NAME: ${{ github.event_name }}
           PUSH_BASE: ${{ github.event.before }}
-          MANUAL_MODE: ${{ inputs.mode }}
-          MANUAL_BASE: ${{ inputs.base }}
+          MANUAL_IDS: ${{ inputs.ids }}
+          MANUAL_WORKERS: ${{ inputs.workers }}
+          MANUAL_BATCH_SIZE: ${{ inputs.batch_size }}
         shell: bash
         run: |
           set -euo pipefail
 
-          if [[ "$EVENT_NAME" == "workflow_dispatch" ]]; then
-            if [[ "$MANUAL_MODE" == "all" ]]; then
-              python3 scripts/import-starintel-documents.py --all
-              exit 0
-            fi
+          export STAR_SERVER_API_KEY="${STAR_SERVER_API_KEY#Bearer }"
+          workers="${MANUAL_WORKERS:-0}"
+          batch_size="${MANUAL_BATCH_SIZE:-500}"
+          core=(bin/starintel-ingest-core --workers "$workers" --batch-size "$batch_size")
 
-            if [[ -z "$MANUAL_BASE" ]]; then
-              echo "base is required when manual mode is diff" >&2
+          if [[ "$EVENT_NAME" == "workflow_dispatch" ]]; then
+            selection="${MANUAL_IDS:-}"
+            if [[ -z "$(printf '%s' "$selection" | xargs)" ]]; then
+              echo "workflow_dispatch requires one or more document IDs." >&2
               exit 2
             fi
-
-            python3 scripts/import-starintel-documents.py --diff "$MANUAL_BASE"
+            python3 scripts/export_starintel_documents.py --ids "$selection" | "${core[@]}"
             exit 0
           fi
 
-          if [[ -z "$PUSH_BASE" || "$PUSH_BASE" =~ ^0+$ ]]; then
-            echo "No usable pre-push base SHA; refusing to turn diff CI into a full backfill."
-            exit 0
+          base="$PUSH_BASE"
+          if [[ -z "$base" || "$base" =~ ^0+$ ]]; then
+            echo "A usable push base SHA is required for merge diff ingest." >&2
+            exit 2
           fi
 
-          python3 scripts/import-starintel-documents.py --diff "$PUSH_BASE"
+          python3 scripts/export_starintel_documents.py --diff "$base" | "${core[@]}"
