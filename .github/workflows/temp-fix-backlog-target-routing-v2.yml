@@ -57,14 +57,12 @@ jobs:
       - name: Run backlog importer regression tests
         run: python3 -m unittest tests.test_import_starintel_backlog
 
-      - name: Commit fix and remove both helpers
+      - name: Commit validated source fix
         shell: bash
         run: |
           set -euo pipefail
           git config user.name 'starintel-ci'
           git config user.email 'starintel-ci@users.noreply.github.com'
-          git rm .github/workflows/temp-fix-backlog-target-routing.yml
-          git rm .github/workflows/temp-fix-backlog-target-routing-v2.yml
-          git add scripts/import-starintel-backlog.py tests/test_import_starintel_backlog.py .github/workflows/temp-backlog-import.yml
+          git add scripts/import-starintel-backlog.py tests/test_import_starintel_backlog.py
           git commit -m 'fix: route backlog target documents through target dispatch'
           git push origin HEAD:main
