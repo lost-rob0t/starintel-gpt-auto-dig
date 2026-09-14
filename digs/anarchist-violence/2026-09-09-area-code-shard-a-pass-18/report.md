@@ -49,3 +49,7 @@ Person-level political/ideological affiliation profiling was not materialized. P
 Primary domains: `nanpa.com`, `4winds419.org`, `safdn.org`, `comomobileaid.org`, `sites.google.com`, `eriefreestore.com`, plus the already-canonical `nepadsa.org` source.
 
 Unresolved leads retained without promotion: The People's Pantry NWO; Surviving Capitalism Together — Northwest Ohio; People's Guild; Scranton Solidarity Project; Tallgrass Collective; historical Columbia Alternative Library; People's Erie; 1020 Collective / The Bastion; historical Centre County 4CR. Reddit/community/event surfaces remain discovery leads unless a sufficiently strong current organization identity is resolved.
+
+## Current-base validation refresh
+
+A concurrent shard-B merge landed immediately before the pass-18 merge transaction. Its delta was isolated to shard-B packet/coverage files and did not overlap shard-A IDs or coverage. This report-only refresh intentionally re-runs the repository's full exact-head validation gates on the resulting current `main` state so pass 18 is validated together with that concurrent mainline change.
