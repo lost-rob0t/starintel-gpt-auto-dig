@@ -24,6 +24,9 @@ import json
 import os
 import subprocess
 import sys
+import urllib.error
+import urllib.parse
+import urllib.request
 from collections import defaultdict
 from datetime import datetime, timezone
 from pathlib import Path
@@ -265,6 +268,96 @@ def request_too_large(output: str) -> bool:
     )
 
 
+def target_record_p(record) -> bool:
+    dtype = record.document.get("dtype")
+    return isinstance(dtype, str) and dtype.lower() == "target"
+
+
+def target_actor(record) -> str | None:
+    document = record.document
+    actor = document.get("actor")
+    if not isinstance(actor, str) or not actor.strip():
+        data = document.get("data")
+        actor = data.get("actor") if isinstance(data, dict) else None
+    if isinstance(actor, str) and actor.strip():
+        return actor.strip()
+    return None
+
+
+def run_target(record) -> tuple[int, str]:
+    """Dispatch one canonical target through the target compatibility route."""
+    actor = target_actor(record)
+    if actor is None:
+        return 2, f"target document {record.document_id!r} is missing data.actor"
+
+    api_key = os.environ.get("STAR_SERVER_API_KEY", "").strip()
+    if api_key.startswith("Bearer "):
+        api_key = api_key[len("Bearer "):]
+    if not api_key:
+        return 2, "STAR_SERVER_API_KEY is required"
+
+    server_url = os.environ.get(
+        "STAR_INGEST_URL", "https://ingest.starintel.actor"
+    ).rstrip("/")
+    encoded_actor = urllib.parse.quote(actor, safe="")
+    url = f"{server_url}/new/target/{encoded_actor}"
+    body = json.dumps(
+        record.document,
+        ensure_ascii=False,
+        separators=(",", ":"),
+    ).encode("utf-8")
+    request = urllib.request.Request(
+        url,
+        data=body,
+        headers={
+            "Accept": "application/json",
+            "Authorization": f"Bearer {api_key}",
+            "Content-Type": "application/json",
+            "User-Agent": "starintel-auto-dig-backlog/1",
+        },
+        method="POST",
+    )
+    try:
+        with urllib.request.urlopen(request, timeout=30.0) as response:
+            raw = response.read().decode("utf-8", errors="replace")
+            return 0, raw
+    except urllib.error.HTTPError as exc:
+        raw = exc.read().decode("utf-8", errors="replace")
+        return 1, f"POST {url} failed with HTTP {exc.code}: {raw[:1000]}"
+    except urllib.error.URLError as exc:
+        return 1, f"POST {url} failed ambiguously: {exc.reason}"
+
+
+def record_confirmed_target(
+    *,
+    import_log: Path,
+    record,
+    index: int,
+    chunk_no: int,
+    run_id: str,
+    source_commit: str,
+    actor: str,
+    adaptive_depth: int,
+) -> None:
+    append_jsonl(
+        import_log,
+        {
+            **common_event(run_id, source_commit),
+            "record_type": "target-dispatch",
+            "status": "confirmed",
+            "chunk": chunk_no,
+            "batch_start_offset": index,
+            "batch_stop_offset": index + 1,
+            "confirmed_offset": index + 1,
+            "document_count": 1,
+            "document_ids": [record.document_id],
+            "actor": actor,
+            "route": "/new/target/:actor",
+            "adaptive_depth": adaptive_depth,
+        },
+    )
+
+
 def common_event(run_id: str, source_commit: str) -> dict:
     return {
         "ledger_version": LEDGER_VERSION,
@@ -316,7 +409,107 @@ def ingest_range(
     state: dict[str, int],
     adaptive_depth: int = 0,
 ) -> bool:
-    """Ingest a contiguous range, bisecting only clean 413 rejections."""
+    """Ingest a contiguous range, routing target documents separately.
+
+    Ordinary documents use /documents/bulk. Canonical target documents are
+    dispatch work items and must use /new/target/:actor; mixing them into the
+    generic bulk route adds a target resource scope and rejects an otherwise
+    valid dispatch credential.
+    """
+    for target_index in range(first, past_last):
+        if not target_record_p(records[target_index]):
+            continue
+
+        if target_index > first:
+            if not ingest_range(
+                core=core,
+                records=records,
+                first=first,
+                past_last=target_index,
+                chunk_no=chunk_no,
+                import_log=import_log,
+                failed_log=failed_log,
+                run_id=run_id,
+                source_commit=source_commit,
+                state=state,
+                adaptive_depth=adaptive_depth + 1,
+            ):
+                return False
+
+        record = records[target_index]
+        actor = target_actor(record)
+        rc, output = run_target(record)
+        if rc != 0 or actor is None:
+            failure = {
+                **common_event(run_id, source_commit),
+                "record_type": "target-dispatch-failure",
+                "status": "failed-or-ambiguous",
+                "chunk": chunk_no,
+                "exit_code": rc,
+                "confirmed_offset": state["confirmed_offset"],
+                "failed_start_offset": target_index,
+                "failed_stop_offset": target_index + 1,
+                "document_count": 1,
+                "document_ids": [record.document_id],
+                "actor": actor,
+                "route": "/new/target/:actor",
+                "replay_requires_review": True,
+                "adaptive_depth": adaptive_depth,
+                "error": output,
+            }
+            append_jsonl(failed_log, failure)
+            emit(
+                {
+                    "status": "target-dispatch-failed",
+                    "document_id": record.document_id,
+                    "actor": actor,
+                    "confirmed_offset": state["confirmed_offset"],
+                }
+            )
+            return False
+
+        record_confirmed_target(
+            import_log=import_log,
+            record=record,
+            index=target_index,
+            chunk_no=chunk_no,
+            run_id=run_id,
+            source_commit=source_commit,
+            actor=actor,
+            adaptive_depth=adaptive_depth,
+        )
+        state["confirmed_offset"] = target_index + 1
+        state["completed_batches"] += 1
+        state["imported_documents"] += 1
+        emit(
+            {
+                "status": "checkpoint",
+                "confirmed_offset": target_index + 1,
+                "completed_server_batches": state["completed_batches"],
+                "imported_documents": state["imported_documents"],
+                "last_batch_documents": 1,
+                "transport": "target-dispatch",
+                "actor": actor,
+                "adaptive_depth": adaptive_depth,
+            }
+        )
+
+        if target_index + 1 < past_last:
+            return ingest_range(
+                core=core,
+                records=records,
+                first=target_index + 1,
+                past_last=past_last,
+                chunk_no=chunk_no,
+                import_log=import_log,
+                failed_log=failed_log,
+                run_id=run_id,
+                source_commit=source_commit,
+                state=state,
+                adaptive_depth=adaptive_depth + 1,
+            )
+        return True
+
     rc, output = run_batch(core, records, first, past_last)
     document_ids = [record.document_id for record in records[first:past_last]]
 

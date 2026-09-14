@@ -84,6 +84,55 @@ class BacklogImportTests(unittest.TestCase):
             self.assertFalse(failures[0]["replay_requires_review"])
             self.assertEqual(failures[0]["document_ids"], ["doc-0", "doc-1", "doc-2", "doc-3"])
 
+    def test_target_is_dispatched_separately_from_bulk_documents(self) -> None:
+        records = [
+            Record(
+                "target-1",
+                {
+                    "_id": "target-1",
+                    "dtype": "target",
+                    "data": {"actor": "data-governance"},
+                },
+            ),
+            Record("doc-1", {"_id": "doc-1", "dtype": "source"}),
+        ]
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            state = {
+                "confirmed_offset": 0,
+                "completed_batches": 0,
+                "imported_documents": 0,
+            }
+            with patch.object(MODULE, "run_target", return_value=(0, '{"status":"ok"}')) as target_run, \
+                 patch.object(MODULE, "run_batch", return_value=(0, '{"status":"completed"}')) as bulk_run:
+                ok = MODULE.ingest_range(
+                    core=Path("unused"),
+                    records=records,
+                    first=0,
+                    past_last=2,
+                    chunk_no=1,
+                    import_log=root / "canonical-import.jsonl",
+                    failed_log=root / "failed-import.jsonl",
+                    run_id="test-run",
+                    source_commit="abc123",
+                    state=state,
+                )
+
+            self.assertTrue(ok)
+            target_run.assert_called_once_with(records[0])
+            bulk_run.assert_called_once()
+            self.assertEqual(bulk_run.call_args.args[2:], (1, 2))
+            self.assertEqual(state["confirmed_offset"], 2)
+            self.assertEqual(state["imported_documents"], 2)
+            events = [
+                json.loads(line)
+                for line in (root / "canonical-import.jsonl").read_text().splitlines()
+            ]
+            self.assertEqual(events[0]["record_type"], "target-dispatch")
+            self.assertEqual(events[0]["actor"], "data-governance")
+            self.assertEqual(events[-1]["document_ids"], ["doc-1"])
+
+
     def test_non_413_failure_stays_ambiguous_and_does_not_advance(self) -> None:
         records = [Record("doc-0", {"_id": "doc-0", "dtype": "source"})]
         with tempfile.TemporaryDirectory() as directory:
