@@ -52,7 +52,7 @@ python3 scripts/starintel.py import \
 python3 scripts/validate-for-merge.py --site
 ```
 
-Do not hand-copy these records into `db/`. The PR remains incomplete until the required importer has materialized the normalized DB surfaces and the refreshed exact head passes all required workflows, including the complete canonical merge gate.
+The packet has now been materialized through `scripts/starintel.py import`; the importer-generated normalized `db/` surfaces are committed on this branch. Merge still requires fresh successful exact-head repository workflows, including `Run complete canonical merge gate`.
 
 ## Public provenance
 
