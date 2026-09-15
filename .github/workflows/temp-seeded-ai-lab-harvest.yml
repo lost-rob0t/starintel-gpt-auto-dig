@@ -19,91 +19,49 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:
-      - name: Preflight read credential
+      - name: Inspect target state and canonical output visibility
         env:
           STAR_SERVER_API_KEY: ${{ secrets.STAR_SERVER_API_KEY }}
         shell: bash
         run: |
           set -euo pipefail
           credential="${STAR_SERVER_API_KEY#Bearer }"
-          response_file="$(mktemp)"
-          code="$(curl --silent --show-error --output "$response_file" --write-out '%{http_code}' \
+          outdir="$RUNNER_TEMP/seeded-ai-lab-state"
+          mkdir -p "$outdir"
+
+          context_code="$(curl --silent --show-error --output "$outdir/auth-context.json" --write-out '%{http_code}' \
             --header "Accept: application/json" \
             --header "Authorization: Bearer ${credential}" \
             "${STAR_INGEST_URL}/auth/context")"
-          test "$code" = "200"
-          jq -e '.scopes | index("documents:read") != null' "$response_file" >/dev/null
-          jq -e '.scopes | index("search:read") != null' "$response_file" >/dev/null
-          jq -c '{status:"credential-ok",principal_type,credential_id,scopes}' "$response_file"
+          test "$context_code" = "200"
+          jq -e '.scopes | index("targets:read") != null' "$outdir/auth-context.json" >/dev/null
 
-      - name: Fetch canonical org docs and first bounded search pages
-        env:
-          STAR_SERVER_API_KEY: ${{ secrets.STAR_SERVER_API_KEY }}
-        shell: bash
-        run: |
-          set -euo pipefail
-          credential="${STAR_SERVER_API_KEY#Bearer }"
-          outdir="$RUNNER_TEMP/seeded-ai-lab-harvest-v2"
-          mkdir -p "$outdir"
-          coverage="$outdir/coverage.jsonl"
-          : > "$coverage"
+          targets_code="$(curl --silent --show-error --output "$outdir/org-member-targets.json" --write-out '%{http_code}' \
+            --header "Accept: application/json" \
+            --header "Authorization: Bearer ${credential}" \
+            "${STAR_INGEST_URL}/targets/org-member")"
 
-          harvest() {
-            local slug="$1"
-            local org_id="starintel:theorg:org:${slug}"
-            local encoded_id
+          for slug in deepseek-ai anthropic openai; do
+            org_id="starintel:theorg:org:${slug}"
             encoded_id="$(python3 -c 'import sys,urllib.parse; print(urllib.parse.quote(sys.argv[1], safe=""))' "$org_id")"
-
-            local org_file="$outdir/${slug}-org.json"
-            local search_org_file="$outdir/${slug}-search-org-id.json"
-            local search_slug_file="$outdir/${slug}-search-slug.json"
-            local org_code search_org_code search_slug_code
-
-            org_code="$(curl --silent --show-error --output "$org_file" --write-out '%{http_code}' \
+            org_code="$(curl --silent --show-error --output "$outdir/${slug}-org.json" --write-out '%{http_code}' \
               --header "Accept: application/json" \
               --header "Authorization: Bearer ${credential}" \
               "${STAR_INGEST_URL}/api/v1/documents/${encoded_id}")"
+            jq -nc --arg slug "$slug" --arg org_id "$org_id" --arg org_http_status "$org_code" \
+              '{record_type:"org-member-output-visibility",slug:$slug,org_id:$org_id,org_http_status:$org_http_status}' \
+              | tee -a "$outdir/coverage.jsonl"
+          done
 
-            search_org_code="$(curl --silent --show-error --output "$search_org_file" --write-out '%{http_code}' \
-              --header "Accept: application/json" \
-              --header "Authorization: Bearer ${credential}" \
-              --get \
-              --data-urlencode "q=${org_id}" \
-              --data-urlencode "dataset=theorg" \
-              --data-urlencode "limit=100" \
-              "${STAR_INGEST_URL}/api/v1/documents/search")"
+          jq -nc --arg http_status "$targets_code" --argjson bytes "$(wc -c < "$outdir/org-member-targets.json")" \
+            '{record_type:"org-member-target-state",http_status:$http_status,bytes:$bytes}' \
+            | tee -a "$outdir/coverage.jsonl"
 
-            search_slug_code="$(curl --silent --show-error --output "$search_slug_file" --write-out '%{http_code}' \
-              --header "Accept: application/json" \
-              --header "Authorization: Bearer ${credential}" \
-              --get \
-              --data-urlencode "q=${slug}" \
-              --data-urlencode "dataset=theorg" \
-              --data-urlencode "limit=100" \
-              "${STAR_INGEST_URL}/api/v1/documents/search")"
-
-            jq -nc \
-              --arg slug "$slug" \
-              --arg org_id "$org_id" \
-              --arg org_http_status "$org_code" \
-              --arg search_org_http_status "$search_org_code" \
-              --arg search_slug_http_status "$search_slug_code" \
-              --argjson org_bytes "$(wc -c < "$org_file")" \
-              --argjson search_org_bytes "$(wc -c < "$search_org_file")" \
-              --argjson search_slug_bytes "$(wc -c < "$search_slug_file")" \
-              '{record_type:"org-member-harvest-probe",slug:$slug,org_id:$org_id,org_http_status:$org_http_status,search_org_http_status:$search_org_http_status,search_slug_http_status:$search_slug_http_status,org_bytes:$org_bytes,search_org_bytes:$search_org_bytes,search_slug_bytes:$search_slug_bytes}' \
-              | tee -a "$coverage"
-          }
-
-          harvest "deepseek-ai"
-          harvest "anthropic"
-          harvest "openai"
-
-      - name: Upload seeded actor harvest snapshots
+      - name: Upload seeded target and output state
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: seeded-ai-lab-org-member-harvest-v2
-          path: ${{ runner.temp }}/seeded-ai-lab-harvest-v2
+          name: seeded-ai-lab-org-member-state
+          path: ${{ runner.temp }}/seeded-ai-lab-state
           if-no-files-found: warn
           retention-days: 90
