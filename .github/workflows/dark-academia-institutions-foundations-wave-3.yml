@@ -87,8 +87,130 @@ jobs:
           )
           PY
 
+      - name: Harden public-person name classifier
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          path = Path("scripts/scrape_dark_academia_memberships.py")
+          source = path.read_text(encoding="utf-8")
+          old = '''    def looks_like_name(self, value: str) -> bool:
+        value = self.clean_text(value)
+        if not 3 <= len(value) <= 100 or value.lower() in NAME_STOPWORDS:
+            return False
+        if any(ch in value for ch in "{}[]<>@") or re.search(r"https?://", value):
+            return False
+        words = [w for w in re.split(r"\\s+", value) if w]
+        if not 2 <= len(words) <= 8:
+            return False
+        alpha = sum(ch.isalpha() for ch in value)
+        return alpha >= max(3, int(len(value) * 0.55))
+'''
+          new = '''    def looks_like_name(self, value: str) -> bool:
+        value = self.clean_text(value)
+        if not 3 <= len(value) <= 100 or value.lower() in NAME_STOPWORDS:
+            return False
+        if any(ch in value for ch in "{}[]<>@") or re.search(r"https?://", value):
+            return False
+        words = [w for w in re.split(r"\\s+", value) if w]
+        if not 2 <= len(words) <= 8:
+            return False
+        alpha = sum(ch.isalpha() for ch in value)
+        if alpha < max(3, int(len(value) * 0.55)):
+            return False
+
+        # High-precision public-person extraction: generic page headings, topic labels,
+        # program names, navigation text, and geographic surfaces are evidence of a
+        # page, not evidence of a human identity. False negatives remain coverage gaps;
+        # false person identities would poison the canonical graph.
+        non_person_terms = {
+            "about", "action", "affairs", "agreement", "agreements", "announcements",
+            "artificial", "background", "board", "california", "careers", "center",
+            "climate", "coalition", "committee", "communications", "conflict", "council",
+            "development", "directors", "division", "donor", "donors", "economics",
+            "education", "energy", "environment", "events", "executives", "explore",
+            "fellows", "financial", "foundation", "global", "governance", "health",
+            "history", "impact", "industry", "initiative", "institute", "institution",
+            "institutional", "intelligence", "international", "jobs", "leadership",
+            "media", "member", "members", "membership", "museum", "national", "network",
+            "news", "nuclear", "office", "operations", "people", "policy", "press",
+            "privacy", "profile", "profiles", "program", "project", "regional", "releases",
+            "research", "researchers", "security", "services", "society", "staff",
+            "statements", "strategy", "support", "sustainability", "team", "technology",
+            "terms", "terrorism", "topic", "topics", "trustees", "university", "volunteers",
+            "war", "weapons", "website", "what", "who", "you",
+        }
+        name_particles = {
+            "al", "bin", "binti", "da", "das", "de", "del", "della", "den", "der",
+            "di", "dos", "du", "el", "la", "le", "st", "van", "von",
+        }
+        suffixes = {"ii", "iii", "iv", "jr", "sr"}
+        normalized = [re.sub(r"[^a-z]+", "", word.lower()) for word in words]
+        if any(term in non_person_terms for term in normalized):
+            return False
+
+        name_like = 0
+        for word, token in zip(words, normalized):
+            if not token:
+                continue
+            if token in name_particles or token in suffixes:
+                continue
+            bare = word.strip(".,()[]{}")
+            if len(token) == 1 and bare[:1].isalpha():
+                name_like += 1
+                continue
+            if bare[:1].isupper() or bare.isupper():
+                name_like += 1
+                continue
+            return False
+        return name_like >= 2
+'''
+          if source.count(old) != 1:
+              raise SystemExit(f"expected one looks_like_name implementation, found {source.count(old)}")
+          path.write_text(source.replace(old, new), encoding="utf-8")
+          PY
+
       - name: Install public-web parsing dependencies
         run: python -m pip install --disable-pip-version-check requests beautifulsoup4 lxml
+
+      - name: Verify public-person classifier regressions
+        run: |
+          python - <<'PY'
+          import importlib.util
+          from pathlib import Path
+
+          path = Path("scripts/scrape_dark_academia_memberships.py")
+          spec = importlib.util.spec_from_file_location("wave3_scraper", path)
+          module = importlib.util.module_from_spec(spec)
+          assert spec.loader is not None
+          spec.loader.exec_module(module)
+          scraper = module.Scraper({}, Path("."))
+
+          false_people = [
+              "Afghanistan war",
+              "Board of Trustees",
+              "Explore fellows",
+              "Artificial Intelligence",
+              "Climate Change Policy",
+              "Global Health",
+              "Research Teams",
+              "Our History",
+              "News and Announcements",
+          ]
+          real_people = [
+              "Bruce Schneier",
+              "H. R. McMaster",
+              "Niall Ferguson",
+              "José María de la Torre",
+              "Jean-Pierre Dupont",
+              "Abdul Rahman al-Sayed",
+          ]
+          bad = [value for value in false_people if scraper.looks_like_name(value)]
+          missed = [value for value in real_people if not scraper.looks_like_name(value)]
+          if bad or missed:
+              raise SystemExit(f"person classifier regression: false_people={bad!r} missed_people={missed!r}")
+          print(f"person classifier guard OK: rejected={len(false_people)} accepted={len(real_people)}")
+          PY
 
       - name: Scrape institutional and foundation rosters
         env:
@@ -97,6 +219,44 @@ jobs:
           python scripts/run_with_membership_url_capture.py \
             --log reports/membership-url-observations-wave-3.jsonl \
             -- scripts/scrape_dark_academia_memberships.py --root .
+
+      - name: Verify generated public-person semantics
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+
+          packet = Path("digs/dark-academia/dark-academia-membership-recursion-wave-3-2026-07-31/starintel-documents.jsonl")
+          if not packet.is_file():
+              raise SystemExit(f"canonical packet missing: {packet}")
+          known_false_people = {
+              "afghanistan war",
+              "board of trustees",
+              "explore fellows",
+              "artificial intelligence",
+              "climate change policy",
+              "global health",
+              "research teams",
+              "our history",
+              "news and announcements",
+          }
+          offenders = []
+          people = 0
+          for line in packet.read_text(encoding="utf-8").splitlines():
+              if not line.strip():
+                  continue
+              doc = json.loads(line)
+              if doc.get("dtype") != "person":
+                  continue
+              people += 1
+              data = doc.get("data") if isinstance(doc.get("data"), dict) else {}
+              name = str(data.get("name") or data.get("full_name") or doc.get("title") or "").strip().lower()
+              if name in known_false_people:
+                  offenders.append(doc.get("_id"))
+          if offenders:
+              raise SystemExit(f"non-person page labels survived canonical generation: {offenders[:20]!r}")
+          print(f"generated public-person semantic guard OK: people={people}")
+          PY
 
       - name: Extract strict roster-list surfaces
         if: always()
