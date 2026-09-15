@@ -60,6 +60,14 @@ REPLACEMENT = '''    def looks_like_name(self, value: str) -> bool:
             if len(token) == 1 and bare[:1].isalpha():
                 name_like += 1
                 continue
+            hyphen_parts = bare.split("-")
+            if (
+                len(hyphen_parts) > 1
+                and hyphen_parts[0].lower() in name_particles
+                and all(part and part[:1].isupper() for part in hyphen_parts[1:])
+            ):
+                name_like += 1
+                continue
             if bare[:1].isupper() or bare.isupper():
                 name_like += 1
                 continue
