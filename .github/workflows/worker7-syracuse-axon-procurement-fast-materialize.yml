@@ -1,0 +1,54 @@
+name: Worker 7 Syracuse Axon procurement fast materialization
+
+on:
+  push:
+    branches:
+      - agent/worker7-syracuse-axon-procurement-20260915
+    paths:
+      - .github/workflows/worker7-syracuse-axon-procurement-fast-materialize.yml
+
+permissions:
+  contents: write
+
+env:
+  TARGET_BRANCH: agent/worker7-syracuse-axon-procurement-20260915
+  PACKET: digs/flock/2026-09-15-request-1903-syracuse-axon-procurement-baseline/starintel-documents.jsonl
+
+jobs:
+  materialize:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+          ref: ${{ env.TARGET_BRANCH }}
+
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+
+      - name: Verify release authority and import normalized DB records
+        run: |
+          python3 scripts/schema-release.py current
+          python3 scripts/schema-release.py check
+          python3 scripts/starintel.py schema --dtype source >/dev/null
+          python3 scripts/starintel.py schema --dtype analysis >/dev/null
+          python3 scripts/starintel.py schema --dtype research-pass >/dev/null
+          python3 scripts/starintel.py import "${PACKET}"
+
+      - name: Commit importer-generated DB records
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add db
+          if git diff --cached --quiet; then
+            echo 'No DB changes to materialize.'
+            exit 0
+          fi
+          git commit -m 'Materialize Syracuse Axon procurement packet'
+          git pull --rebase origin "${TARGET_BRANCH}"
+          git push origin HEAD:"${TARGET_BRANCH}"
