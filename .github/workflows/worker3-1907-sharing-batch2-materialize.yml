@@ -1,0 +1,35 @@
+name: Worker 3 materialize #1907 sharing batch 2
+
+on:
+  push:
+    branches:
+      - auto-dig/worker3-1907-sharing-batch2-20260915
+    paths:
+      - digs/flock/2026-09-15-request-1907-onondaga-incoming-sharing-history-batch2/starintel-documents.jsonl
+      - .github/workflows/worker3-1907-sharing-batch2-materialize.yml
+
+permissions:
+  contents: write
+
+jobs:
+  materialize:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref_name }}
+      - name: Materialize canonical StarIntel records
+        run: |
+          python3 scripts/starintel.py import digs/flock/2026-09-15-request-1907-onondaga-incoming-sharing-history-batch2/starintel-documents.jsonl
+      - name: Commit generated canonical records
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add db/
+          if git diff --cached --quiet; then
+            echo "No canonical changes to commit"
+            exit 0
+          fi
+          git commit -m "Materialize #1907 sharing batch 2 [worker3-materialized]"
+          git push origin HEAD:${{ github.ref_name }}
