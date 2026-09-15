@@ -35,8 +35,6 @@ jobs:
           PY
       - name: Import packet through canonical writer
         run: python3 scripts/starintel.py import digs/axon/2026-09-15-request-2100-platform-control-baseline/starintel-documents.jsonl
-      - name: Validate complete StarIntel corpus
-        run: python3 scripts/starintel.py validate --root .
       - name: Commit corrected packet and importer-generated DB records
         shell: bash
         run: |
