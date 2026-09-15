@@ -1,202 +1,189 @@
 {
-  "completed_at": "2026-07-31T07:18:11Z",
+  "completed_at": "2026-09-15T05:47:39Z",
   "counts_by_dtype": {
-    "dataset-manifest": 27,
-    "email": 19,
-    "org": 25,
-    "person": 1175,
-    "relation": 1203,
+    "dataset-manifest": 25,
+    "email": 298,
+    "org": 22,
+    "person": 6332,
+    "phone": 10,
+    "relation": 6726,
     "research-pass": 1,
-    "target": 1342
+    "target": 6498
   },
-  "cross_tie_relations": 9,
-  "documents": 3792,
+  "cross_tie_relations": 96,
+  "documents": 19912,
   "errors": [],
-  "people_records": 1175,
-  "started_at": "2026-07-31T07:18:11Z",
+  "people_records": 6332,
+  "started_at": "2026-09-15T05:47:39Z",
   "targets": {
-    "aei": {
-      "coverage_status": "no_parseable_roster_entries",
-      "elapsed_seconds": 0.7,
-      "name": "American Enterprise Institute",
-      "people": 0,
-      "source_pages": 0
-    },
-    "aspen-institute": {
-      "coverage_status": "no_parseable_roster_entries",
-      "elapsed_seconds": 0.59,
-      "name": "The Aspen Institute",
-      "people": 0,
-      "source_pages": 0
-    },
-    "atlantic-council": {
+    "asia-society": {
       "coverage_status": "roster_exposed",
-      "elapsed_seconds": 355.96,
-      "name": "Atlantic Council",
-      "people": 473,
-      "source_pages": 222
-    },
-    "bilderberg": {
-      "coverage_status": "no_parseable_roster_entries",
-      "elapsed_seconds": 0.05,
-      "name": "Bilderberg Meetings",
-      "people": 0,
-      "source_pages": 0
-    },
-    "boao-forum": {
-      "coverage_status": "no_parseable_roster_entries",
-      "elapsed_seconds": 66.68,
-      "name": "Boao Forum for Asia",
-      "people": 0,
-      "source_pages": 0
-    },
-    "bretton-woods-committee": {
-      "coverage_status": "no_parseable_roster_entries",
-      "elapsed_seconds": 0.47,
-      "name": "Bretton Woods Committee",
-      "people": 0,
-      "source_pages": 0
-    },
-    "brookings": {
-      "coverage_status": "no_parseable_roster_entries",
-      "elapsed_seconds": 0.06,
-      "name": "Brookings Institution",
-      "people": 0,
-      "source_pages": 0
-    },
-    "bruegel": {
-      "coverage_status": "no_parseable_roster_entries",
-      "elapsed_seconds": 0.15,
-      "name": "Bruegel",
-      "people": 0,
-      "source_pages": 0
-    },
-    "carnegie-endowment": {
-      "coverage_status": "no_parseable_roster_entries",
-      "elapsed_seconds": 0.68,
-      "name": "Carnegie Endowment for International Peace",
-      "people": 0,
-      "source_pages": 0
-    },
-    "chatham-house": {
-      "coverage_status": "no_parseable_roster_entries",
-      "elapsed_seconds": 0.15,
-      "name": "Chatham House",
-      "people": 0,
-      "source_pages": 0
-    },
-    "club-of-rome": {
-      "coverage_status": "roster_exposed",
-      "elapsed_seconds": 15.72,
-      "name": "Club of Rome",
-      "people": 215,
-      "source_pages": 215
-    },
-    "cnas": {
-      "coverage_status": "no_parseable_roster_entries",
-      "elapsed_seconds": 0.21,
-      "name": "Center for a New American Security",
-      "people": 0,
-      "source_pages": 0
-    },
-    "concordia": {
-      "coverage_status": "no_parseable_roster_entries",
-      "elapsed_seconds": 0.1,
-      "name": "Concordia",
-      "people": 0,
-      "source_pages": 0
-    },
-    "council-on-foreign-relations": {
-      "coverage_status": "no_parseable_roster_entries",
-      "elapsed_seconds": 0.22,
-      "name": "Council on Foreign Relations",
-      "people": 0,
-      "source_pages": 0
-    },
-    "csis": {
-      "coverage_status": "no_parseable_roster_entries",
-      "elapsed_seconds": 0.04,
-      "name": "Center for Strategic and International Studies",
-      "people": 0,
-      "source_pages": 0
-    },
-    "ecfr": {
-      "coverage_status": "no_parseable_roster_entries",
-      "elapsed_seconds": 0.06,
-      "name": "European Council on Foreign Relations",
-      "people": 0,
-      "source_pages": 0
-    },
-    "german-marshall-fund": {
-      "coverage_status": "no_parseable_roster_entries",
-      "elapsed_seconds": 0.22,
-      "name": "German Marshall Fund of the United States",
-      "people": 0,
-      "source_pages": 0
-    },
-    "group-of-thirty": {
-      "coverage_status": "no_parseable_roster_entries",
-      "elapsed_seconds": 0.4,
-      "name": "Group of Thirty",
-      "people": 0,
-      "source_pages": 0
-    },
-    "iiss": {
-      "coverage_status": "no_parseable_roster_entries",
-      "elapsed_seconds": 0.28,
-      "name": "International Institute for Strategic Studies",
-      "people": 0,
-      "source_pages": 0
-    },
-    "milken-institute": {
-      "coverage_status": "no_parseable_roster_entries",
-      "elapsed_seconds": 0.21,
-      "name": "Milken Institute",
-      "people": 0,
-      "source_pages": 0
-    },
-    "munich-security-conference": {
-      "coverage_status": "roster_exposed",
-      "elapsed_seconds": 30.13,
-      "name": "Munich Security Conference",
+      "elapsed_seconds": 24.89,
+      "name": "Asia Society",
       "people": 3,
       "source_pages": 3
     },
-    "piie": {
-      "coverage_status": "no_parseable_roster_entries",
-      "elapsed_seconds": 0.12,
-      "name": "Peterson Institute for International Economics",
-      "people": 0,
-      "source_pages": 0
-    },
-    "rand": {
-      "coverage_status": "no_parseable_roster_entries",
-      "elapsed_seconds": 0.3,
-      "name": "RAND Corporation",
-      "people": 0,
-      "source_pages": 0
-    },
-    "rockefeller-foundation": {
-      "coverage_status": "no_parseable_roster_entries",
-      "elapsed_seconds": 21.96,
-      "name": "The Rockefeller Foundation",
-      "people": 0,
-      "source_pages": 0
-    },
-    "trilateral-commission": {
+    "belfer-center": {
       "coverage_status": "roster_exposed",
-      "elapsed_seconds": 32.73,
-      "name": "The Trilateral Commission",
-      "people": 484,
-      "source_pages": 484
+      "elapsed_seconds": 275.22,
+      "name": "Belfer Center for Science and International Affairs",
+      "people": 1511,
+      "source_pages": 1484
     },
-    "wilson-center": {
+    "carnegie-corporation": {
       "coverage_status": "no_parseable_roster_entries",
-      "elapsed_seconds": 0.1,
-      "name": "Wilson Center",
+      "elapsed_seconds": 2.41,
+      "name": "Carnegie Corporation of New York",
       "people": 0,
       "source_pages": 0
+    },
+    "cato-institute": {
+      "coverage_status": "no_parseable_roster_entries",
+      "elapsed_seconds": 0.58,
+      "name": "Cato Institute",
+      "people": 0,
+      "source_pages": 0
+    },
+    "center-for-american-progress": {
+      "coverage_status": "roster_exposed",
+      "elapsed_seconds": 946.81,
+      "name": "Center for American Progress",
+      "people": 189,
+      "source_pages": 189
+    },
+    "center-for-global-development": {
+      "coverage_status": "no_parseable_roster_entries",
+      "elapsed_seconds": 0.38,
+      "name": "Center for Global Development",
+      "people": 0,
+      "source_pages": 0
+    },
+    "council-of-the-americas": {
+      "coverage_status": "no_parseable_roster_entries",
+      "elapsed_seconds": 1.56,
+      "name": "Council of the Americas",
+      "people": 0,
+      "source_pages": 0
+    },
+    "eurasia-group": {
+      "coverage_status": "roster_exposed",
+      "elapsed_seconds": 6.79,
+      "name": "Eurasia Group",
+      "people": 17,
+      "source_pages": 17
+    },
+    "ford-foundation": {
+      "coverage_status": "roster_exposed",
+      "elapsed_seconds": 4.48,
+      "name": "Ford Foundation",
+      "people": 1,
+      "source_pages": 1
+    },
+    "gates-foundation": {
+      "coverage_status": "roster_exposed",
+      "elapsed_seconds": 46.58,
+      "name": "Gates Foundation",
+      "people": 261,
+      "source_pages": 261
+    },
+    "heritage-foundation": {
+      "coverage_status": "no_parseable_roster_entries",
+      "elapsed_seconds": 0.37,
+      "name": "The Heritage Foundation",
+      "people": 0,
+      "source_pages": 0
+    },
+    "hoover-institution": {
+      "coverage_status": "roster_exposed",
+      "elapsed_seconds": 4.0,
+      "name": "Hoover Institution",
+      "people": 184,
+      "source_pages": 23
+    },
+    "hudson-institute": {
+      "coverage_status": "roster_exposed",
+      "elapsed_seconds": 219.34,
+      "name": "Hudson Institute",
+      "people": 1215,
+      "source_pages": 1215
+    },
+    "international-chamber-of-commerce": {
+      "coverage_status": "roster_exposed",
+      "elapsed_seconds": 17.07,
+      "name": "International Chamber of Commerce",
+      "people": 6,
+      "source_pages": 1
+    },
+    "international-crisis-group": {
+      "coverage_status": "no_parseable_roster_entries",
+      "elapsed_seconds": 0.44,
+      "name": "International Crisis Group",
+      "people": 0,
+      "source_pages": 0
+    },
+    "new-america": {
+      "coverage_status": "roster_exposed",
+      "elapsed_seconds": 346.96,
+      "name": "New America",
+      "people": 401,
+      "source_pages": 401
+    },
+    "odi-global": {
+      "coverage_status": "no_parseable_roster_entries",
+      "elapsed_seconds": 7.48,
+      "name": "ODI Global",
+      "people": 0,
+      "source_pages": 0
+    },
+    "open-society-foundations": {
+      "coverage_status": "roster_exposed",
+      "elapsed_seconds": 2.15,
+      "name": "Open Society Foundations",
+      "people": 13,
+      "source_pages": 13
+    },
+    "quincy-institute": {
+      "coverage_status": "roster_exposed",
+      "elapsed_seconds": 108.91,
+      "name": "Quincy Institute for Responsible Statecraft",
+      "people": 237,
+      "source_pages": 237
+    },
+    "rockefeller-brothers-fund": {
+      "coverage_status": "no_parseable_roster_entries",
+      "elapsed_seconds": 0.42,
+      "name": "Rockefeller Brothers Fund",
+      "people": 0,
+      "source_pages": 0
+    },
+    "rusi": {
+      "coverage_status": "roster_exposed",
+      "elapsed_seconds": 243.42,
+      "name": "Royal United Services Institute",
+      "people": 1305,
+      "source_pages": 1301
+    },
+    "sipri": {
+      "coverage_status": "roster_exposed",
+      "elapsed_seconds": 90.03,
+      "name": "Stockholm International Peace Research Institute",
+      "people": 988,
+      "source_pages": 987
+    },
+    "wbcsd": {
+      "coverage_status": "no_parseable_roster_entries",
+      "elapsed_seconds": 12.84,
+      "name": "World Business Council for Sustainable Development",
+      "people": 0,
+      "source_pages": 0
+    },
+    "world-government-summit": {
+      "coverage_status": "roster_exposed",
+      "elapsed_seconds": 0.89,
+      "name": "World Governments Summit",
+      "people": 1,
+      "source_pages": 1
     }
   },
-  "wef_partner_targets": 167
+  "wef_partner_targets": 166
 }
