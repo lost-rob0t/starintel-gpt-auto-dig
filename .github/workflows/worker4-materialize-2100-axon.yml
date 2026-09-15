@@ -19,19 +19,33 @@ jobs:
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
+      - name: Remove undeclared research-pass helper fields
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          path = Path('digs/axon/2026-09-15-request-2100-platform-control-baseline/starintel-documents.jsonl')
+          docs = [json.loads(line) for line in path.read_text().splitlines() if line.strip()]
+          for doc in docs:
+              data = doc.get('data', {})
+              data.pop('completion_state', None)
+              data.pop('next_steps', None)
+          path.write_text('\n'.join(json.dumps(doc, separators=(',', ':'), ensure_ascii=False) for doc in docs) + '\n')
+          PY
       - name: Import packet through canonical writer
         run: python3 scripts/starintel.py import digs/axon/2026-09-15-request-2100-platform-control-baseline/starintel-documents.jsonl
       - name: Validate complete StarIntel corpus
         run: python3 scripts/starintel.py validate --root .
-      - name: Commit importer-generated DB records
+      - name: Commit corrected packet and importer-generated DB records
         shell: bash
         run: |
           set -euo pipefail
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add db/
+          git add digs/axon/2026-09-15-request-2100-platform-control-baseline/starintel-documents.jsonl db/
           if git diff --cached --quiet; then
-            echo "No importer-generated DB changes"
+            echo "No packet or importer-generated DB changes"
             exit 0
           fi
           git commit -m "Materialize #2100 Axon platform controls"
