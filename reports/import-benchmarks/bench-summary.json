@@ -1,0 +1,14 @@
+{
+  "attempted": 5671,
+  "accepted": 5671,
+  "duplicate": 0,
+  "invalid": 0,
+  "failed": 0,
+  "transient": 0,
+  "elapsed_seconds": 7.759,
+  "documents_per_second": 730.9,
+  "input": "/home/unseen/starintel/starintel-gpt-auto-dig/db",
+  "server": "http://127.0.0.1:5000",
+  "mode": "import",
+  "checkpoint_ids": 5671
+}
