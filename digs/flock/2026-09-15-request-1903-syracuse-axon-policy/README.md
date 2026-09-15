@@ -23,6 +23,10 @@ These are policy and source-backed deployment facts, not proof of all production
 - no Flock hotlist, read, case, user, credential, or historical-data migration is inferred;
 - the executed Axon contract/procurement package remains unresolved.
 
+## Canonicalization
+
+The normalized `db/` records in this PR were materialized through the repository-owned `scripts/starintel.py import` path from the packet JSONL. No normalized DB record in this pass was hand-written.
+
 ## Sources
 
 1. Syracuse Police Department, **Automated License Plate Readers (ALPRs), Policy 427**: https://www.syr.gov/files/bd93959e-cc8b-4737-ad1a-26247a042b56/Automated_License_Plate_Readers__ALPRs.pdf
