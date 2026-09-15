@@ -25,4 +25,4 @@ The six existing canonical Syracuse investigation targets are reused; no competi
 - City of Syracuse, Surveillance Technology Working Group, January 27, 2026 meeting page and Meeting #79 presentation.
 - Central Current, February 9, 2026 report on the Common Council's 7-1 approval vote.
 
-Normalized `db/` records for this packet must be materialized through the canonical `scripts/starintel.py import` transactional path; they must not be hand-written.
+Normalized `db/` records for this packet were materialized through the canonical `scripts/starintel.py import` transactional path; generated DB records were not hand-written. The same materialization run completed the canonical Nim merge/site gate before committing the importer output.
