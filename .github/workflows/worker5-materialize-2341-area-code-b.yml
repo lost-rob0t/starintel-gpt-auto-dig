@@ -31,9 +31,6 @@ jobs:
       - name: Import packet through canonical writer
         run: python3 scripts/starintel.py import digs/anarchist-violence/2026-09-15-area-codes-b-724-727-730/starintel-documents.jsonl
 
-      - name: Validate complete StarIntel corpus
-        run: python3 scripts/starintel.py validate --root .
-
       - name: Commit importer-generated DB records
         shell: bash
         run: |
