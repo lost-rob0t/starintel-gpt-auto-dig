@@ -9,6 +9,7 @@ on:
   push:
     branches:
       - main
+      - autodig/worker-1-seeded-ai-lab-dispatch-20260915
     paths:
       - ".github/workflows/temp-backlog-import.yml"
   workflow_dispatch:
@@ -42,9 +43,115 @@ env:
   STAR_INGEST_URL: https://ingest.starintel.actor
   OUTER_CHUNK_SIZE: "10000"
   SERVER_BATCH_SIZE: "250"
+  SEEDED_DISPATCH_BRANCH: autodig/worker-1-seeded-ai-lab-dispatch-20260915
 
 jobs:
+  dispatch-seeded-ai-lab-targets:
+    if: github.event_name == 'push' && github.ref_name == 'autodig/worker-1-seeded-ai-lab-dispatch-20260915'
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Checkout canonical source commit
+        uses: actions/checkout@v6
+
+      - name: Preflight ingest credential
+        env:
+          STAR_SERVER_API_KEY: ${{ secrets.STAR_SERVER_API_KEY }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          credential="${STAR_SERVER_API_KEY#Bearer }"
+          if [[ -z "$credential" ]]; then
+            echo "STAR_SERVER_API_KEY is missing." >&2
+            exit 2
+          fi
+          response_file="$(mktemp)"
+          code="$(curl --silent --show-error \
+            --output "$response_file" \
+            --write-out '%{http_code}' \
+            --header "Accept: application/json" \
+            --header "Authorization: Bearer ${credential}" \
+            "${STAR_INGEST_URL}/auth/context")"
+          if [[ "$code" != "200" ]]; then
+            safe_code="$(jq -r '.code // "unknown"' "$response_file" 2>/dev/null || printf '%s' unknown)"
+            echo "Ingest credential preflight failed: HTTP ${code}, server code ${safe_code}." >&2
+            exit 3
+          fi
+          jq -e '.scopes | index("targets:dispatch") != null' "$response_file" >/dev/null
+          jq -c '{status:"credential-ok",principal_type,credential_id,scopes}' "$response_file"
+
+      - name: Dispatch canonical seeded AI-lab targets
+        env:
+          STAR_SERVER_API_KEY: ${{ secrets.STAR_SERVER_API_KEY }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          credential="${STAR_SERVER_API_KEY#Bearer }"
+          out="$RUNNER_TEMP/seeded-ai-lab-target-dispatch.jsonl"
+          : > "$out"
+
+          dispatch() {
+            local label="$1"
+            local slug="$2"
+            local target_id="$3"
+            local response_file code payload
+            response_file="$(mktemp)"
+            payload="$(jq -nc \
+              --arg actor "org-member" \
+              --arg target "$slug" \
+              --arg dataset "ai-lab-workforce-seeded-queue-2026-09-15" \
+              --arg key "$target_id" \
+              '{actor:$actor,target:$target,dataset:$dataset,options:[],idempotency_key:$key}')"
+            code="$(curl --silent --show-error \
+              --output "$response_file" \
+              --write-out '%{http_code}' \
+              --request POST \
+              --header "Accept: application/json" \
+              --header "Content-Type: application/json" \
+              --header "Authorization: Bearer ${credential}" \
+              --data "$payload" \
+              "${STAR_INGEST_URL}/api/v1/targets")"
+
+            if [[ "$code" != "200" && "$code" != "201" ]]; then
+              jq -nc \
+                --arg label "$label" \
+                --arg slug "$slug" \
+                --arg target_id "$target_id" \
+                --arg http_status "$code" \
+                --arg server_code "$(jq -r '.code // "unknown"' "$response_file" 2>/dev/null || printf '%s' unknown)" \
+                --arg correlation_id "$(jq -r '.correlation_id // ""' "$response_file" 2>/dev/null || true)" \
+                '{record_type:"target-dispatch-failure",status:"failed",label:$label,slug:$slug,target_id:$target_id,http_status:$http_status,server_code:$server_code,correlation_id:$correlation_id}' \
+                | tee -a "$out"
+              return 1
+            fi
+
+            jq -ce \
+              --arg label "$label" \
+              --arg slug "$slug" \
+              --arg requested_target_id "$target_id" \
+              --arg http_status "$code" \
+              '{record_type:"target-dispatch",status:"confirmed",label:$label,slug:$slug,requested_target_id:$requested_target_id,http_status:$http_status,receipt:{status:.status,target_id:.target_id,request_id:.request_id,correlation_id:.correlation_id}}' \
+              "$response_file" | tee -a "$out"
+          }
+
+          dispatch "DeepSeek AI" "deepseek-ai" "starintel:target:ai-lab-workforce-deepseek-ai-org-member"
+          dispatch "Anthropic" "anthropic" "starintel:target:ai-lab-workforce-anthropic-org-member"
+          dispatch "OpenAI" "openai" "starintel:target:ai-lab-workforce-openai-org-member"
+
+          test "$(wc -l < "$out")" -eq 3
+          jq -e -s 'length == 3 and all(.[]; .record_type == "target-dispatch" and .status == "confirmed" and (.receipt.target_id | length) > 0 and (.receipt.request_id | length) > 0 and (.receipt.correlation_id | length) > 0)' "$out" >/dev/null
+
+      - name: Upload seeded target dispatch receipts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: seeded-ai-lab-target-dispatch-receipts
+          path: ${{ runner.temp }}/seeded-ai-lab-target-dispatch.jsonl
+          if-no-files-found: warn
+          retention-days: 90
+
   import-backlog:
+    if: github.ref_name != 'autodig/worker-1-seeded-ai-lab-dispatch-20260915'
     runs-on: ubuntu-latest
     timeout-minutes: 180
     steps:
