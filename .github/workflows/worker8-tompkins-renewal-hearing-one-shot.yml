@@ -1,0 +1,80 @@
+name: Worker 8 Tompkins renewal-hearing canonical materializer
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - agent/worker8-tompkins-renewal-hearing-20260915
+    paths:
+      - .github/workflows/worker8-tompkins-renewal-hearing-one-shot.yml
+      - digs/flock/2026-09-15-request-1904-renewal-hearing-baseline/**
+
+permissions:
+  contents: write
+
+env:
+  TARGET_BRANCH: agent/worker8-tompkins-renewal-hearing-20260915
+  PACKET: digs/flock/2026-09-15-request-1904-renewal-hearing-baseline/starintel-documents.jsonl
+  NIM_VERSION: 2.2.4
+  STARINTEL_NIM_REF: b55316bae294a146523cd2f977b81096e538c86a
+
+jobs:
+  materialize:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+          ref: ${{ env.TARGET_BRANCH }}
+
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+
+      - name: Inspect executable schema authority
+        run: |
+          python3 scripts/schema-release.py current
+          python3 scripts/schema-release.py check
+          python3 scripts/starintel.py types
+          python3 scripts/starintel.py schema --dtype source >/tmp/source-schema.json
+          python3 scripts/starintel.py schema --dtype analysis >/tmp/analysis-schema.json
+          python3 scripts/starintel.py schema --dtype research-pass >/tmp/research-pass-schema.json
+
+      - name: Import canonical packet through transactional writer
+        run: python3 scripts/starintel.py import "${PACKET}"
+
+      - name: Checkout canonical StarIntel Nim runtime
+        uses: actions/checkout@v6
+        with:
+          repository: lost-rob0t/starintel-doc.nim
+          ref: ${{ env.STARINTEL_NIM_REF }}
+          path: .starintel-doc-nim
+
+      - name: Set up Nim
+        uses: jiro4989/setup-nim-action@v2
+        with:
+          nim-version: ${{ env.NIM_VERSION }}
+
+      - name: Build canonical validation binaries
+        run: nimble buildFast -y
+
+      - name: Run complete canonical merge gate
+        shell: bash
+        run: bin/validate-for-merge --site
+
+      - name: Commit normalized DB records
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add db "$(dirname "${PACKET}")"
+          if git diff --cached --quiet; then
+            echo 'Canonical packet and normalized DB are unchanged.'
+            exit 0
+          fi
+          git commit -m 'Materialize Tompkins renewal-hearing StarIntel records'
+          git pull --rebase origin "${TARGET_BRANCH}"
+          git push origin HEAD:"${TARGET_BRANCH}"
