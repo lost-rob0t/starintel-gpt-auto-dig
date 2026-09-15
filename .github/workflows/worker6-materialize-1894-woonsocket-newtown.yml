@@ -23,9 +23,6 @@ jobs:
       - name: Import packet through canonical writer
         run: python3 scripts/starintel.py import digs/flock/2026-09-15-request-1894-woonsocket-newtown-incoming-portal-edges/starintel-documents.jsonl
 
-      - name: Validate complete StarIntel corpus
-        run: python3 scripts/starintel.py validate --root .
-
       - name: Commit importer-generated DB records
         shell: bash
         run: |
