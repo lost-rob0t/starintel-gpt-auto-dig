@@ -17,7 +17,13 @@ class FixtureScraper(Scraper):
         super().__init__({"targets": []}, ROOT)
         self.html = html
 
-    def fetch(self, url: str, *, allow_binary: bool = False) -> tuple[str, int, str]:
+    def fetch(
+        self,
+        url: str,
+        *,
+        allow_binary: bool = False,
+        respect_robots: bool = True,
+    ) -> tuple[str, int, str]:
         return self.html, 200, url
 
 
