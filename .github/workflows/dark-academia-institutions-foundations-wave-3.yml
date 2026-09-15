@@ -5,12 +5,14 @@ on:
     branches: ["agent/dark-academia-institutions-foundations-wave-3"]
     paths:
       - "imports/dark-academia-wave3/**"
+      - "scripts/harden_wave3_person_classifier.py"
       - ".github/workflows/dark-academia-institutions-foundations-wave-3.yml"
   pull_request:
     types: [opened, reopened, synchronize]
     branches: [main]
     paths:
       - "imports/dark-academia-wave3/**"
+      - "scripts/harden_wave3_person_classifier.py"
   workflow_dispatch:
 
 permissions:
