@@ -1,0 +1,35 @@
+name: Worker 7 materialize #1951 Axon control chain
+
+on:
+  push:
+    branches:
+      - auto-dig/worker7-1951-syracuse-axon-control-chain-20260915
+    paths:
+      - digs/flock/2026-09-15-request-1951-syracuse-axon-approval-control-chain/starintel-documents.jsonl
+      - .github/workflows/worker7-1951-axon-control-chain-materialize.yml
+
+permissions:
+  contents: write
+
+jobs:
+  materialize:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref_name }}
+      - name: Materialize canonical StarIntel records
+        run: |
+          python3 scripts/starintel.py import digs/flock/2026-09-15-request-1951-syracuse-axon-approval-control-chain/starintel-documents.jsonl
+      - name: Commit generated canonical records
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add db/
+          if git diff --cached --quiet; then
+            echo "No canonical changes to commit"
+            exit 0
+          fi
+          git commit -m "Materialize #1951 Axon control chain [worker7-materialized]"
+          git push origin HEAD:${{ github.ref_name }}
