@@ -16,6 +16,7 @@ on:
       - "scripts/quasar_issue_queue.py"
       - "scripts/quasar_autodig_runtime.py"
       - "tests/test_canonical_dataset_roots.py"
+      - "tests/test_import_starintel_corpus.py"
       - "tests/test_operation_document.py"
       - "tests/test_starintel_legacy.nim"
       - "tests/test_starintel_transport.nim"
@@ -37,6 +38,7 @@ on:
       - "scripts/quasar_issue_queue.py"
       - "scripts/quasar_autodig_runtime.py"
       - "tests/test_canonical_dataset_roots.py"
+      - "tests/test_import_starintel_corpus.py"
       - "tests/test_operation_document.py"
       - "tests/test_starintel_legacy.nim"
       - "tests/test_starintel_transport.nim"
@@ -95,6 +97,22 @@ jobs:
           python -m unittest tests.test_canonical_dataset_roots -v
           python -m unittest tests.test_operation_document -v
 
+      - name: Probe importer corpus duplicate invariant
+        shell: bash
+        run: |
+          set +e
+          python -m unittest tests.test_import_starintel_corpus -v
+          status=$?
+          set -e
+          if (( status != 0 )); then
+            if [[ -f importer-corpus-error.txt ]]; then
+              while IFS= read -r line; do
+                echo "::error title=Importer duplicate::$line"
+              done < importer-corpus-error.txt
+            fi
+            exit "$status"
+          fi
+
       - name: Test Nim validator compatibility
         run: |
           nim c -r -d:release --opt:speed --mm:orc \
@@ -134,5 +152,6 @@ jobs:
             unverifed
             validation-errors
             validator.log
+            importer-corpus-error.txt
           if-no-files-found: warn
           retention-days: 7
