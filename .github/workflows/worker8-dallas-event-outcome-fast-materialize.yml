@@ -1,3 +1,4 @@
+# Retry after validating research-pass fields against live executable schema.
 name: Worker 8 Dallas protest outcome fast materialization
 
 on:
