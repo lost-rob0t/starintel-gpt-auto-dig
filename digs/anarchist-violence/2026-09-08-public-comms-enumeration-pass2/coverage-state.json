@@ -1,0 +1,36 @@
+{
+  "run_id": "public-comms-enumeration-2026-09-08-pass2",
+  "observed_at": "2026-09-08T13:52:20Z",
+  "scope": "publicly advertised organization communications surfaces only",
+  "stats": {
+    "orgs_checked": 11,
+    "public_communications_surfaces_added_or_reverified": 9,
+    "active_exact_or_public_join_endpoints": 6,
+    "stale_invites": 0,
+    "expired_invites": 0,
+    "non_public_but_observed_coordination_surfaces": 0,
+    "public_signal_join_surfaces_with_token_not_exposed_by_collector": 3,
+    "communications_platforms_materialized": ["Discord", "Signal"],
+    "public_social_endpoint_platforms_observed": ["Instagram", "Facebook", "TikTok", "Bluesky", "YouTube", "Substack", "Reddit", "X", "UpScrolled"],
+    "public_social_endpoint_platform_count": 9,
+    "source_domains_consulted": ["linktr.ee", "discord.gg", "discord.com", "columbusdsa.org", "columbusdsa.solidarity.tech", "signal.group", "happeningnext.com", "facebook.com", "reddit.com"],
+    "source_domain_count": 9,
+    "newly_discovered_orgs_materialized": ["Columbus 50501", "Columbus DSA", "General Strike U.S. - Colorado"],
+    "newly_discovered_org_count": 3,
+    "unresolved_communications_leads": [
+      "Texas Mutual Aid Discord exact destination",
+      "Green Country Collective Discord exact destination",
+      "General Strike U.S. Oregon Discord exact destination",
+      "Tokenized Signal destinations for GCC Bulletin, GCC Care Connection, and GSUS Colorado",
+      "Columbus 50501 ICE Sightings Chat, 614 ICE Watch, and Community Response Hub canonical resolution",
+      "Northwest Ohio People’s Pantry first-party communications resolution"
+    ],
+    "unresolved_communications_lead_count": 6
+  },
+  "safety": {
+    "access_controls_bypassed": false,
+    "private_group_access_requested": false,
+    "hidden_rosters_scraped": false,
+    "private_individual_political_affiliation_inferred": false
+  }
+}
