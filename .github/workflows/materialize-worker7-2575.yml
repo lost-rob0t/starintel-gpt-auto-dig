@@ -1,0 +1,45 @@
+name: Materialize Worker 7 request 2575
+
+on:
+  push:
+    branches:
+      - agent/worker7-dallas-permit-coordination-2575-20260915
+    paths:
+      - .github/workflows/materialize-worker7-2575.yml
+
+permissions:
+  contents: write
+
+jobs:
+  materialize:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out exact branch
+        uses: actions/checkout@v4
+        with:
+          ref: agent/worker7-dallas-permit-coordination-2575-20260915
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Materialize canonical records through importer
+        run: |
+          python3 scripts/starintel.py import \
+            digs/dallas/2026-09-15-request-2575-dallas-permit-coordination/starintel-documents.jsonl
+
+      - name: Commit importer output and remove one-shot workflow
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add db
+          git rm .github/workflows/materialize-worker7-2575.yml
+          if git diff --cached --quiet; then
+            echo 'No importer output or workflow removal to commit' >&2
+            exit 1
+          fi
+          git commit -m 'Materialize #2575 canonical records'
+          git push origin HEAD:agent/worker7-dallas-permit-coordination-2575-20260915
