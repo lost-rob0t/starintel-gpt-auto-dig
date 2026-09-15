@@ -1,0 +1,69 @@
+name: Worker 2 Danbury September 1 AV materialization
+
+on:
+  push:
+    branches:
+      - auto-dig/worker2-2514-sep1-av-20260915
+    paths:
+      - .github/workflows/worker2-2514-sep1-av-materialize.yml
+      - digs/danbury/2026-09-15-request-2514-september-1-av-record/**
+
+permissions:
+  contents: write
+
+env:
+  TARGET_BRANCH: auto-dig/worker2-2514-sep1-av-20260915
+  PACKET: digs/danbury/2026-09-15-request-2514-september-1-av-record/starintel-documents.jsonl
+  NIM_VERSION: 2.2.4
+  STARINTEL_NIM_REF: b55316bae294a146523cd2f977b81096e538c86a
+
+jobs:
+  materialize:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+          ref: ${{ env.TARGET_BRANCH }}
+
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+
+      - name: Checkout canonical StarIntel Nim runtime
+        uses: actions/checkout@v6
+        with:
+          repository: lost-rob0t/starintel-doc.nim
+          ref: ${{ env.STARINTEL_NIM_REF }}
+          path: .starintel-doc-nim
+
+      - name: Set up Nim
+        uses: jiro4989/setup-nim-action@v2
+        with:
+          nim-version: ${{ env.NIM_VERSION }}
+
+      - name: Import canonical packet
+        run: python3 scripts/starintel.py import "${PACKET}"
+
+      - name: Build canonical Nim validation and site binaries
+        run: nimble buildFast -y
+
+      - name: Run mandatory AutoDig merge/site gate
+        run: bin/validate-for-merge --site
+
+      - name: Commit importer-generated normalized records
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add db
+          if git diff --cached --quiet; then
+            echo 'Normalized documents are unchanged.'
+            exit 0
+          fi
+          git commit -m 'Materialize #2514 September 1 audiovisual records'
+          git pull --rebase origin "${TARGET_BRANCH}"
+          git push origin HEAD:"${TARGET_BRANCH}"
