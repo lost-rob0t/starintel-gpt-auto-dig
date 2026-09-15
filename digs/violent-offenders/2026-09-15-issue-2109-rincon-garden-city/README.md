@@ -40,4 +40,4 @@ python3 scripts/starintel.py import \
 python3 scripts/validate-for-merge.py --site
 ```
 
-Do not hand-copy packet records into `db/`.
+The branch materialization workflow successfully ran the canonical importer and repository validation before committing the resulting `db/` surfaces. Do not hand-copy packet records into `db/`.
