@@ -1,0 +1,34 @@
+name: Worker 6 materialize Rensselaer locality records
+
+on:
+  push:
+    branches:
+      - auto-dig/worker6-rensselaer-locality-universe-20260915
+
+permissions:
+  contents: write
+
+jobs:
+  materialize:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Materialize canonical records through repository importer
+        run: python3 scripts/starintel.py import digs/flock/2026-09-15-request-1894-rensselaer-official-locality-universe/starintel-documents.jsonl
+      - name: Commit generated canonical DB records
+        shell: bash
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add db/
+          if git diff --cached --quiet; then
+            echo 'No canonical DB changes to commit.'
+            exit 0
+          fi
+          git commit -m 'Auto-Dig #1894: materialize canonical locality records'
+          git push origin HEAD:${GITHUB_REF_NAME}
