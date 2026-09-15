@@ -1,0 +1,41 @@
+name: Worker 3 materialize request 1907 Onondaga sharing pass
+
+on:
+  push:
+    branches:
+      - agent/worker3-onondaga-incoming-history-1907-20260915
+    paths:
+      - digs/flock/2026-09-15-request-1907-onondaga-incoming-sharing-history/starintel-documents.jsonl
+      - .github/workflows/worker3-materialize-1907-onondaga-history.yml
+
+permissions:
+  contents: write
+
+jobs:
+  materialize:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out branch
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Import packet through canonical writer
+        run: python3 scripts/starintel.py import digs/flock/2026-09-15-request-1907-onondaga-incoming-sharing-history/starintel-documents.jsonl
+
+      - name: Validate complete StarIntel corpus
+        run: python3 scripts/starintel.py validate --root .
+
+      - name: Commit importer-generated DB records
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add db/
+          if git diff --cached --quiet; then
+            echo "No importer-generated DB changes"
+            exit 0
+          fi
+          git commit -m "Materialize #1907 Onondaga historical sharing canonical records"
+          git push origin HEAD:${GITHUB_REF_NAME}
