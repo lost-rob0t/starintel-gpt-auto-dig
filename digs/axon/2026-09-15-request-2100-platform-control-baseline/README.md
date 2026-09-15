@@ -19,7 +19,7 @@ Current primary Axon documentation establishes a testable control matrix:
 
 Axon also documents two evidence-quality caveats that must survive downstream analysis: some fields for roughly pre-April-2026 activity can be incomplete because of the legacy audit system, and the ALPR Data Sharing report's `Device Scope` / `Data Conditions` columns can show generic `All Devices` / `Full Sharing` values regardless of the actual relationship. Live Sharing Management therefore outranks those summary columns for configured sharing conditions.
 
-Primary sources:
+Primary sources are preserved inline on the canonical analysis/research-pass records:
 
 - https://www.axon.com/help/fusus/software/fusus/alpr/alpr-sharing.htm
 - https://www.axon.com/help/fusus/software/fusus/alpr/alpr-search-interface.htm
@@ -43,10 +43,6 @@ The next native Syracuse package should capture `ALPR Settings`, `LPR Search Set
 
 New records:
 
-- `starintel:source:axon-fusus-alpr-sharing-2026-07-30`
-- `starintel:source:axon-fusus-alpr-search-2026`
-- `starintel:source:axon-fusus-alpr-administration-2026`
-- `starintel:source:axon-fusus-alpr-audit-2026`
 - `starintel:analysis:axon-alpr-platform-controls-request-2100-2026-09-15`
 - `starintel:research-pass:request-2100-axon-platform-control-baseline-2026-09-15`
 
