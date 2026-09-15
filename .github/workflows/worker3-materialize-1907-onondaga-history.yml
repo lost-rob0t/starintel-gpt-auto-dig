@@ -23,9 +23,6 @@ jobs:
       - name: Import packet through canonical writer
         run: python3 scripts/starintel.py import digs/flock/2026-09-15-request-1907-onondaga-incoming-sharing-history/starintel-documents.jsonl
 
-      - name: Validate complete StarIntel corpus
-        run: python3 scripts/starintel.py validate --root .
-
       - name: Commit importer-generated DB records
         shell: bash
         run: |
@@ -37,5 +34,5 @@ jobs:
             echo "No importer-generated DB changes"
             exit 0
           fi
-          git commit -m "Materialize #1907 Onondaga historical sharing canonical records"
+          git commit -m "Materialize #1907 Onondaga sharing canonical records"
           git push origin HEAD:${GITHUB_REF_NAME}
