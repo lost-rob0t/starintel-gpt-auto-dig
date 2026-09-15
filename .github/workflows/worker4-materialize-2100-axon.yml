@@ -1,0 +1,38 @@
+name: Worker 4 materialize request 2100 Axon controls
+
+on:
+  push:
+    branches:
+      - agent/worker4-axon-platform-controls-2100-20260915
+    paths:
+      - digs/axon/2026-09-15-request-2100-platform-control-baseline/starintel-documents.jsonl
+      - .github/workflows/worker4-materialize-2100-axon.yml
+
+permissions:
+  contents: write
+
+jobs:
+  materialize:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out branch
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Import packet through canonical writer
+        run: python3 scripts/starintel.py import digs/axon/2026-09-15-request-2100-platform-control-baseline/starintel-documents.jsonl
+      - name: Validate complete StarIntel corpus
+        run: python3 scripts/starintel.py validate --root .
+      - name: Commit importer-generated DB records
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add db/
+          if git diff --cached --quiet; then
+            echo "No importer-generated DB changes"
+            exit 0
+          fi
+          git commit -m "Materialize #2100 Axon platform controls"
+          git push origin HEAD:${GITHUB_REF_NAME}
