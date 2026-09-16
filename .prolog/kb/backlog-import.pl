@@ -24,3 +24,15 @@ import, which validates and records the existing file_format-to-medium
 migration. Preserve stable IDs and sorted order, check the prior confirmed
 prefix is unchanged, then resume at the cleanly rejected offset on the new
 source commit. Keep prior ledgers for the cross-commit audit trail.").
+
+root_cause(backlog_actorless_target_failure, compatibility_route_requires_actor,
+    "The legacy /new/target/:actor route requires an actor path component,
+while canonical target documents may omit data.actor. Most remaining backlog
+targets are actorless, so the importer cannot dispatch them through that
+compatibility route.").
+
+method(backlog_canonical_target_bulk,
+    "Send target documents through /documents/bulk with the other canonical
+documents. The server validates the full batch and authorizes each target as
+targets:dispatch against its document resource before any publish side effect;
+the full-corpus ingest credential must carry the required resource grants.").
