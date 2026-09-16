@@ -6,11 +6,6 @@ on:
       - "scripts/import-starintel-backlog.py"
       - "tests/test_import_starintel_backlog.py"
       - ".github/workflows/temp-backlog-import.yml"
-  push:
-    branches:
-      - main
-    paths:
-      - ".github/workflows/temp-backlog-import.yml"
   workflow_dispatch:
     inputs:
       start_offset:
