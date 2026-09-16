@@ -4,7 +4,7 @@ on:
   pull_request:
     paths:
       - "scripts/import-starintel-backlog.py"
-      - "tests/test_import_starintel-backlog.py"
+      - "tests/test_import_starintel_backlog.py"
       - ".github/workflows/temp-backlog-import.yml"
   push:
     branches:
