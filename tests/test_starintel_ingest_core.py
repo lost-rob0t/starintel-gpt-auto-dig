@@ -189,6 +189,19 @@ class StarIntelIngestCoreTests(unittest.TestCase):
         self.assertEqual(final["failed_batches"], 0)
         self.assertEqual(final["workers"], 3)
 
+    def test_actorless_target_uses_canonical_bulk_route(self) -> None:
+        target = {
+            "_id": "starintel:target:actorless-canary",
+            "dtype": "target",
+            "data": {"target": "actorless canary"},
+        }
+        result = self.run_core([target], "--workers", "1", "--batch-size", "1")
+
+        self.assertEqual(result.returncode, 0, result.stderr + result.stdout)
+        self.assertEqual(FakeIngestHandler.post_attempts, 1)
+        self.assertEqual(list(FakeIngestHandler.batches.values()), [[target]])
+        self.assertEqual(set(FakeIngestHandler.auth_headers), {"Bearer test-secret"})
+
     def test_missing_key_fails_before_network_request(self) -> None:
         result = self.run_core(
             [{"_id": "starintel:test:one", "dtype": "note"}],
