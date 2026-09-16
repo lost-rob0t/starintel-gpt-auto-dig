@@ -99,10 +99,20 @@ jobs:
           set -euo pipefail
           rm -f "$RUNNER_TEMP/backlog-import/canonical-import.jsonl" \
                 "$RUNNER_TEMP/backlog-import/failed-import.jsonl"
-          gh run download "$RESUME_RUN_ID" \
-            --repo "$GITHUB_REPOSITORY" \
-            --name starintel-backlog-import-ledgers \
-            --dir "$RUNNER_TEMP/backlog-import"
+          # A rerun may upload another artifact with the same name. Select the
+          # latest attempt's artifact explicitly so an earlier empty ledger
+          # cannot shadow a later confirmed checkpoint.
+          artifact_id="$(gh api \
+            "repos/${GITHUB_REPOSITORY}/actions/runs/${RESUME_RUN_ID}/artifacts?per_page=100" \
+            --paginate | jq -sr '[.[].artifacts[] | select(.name == "starintel-backlog-import-ledgers" and .expired == false)] | max_by([.created_at, .id]).id // empty')"
+          if [[ -z "$artifact_id" ]]; then
+            echo "No unexpired backlog ledger artifact found for run $RESUME_RUN_ID." >&2
+            exit 4
+          fi
+          artifact_zip="$(mktemp)"
+          trap 'rm -f "$artifact_zip"' EXIT
+          gh api "repos/${GITHUB_REPOSITORY}/actions/artifacts/${artifact_id}/zip" > "$artifact_zip"
+          unzip -oq "$artifact_zip" -d "$RUNNER_TEMP/backlog-import"
           touch "$RUNNER_TEMP/backlog-import/canonical-import.jsonl"
           touch "$RUNNER_TEMP/backlog-import/failed-import.jsonl"
 
