@@ -4,7 +4,7 @@ on:
   pull_request:
     paths:
       - "scripts/import-starintel-backlog.py"
-      - "tests/test_import_starintel_backlog.py"
+      - "tests/test_import_starintel-backlog.py"
       - ".github/workflows/temp-backlog-import.yml"
   push:
     branches:
@@ -186,3 +186,4 @@ jobs:
           retention-days: 90
 
 # full retry with validated target routing fix
+# full-corpus retrigger 2026-09-16
