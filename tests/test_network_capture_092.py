@@ -47,6 +47,7 @@ def test_http_transaction_redacts_sensitive_headers_and_uses_artifact_policy():
             "response_body_hash": "sha256:resp",
             "response_body_artifact_uri": "artifact://responses/resp-1",
             "capture_actor_uri": "star://bbp.starintel.actor/actor/http-proxy",
+            "challenge_actor_uri": "star://browser.starintel.actor/actor/challenge",
         },
     )
     assert doc["schema_version"] == "0.9.0"
@@ -55,6 +56,7 @@ def test_http_transaction_redacts_sensitive_headers_and_uses_artifact_policy():
     assert doc["data"]["response_headers"]["Set-Cookie"] == "[REDACTED]"
     assert doc["data"]["redacted_headers"] == ["Authorization", "Set-Cookie"]
     assert doc["data"]["body_capture_policy"] == "artifact-reference-only"
+    assert doc["data"]["challenge_actor_uri"].startswith("star://")
     assert doc["extensions"]["starintel.profile"]["release_version"] == "0.9.2"
 
 
