@@ -6,7 +6,7 @@ from copy import deepcopy
 from datetime import datetime, timezone
 from typing import Any, Mapping
 
-from .spec_092 import PROFILE_VERSION, SCHEMA_VERSION, document_schema
+from .spec_092 import CAPTCHA_SOLVE_CAPABILITY, PROFILE_VERSION, SCHEMA_VERSION, document_schema
 from .validation import ValidationError, validate_value
 
 SENSITIVE_HEADERS = frozenset(
@@ -60,6 +60,13 @@ def validate_network_capture_document(document: Mapping[str, Any]) -> dict[str, 
     return value
 
 
+def _apply_capture_context(data: dict[str, Any], fields: Mapping[str, Any] | None) -> None:
+    if fields:
+        data.update(deepcopy(dict(fields)))
+    if data.get("challenge_status") not in (None, "", "none"):
+        data.setdefault("captcha_capability", CAPTCHA_SOLVE_CAPABILITY)
+
+
 def build_http_transaction(
     *,
     dataset: str,
@@ -100,14 +107,9 @@ def build_http_transaction(
         "challenge_status": "none",
         "body_capture_policy": "artifact-reference-only",
     }
-    if fields:
-        data.update(deepcopy(dict(fields)))
+    _apply_capture_context(data, fields)
     document = {
-        "_id": stable_capture_id(
-            "http-transaction",
-            dataset,
-            {"transaction_id": identity_id},
-        ),
+        "_id": stable_capture_id("http-transaction", dataset, {"transaction_id": identity_id}),
         "dataset": dataset,
         "dtype": "http-transaction",
         "schema_version": SCHEMA_VERSION,
@@ -154,8 +156,7 @@ def build_web_capture(
         "http_transaction_ids": [],
         "challenge_status": "none",
     }
-    if fields:
-        data.update(deepcopy(dict(fields)))
+    _apply_capture_context(data, fields)
     document = {
         "_id": stable_capture_id("web-capture", dataset, {"capture_id": identity_id}),
         "dataset": dataset,
@@ -184,10 +185,7 @@ def to_jsonld(document: Mapping[str, Any]) -> dict[str, Any]:
             "target": data["url"],
             "startTime": data.get("started_at"),
             "endTime": data.get("ended_at"),
-            "result": {
-                "@type": "Thing",
-                "identifier": str(data["response_status"]),
-            },
+            "result": {"@type": "Thing", "identifier": str(data["response_status"])},
         }
     return {
         "@context": "https://schema.org",
