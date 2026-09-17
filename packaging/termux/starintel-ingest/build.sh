@@ -3,7 +3,7 @@ TERMUX_PKG_DESCRIPTION="StarIntel authenticated bulk ingest client"
 TERMUX_PKG_LICENSE="GPL-3.0-or-later"
 TERMUX_PKG_MAINTAINER="@lost-rob0t"
 TERMUX_PKG_VERSION=0.9.1
-TERMUX_PKG_DEPENDS="ca-certificates, openssl"
+TERMUX_PKG_DEPENDS="ca-certificates, libandroid-glob, libandroid-spawn, openssl"
 TERMUX_PKG_SKIP_SRC_EXTRACT=true
 
 termux_step_make() {
@@ -15,6 +15,8 @@ termux_step_make() {
 		i686) nim_arch=i386 ;;
 		x86_64) nim_arch=amd64 ;;
 	esac
+
+	local nim_ldflags="$LDFLAGS -landroid-glob -landroid-spawn"
 
 	mkdir -p "$TERMUX_PKG_BUILDDIR/bin"
 
@@ -32,7 +34,7 @@ termux_step_make() {
 		--opt:speed \
 		--mm:orc \
 		--threads:on \
-		-l:"$LDFLAGS" \
+		-l:"$nim_ldflags" \
 		-t:"$CPPFLAGS $CFLAGS" \
 		--out:"$TERMUX_PKG_BUILDDIR/bin/starintel-ingest" \
 		c "$TERMUX_PKG_BUILDER_DIR/starintel_ingest_core.nim"
