@@ -9,6 +9,7 @@ SCHEMA_VERSION = base.SCHEMA_VERSION
 RELEASE_VERSION = "0.9.2"
 PROFILE_VERSION = RELEASE_VERSION
 PROFILE_ID = "https://spec.starintel.actor/profile/network-capture-v0.9.2.json"
+CAPTCHA_SOLVE_CAPABILITY = "captcha.solve"
 
 STR = base.STR
 STRS = base.STRS
@@ -18,6 +19,15 @@ BOOL = base.BOOL
 DATE_TIME = base.DATE_TIME
 NULLABLE_DATE_TIME = base.NULLABLE_DATE_TIME
 JSON_MAP = base.JSON_MAP
+
+CAPTCHA_CONTEXT_FIELDS: dict[str, dict[str, Any]] = {
+    "challenge_status": STR,
+    "captcha_detection_id": STR,
+    "captcha_capability": STR,
+    "browser_session_ref": STR,
+    "network_context_ref": STR,
+    "proxy_actor_uri": STR,
+}
 
 HTTP_TRANSACTION_FIELDS: dict[str, dict[str, Any]] = {
     "transaction_id": STR,
@@ -54,9 +64,7 @@ HTTP_TRANSACTION_FIELDS: dict[str, dict[str, Any]] = {
     "redirect_from_id": STR,
     "redirect_to_id": STR,
     "capture_actor_uri": STR,
-    "proxy_actor_uri": STR,
-    "challenge_status": STR,
-    "challenge_actor_uri": STR,
+    **CAPTCHA_CONTEXT_FIELDS,
     "redacted_headers": STRS,
     "body_capture_policy": STR,
     "request_truncated": BOOL,
@@ -84,9 +92,7 @@ WEB_CAPTURE_FIELDS: dict[str, dict[str, Any]] = {
     "captured_at": NULLABLE_DATE_TIME,
     "http_transaction_ids": STRS,
     "capture_actor_uri": STR,
-    "proxy_actor_uri": STR,
-    "challenge_status": STR,
-    "challenge_actor_uri": STR,
+    **CAPTCHA_CONTEXT_FIELDS,
 }
 
 TYPE_FIELDS: dict[str, dict[str, Any]] = {
