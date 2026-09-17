@@ -86,7 +86,7 @@ def test_profile_rejects_unknown_http_fields():
     )
     bad = copy.deepcopy(doc)
     bad["data"]["raw_password"] = "nope"
-    with pytest.raises(ValidationError, match="unknown field"):
+    with pytest.raises(ValidationError, match="undeclared field"):
         validate_network_capture_document(bad)
 
 
