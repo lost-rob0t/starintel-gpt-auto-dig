@@ -43,8 +43,10 @@ jobs:
         with:
           nim-version: ${{ env.NIM_VERSION }}
 
-      - name: Validate Termux recipe shell
-        run: bash -n packaging/termux/starintel-ingest/build.sh
+      - name: Validate Termux packaging shell
+        run: |
+          bash -n packaging/termux/starintel-ingest/build.sh
+          bash -n packaging/termux/starintel-ingest/install-termux.sh
 
       - name: Build host ingest core
         run: nimble buildIngest
@@ -151,6 +153,11 @@ jobs:
     env:
       SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
     steps:
+      - name: Checkout bundle metadata
+        uses: actions/checkout@v6
+        with:
+          path: source
+
       - name: Download architecture packages
         uses: actions/download-artifact@v4
         with:
@@ -162,6 +169,9 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+          cp source/packaging/termux/starintel-ingest/install-termux.sh dist/install-termux.sh
+          cp source/packaging/termux/starintel-ingest/README.termux.md dist/README.md
+
           cd dist
           shopt -s nullglob
           packages=(starintel-ingest_*.deb)
@@ -180,7 +190,7 @@ jobs:
           ingest-default: https://ingest.starintel.actor
           termux-packages-commit: $TERMUX_PACKAGES_REF
           architectures: aarch64 arm i686 x86_64
-          install: apt install ./starintel-ingest_0.9.1_<arch>.deb
+          install: bash install-termux.sh
           command: starintel-ingest < starintel-documents.jsonl
           EOF
           cat SHA256SUMS
@@ -194,6 +204,8 @@ jobs:
             dist/starintel-ingest_*.deb
             dist/SHA256SUMS
             dist/MANIFEST.txt
+            dist/install-termux.sh
+            dist/README.md
           if-no-files-found: error
           retention-days: 30
           compression-level: 0
