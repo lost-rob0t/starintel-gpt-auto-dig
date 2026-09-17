@@ -56,6 +56,7 @@ HTTP_TRANSACTION_FIELDS: dict[str, dict[str, Any]] = {
     "capture_actor_uri": STR,
     "proxy_actor_uri": STR,
     "challenge_status": STR,
+    "challenge_actor_uri": STR,
     "redacted_headers": STRS,
     "body_capture_policy": STR,
     "request_truncated": BOOL,
