@@ -12,6 +12,7 @@ from starintel_doc.network_capture import (
     validate_network_capture_document,
 )
 from starintel_doc.spec_092 import (
+    CAPTCHA_SOLVE_CAPABILITY,
     DTYPE_ALIASES,
     PROFILE_VERSION,
     SCHEMA_VERSION,
@@ -37,7 +38,7 @@ def test_http_transaction_redacts_sensitive_headers_and_uses_artifact_policy():
         dataset="capture-fixture",
         method="get",
         url="https://example.test/a?x=1",
-        response_status=200,
+        response_status=403,
         observed_at=NOW,
         request_headers={"Authorization": "Bearer secret", "Accept": "text/html"},
         response_headers={"Set-Cookie": "sid=secret", "Content-Type": "text/html"},
@@ -47,7 +48,11 @@ def test_http_transaction_redacts_sensitive_headers_and_uses_artifact_policy():
             "response_body_hash": "sha256:resp",
             "response_body_artifact_uri": "artifact://responses/resp-1",
             "capture_actor_uri": "star://bbp.starintel.actor/actor/http-proxy",
-            "challenge_actor_uri": "star://browser.starintel.actor/actor/challenge",
+            "proxy_actor_uri": "star://proxy.starintel.actor/actor/egress",
+            "challenge_status": "observed",
+            "captcha_detection_id": "captcha-detection:fixture-1",
+            "browser_session_ref": "star-secret://webdriver/session/fixture-1",
+            "network_context_ref": "star-secret://network/context/fixture-1",
         },
     )
     assert doc["schema_version"] == "0.9.0"
@@ -56,7 +61,9 @@ def test_http_transaction_redacts_sensitive_headers_and_uses_artifact_policy():
     assert doc["data"]["response_headers"]["Set-Cookie"] == "[REDACTED]"
     assert doc["data"]["redacted_headers"] == ["Authorization", "Set-Cookie"]
     assert doc["data"]["body_capture_policy"] == "artifact-reference-only"
-    assert doc["data"]["challenge_actor_uri"].startswith("star://")
+    assert doc["data"]["captcha_capability"] == CAPTCHA_SOLVE_CAPABILITY
+    assert doc["data"]["browser_session_ref"].startswith("star-secret://")
+    assert doc["data"]["network_context_ref"].startswith("star-secret://")
     assert doc["extensions"]["starintel.profile"]["release_version"] == "0.9.2"
 
 
@@ -71,10 +78,13 @@ def test_web_capture_requires_artifact_reference_and_hash():
             "viewport_width": 1440,
             "viewport_height": 900,
             "capture_actor_uri": "star://bbp.starintel.actor/actor/screenshot",
+            "challenge_status": "observed",
+            "browser_session_ref": "star-secret://webdriver/session/fixture-2",
         },
     )
     assert doc["dtype"] == "web-capture"
     assert doc["data"]["screenshot_uri"].startswith("artifact://")
+    assert doc["data"]["captcha_capability"] == CAPTCHA_SOLVE_CAPABILITY
     assert to_jsonld(doc)["@type"] == "DigitalDocument"
 
 
