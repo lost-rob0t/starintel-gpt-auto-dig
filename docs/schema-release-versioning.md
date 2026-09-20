@@ -2,15 +2,20 @@
 
 ## Current authority
 
-As of this document revision:
+As of this document revision (0.10.1, 2026-09-19):
 
-- current StarIntel **release/profile version**: `0.9.1`
-- immutable v0.9 **base/wire schema version**: `0.9.0`
-- next additive release for schema/profile changes: **`0.9.2`**
+- current StarIntel **release/profile version**: `0.10.1`
+- **base/wire schema version**: `0.10.1` (the unified 0.10 line reunifies
+  release and base schema versions)
+- next additive patch release: **`0.10.2`**
+- legacy line: release `0.9.1` over immutable base `0.9.0`
+  (`schemas/starintel-doc-v0.9.0.*` remain on disk for consumers pinned to
+  0.9; the 0.9 expansion registry is retired as an authority — the vocabulary
+  lives in `starintel_doc/spec.py`; see `docs/schema-0.10.1-design.md`)
 
-These numbers are intentionally allowed to differ. The file name
-`schemas/starintel-doc-v0.9.0.schema.json` identifies the immutable base schema
-family; it does **not** tell you the current StarIntel release.
+These numbers were intentionally allowed to differ throughout the 0.9 line.
+The 0.10 line reunifies them. In neither case may a filename alone tell you
+the current StarIntel release.
 
 ## The rule agents must follow
 
@@ -38,11 +43,11 @@ python3 scripts/schema-release.py check
 `current` reports all distinct version dimensions, for example:
 
 ```text
-release=0.9.1 profile=0.9.1 base_schema=0.9.0 ... next=0.9.2
+release=0.10.1 profile=0.10.1 base_schema=0.10.1 ... next=0.10.2
 ```
 
 When someone asks "what is the current StarIntel spec/version?", report
-`release_version` (`0.9.1` currently), not the base schema filename/version.
+`release_version` (`0.10.1` currently), not a schema filename.
 
 ### In a consumer repository
 
@@ -77,18 +82,33 @@ release/profile fields.
 For the next approved additive release:
 
 ```bash
-python3 scripts/schema-release.py bump --to 0.9.2 --dry-run
-python3 scripts/schema-release.py bump --to 0.9.2
+python3 scripts/schema-release.py bump --to 0.10.2 --dry-run
+python3 scripts/schema-release.py bump --to 0.10.2
 python3 scripts/schema-release.py check
 ```
 
-The bump command only accepts the next patch release. From `0.9.1`, the only
-accepted additive bump is `0.9.2`.
+The bump command only accepts the next patch release. From `0.10.1`, the only
+accepted additive bump is `0.10.2`.
 
-The script updates release/profile metadata while deliberately leaving the
-immutable v0.9.0 base-schema identity alone. A new base schema version requires
-a separate explicit compatibility/migration decision; do not get one merely by
-renaming files.
+## Minting a new base line
+
+Creating a new base schema version (e.g. a future 0.11.0) requires an explicit
+compatibility/migration decision and uses `mint`, not `bump`:
+
+```bash
+python3 scripts/schema-release.py mint --to <X.Y.Z> --dry-run
+python3 scripts/schema-release.py mint --to <X.Y.Z>
+python3 scripts/schema-release.py check
+```
+
+Mint refuses to run unless the target strictly advances the current base schema
+version and `starintel_doc.spec.SCHEMA_VERSION` already equals the target (the
+spec source lands first; mint only plumbs release artifacts: generated schema,
+manifest, conformance inventory, package/version pins, and the current-schema
+filename pins). See `docs/schema-0.10.1-design.md` for the 0.10.1 mint record.
+
+The bump command, by contrast, preserves the base schema identity of the
+current line. Do not obtain a new base line merely by renaming files.
 
 After the canonical release is merged and green:
 
