@@ -3,3 +3,4 @@
 :- multifile root_cause/3, invariant/2, method/2.
 :- ensure_loaded('backlog-import.pl').
 :- ensure_loaded('workflow-guard.pl').
+:- ensure_loaded('spec-release.pl').
