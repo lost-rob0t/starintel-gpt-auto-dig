@@ -1,5 +1,5 @@
 # Package
-version = "0.9.1"
+version = "0.10.1"
 author = "StarIntel"
 description = "Nim-first StarIntel AutoDig validation, FEC ingest, and static-site pipeline"
 license = "GPL-3.0-or-later"

@@ -2,7 +2,7 @@
 
 ## Canonical schema
 
-`starintel_doc/` is the sole schema implementation. `schemas/starintel-doc-v0.9.0.schema.json` is generated from it. Skills, scripts, validators, agents, and renderers may not duplicate the field registry or invent parallel document shapes.
+`starintel_doc/` is the sole schema implementation. `schemas/starintel-doc-v0.10.1.schema.json` is generated from it (legacy `schemas/starintel-doc-v0.9.0.*` artifacts remain on disk for consumers pinned to the 0.9 line). Skills, scripts, validators, agents, and renderers may not duplicate the field registry or invent parallel document shapes.
 
 Every producer must inspect the executable schema before creating a dtype:
 
@@ -17,7 +17,8 @@ Undeclared top-level fields and undeclared dtype-specific `data` fields are inva
 
 ```text
 starintel_doc/
-schemas/starintel-doc-v0.9.0.schema.json
+schemas/starintel-doc-v0.10.1.schema.json
+schemas/starintel-doc-v0.10.1.manifest.json
 digs/<target>/<YYYY-MM-DD>-<loop-slug>/starintel-documents.jsonl
 db/<dtype>/<_id>.ndjson
 manifests/<dataset>.json

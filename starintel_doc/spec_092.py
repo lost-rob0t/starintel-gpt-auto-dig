@@ -5,7 +5,15 @@ from typing import Any
 
 from . import spec as base
 
-SCHEMA_VERSION = base.SCHEMA_VERSION
+# 0.9-line compatibility module (docs/schema-0.10.1-design.md §2).
+# The 0.9.2 network-capture profile is superseded by the 0.10.1 core, which
+# folds http-transaction and web-capture into base TYPE_FIELDS. This module
+# keeps working for consumers still pinned to the 0.9 line: the wire identity
+# stays a strict "0.9.0" const, while the field tables transparently re-export
+# the unified base vocabulary (a superset). Freeze-pin the 0.9.x git tag or
+# the legacy schemas/starintel-doc-v0.9.0.* artifacts for the exact frozen
+# 0.9-era profile.
+SCHEMA_VERSION = "0.9.0"
 RELEASE_VERSION = "0.9.2"
 PROFILE_VERSION = RELEASE_VERSION
 PROFILE_ID = "https://spec.starintel.actor/profile/network-capture-v0.9.2.json"
@@ -20,80 +28,9 @@ DATE_TIME = base.DATE_TIME
 NULLABLE_DATE_TIME = base.NULLABLE_DATE_TIME
 JSON_MAP = base.JSON_MAP
 
-CAPTCHA_CONTEXT_FIELDS: dict[str, dict[str, Any]] = {
-    "challenge_status": STR,
-    "captcha_detection_id": STR,
-    "captcha_capability": STR,
-    "browser_session_ref": STR,
-    "network_context_ref": STR,
-    "proxy_actor_uri": STR,
-}
-
-HTTP_TRANSACTION_FIELDS: dict[str, dict[str, Any]] = {
-    "transaction_id": STR,
-    "request_id": STR,
-    "connection_id": STR,
-    "parent_transaction_id": STR,
-    "method": STR,
-    "url": STR,
-    "scheme": STR,
-    "host": STR,
-    "port": INT,
-    "path": STR,
-    "query": STR,
-    "http_version": STR,
-    "request_headers": JSON_MAP,
-    "request_body_size": INT,
-    "request_body_hash": STR,
-    "request_body_artifact_uri": STR,
-    "response_status": INT,
-    "response_reason": STR,
-    "response_headers": JSON_MAP,
-    "response_body_size": INT,
-    "response_body_hash": STR,
-    "response_body_artifact_uri": STR,
-    "started_at": NULLABLE_DATE_TIME,
-    "ended_at": NULLABLE_DATE_TIME,
-    "duration_ms": NUM,
-    "remote_ip": STR,
-    "remote_port": INT,
-    "tls_version": STR,
-    "tls_cipher": STR,
-    "tls_server_name": STR,
-    "certificate_sha256": STR,
-    "redirect_from_id": STR,
-    "redirect_to_id": STR,
-    "capture_actor_uri": STR,
-    **CAPTCHA_CONTEXT_FIELDS,
-    "redacted_headers": STRS,
-    "body_capture_policy": STR,
-    "request_truncated": BOOL,
-    "response_truncated": BOOL,
-}
-
-WEB_CAPTURE_FIELDS: dict[str, dict[str, Any]] = {
-    "capture_id": STR,
-    "url": STR,
-    "final_url": STR,
-    "title": STR,
-    "status_code": INT,
-    "browser": STR,
-    "browser_version": STR,
-    "viewport_width": INT,
-    "viewport_height": INT,
-    "device_scale_factor": NUM,
-    "screenshot_uri": STR,
-    "screenshot_hash": STR,
-    "screenshot_media_type": STR,
-    "screenshot_size_bytes": INT,
-    "dom_artifact_uri": STR,
-    "dom_artifact_hash": STR,
-    "dom_artifact_size_bytes": INT,
-    "captured_at": NULLABLE_DATE_TIME,
-    "http_transaction_ids": STRS,
-    "capture_actor_uri": STR,
-    **CAPTCHA_CONTEXT_FIELDS,
-}
+CAPTCHA_CONTEXT_FIELDS = base.CAPTCHA_CONTEXT_FIELDS
+HTTP_TRANSACTION_FIELDS = base.HTTP_TRANSACTION_FIELDS
+WEB_CAPTURE_FIELDS = base.WEB_CAPTURE_FIELDS
 
 TYPE_FIELDS: dict[str, dict[str, Any]] = {
     **base.TYPE_FIELDS,
@@ -115,6 +52,8 @@ DTYPE_ALIASES = {
 
 COMMON_PROPERTIES = deepcopy(base.COMMON_PROPERTIES)
 COMMON_PROPERTIES["dtype"] = base.string(enum=sorted(TYPE_FIELDS))
+# Strict 0.9-line profile: only the legacy envelope validates here.
+COMMON_PROPERTIES["schema_version"] = {"const": SCHEMA_VERSION}
 REQUIRED_COMMON = base.REQUIRED_COMMON
 
 

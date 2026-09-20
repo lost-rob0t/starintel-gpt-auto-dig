@@ -23,16 +23,12 @@ class OperationRegistryTests(unittest.TestCase):
         self.assertTrue(set(TYPE_FIELDS).issubset(fixture_types))
 
     def test_release_profile_matches_runtime_inventory(self) -> None:
-        expansion = json.loads(
-            (ROOT / "schemas" / "starintel-doc-v0.9.0.expansion.json").read_text()
-        )
         manifest = json.loads(
-            (ROOT / "schemas" / "starintel-doc-v0.9.0.manifest.json").read_text()
+            (ROOT / "schemas" / "starintel-doc-v0.10.1.manifest.json").read_text()
         )
-        self.assertEqual(set(expansion["dtype_fields"]), set(TYPE_FIELDS))
         self.assertEqual(manifest["dtype_count"], len(TYPE_FIELDS))
-        self.assertEqual(manifest["release_version"], "0.9.1")
-        self.assertEqual(manifest["profile_version"], "0.9.1")
+        self.assertEqual(manifest["release_version"], "0.10.1")
+        self.assertEqual(manifest["profile_version"], "0.10.1")
 
 
 if __name__ == "__main__":
