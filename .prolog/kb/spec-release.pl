@@ -45,7 +45,7 @@ invariant(db_corpus_untouched_by_spec_releases,
     "Spec releases must not write into db/. The dual schema_version acceptance
 window exists precisely so legacy 0.9.0 corpus documents keep validating while
 a future migrator upgrades them; validate-by-replacement is not required at
-release time.")
+release time.").
 
 %% Note: sorted() on version strings is wrong for 0.10.x ('0.10.1' < '0.9.0'
 %% lexicographically); use spec.SCHEMA_VERSIONS_ENUM which is ordered
