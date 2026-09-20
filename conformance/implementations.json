@@ -1,6 +1,6 @@
 {
   "inventory_version": 2,
-  "spec_version": "0.9.0",
+  "spec_version": "0.10.1",
   "source_of_truth": {
     "repository": "lost-rob0t/starintel-gpt-auto-dig",
     "registry": "starintel_doc/spec.py",
@@ -110,13 +110,20 @@
     "merge": "Replace every cross-repository branch ref with an exact commit SHA after all implementation checks are green.",
     "release": "Tag and checksum the fixture bundle; repository-local CI consumes that immutable release."
   },
-  "release_version": "0.9.1",
+  "release_version": "0.10.1",
   "release_contract": {
-    "wire_spec_version": "0.9.0",
-    "release_version": "0.9.1",
+    "wire_spec_version": "0.10.1",
+    "release_version": "0.10.1",
     "required_dtypes": [
       "operation"
     ],
-    "compatibility": "additive-v0.9"
+    "compatibility": "additive-with-migration-v0.10"
+  },
+  "migration": {
+    "accepted_schema_versions": [
+      "0.9.0",
+      "0.10.1"
+    ],
+    "note": "Migration window: binding repositories repin through their own lock/sync workflows before claiming this release; supported_spec_versions and library_release are intentionally not rewritten by mint."
   }
 }

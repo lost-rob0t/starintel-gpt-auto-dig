@@ -205,8 +205,16 @@ class TestSchemaVersionMigration:
 
 class TestUnify:
     def test_folded_capture_fields_match_spec_092(self) -> None:
-        assert TYPE_FIELDS["http-transaction"] == spec_092.HTTP_TRANSACTION_FIELDS
-        assert TYPE_FIELDS["web-capture"] == spec_092.WEB_CAPTURE_FIELDS
+        from starintel_doc.spec import ABSORBED_COMMON_DATA_FIELDS
+
+        assert TYPE_FIELDS["http-transaction"] == {
+            **ABSORBED_COMMON_DATA_FIELDS,
+            **spec_092.HTTP_TRANSACTION_FIELDS,
+        }
+        assert TYPE_FIELDS["web-capture"] == {
+            **ABSORBED_COMMON_DATA_FIELDS,
+            **spec_092.WEB_CAPTURE_FIELDS,
+        }
         assert REQUIRED_DATA_FIELDS["http-transaction"] == spec_092.REQUIRED_DATA_FIELDS["http-transaction"]
         assert REQUIRED_DATA_FIELDS["web-capture"] == spec_092.REQUIRED_DATA_FIELDS["web-capture"]
 

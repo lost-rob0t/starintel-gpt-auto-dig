@@ -25,7 +25,7 @@ def run(command: list[str]) -> None:
 
 
 def validate_generated_schema() -> None:
-    expected = ROOT / "schemas" / "starintel-doc-v0.9.0.schema.json"
+    expected = ROOT / "schemas" / "starintel-doc-v0.10.1.schema.json"
     generated = json.dumps(document_schema(), ensure_ascii=False, indent=2, sort_keys=True) + "\n"
     if not expected.is_file():
         raise RuntimeError(f"missing generated schema: {expected.relative_to(ROOT)}")
@@ -33,7 +33,7 @@ def validate_generated_schema() -> None:
     if actual != generated:
         raise RuntimeError(
             "checked-in JSON Schema is stale; run: "
-            "python3 scripts/starintel.py schema --output schemas/starintel-doc-v0.9.0.schema.json"
+            "python3 scripts/starintel.py schema --output schemas/starintel-doc-v0.10.1.schema.json"
         )
 
 

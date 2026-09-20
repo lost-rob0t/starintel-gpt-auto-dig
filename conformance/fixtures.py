@@ -64,7 +64,7 @@ def minimal_data(dtype: str) -> dict[str, Any]:
             "status": "draft",
         },
         "operation": {
-            "mission": "Exercise the 0.9.1 operation control-plane contract.",
+            "mission": "Exercise the 0.10.1 operation control-plane contract.",
             "status": "planned",
             "phases": [
                 {

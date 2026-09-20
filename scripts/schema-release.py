@@ -34,10 +34,10 @@ from pathlib import Path
 from typing import Any
 
 ROOT = Path(__file__).resolve().parents[1]
-MANIFEST = Path("schemas/starintel-doc-v0.9.0.manifest.json")
+MANIFEST = Path("schemas/starintel-doc-v0.10.1.manifest.json")
 # Legacy 0.9-line registry. Unified (0.10+) lines have no active expansion
 # registry; mint renames this constant when a new base line is created.
-EXPANSION = Path("schemas/starintel-doc-v0.9.0.expansion.json")
+LEGACY_EXPANSION = Path("schemas/starintel-doc-v0.9.0.expansion.json")
 IMPLEMENTATIONS = Path("conformance/implementations.json")
 CONFORMANCE_INIT = Path("conformance/__init__.py")
 NIMBLE = Path("starintel_auto_dig.nimble")
@@ -266,7 +266,7 @@ def mint(root: Path, target: str, *, dry_run: bool) -> list[str]:
             f"starintel_doc.spec.SCHEMA_VERSION is {doc_spec.SCHEMA_VERSION!r}, not {target!r}; "
             "land the spec source change first; mint only plumbs release artifacts"
         )
-    accepted = sorted(doc_spec.ACCEPTED_SCHEMA_VERSIONS)
+    accepted = list(doc_spec.SCHEMA_VERSIONS_ENUM)
     if accepted != [state["schema_version"], target]:
         fail(
             "ACCEPTED_SCHEMA_VERSIONS must be exactly the legacy and target versions "

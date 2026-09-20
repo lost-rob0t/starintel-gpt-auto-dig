@@ -264,7 +264,7 @@ proc main(): int =
   if errorsReport.len == 0: errorsReport = root / DefaultErrorsReport
   elif not errorsReport.isAbsolute: errorsReport = root / errorsReport
 
-  putEnv("STARINTEL_SCHEMA", root / "schemas" / "starintel-doc-v0.9.0.schema.json")
+  putEnv("STARINTEL_SCHEMA", root / "schemas" / "starintel-doc-v0.10.1.schema.json")
   let schema = loadSchema()
   let state = AuditState(dbIds: initTable[string, string]())
   let dbRoot = root / "db"
