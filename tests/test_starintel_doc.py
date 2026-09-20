@@ -27,7 +27,7 @@ class StarIntelDocumentTests(unittest.TestCase):
                 "object": "starintel:org:b",
             },
         ).to_dict()
-        self.assertEqual(doc["schema_version"], "0.9.0")
+        self.assertEqual(doc["schema_version"], "0.10.1")
         validate_document(doc)
 
     def test_schema_org_defaults_cover_every_dtype(self) -> None:

@@ -47,6 +47,7 @@ DTYPE_SCHEMA_ORG_TYPES: dict[str, tuple[str, ...]] = {
     "geo": ("GeoCoordinates",),
     "grant": ("Grant",),
     "host": ("Thing",),
+    "http-transaction": ("Action",),
     "investigation-target": ("Thing",),
     "legal-case": ("CreativeWork",),
     "lobbying-filing": ("DigitalDocument",),
@@ -55,10 +56,13 @@ DTYPE_SCHEMA_ORG_TYPES: dict[str, tuple[str, ...]] = {
     "meeting": ("Event",),
     "message": ("Message",),
     "network": ("Thing",),
+    "network-conversation": ("Event",),
+    "network-device": ("Thing",),
     "observation": ("CreativeWork",),
     "operation": ("Action",),
     "org": ("Organization",),
     "ownership": ("Role",),
+    "pcap-capture": ("MediaObject",),
     "person": ("Person",),
     "phone": ("ContactPoint",),
     "policy": ("CreativeWork",),
@@ -73,6 +77,9 @@ DTYPE_SCHEMA_ORG_TYPES: dict[str, tuple[str, ...]] = {
     "task": ("Action",),
     "url": ("WebPage",),
     "user": ("Person",),
+    "web-capture": ("CreativeWork",),
+    "wireless-network": ("Thing",),
+    "wireless-station": ("Thing",),
 }
 
 STRING_OR_STRINGS = {"anyOf": [STR, STRS]}

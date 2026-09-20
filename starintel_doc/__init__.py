@@ -10,12 +10,13 @@ from .schema_org import (
     to_schema_org,
 )
 from .selectors import Candidate, candidate_documents, select_candidates
-from .spec import SCHEMA_ID, SCHEMA_VERSION, TYPE_FIELDS
+from .spec import ACCEPTED_SCHEMA_VERSIONS, SCHEMA_ID, SCHEMA_VERSION, TYPE_FIELDS
 from .store import iter_corpus, migrate_repository, search_documents, validate_repository
 from .validation import ValidationError, validate_document
 from .writer import DatabaseWriteError, canonical_db_path, write_db_document
 
 __all__ = [
+    "ACCEPTED_SCHEMA_VERSIONS",
     "Candidate",
     "DTYPE_SCHEMA_ORG_TYPES",
     "DatabaseWriteError",

@@ -6,7 +6,13 @@ from typing import Any
 
 from .operation_spec import validate_operation_semantics
 from .schema_org import document_schema
-from .spec import DTYPE_ALIASES, SCHEMA_VERSION, TYPE_FIELDS
+from .spec import (
+    ACCEPTED_SCHEMA_VERSIONS,
+    BREACH_FORBIDDEN_INLINE_FIELDS,
+    DTYPE_ALIASES,
+    SCHEMA_VERSION,
+    TYPE_FIELDS,
+)
 
 
 class ValidationError(ValueError):
@@ -142,10 +148,26 @@ def validate_document(document: dict[str, Any]) -> dict[str, Any]:
     dtype = DTYPE_ALIASES.get(dtype, dtype)
     if dtype not in TYPE_FIELDS:
         raise ValidationError(f"$.dtype: unknown document type {dtype!r}")
-    if document.get("schema_version") != SCHEMA_VERSION:
+    schema_version = document.get("schema_version")
+    if schema_version not in ACCEPTED_SCHEMA_VERSIONS:
+        accepted = ", ".join(sorted(ACCEPTED_SCHEMA_VERSIONS))
         raise ValidationError(
-            f"$.schema_version: expected {SCHEMA_VERSION!r}, got {document.get('schema_version')!r}"
+            f"$.schema_version: expected one of [{accepted}] "
+            f"(emitting {SCHEMA_VERSION!r}), got {schema_version!r}"
         )
+    if dtype == "breach":
+        # SECURITY: breach documents must never carry raw leaked material
+        # inline; leak_corpus_uri/leaked_file_ids are reference-only
+        # (docs/schema-0.10.1-design.md §6). Fail closed on reserved names.
+        data = document.get("data")
+        if isinstance(data, dict):
+            forbidden = sorted(BREACH_FORBIDDEN_INLINE_FIELDS & set(data))
+            if forbidden:
+                raise ValidationError(
+                    "$.data: breach documents must not carry inline leaked material "
+                    f"(forbidden fields present: {', '.join(forbidden)}); "
+                    "store counts, hashes, and artifact references instead"
+                )
     validate_value(document, document_schema(dtype))
     if dtype == "operation":
         try:

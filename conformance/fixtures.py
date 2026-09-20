@@ -77,6 +77,35 @@ def minimal_data(dtype: str) -> dict[str, Any]:
                 }
             ],
         },
+        "breach": {"name": "Example breach fixture"},
+        "http-transaction": {
+            "transaction_id": "fixture-http-001",
+            "method": "GET",
+            "url": "https://example.test/",
+            "response_status": 204,
+        },
+        "web-capture": {
+            "capture_id": "fixture-capture-001",
+            "url": "https://example.test/",
+            "screenshot_uri": "artifact://screenshots/fixture.png",
+            "screenshot_hash": "sha256:fixture",
+        },
+        "network-device": {"device_class": "router"},
+        "pcap-capture": {
+            "capture_id": "fixture-pcap-001",
+            "file_uri": "artifact://pcap/fixture.pcapng",
+            "file_sha256": "sha256:fixture",
+        },
+        "network-conversation": {
+            "conversation_id": "fixture-conv-001",
+            "capture_id": "fixture-pcap-001",
+            "layer": "tcp",
+        },
+        "wireless-network": {
+            "bssid": "aa:bb:cc:00:00:01",
+            "security": "wpa2-psk",
+        },
+        "wireless-station": {"mac": "aa:bb:cc:00:00:02"},
     }
     return deepcopy(required.get(dtype, {}))
 
