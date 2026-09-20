@@ -4,3 +4,4 @@
 :- ensure_loaded('backlog-import.pl').
 :- ensure_loaded('workflow-guard.pl').
 :- ensure_loaded('spec-release.pl').
+:- ensure_loaded('cross-tie-pass.pl').
