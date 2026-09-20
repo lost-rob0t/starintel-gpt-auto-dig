@@ -7,3 +7,4 @@
 :- ensure_loaded('merge-gate-version-pin.pl').
 :- ensure_loaded('dig-queue-cross-ties.pl').
 :- ensure_loaded('dig-queue-cross-ties-w3.pl').
+:- ensure_loaded('cross-tie-pass.pl').
