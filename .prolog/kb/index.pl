@@ -6,3 +6,4 @@
 :- ensure_loaded('spec-release.pl').
 :- ensure_loaded('merge-gate-version-pin.pl').
 :- ensure_loaded('dig-queue-cross-ties.pl').
+:- ensure_loaded('dig-queue-cross-ties-w3.pl').
