@@ -1,0 +1,149 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+die() {
+  printf 'starintel live social mine: %s\n' "$*" >&2
+  exit 2
+}
+
+usage() {
+  cat <<'EOF'
+Usage: scripts/opencode-live-social-mine [options] [research scope]
+
+Options:
+  --config-dir DIR   StarIntel infra config directory
+                     (default: ~/.config/starintelinfra)
+  --model MODEL      OpenCode provider/model override
+  --variant NAME     OpenCode model variant/reasoning effort
+  --agent AGENT      OpenCode agent override
+  --attach URL       Reuse a running OpenCode server
+  -h, --help         Show this help
+
+The launcher never prints secrets and never publishes to StarIntel. It reads
+the live corpus through the read-only StarIntel MCP configured for this repo.
+EOF
+}
+
+CONFIG_DIR="${STARINTELINFRA_CONFIG_DIR:-$HOME/.config/starintelinfra}"
+MODEL="${OPENCODE_MODEL:-}"
+VARIANT="${OPENCODE_VARIANT:-}"
+AGENT="${OPENCODE_AGENT:-}"
+ATTACH="${OPENCODE_ATTACH:-}"
+
+while (($#)); do
+  case "$1" in
+    --config-dir)
+      (($# >= 2)) || die "--config-dir requires a value"
+      CONFIG_DIR="$2"
+      shift 2
+      ;;
+    --model)
+      (($# >= 2)) || die "--model requires a value"
+      MODEL="$2"
+      shift 2
+      ;;
+    --variant)
+      (($# >= 2)) || die "--variant requires a value"
+      VARIANT="$2"
+      shift 2
+      ;;
+    --agent)
+      (($# >= 2)) || die "--agent requires a value"
+      AGENT="$2"
+      shift 2
+      ;;
+    --attach)
+      (($# >= 2)) || die "--attach requires a value"
+      ATTACH="$2"
+      shift 2
+      ;;
+    -h|--help)
+      usage
+      exit 0
+      ;;
+    --)
+      shift
+      break
+      ;;
+    -*)
+      die "unknown option: $1"
+      ;;
+    *)
+      break
+      ;;
+  esac
+done
+
+ROOT="$(git rev-parse --show-toplevel 2>/dev/null)" ||
+  die "run this inside the starintel-gpt-auto-dig checkout"
+cd "$ROOT"
+
+load_env_file() {
+  local path="$1"
+  [[ -f "$path" ]] || return 1
+  set -a
+  # shellcheck disable=SC1090
+  . "$path"
+  set +a
+}
+
+loaded_config=false
+for candidate in   "$CONFIG_DIR/env"   "$CONFIG_DIR/.env"   "$CONFIG_DIR/starintel.env"   "$CONFIG_DIR/config.env"   "$CONFIG_DIR/config.sh"
+do
+  if load_env_file "$candidate"; then
+    loaded_config=true
+  fi
+done
+
+set_if_empty() {
+  local name="$1"
+  local value="$2"
+  if [[ -z "${!name:-}" && -n "$value" ]]; then
+    printf -v "$name" '%s' "$value"
+    export "$name"
+  fi
+}
+
+JSON_CONFIG="$CONFIG_DIR/config.json"
+if [[ -f "$JSON_CONFIG" ]]; then
+  command -v jq >/dev/null 2>&1 ||
+    die "$JSON_CONFIG exists but jq is unavailable"
+  loaded_config=true
+  set_if_empty STARINTEL_SERVER_URL     "$(jq -r '.starintel.server_url // .starintel.serverUrl // .STARINTEL_SERVER_URL // empty' "$JSON_CONFIG")"
+  set_if_empty STARINTEL_TOKEN     "$(jq -r '.starintel.token // .STARINTEL_TOKEN // empty' "$JSON_CONFIG")"
+  set_if_empty STAR_INGEST_URL     "$(jq -r '.ingest.url // .starintel.ingest_url // .STAR_INGEST_URL // empty' "$JSON_CONFIG")"
+  set_if_empty STAR_SERVER_API_KEY     "$(jq -r '.ingest.api_key // .starintel.api_key // .STAR_SERVER_API_KEY // empty' "$JSON_CONFIG")"
+  set_if_empty BRAVE_API_KEY     "$(jq -r '.brave.api_key // .BRAVE_API_KEY // empty' "$JSON_CONFIG")"
+fi
+
+if [[ "$loaded_config" != true && -z "${STARINTEL_SERVER_URL:-}" ]]; then
+  die "no config found in $CONFIG_DIR and STARINTEL_SERVER_URL is unset"
+fi
+
+[[ -n "${STARINTEL_SERVER_URL:-}" ]] ||
+  die "STARINTEL_SERVER_URL is required for a live-ingest mining run"
+
+command -v python3 >/dev/null 2>&1 || die "python3 is required"
+command -v swipl >/dev/null 2>&1 || die "SWI-Prolog (swipl) is required"
+command -v opencode >/dev/null 2>&1 || die "opencode is required"
+
+python3 scripts/check-auto-dig-control.py
+
+SCOPE="$*"
+if [[ -z "$SCOPE" ]]; then
+  SCOPE="Find high-value unresolved public social relations around the most connected current investigation entities; prefer missing corroboration, cross-dataset joins, and explainable relation gaps."
+fi
+
+ARGS=(
+  run
+  --dir "$ROOT"
+  --command mine-live-social
+  --title "StarIntel live social mine"
+)
+
+[[ -n "$MODEL" ]] && ARGS+=(--model "$MODEL")
+[[ -n "$VARIANT" ]] && ARGS+=(--variant "$VARIANT")
+[[ -n "$AGENT" ]] && ARGS+=(--agent "$AGENT")
+[[ -n "$ATTACH" ]] && ARGS+=(--attach "$ATTACH")
+
+exec opencode "${ARGS[@]}" "$SCOPE"
