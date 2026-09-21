@@ -4,6 +4,9 @@ on:
   pull_request:
     paths:
       - 'agents/**'
+      - '.prolog/kb/**'
+      - '.opencode/**'
+      - 'scripts/opencode-live-social-mine'
       - 'config/auto-dig-control.json'
       - 'scripts/check-auto-dig-control.py'
       - 'scripts/apply_prolog_rlm_hotfix.py'
@@ -89,6 +92,10 @@ jobs:
           swipl \
             -q \
             -s agents/test_auto_dig_model_router.pl \
+            -g 'run_tests,halt'
+          swipl \
+            -q \
+            -s agents/test_social_relations_expert.pl \
             -g 'run_tests,halt'
           swipl \
             -q \
