@@ -118,6 +118,16 @@ jobs:
           set -o pipefail
           python -m unittest tests.test_conformance 2>&1 | tee artifacts/reference-tests.log
 
+      - name: Run spec deployment tests (star-lang export + HTTP registry)
+        run: |
+          set -o pipefail
+          python -m unittest tests.test_star_lang_export tests.test_spec_serving 2>&1 | tee artifacts/spec-deployment-tests.log
+
+      - name: Verify committed star-lang export matches the vocabulary
+        run: |
+          python3 scripts/star-lang-export.py --out "$RUNNER_TEMP/star-check"
+          diff -u spec/star/starintel-core-0.10.1.star "$RUNNER_TEMP/star-check/starintel-core-0.10.1.star"
+
       - name: Run complete ordered language matrix
         run: |
           set -o pipefail
