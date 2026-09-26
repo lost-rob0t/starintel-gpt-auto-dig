@@ -6,7 +6,9 @@ from copy import deepcopy
 from datetime import datetime, timezone
 from typing import Any, Mapping
 
-from .spec_092 import CAPTCHA_SOLVE_CAPABILITY, PROFILE_VERSION, SCHEMA_VERSION, document_schema
+from . import spec as core_spec
+from . import spec_092 as legacy_spec
+from .spec_092 import CAPTCHA_SOLVE_CAPABILITY
 from .validation import ValidationError, validate_value
 
 SENSITIVE_HEADERS = frozenset(
@@ -56,7 +58,9 @@ def validate_network_capture_document(document: Mapping[str, Any]) -> dict[str, 
         raise ValidationError(
             f"$.dtype: network-capture profile expects http-transaction or web-capture, got {dtype!r}"
         )
-    validate_value(value, document_schema(str(dtype)))
+    schema_version = value.get("schema_version")
+    spec = legacy_spec if schema_version == legacy_spec.SCHEMA_VERSION else core_spec
+    validate_value(value, spec.document_schema(str(dtype)))
     return value
 
 
@@ -78,10 +82,12 @@ def build_http_transaction(
     response_headers: Mapping[str, Any] | None = None,
     observed_at: str | None = None,
     fields: Mapping[str, Any] | None = None,
+    legacy_profile: bool = False,
 ) -> dict[str, Any]:
     if not dataset or not method or not url:
         raise ValueError("dataset, method, and url are required")
     timestamp = observed_at or utc_now()
+    spec = legacy_spec if legacy_profile else core_spec
     request, request_redacted = redact_headers(request_headers or {})
     response, response_redacted = redact_headers(response_headers or {})
     identity_id = transaction_id or stable_capture_id(
@@ -112,14 +118,14 @@ def build_http_transaction(
         "_id": stable_capture_id("http-transaction", dataset, {"transaction_id": identity_id}),
         "dataset": dataset,
         "dtype": "http-transaction",
-        "schema_version": SCHEMA_VERSION,
+        "schema_version": spec.SCHEMA_VERSION,
         "version": 1,
         "date_added": timestamp,
         "date_updated": timestamp,
         "sources": [],
         "evidence": [],
         "data": data,
-        "extensions": {"starintel.profile": {"release_version": PROFILE_VERSION}},
+        "extensions": {"starintel.profile": {"release_version": legacy_spec.PROFILE_VERSION if legacy_profile else core_spec.SCHEMA_VERSION}},
     }
     return validate_network_capture_document(document)
 
@@ -133,10 +139,12 @@ def build_web_capture(
     capture_id: str | None = None,
     captured_at: str | None = None,
     fields: Mapping[str, Any] | None = None,
+    legacy_profile: bool = False,
 ) -> dict[str, Any]:
     if not dataset or not url or not screenshot_uri or not screenshot_hash:
         raise ValueError("dataset, url, screenshot_uri, and screenshot_hash are required")
     timestamp = captured_at or utc_now()
+    spec = legacy_spec if legacy_profile else core_spec
     identity_id = capture_id or stable_capture_id(
         "web-capture",
         dataset,
@@ -161,14 +169,14 @@ def build_web_capture(
         "_id": stable_capture_id("web-capture", dataset, {"capture_id": identity_id}),
         "dataset": dataset,
         "dtype": "web-capture",
-        "schema_version": SCHEMA_VERSION,
+        "schema_version": spec.SCHEMA_VERSION,
         "version": 1,
         "date_added": timestamp,
         "date_updated": timestamp,
         "sources": [],
         "evidence": [],
         "data": data,
-        "extensions": {"starintel.profile": {"release_version": PROFILE_VERSION}},
+        "extensions": {"starintel.profile": {"release_version": legacy_spec.PROFILE_VERSION if legacy_profile else core_spec.SCHEMA_VERSION}},
     }
     return validate_network_capture_document(document)
 
