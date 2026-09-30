@@ -1,24 +1,26 @@
 {
-  "inventory_version": 2,
+  "inventory_version": 3,
   "spec_version": "0.10.1",
   "source_of_truth": {
-    "repository": "lost-rob0t/starintel-gpt-auto-dig",
-    "registry": "starintel_doc/spec.py",
-    "schema": "schemas/starintel-doc-v0.9.0.schema.json",
-    "fixtures": "conformance/fixtures.py",
-    "test_command": "python -m conformance.runner test",
-    "ci": ".github/workflows/conformance.yml"
+    "repository": "nsaspy/star-lang",
+    "commit": "919833266723edc9bddb337d606f72ae25fb8ced",
+    "registry": "specs/starintel/0.10.1/core.star",
+    "schema": "schema/star-lang/0.10.1/schema.json",
+    "fixtures": "schema/star-lang/0.10.1/compatibility-fixtures.json",
+    "consumer_lock": "schema/starintel-schema.lock.json"
   },
   "implementations": [
     {
       "repository": "lost-rob0t/starintel-doc",
       "language": "python",
       "supported_spec_versions": [
-        "0.9.0"
+        "0.9.0",
+        "0.10.1"
       ],
       "parser_entry_point": "starintel_doc.v090.Document.from_json",
-      "validator_entry_point": "starintel_doc.v090.validate_document",
-      "serializer_entry_point": "starintel_doc.v090.Document.to_json",
+      "validator_entry_point": "starintel_doc.validate_document",
+      "serializer_entry_point": "starintel_doc.roundtrip_document",
+      "migration_entry_point": "starintel_doc.migrate_document / migrate_batch",
       "adapter_entry_point": "python -m starintel_doc.conformance_adapter",
       "existing_test_command": "python -m unittest discover -s tests",
       "ci": ".github/workflows/conformance.yml",
@@ -26,62 +28,72 @@
         "0.8.0",
         "0.8.2"
       ],
-      "status": "implementation-pr",
-      "library_release": "0.9.1"
+      "status": "verified-local-commit",
+      "library_release": "0.10.1",
+      "canonical_commit": "2ed4593c9a0a1520019c54888bff2cbdcb17df11"
     },
     {
       "repository": "lost-rob0t/starintel_doc.js",
       "language": "js",
       "supported_spec_versions": [
-        "0.9.0"
+        "0.9.0",
+        "0.10.1"
       ],
       "parser_entry_point": "Document.fromJSON / parseLosslessJson",
       "validator_entry_point": "validateDocument",
-      "serializer_entry_point": "Document.toJSON / stringifyLosslessJson",
+      "serializer_entry_point": "roundtripDocument",
+      "migration_entry_point": "migrateDocument / migrateBatch",
       "adapter_entry_point": "node bin/starintel-conformance.js",
       "existing_test_command": "npm test",
       "ci": ".github/workflows/conformance.yml",
       "legacy_input_support": [
         "0.7.3"
       ],
-      "status": "implementation-pr",
-      "library_release": "0.9.1"
+      "status": "verified-local-commit",
+      "library_release": "0.10.1",
+      "canonical_commit": "b7217fe20d518994bed0679bef6886a521af7f5a"
     },
     {
       "repository": "lost-rob0t/star-cl",
       "language": "cl",
       "supported_spec_versions": [
-        "0.9.0"
+        "0.9.0",
+        "0.10.1"
       ],
       "parser_entry_point": "com.inuoe.jzon:parse",
-      "validator_entry_point": "starintel::validate-v090-document",
-      "serializer_entry_point": "com.inuoe.jzon:stringify / starintel::roundtrip-v090-document",
+      "validator_entry_point": "starintel-v0101:validate-document",
+      "serializer_entry_point": "com.inuoe.jzon:stringify",
+      "migration_entry_point": "starintel-v0101:migrate-document / migrate-batch",
       "adapter_entry_point": "sbcl --script bin/starintel-conformance.lisp",
       "existing_test_command": "asdf:test-system :starintel-test",
       "ci": ".github/workflows/conformance.yml",
       "legacy_input_support": [
         "0.8.0"
       ],
-      "status": "implementation-pr",
-      "library_release": "0.9.1"
+      "status": "verified-local-commit",
+      "library_release": "0.10.1",
+      "canonical_commit": "2ecbf77f99730e1e7423c87c40ea53f0b7afb4dd"
     },
     {
       "repository": "lost-rob0t/starintel-doc.nim",
       "language": "nim",
       "supported_spec_versions": [
-        "0.9.0"
+        "0.9.0",
+        "0.10.1"
       ],
       "parser_entry_point": "std/json.parseJson",
-      "validator_entry_point": "starintel_doc/v090.validateDocument",
-      "serializer_entry_point": "starintel_doc/v090.roundtrip",
+      "validator_entry_point": "starintel_doc.validateDocument",
+      "serializer_entry_point": "starintel_doc.roundtripDocument",
+      "migration_entry_point": "starintel_doc.migrateDocument / migrateBatch",
       "adapter_entry_point": "starintel_conformance",
       "existing_test_command": "nimble test",
       "ci": ".github/workflows/conformance.yml",
       "legacy_input_support": [
         "0.7.3"
       ],
-      "status": "implementation-pr",
-      "library_release": "0.9.1"
+      "status": "verified-local-commit",
+      "library_release": "0.10.1",
+      "canonical_commit": "665aec86d554ecb804c48e22befbf608b76e5a38"
     }
   ],
   "superseded_repositories": [
@@ -115,7 +127,14 @@
     "wire_spec_version": "0.10.1",
     "release_version": "0.10.1",
     "required_dtypes": [
-      "operation"
+      "file",
+      "picture",
+      "video",
+      "audio",
+      "transcript",
+      "person-identifier",
+      "geo-point",
+      "location"
     ],
     "compatibility": "additive-with-migration-v0.10"
   },
@@ -124,6 +143,6 @@
       "0.9.0",
       "0.10.1"
     ],
-    "note": "Migration window: binding repositories repin through their own lock/sync workflows before claiming this release; supported_spec_versions and library_release are intentionally not rewritten by mint."
+    "note": "Legacy 0.9 input is accepted only at binding migration boundaries. Successful migration emits lowerCamelCase 0.10.1 and isolates invalid batch items."
   }
 }

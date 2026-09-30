@@ -3,6 +3,10 @@ from __future__ import annotations
 from copy import deepcopy
 from typing import Any
 
+# Legacy Auto-Dig corpus compatibility schema. This module is not the
+# canonical StarIntel 0.10.1 authority; canonical documents come from the
+# Star-Lang commit pinned in schema/starintel-schema.lock.json and use
+# lowerCamelCase. Snake-case names below are accepted migration input only.
 SCHEMA_VERSION = "0.10.1"
 LEGACY_SCHEMA_VERSION = "0.9.0"
 # Validators accept every accepted version during the migration window;

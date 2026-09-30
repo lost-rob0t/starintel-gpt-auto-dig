@@ -5,28 +5,22 @@ on:
     paths:
       - ".github/workflows/schema-release.yml"
       - "scripts/schema-release.py"
+      - "scripts/check-starintel-schema-lock.py"
+      - "scripts/sync-starintel-authority.py"
       - "tests/test_schema_release.py"
-      - "schemas/starintel-doc-v0.9.0.expansion.json"
-      - "schemas/starintel-doc-v0.9.0.manifest.json"
-      - "conformance/__init__.py"
-      - "conformance/implementations.json"
-      - "conformance/fixtures.py"
-      - "starintel_auto_dig.nimble"
-      - "tests/test_operation_registry.py"
+      - "schema/starintel-schema.lock.json"
+      - "schema/star-lang/**"
   push:
     branches:
       - main
     paths:
       - ".github/workflows/schema-release.yml"
       - "scripts/schema-release.py"
+      - "scripts/check-starintel-schema-lock.py"
+      - "scripts/sync-starintel-authority.py"
       - "tests/test_schema_release.py"
-      - "schemas/starintel-doc-v0.9.0.expansion.json"
-      - "schemas/starintel-doc-v0.9.0.manifest.json"
-      - "conformance/__init__.py"
-      - "conformance/implementations.json"
-      - "conformance/fixtures.py"
-      - "starintel_auto_dig.nimble"
-      - "tests/test_operation_registry.py"
+      - "schema/starintel-schema.lock.json"
+      - "schema/star-lang/**"
   workflow_dispatch:
 
 permissions:
@@ -42,5 +36,5 @@ jobs:
           python-version: "3.13"
       - name: Check current release authority
         run: python3 scripts/schema-release.py check
-      - name: Test release resolver and bump dry-run
+      - name: Test read-only release resolver
         run: python3 -m unittest tests.test_schema_release -v

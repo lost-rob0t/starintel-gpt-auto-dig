@@ -24,15 +24,15 @@ def run(command: list[str]) -> None:
     subprocess.run(command, cwd=ROOT, check=True)
 
 
-def validate_generated_schema() -> None:
+def validate_legacy_corpus_schema() -> None:
     expected = ROOT / "schemas" / "starintel-doc-v0.10.1.schema.json"
     generated = json.dumps(document_schema(), ensure_ascii=False, indent=2, sort_keys=True) + "\n"
     if not expected.is_file():
-        raise RuntimeError(f"missing generated schema: {expected.relative_to(ROOT)}")
+        raise RuntimeError(f"missing legacy corpus schema: {expected.relative_to(ROOT)}")
     actual = expected.read_text(encoding="utf-8")
     if actual != generated:
         raise RuntimeError(
-            "checked-in JSON Schema is stale; run: "
+            "checked-in legacy corpus schema is stale; run: "
             "python3 scripts/starintel.py schema --output schemas/starintel-doc-v0.10.1.schema.json"
         )
 
@@ -180,10 +180,11 @@ def build_parser() -> argparse.ArgumentParser:
 def main(argv: list[str] | None = None) -> int:
     args = build_parser().parse_args(argv)
     try:
+        run([sys.executable, "scripts/check-starintel-schema-lock.py"])
         run([sys.executable, "-m", "compileall", "-q", "starintel_doc", "scripts"])
         run([sys.executable, "-m", "unittest", "discover", "-s", "tests", "-v"])
         validate_javascript()
-        validate_generated_schema()
+        validate_legacy_corpus_schema()
         validate_corpus()
         if args.site:
             validate_site()

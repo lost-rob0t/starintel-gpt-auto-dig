@@ -37,7 +37,7 @@ def json_object(value: str, label: str) -> dict[str, Any]:
 
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
-        description="Create, validate, and atomically write one canonical StarIntel DB document"
+        description="Create, validate, and atomically write one legacy Auto-Dig corpus document"
     )
     parser.add_argument("dtype", choices=sorted(TYPE_FIELDS))
     parser.add_argument("--dataset", required=True)

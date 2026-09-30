@@ -1,33 +1,25 @@
-% StarIntel spec release authority and 0.10.1 unified line.
-% Verified 2026-09-19 on branch spec/0.10.1-unify (HEAD 40622e3f4).
+% Historical Auto-Dig release machinery and the Star-Lang authority handoff.
 
 invariant(spec_release_authority_is_scripted,
-    "All StarIntel release/profile/base-schema version plumbing goes through
-scripts/schema-release.py: bump advances the next patch of the current line;
-mint creates a new unified base line and requires starintel_doc.spec.SCHEMA_VERSION
-to already equal the target. Hand-editing version fields or schema filenames
-breaks check() and the release-coupling tests.").
+    "Star-Lang is the sole StarIntel release and schema authority. Auto-Dig's
+schema/starintel-schema.lock.json pins the exact commit. The local
+scripts/schema-release.py is read-only; bump and mint fail closed.").
 
 invariant(unified_line_has_no_expansion_registry,
-    "Manifests without expansion_registry_path are unified lines: check()
-instead requires their base_schema_path to exist. The 0.9 expansion registry
-is frozen legacy; its vocabulary lives in starintel_doc/spec.py
-(EXPANSION_ABSORBED_FIELDS merged at import, wire fields win on collision).").
+    "The Star-Lang 0.10.1 release lock and compatibility registry are vendored
+under schema/star-lang at their verified hashes. Repository-local schemas and
+the 0.9 expansion registry are frozen legacy migration inputs, not authority.").
 
 invariant(schema_version_migration_window,
-    "0.10.1 validators accept schema_version in {0.9.0, 0.10.1}; emitters write
-0.10.1. The generated schema's schema_version is an enum, not a const. The
-legacy spec_092 profile pins the 0.9.0 const and rejects 0.10.1 envelopes.").
+    "The Star-Lang-derived binding accepts legacy 0.9.0 snake-case input only
+at its migration boundary and emits lowerCamelCase 0.10.1. The local Auto-Dig
+runtime remains a legacy corpus reader and must not emit canonical documents.").
 
 method(mint_new_base_line,
-    "Land the spec.py source change first (SCHEMA_VERSION, ACCEPTED_SCHEMA_VERSIONS
-ordered legacy-first, SCHEMA_ID, new dtypes), commit, then run
-`python3 scripts/schema-release.py mint --to X.Y.Z`. Mint regenerates the
-schema via scripts/starintel.py, writes the manifest, and repoints conformance,
-nimble, the operation-registry test, fixtures, and the schema filename pins
-(scripts/validate-for-merge.py, scripts/starintel_validate.nim, workflows).
-Release-coupling tests are red between the spec commit and the mint commit by
-construction.").
+    "Create and verify releases in Star-Lang, update each generated language
+binding, then run scripts/sync-starintel-authority.py with the exact canonical
+checkout and verify scripts/check-starintel-schema-lock.py. Auto-Dig never
+mints a release.").
 
 root_cause(release_test_red_between_spec_and_mint, release_coupling_by_design,
     "tests/test_operation_registry.py and tests/test_spec_0101.py assert

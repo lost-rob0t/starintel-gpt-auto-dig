@@ -54,7 +54,9 @@ The registry covers the original package types and the later auto-dig corpus:
 - Institutional/economic: `product`, `event`, `meeting`, `financial-observation`, `contract`, `procurement`, `grant`, `lobbying-filing`, `campaign-finance`, `legal-case`, `policy`, `education`, `employment`, `ownership`, `asset`.
 - Operations: `actor-manifest`, `dataset-manifest`, `alert`, `task`, `media`, `file`, `breach`.
 
-The executable registry in `starintel_doc/spec.py` is authoritative. The generated `schemas/starintel-doc-v0.9.0.schema.json` is derived from it and must not be edited independently.
+For this frozen legacy format, `starintel_doc/spec.py` is the local compatibility
+registry and `schemas/starintel-doc-v0.9.0.schema.json` is derived from it. It is
+not canonical StarIntel authority; Star-Lang owns the current contract.
 
 
 ## Research nodes

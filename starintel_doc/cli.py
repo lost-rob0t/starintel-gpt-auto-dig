@@ -230,13 +230,13 @@ def cmd_import(args: argparse.Namespace) -> int:
 
 
 def build_parser() -> argparse.ArgumentParser:
-    parser = argparse.ArgumentParser(prog="starintel", description="Canonical StarIntel v0.9.0 document tooling")
+    parser = argparse.ArgumentParser(prog="starintel", description="Legacy Auto-Dig corpus tooling; Star-Lang owns canonical StarIntel")
     sub = parser.add_subparsers(dest="command", required=True)
 
-    p = sub.add_parser("types", help="list canonical document types")
+    p = sub.add_parser("types", help="list legacy Auto-Dig corpus types")
     p.set_defaults(func=cmd_types)
 
-    p = sub.add_parser("schema", help="export the canonical JSON Schema")
+    p = sub.add_parser("schema", help="export the legacy Auto-Dig corpus schema")
     p.add_argument("--dtype", choices=sorted(TYPE_FIELDS))
     p.add_argument("--output")
     p.set_defaults(func=cmd_schema)

@@ -1,143 +1,76 @@
-name: StarIntel conformance
+name: StarIntel authority and binding pins
 
 on:
+  pull_request:
+    paths:
+      - "schema/**"
+      - "conformance/implementations.json"
+      - "scripts/check-starintel-schema-lock.py"
+      - ".github/workflows/conformance.yml"
+  push:
+    branches:
+      - main
+    paths:
+      - "schema/**"
+      - "conformance/implementations.json"
+      - "scripts/check-starintel-schema-lock.py"
+      - ".github/workflows/conformance.yml"
   workflow_dispatch:
 
 permissions:
   contents: read
 
 jobs:
-  matrix:
+  pins:
     runs-on: ubuntu-latest
-    timeout-minutes: 30
     steps:
-      - name: Checkout conformance source
+      - name: Checkout Auto-Dig consumer
         uses: actions/checkout@v6
 
-      - name: Checkout Python implementation
+      - name: Checkout Star-Lang authority
+        uses: actions/checkout@v6
+        with:
+          repository: lost-rob0t/star-lang
+          ref: 919833266723edc9bddb337d606f72ae25fb8ced
+          path: implementations/star-lang
+
+      - name: Checkout Python binding
         uses: actions/checkout@v6
         with:
           repository: lost-rob0t/starintel-doc
-          ref: 1b53ee39528e92625f1fcd4971a4193c033dd584
+          ref: 2ed4593c9a0a1520019c54888bff2cbdcb17df11
           path: implementations/python
 
-      - name: Checkout JavaScript implementation
+      - name: Checkout JavaScript binding
         uses: actions/checkout@v6
         with:
           repository: lost-rob0t/starintel_doc.js
-          ref: b5dc62d28388b6ceb6db52e27eaa0622fda37ddb
+          ref: b7217fe20d518994bed0679bef6886a521af7f5a
           path: implementations/js
 
-      - name: Checkout Common Lisp implementation
+      - name: Checkout Common Lisp binding
         uses: actions/checkout@v6
         with:
           repository: lost-rob0t/star-cl
-          ref: 20d8b560e6fbed366f56b636448302a3e7238506
+          ref: 2ecbf77f99730e1e7423c87c40ea53f0b7afb4dd
           path: implementations/cl
 
-      - name: Checkout Nim implementation
+      - name: Checkout Nim binding
         uses: actions/checkout@v6
         with:
           repository: lost-rob0t/starintel-doc.nim
-          ref: fc08a9c8fd1eaf524baba2ac918414c0e4874ab5
+          ref: 665aec86d554ecb804c48e22befbf608b76e5a38
           path: implementations/nim
 
       - uses: actions/setup-python@v6
         with:
           python-version: "3.13"
-          cache: pip
 
-      - uses: actions/setup-node@v6
-        with:
-          node-version: "22"
-          cache: npm
-          cache-dependency-path: implementations/js/package-lock.json
-
-      - name: Set up Nim
-        uses: jiro4989/setup-nim-action@v2
-        with:
-          nim-version: "2.2.4"
-
-      - name: Install system runtimes
-        run: |
-          sudo apt-get update
-          sudo apt-get install --yes sbcl curl
-
-      - name: Install Python and JavaScript dependencies
-        run: |
-          python -m pip install --upgrade pip
-          python -m pip install jsonschema dataclasses-json ulid-py
-          npm install --prefix implementations/js
-
-      - name: Install v0.9 Common Lisp dependencies
-        shell: bash
-        run: |
-          curl --fail --silent --show-error --location https://beta.quicklisp.org/quicklisp.lisp --output /tmp/quicklisp.lisp
-          sbcl --non-interactive \
-            --load /tmp/quicklisp.lisp \
-            --eval '(quicklisp-quickstart:install :path (merge-pathnames "quicklisp/" (user-homedir-pathname)))' \
-            --eval '(quit)'
-          cat >/tmp/install-starintel-deps.lisp <<'LISP'
-          (load (merge-pathnames "quicklisp/setup.lisp" (user-homedir-pathname)))
-          (ql:quickload '(:com.inuoe.jzon :cl-ppcre) :silent t)
-          (quit)
-          LISP
-          sbcl --script /tmp/install-starintel-deps.lisp
-
-      - name: Build Nim adapter
-        run: |
-          mkdir -p artifacts
-          set -o pipefail
-          nim c -d:release \
-            --path:implementations/nim/src \
-            --out:implementations/nim/starintel_conformance \
-            implementations/nim/src/starintel_conformance.nim \
-            2>&1 | tee artifacts/nim-build.log
-
-      - name: Check generated schema drift
-        run: |
-          mkdir -p artifacts
-          python - <<'PY'
-          import json
-          from pathlib import Path
-          from starintel_doc.schema_org import document_schema
-
-          Path("artifacts/generated-starintel-doc-v0.10.1.schema.json").write_text(
-              json.dumps(document_schema(), ensure_ascii=False, indent=2, sort_keys=True) + "\n",
-              encoding="utf-8",
-          )
-          PY
-          if ! cmp schemas/starintel-doc-v0.10.1.schema.json artifacts/generated-starintel-doc-v0.10.1.schema.json; then
-            diff -u schemas/starintel-doc-v0.10.1.schema.json artifacts/generated-starintel-doc-v0.10.1.schema.json \
-              > artifacts/schema-drift.diff || true
-            exit 1
-          fi
-
-      - name: Run reference fixture tests
-        run: |
-          set -o pipefail
-          python -m unittest tests.test_conformance 2>&1 | tee artifacts/reference-tests.log
-
-      - name: Run complete ordered language matrix
-        run: |
-          set -o pipefail
-          python -m conformance.runner test \
-            --adapter "python=sh -c 'cd implementations/python && python -m starintel_doc.conformance_adapter'" \
-            --adapter "js=node implementations/js/bin/starintel-conformance.js" \
-            --adapter "cl=sbcl --script implementations/cl/bin/starintel-conformance.lisp" \
-            --adapter "nim=implementations/nim/starintel_conformance" \
-            2>&1 | tee artifacts/matrix.log
-
-      - name: Export fixtures
-        if: always()
-        run: |
-          mkdir -p artifacts
-          python -m conformance.runner dump-fixtures --output artifacts/fixtures-v0.9.0.json
-
-      - name: Upload conformance artifacts
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: starintel-conformance
-          path: artifacts/
-          if-no-files-found: error
+      - name: Verify authority snapshot and every binding lock
+        run: >-
+          python3 scripts/check-starintel-schema-lock.py
+          --canonical-root implementations/star-lang
+          --binding-root implementations/python
+          --binding-root implementations/js
+          --binding-root implementations/cl
+          --binding-root implementations/nim

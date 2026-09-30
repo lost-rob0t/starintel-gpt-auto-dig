@@ -2,7 +2,17 @@
 
 ## Canonical schema
 
-`starintel_doc/` is the sole schema implementation. `schemas/starintel-doc-v0.10.1.schema.json` is generated from it (legacy `schemas/starintel-doc-v0.9.0.*` artifacts remain on disk for consumers pinned to the 0.9 line). Skills, scripts, validators, agents, and renderers may not duplicate the field registry or invent parallel document shapes.
+`nsaspy/star-lang` is the sole schema implementation. This repository pins its
+exact commit in `schema/starintel-schema.lock.json` and vendors checked generated
+artifacts under `schema/star-lang/`. Refresh those files only with
+`scripts/sync-starintel-authority.py`; `scripts/schema-release.py` is read-only
+and cannot create releases.
+
+`starintel_doc/` and `schemas/starintel-doc-v0.*` are the historical Auto-Dig
+corpus format. They remain available to read and normalize legacy records, but
+do not define canonical 0.10.1. Canonical documents use lowerCamelCase and are
+migrated and validated by the pinned Star-Lang-derived Python binding before
+star-server ingest.
 
 Every producer must inspect the executable schema before creating a dtype:
 
@@ -17,6 +27,8 @@ Undeclared top-level fields and undeclared dtype-specific `data` fields are inva
 
 ```text
 starintel_doc/
+schema/starintel-schema.lock.json
+schema/star-lang/0.10.1/
 schemas/starintel-doc-v0.10.1.schema.json
 schemas/starintel-doc-v0.10.1.manifest.json
 digs/<target>/<YYYY-MM-DD>-<loop-slug>/starintel-documents.jsonl
@@ -86,7 +98,12 @@ Plain `starintel-documents.jsonl` is canonical. Legacy gzip/base64 and `.parts` 
 
 ## Validation boundary
 
-A record is publishable only when `starintel_doc.validate_document` accepts it. A corpus is publishable only when path consistency, one-record-per-file formatting, duplicate IDs, relation endpoints, tests, generated schema, graph, and site generation pass.
+A legacy corpus record is locally acceptable only when the historical
+Auto-Dig validator accepts it. It is publishable to star-server only after the
+pinned canonical Python binding migrates and validates it as lowerCamelCase
+0.10.1. One legacy record may expand into multiple canonical records. A corpus
+change also requires path consistency, one-record-per-file formatting,
+duplicate-ID checks, relation endpoints, tests, graph, and site generation.
 
 The mandatory merge gate is:
 

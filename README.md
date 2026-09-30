@@ -1,12 +1,20 @@
 # StarIntel GPT Auto Dig
 
-Evidence-first research packets and a Git-backed JSON database using the repository-local **`starintel_doc` v0.9.0 schema** as the document specification, with Nim as the performance-critical validation and static-site runtime.
+Evidence-first research packets and a Git-backed legacy corpus, with Star-Lang
+as the canonical StarIntel authority and Nim as the performance-critical local
+validation and static-site runtime.
 
 ## Canonical rule
 
-`starintel_doc/` and `schemas/starintel-doc-v0.9.0.schema.json` define the document contract. The Nim validator loads that generated schema through the canonical `starintel-doc.nim` runtime. Do not create a second JSON shape, a prompt-only “style,” or undocumented fields.
+`nsaspy/star-lang` defines the document contract. The exact authority commit is
+pinned in `schema/starintel-schema.lock.json`; verified generated artifacts are
+synchronized under `schema/star-lang/`. The local `starintel_doc/` package,
+snake-case envelope, and `schemas/` files are retained only for the existing
+Auto-Dig corpus and migration. Canonical 0.10.1 documents are lowerCamelCase and
+must be migrated and validated by the pinned Star-Lang-derived binding before
+server ingest.
 
-Every document uses the v0.9.0 envelope:
+Existing corpus documents use this legacy envelope:
 
 ```text
 _id, dataset, dtype, schema_version, version,
@@ -26,11 +34,13 @@ schema_org, data, extensions
 ## Repository layout
 
 ```text
-starintel_doc/                    Canonical v0.9.0 schema source
-schemas/                          Generated JSON Schema
+starintel_doc/                    Legacy Auto-Dig corpus compatibility runtime
+schemas/                          Historical Auto-Dig schema artifacts
+schema/starintel-schema.lock.json Exact Star-Lang authority pin
+schema/star-lang/                 Verified generated Star-Lang snapshot
 skills/                           Auto-dig operating skills
 scripts/starintel.py              Legacy/admin schema CLI
-scripts/create-db-document.py     Transactional canonical DB writer
+scripts/create-db-document.py     Transactional legacy-corpus DB writer
 scripts/starintel_transport.nim   Streaming packet transport reader
 scripts/starintel_validate.nim    Fast schema + source audit validator
 scripts/validate-for-merge.nim    Canonical Nim merge gate
@@ -114,7 +124,9 @@ The site generator keeps raw canonical JSON plus small index fields in memory. P
 
 ## Administrative CLI
 
-The existing Python CLI remains for schema inspection, migration, normalized DB writes, search, and recursive target tooling that has not yet moved into the Nim runtime:
+The existing Python CLI remains for legacy corpus inspection, migration,
+normalized DB writes, search, and recursive target tooling. It does not define
+canonical 0.10.1:
 
 ```bash
 python3 scripts/starintel.py types
@@ -131,7 +143,8 @@ python3 scripts/starintel.py select-targets \
 
 ## Full migration
 
-Legacy v0.9 migration still uses the compatibility migrator, then the resulting corpus is validated by the Nim gate:
+Legacy v0.9 corpus normalization still uses the compatibility migrator, then
+the resulting local corpus is validated by the Nim gate:
 
 ```bash
 python3 scripts/migrate-starintel-v0.9.py --write

@@ -23,7 +23,19 @@ This gate outranks every lower section of this file while paused.
 
 ## Non-negotiable authority
 
-The repository-local `starintel_doc/` package and generated `schemas/starintel-doc-v0.10.1.schema.json` are the StarIntel document **base/wire schema** specification (unified 0.10 line; the legacy `schemas/starintel-doc-v0.9.0.*` artifacts remain on disk for consumers pinned to 0.9). Never create a parallel JSON shape, a prompt-only “StarIntel style,” a renderer-specific schema, or undocumented fields. The Nim runtime is an implementation of this contract, not an independent schema.
+`nsaspy/star-lang` is the sole StarIntel document authority. This repository is
+a consumer pinned by `schema/starintel-schema.lock.json`. The synchronized
+files under `schema/star-lang/` are generated evidence from that exact commit;
+they must be refreshed only with `scripts/sync-starintel-authority.py`.
+
+The repository-local `starintel_doc/` package and the historical artifacts
+under `schemas/` are legacy Auto-Dig corpus compatibility machinery. They are
+not allowed to define, extend, bump, or mint the canonical contract. Existing
+snake-case records remain valid migration input only. Canonical 0.10.1 output
+uses Star-Lang's lowerCamelCase fields and must pass through the pinned
+`starintel_doc` Python binding before server ingest. Never add a second schema
+shape, prompt-only “StarIntel style,” renderer-specific schema, or undocumented
+field.
 
 The active StarIntel **release/profile version** is resolved separately through the release tooling, never from a filename. Before relying on a StarIntel version number or changing schema/profile metadata, every agent must run:
 
@@ -34,16 +46,15 @@ python3 scripts/schema-release.py check
 
 Rules:
 
-- use the reported `release_version` as the active StarIntel release;
+- use the reported `release_version` and Star-Lang commit as the active contract;
 - do not infer the active release from `schema_version`, a schema filename, issue prose, research notes, README text, or memory;
 - on the unified 0.10 line, `release_version == profile_version == schema_version` (0.10.1 reunifies them; the 0.9 line kept release/profile distinct from the immutable 0.9.0 base, and those legacy artifacts are retained);
-- additive patch bumps MUST use `python3 scripts/schema-release.py bump --to <next-patch>`; never update version fields with `sed`, editor search/replace, or an ad hoc script;
-- creating a new base line MUST use `python3 scripts/schema-release.py mint --to <X.Y.Z>` after the spec source change lands; mint generates the schema/manifest and repins conformance, package, and schema-filename metadata programmatically;
-- the 0.9 expansion registry is retired as an authority: its vocabulary was absorbed into `starintel_doc/spec.py` in 0.10.1 (see `docs/schema-0.10.1-design.md`);
-- after a canonical release changes, consumers must repin their schema locks through their repository-owned sync/lock workflow and pass conformance before claiming support;
+- `bump` and `mint` are deliberately disabled here; releases are authored in Star-Lang, then repinned with `scripts/sync-starintel-authority.py`;
+- the repository-local 0.9 expansion registry and `starintel_doc/spec.py` are retained only to read and migrate the legacy corpus;
+- after a canonical release changes, repin the lock through the sync workflow and pass the consumer checker and binding conformance before claiming support;
 - any disagreement among manifest, conformance metadata, package metadata, or a consumer lock is a hard blocker. Fix the authority chain instead of guessing.
 
-At the time this rule was updated the canonical release/profile/base schema is `0.10.1` and the next additive patch is `0.10.2`. Those literals are historical context only; `scripts/schema-release.py current` is authoritative after any bump or mint.
+At the time this rule was updated the canonical release/profile/base schema is `0.10.1` and the next additive patch is `0.10.2`. Those literals are historical context only; the consumer lock and synchronized Star-Lang release lock outrank them.
 
 Before creating or changing a document, every agent must inspect the executable schema:
 
@@ -222,13 +233,19 @@ Do not merge invalid documents with a promise to repair them later. Do not bypas
 
 ## Migration and update policy
 
-Legacy records must be migrated with:
+Legacy records may still be normalized inside the historical corpus with:
 
 ```bash
 python3 scripts/migrate-starintel-v0.9.py --write
 ```
 
-The migrator preserves unknown legacy values in `extensions.legacy.v0`; it does not silently discard them. After migration, run the Nim merge gate.
+The migrator preserves unknown legacy values in `extensions.legacy.v0`; it does
+not silently discard them. That output remains legacy input. Before sending it
+to star-server, migrate and validate it with the pinned canonical Python
+binding, which emits lowerCamelCase 0.10.1 documents and may expand one source
+record into derived transcript or person-identifier documents. Never label the
+repository-local snake-case shape canonical. After corpus changes, run the Nim
+merge gate.
 
 Existing IDs are stable:
 

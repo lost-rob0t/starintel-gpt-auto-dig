@@ -1,12 +1,12 @@
 # StarIntel 0.10.1 Design and Decision Record
 
-Status: implemented (branch `spec/0.10.1-unify`)
+Status: historical Auto-Dig design, superseded as canonical authority
 Date: 2026-09-19
-Authority: this document records the decisions behind the StarIntel 0.10.1
-release. The executable authority is `starintel_doc/spec.py`, the generated
-`schemas/starintel-doc-v0.10.1.schema.json`, and
-`schemas/starintel-doc-v0.10.1.manifest.json`, resolved through
-`scripts/schema-release.py`.
+Authority: this document records the former repository-local 0.10.1 design.
+The executable authority is now `nsaspy/star-lang` at the commit pinned by
+`schema/starintel-schema.lock.json`. Repository-local snake-case schemas and
+`starintel_doc/spec.py` are legacy corpus compatibility inputs only. Canonical
+0.10.1 output is lowerCamelCase and comes from Star-Lang-derived bindings.
 
 ## 1. Operator instruction and version normalization
 

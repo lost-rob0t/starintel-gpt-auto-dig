@@ -2,7 +2,11 @@
 
 This directory is the shared, versioned conformance source for the StarIntel language bindings.
 
-The executable registry in `starintel_doc/spec.py` and generated schema in `schemas/starintel-doc-v0.9.0.schema.json` define the tested contract. Fixtures are generated deterministically by `conformance/fixtures.py`; downstream repositories must consume this pinned directory rather than copy and edit fixture files.
+This directory is the frozen legacy Auto-Dig conformance harness for the
+snake-case corpus format. It does not define canonical StarIntel. Star-Lang is
+the authority, and current language bindings consume the exact commit pinned by
+`schema/starintel-schema.lock.json`. New cross-language conformance belongs to
+the Star-Lang compatibility fixtures and each binding's generated adapter.
 
 ## Adapter protocol
 
