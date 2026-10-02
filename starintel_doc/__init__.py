@@ -14,6 +14,7 @@ from .spec import ACCEPTED_SCHEMA_VERSIONS, SCHEMA_ID, SCHEMA_VERSION, TYPE_FIEL
 from .store import iter_corpus, migrate_repository, search_documents, validate_repository
 from .validation import ValidationError, validate_document
 from .writer import DatabaseWriteError, canonical_db_path, write_db_document
+from .wardrive import ingest_pcap, pcap_documents_from_rows
 
 __all__ = [
     "ACCEPTED_SCHEMA_VERSIONS",
@@ -44,4 +45,6 @@ __all__ = [
     "validate_document",
     "validate_repository",
     "write_db_document",
+    "ingest_pcap",
+    "pcap_documents_from_rows",
 ]
