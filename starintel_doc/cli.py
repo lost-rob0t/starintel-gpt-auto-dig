@@ -20,6 +20,7 @@ from .store import (
     validate_repository,
 )
 from .validation import validate_document
+from .wardrive import ingest_pcap
 
 
 def _json_object(value: str, label: str) -> dict[str, Any]:
@@ -229,6 +230,27 @@ def cmd_import(args: argparse.Namespace) -> int:
     return 0
 
 
+
+def cmd_wardrive_pcap(args: argparse.Namespace) -> int:
+    documents = ingest_pcap(
+        args.source,
+        dataset=args.dataset,
+        tshark=args.tshark,
+        file_uri=args.file_uri or None,
+    )
+    payload = "".join(
+        json.dumps(document, ensure_ascii=False, sort_keys=True, separators=(",", ":")) + "\n"
+        for document in documents
+    )
+    if args.output:
+        output = Path(args.output)
+        output.parent.mkdir(parents=True, exist_ok=True)
+        output.write_text(payload, encoding="utf-8")
+    else:
+        print(payload, end="")
+    return 0
+
+
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(prog="starintel", description="Canonical StarIntel v0.9.0 document tooling")
     sub = parser.add_subparsers(dest="command", required=True)
@@ -304,6 +326,14 @@ def build_parser() -> argparse.ArgumentParser:
     p.add_argument("--db-only", action="store_true")
     p.add_argument("--packets-only", action="store_true")
     p.set_defaults(func=cmd_select)
+
+    p = sub.add_parser("wardrive-pcap", help="parse a PCAP/PCAPNG into canonical StarIntel 0.10.1 JSONL")
+    p.add_argument("source")
+    p.add_argument("--dataset", default="wardrive")
+    p.add_argument("--tshark", default="tshark")
+    p.add_argument("--file-uri", default="")
+    p.add_argument("--output")
+    p.set_defaults(func=cmd_wardrive_pcap)
 
     p = sub.add_parser("import", help="transactionally import canonical JSONL into db/")
     p.add_argument("source")
