@@ -4,7 +4,6 @@ import csv
 import hashlib
 import json
 import subprocess
-from collections import defaultdict
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Iterable, Iterator, Sequence
@@ -112,7 +111,7 @@ def _endpoint(
     return result
 
 
-def _conversation_key(row: dict[str, str]) -> tuple[str, str, str, dict[str, Any], dict[str, Any]] | None:
+def _conversation_key(row: dict[str, str]) -> tuple[str, str, str, dict[str, Any], dict[str, Any], bool] | None:
     if row["tcp.srcport"] or row["tcp.dstport"]:
         layer = "tcp"
         left = _endpoint(ipv4=row["ip.src"], ipv6=row["ipv6.src"], port=row["tcp.srcport"])
@@ -139,8 +138,8 @@ def _conversation_key(row: dict[str, str]) -> tuple[str, str, str, dict[str, Any
     left_key = json.dumps(left, sort_keys=True, separators=(",", ":"))
     right_key = json.dumps(right, sort_keys=True, separators=(",", ":"))
     if left_key <= right_key:
-        return layer, left_key, right_key, left, right
-    return layer, right_key, left_key, right, left
+        return layer, left_key, right_key, left, right, True
+    return layer, right_key, left_key, right, left, False
 
 
 def iter_tshark_rows(path: Path, *, tshark: str = "tshark") -> Iterator[dict[str, str]]:
@@ -302,7 +301,7 @@ def pcap_documents_from_rows(
         conversation = _conversation_key(row)
         if conversation is None:
             continue
-        layer, left_key, right_key, left_endpoint, right_endpoint = conversation
+        layer, left_key, right_key, left_endpoint, right_endpoint, source_is_a = conversation
         key = (layer, left_key, right_key)
         record = conversations.setdefault(
             key,
@@ -319,14 +318,7 @@ def pcap_documents_from_rows(
                 "last_frame_num": frame_number,
             },
         )
-        original_left = _endpoint(
-            mac=row["eth.src"],
-            ipv4=row["ip.src"],
-            ipv6=row["ipv6.src"],
-            port=row["tcp.srcport"] or row["udp.srcport"],
-        )
-        original_left_key = json.dumps(original_left, sort_keys=True, separators=(",", ":"))
-        if original_left_key == left_key:
+        if source_is_a:
             record["a_packets"] += 1
             record["a_bytes"] += frame_len
         else:
