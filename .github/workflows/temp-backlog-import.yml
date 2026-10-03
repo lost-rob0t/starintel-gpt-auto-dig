@@ -53,6 +53,14 @@ jobs:
         with:
           nim-version: ${{ env.NIM_VERSION }}
 
+      - name: Checkout the pinned generated document runtime
+        uses: actions/checkout@v6
+        with:
+          repository: lost-rob0t/starintel-doc.nim
+          ref: 827f2c072e9893561a1925c47f898458bafd6759
+          path: .starintel-doc-nim
+      - name: Install PCRE for strict generated validation
+        run: sudo apt-get update && sudo apt-get install --yes libpcre3
       - name: Build threaded ingest core
         run: nimble buildIngest
 

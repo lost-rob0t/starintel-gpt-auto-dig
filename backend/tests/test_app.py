@@ -56,7 +56,7 @@ class BackendApiTests(unittest.TestCase):
         res = self.client.get("/api/v1/capabilities")
         self.assertEqual(res.status_code, 200)
         body = res.json()
-        self.assertEqual(body["schema_version"], "0.9.0")
+        self.assertEqual(body["schema_version"], "0.10.1")
         self.assertIn("org", body["dtypes"])
         self.assertIn("start", body["actions"])
 

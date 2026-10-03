@@ -165,7 +165,7 @@ class StarIntelIngestCoreTests(unittest.TestCase):
 
     def test_parallel_batches_use_bearer_auth_and_complete(self) -> None:
         documents = [
-            {"_id": f"starintel:test:{index}", "dtype": "note", "version": 1}
+            {"id": f"starintel:test:{index}", "dtype": "person", "dataset": "test", "schemaVersion": "0.10.1"}
             for index in range(7)
         ]
         result = self.run_core(
@@ -192,6 +192,7 @@ class StarIntelIngestCoreTests(unittest.TestCase):
     def test_actorless_target_uses_canonical_bulk_route(self) -> None:
         target = {
             "_id": "starintel:target:actorless-canary",
+            "schema_version": "0.9.0", "version": 1, "dataset": "test", "date_added": "2026-10-03T00:00:00Z", "date_updated": "2026-10-03T00:00:00Z", "sources": [], "evidence": [],
             "dtype": "target",
             "data": {"target": "actorless canary"},
         }
@@ -204,7 +205,7 @@ class StarIntelIngestCoreTests(unittest.TestCase):
 
     def test_missing_key_fails_before_network_request(self) -> None:
         result = self.run_core(
-            [{"_id": "starintel:test:one", "dtype": "note"}],
+            [{"id": "starintel:test:one", "dtype": "person", "dataset": "test", "schemaVersion": "0.10.1"}],
             key=None,
         )
 
@@ -213,9 +214,14 @@ class StarIntelIngestCoreTests(unittest.TestCase):
         self.assertFalse(FakeIngestHandler.batches)
         self.assertEqual(FakeIngestHandler.post_attempts, 0)
 
+    def test_nested_research_profile_cannot_cross_wire_boundary(self) -> None:
+        result = self.run_core([{"_id": "test:person", "dtype": "person", "schema_version": "0.10.1", "data": {}}])
+        self.assertNotEqual(result.returncode, 0)
+        self.assertEqual(FakeIngestHandler.post_attempts, 0)
+
     def test_accepted_without_status_url_fails_closed(self) -> None:
         FakeIngestHandler.response_mode = "accepted-no-status-url"
-        result = self.run_core([{"_id": "starintel:test:one", "dtype": "note"}])
+        result = self.run_core([{"id": "starintel:test:one", "dtype": "person", "dataset": "test", "schemaVersion": "0.10.1"}])
 
         self.assertEqual(result.returncode, 1, result.stderr + result.stdout)
         self.assertIn("accepted without status_url", result.stderr)
@@ -224,7 +230,7 @@ class StarIntelIngestCoreTests(unittest.TestCase):
 
     def test_failed_2xx_status_is_not_reported_as_success(self) -> None:
         FakeIngestHandler.response_mode = "inline-failed-status"
-        result = self.run_core([{"_id": "starintel:test:one", "dtype": "note"}])
+        result = self.run_core([{"id": "starintel:test:one", "dtype": "person", "dataset": "test", "schemaVersion": "0.10.1"}])
 
         self.assertEqual(result.returncode, 1, result.stderr + result.stdout)
         self.assertIn("did not complete successfully", result.stderr)
@@ -234,8 +240,8 @@ class StarIntelIngestCoreTests(unittest.TestCase):
         FakeIngestHandler.response_mode = "inline-partial-zero-failed"
         result = self.run_core(
             [
-                {"_id": "starintel:test:one", "dtype": "note"},
-                {"_id": "starintel:test:two", "dtype": "note"},
+                {"id": "starintel:test:one", "dtype": "person", "dataset": "test", "schemaVersion": "0.10.1"},
+                {"id": "starintel:test:two", "dtype": "person", "dataset": "test", "schemaVersion": "0.10.1"},
             ]
         )
 
@@ -245,7 +251,7 @@ class StarIntelIngestCoreTests(unittest.TestCase):
 
     def test_ambiguous_connection_drop_is_never_retried(self) -> None:
         FakeIngestHandler.response_mode = "drop-after-accept"
-        result = self.run_core([{"_id": "starintel:test:one", "dtype": "note"}])
+        result = self.run_core([{"id": "starintel:test:one", "dtype": "person", "dataset": "test", "schemaVersion": "0.10.1"}])
 
         self.assertEqual(result.returncode, 1, result.stderr + result.stdout)
         self.assertIn("not retried to avoid duplicate ingestion", result.stderr)
@@ -254,7 +260,7 @@ class StarIntelIngestCoreTests(unittest.TestCase):
 
     def test_503_post_is_not_retried_without_idempotency(self) -> None:
         FakeIngestHandler.response_mode = "http-503"
-        result = self.run_core([{"_id": "starintel:test:one", "dtype": "note"}])
+        result = self.run_core([{"id": "starintel:test:one", "dtype": "person", "dataset": "test", "schemaVersion": "0.10.1"}])
 
         self.assertEqual(result.returncode, 1, result.stderr + result.stdout)
         self.assertIn("not retried because acceptance is ambiguous", result.stderr)
@@ -263,7 +269,7 @@ class StarIntelIngestCoreTests(unittest.TestCase):
     def test_429_post_is_safely_retried(self) -> None:
         FakeIngestHandler.response_mode = "http-429-once"
         result = self.run_core(
-            [{"_id": "starintel:test:one", "dtype": "note"}],
+            [{"id": "starintel:test:one", "dtype": "person", "dataset": "test", "schemaVersion": "0.10.1"}],
             "--poll-timeout-ms",
             "5000",
         )

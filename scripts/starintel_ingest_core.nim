@@ -7,6 +7,8 @@
 ## idempotency key, an ambiguous retry can publish the same batch twice.
 
 import std/[cpuinfo, httpclient, json, os, strutils, threadpool, times]
+import starintel_doc/canonical as canonicalRuntime
+import starintel_doc/v090 as legacyRuntime
 
 const
   DefaultServerUrl = "https://ingest.starintel.actor"
@@ -318,10 +320,14 @@ proc readDocuments(): seq[string] =
       let node = parseJson(line)
       if node.kind != JObject:
         fail("stdin:" & $lineNo & ": document must be a JSON object")
-      if not node.hasKey("_id") or node["_id"].kind != JString or node["_id"].getStr().len == 0:
-        fail("stdin:" & $lineNo & ": document is missing non-empty _id")
-      if not node.hasKey("dtype") or node["dtype"].kind != JString or node["dtype"].getStr().len == 0:
-        fail("stdin:" & $lineNo & ": document is missing dtype")
+      if node.hasKey("schemaVersion"):
+        let checked = canonicalRuntime.validateDocument(node)
+        if not checked.ok:
+          fail("stdin:" & $lineNo & ": " & checked.category & ": " & checked.message)
+      else:
+        let checked = legacyRuntime.validateDocument(node, legacyRuntime.loadSchema())
+        if not checked.ok:
+          fail("stdin:" & $lineNo & ": historical wire: " & checked.category & ": " & checked.message)
     except JsonParsingError as exc:
       fail("stdin:" & $lineNo & ": invalid JSON: " & exc.msg)
     result.add(line)
@@ -366,9 +372,6 @@ proc main(): int =
     workers = min(cores, DefaultServerPrincipalConcurrency)
   workers = max(1, min(workers, payloads.len))
 
-  setMinPoolSize(workers)
-  setMaxPoolSize(workers)
-
   stdout.writeLine($( %*{
     "status": "starting",
     "documents": documents.len,
@@ -380,41 +383,45 @@ proc main(): int =
   }))
 
   let started = epochTime()
-  var futures: seq[FlowVar[UploadResult]]
-  for index, batch in payloads:
-    futures.add(spawn uploadBatch(
-      index + 1,
-      batch.documents,
-      batch.payload,
-      options.serverUrl,
-      apiKey,
-      options.timeoutMs,
-      options.pollTimeoutMs,
-      options.retries,
-    ))
-
   var failures = 0
   var uploaded = 0
-  for future in futures:
-    let batch = ^future
-    if batch.ok:
-      uploaded += batch.documents
-      stdout.writeLine($( %*{
-        "status": "batch-completed",
-        "batch": batch.batchNo,
-        "batch_documents": batch.documents,
-        "server_status": batch.status,
-        "uploaded": uploaded,
-        "total": documents.len,
-      }))
-    else:
-      inc failures
-      stderr.writeLine($( %*{
-        "status": "batch-failed",
-        "batch": batch.batchNo,
-        "batch_documents": batch.documents,
-        "error": batch.error,
-      }))
+  # Bound in-flight batches without shrinking the pool: Nim 2.2 can leave
+  # its ready-worker pointer on a retiring worker during pool shutdown.
+  for firstBatch in countup(0, payloads.len - 1, workers):
+    var futures: seq[FlowVar[UploadResult]]
+    for index in firstBatch ..< min(firstBatch + workers, payloads.len):
+      let batch = payloads[index]
+      futures.add(spawn uploadBatch(
+        index + 1,
+        batch.documents,
+        batch.payload,
+        options.serverUrl,
+        apiKey,
+        options.timeoutMs,
+        options.pollTimeoutMs,
+        options.retries,
+      ))
+
+    for future in futures:
+      let batch = ^future
+      if batch.ok:
+        uploaded += batch.documents
+        stdout.writeLine($( %*{
+          "status": "batch-completed",
+          "batch": batch.batchNo,
+          "batch_documents": batch.documents,
+          "server_status": batch.status,
+          "uploaded": uploaded,
+          "total": documents.len,
+        }))
+      else:
+        inc failures
+        stderr.writeLine($( %*{
+          "status": "batch-failed",
+          "batch": batch.batchNo,
+          "batch_documents": batch.documents,
+          "error": batch.error,
+        }))
 
   sync()
   let elapsed = max(0.001, epochTime() - started)

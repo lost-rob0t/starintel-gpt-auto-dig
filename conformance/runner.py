@@ -15,7 +15,7 @@ from .fixtures import all_fixtures, fixture_payload
 
 REPORT_PATH = Path("artifacts/conformance-report.json")
 DEFAULT_COMMANDS = {
-    "python": f"{shlex.quote(sys.executable)} -m conformance.adapter",
+    "python": f"{shlex.quote(sys.executable)} -m conformance.legacy_adapter",
 }
 
 
@@ -298,6 +298,7 @@ def run_suite(args: argparse.Namespace) -> dict[str, Any]:
     report = {
         "ok": ok,
         "spec_version": SPEC_VERSION,
+        "profile": "historical-auto-dig-research",
         "languages": list(LANGUAGES),
         "required_languages": sorted(required_languages),
         "missing_adapters": missing,

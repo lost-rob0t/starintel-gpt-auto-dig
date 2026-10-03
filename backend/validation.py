@@ -14,7 +14,8 @@ _ROOT = Path(__file__).resolve().parent.parent
 if str(_ROOT) not in sys.path:
     sys.path.insert(0, str(_ROOT))
 
-from starintel_doc.validation import validate_document  # noqa: E402
+from starintel_doc.canonical import validate_document as validate_canonical  # noqa: E402
+from starintel_doc.validation import validate_document as validate_legacy  # noqa: E402
 
 
 class DocumentValidationError(ValueError):
@@ -27,9 +28,13 @@ def validate_v09(document: Any) -> dict[str, Any]:
     """Validate one parsed document against StarIntel v0.9. Raises DocumentValidationError."""
     if not isinstance(document, dict):
         raise DocumentValidationError("<unknown>", "document must be a JSON object")
-    doc_id = str(document.get("_id", "<unknown>"))
+    doc_id = str(document.get("id", document.get("_id", "<unknown>")))
     try:
-        return validate_document(document)
+        if "schemaVersion" in document:
+            return validate_canonical(document)
+        if document.get("schema_version") == "0.9.0":
+            return validate_legacy(document)
+        raise ValueError("StarLang 0.10.1 requires id/schemaVersion and flat fields; the historical nested research profile cannot be submitted as canonical wire data")
     except Exception as exc:  # starintel_doc raises ValueError subclasses
         raise DocumentValidationError(doc_id, str(exc)) from exc
 

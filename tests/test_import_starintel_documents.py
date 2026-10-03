@@ -151,14 +151,14 @@ class ImportStarIntelDocumentsTests(unittest.TestCase):
             self.assertIn(method, {"POST", "GET"})
             if method == "POST":
                 self.assertEqual(path, "/documents/bulk")
-                self.assertEqual(payload[0]["_id"], "starintel:test:one")
+                self.assertEqual(payload[0]["id"], "starintel:test:one")
             else:
                 self.assertEqual(path, "/documents/bulk/job-1")
             return responses.pop(0)
 
         with mock.patch.object(client, "request_json", side_effect=fake_request):
             result = client.upload_batch(
-                [{"_id": "starintel:test:one", "dtype": "note", "version": 1}]
+                [{"id": "starintel:test:one", "dtype": "person", "dataset": "test", "schemaVersion": "0.10.1"}]
             )
 
         self.assertEqual(result["status"], "completed")
@@ -176,7 +176,7 @@ class ImportStarIntelDocumentsTests(unittest.TestCase):
             client.request_json(
                 "POST",
                 "/documents/bulk",
-                [{"_id": "starintel:test:one", "dtype": "note", "version": 1}],
+                [{"id": "starintel:test:one", "dtype": "person", "dataset": "test", "schemaVersion": "0.10.1"}],
             )
 
         request = urlopen.call_args.args[0]

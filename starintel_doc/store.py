@@ -12,6 +12,7 @@ from typing import Any, Iterable, Iterator
 from .migration import migrate_document
 from .schema_org_migration import enrich_schema_org
 from .validation import ValidationError, validate_document
+from .storage_validation import validate_stored_document, document_id
 
 
 @dataclass(frozen=True, slots=True)
@@ -145,9 +146,9 @@ def validate_repository(root: Path, *, require_v090: bool = True) -> dict[str, A
         label = f"{located.path}:{located.line}"
         try:
             if require_v090:
-                validate_document(doc)
+                validate_stored_document(doc)
             dtype = str(doc.get("dtype", ""))
-            doc_id = str(doc.get("_id", ""))
+            doc_id = str(document_id(doc) or "")
             counts[dtype] += 1
             if located.surface == "db":
                 expected_dtype = located.path.parent.name
@@ -168,8 +169,9 @@ def validate_repository(root: Path, *, require_v090: bool = True) -> dict[str, A
     for located in located_docs:
         if located.surface != "db" or located.document.get("dtype") != "relation":
             continue
-        data = located.document.get("data", {})
-        for endpoint in ("subject", "object"):
+        canonical = "schemaVersion" in located.document
+        data = located.document if canonical else located.document.get("data", {})
+        for endpoint in (("subject", "object") if not canonical else ("source", "destination")):
             value = data.get(endpoint)
             values = value if isinstance(value, list) else [value]
             for item in values:

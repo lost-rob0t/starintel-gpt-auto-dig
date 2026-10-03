@@ -10,7 +10,7 @@ from pathlib import Path
 from typing import Any
 
 ROOT = Path(__file__).resolve().parents[1]
-SCRIPT = ROOT / "scripts" / "schema-release.py"
+SCRIPT = ROOT / "scripts" / "schema-release-legacy.py"
 MANIFEST = ROOT / "schemas" / "starintel-doc-v0.10.1.manifest.json"
 LEGACY_MANIFEST = ROOT / "schemas" / "starintel-doc-v0.9.0.manifest.json"
 LEGACY_EXPANSION = ROOT / "schemas" / "starintel-doc-v0.9.0.expansion.json"

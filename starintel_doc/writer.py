@@ -5,7 +5,7 @@ from pathlib import Path
 from typing import Any
 
 from .store import compact, validate_repository
-from .validation import validate_document
+from .storage_validation import validate_stored_document as validate_document, document_id
 
 
 class DatabaseWriteError(ValueError):
@@ -16,7 +16,7 @@ def canonical_db_path(root: Path, document: dict[str, Any]) -> Path:
     """Return the only valid normalized DB path for a validated document."""
     validate_document(document)
     dtype = document["dtype"]
-    doc_id = document["_id"]
+    doc_id = document_id(document)
     if not isinstance(doc_id, str) or not doc_id:
         raise DatabaseWriteError("document _id must be a non-empty string")
     if "/" in doc_id or "\\" in doc_id or doc_id in {".", ".."}:

@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import unittest
 
-from conformance.adapter import error_category, handle
+from conformance.legacy_adapter import error_category, handle
 from conformance.fixtures import all_fixtures
 from starintel_doc.spec import SCHEMA_VERSION, TYPE_FIELDS
 from starintel_doc.validation import ValidationError

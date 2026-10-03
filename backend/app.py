@@ -22,7 +22,7 @@ from .validation import DocumentValidationError, validate_v09
 from .server_client import StarIntelClient, StarIntelServerError
 
 API = "/api/v1"
-SCHEMA_VERSION = "0.9.0"
+SCHEMA_VERSION = "0.10.1"
 BACKEND_VERSION = "0.1.0"
 
 
@@ -43,9 +43,9 @@ class DocumentInBody(BaseModel):
 
 def dtypes() -> list[str]:
     try:
-        from starintel_doc import TYPE_FIELDS
+        from starintel_doc import DOCUMENT_TYPES
 
-        return sorted(TYPE_FIELDS.keys())
+        return sorted(DOCUMENT_TYPES.keys())
     except Exception:
         return []
 
