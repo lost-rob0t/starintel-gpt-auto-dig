@@ -1,8 +1,4 @@
-"""StarIntel v0.9 validation wrapper.
-
-The repository-local `starintel_doc` package is the canonical authority.
-Validation failures are typed errors; nothing invalid ever crosses the API.
-"""
+"""Generated StarLang wire validation with explicit historical 0.9 compatibility."""
 
 from __future__ import annotations
 
@@ -25,7 +21,7 @@ class DocumentValidationError(ValueError):
 
 
 def validate_v09(document: Any) -> dict[str, Any]:
-    """Validate one parsed document against StarIntel v0.9. Raises DocumentValidationError."""
+    """Validate one parsed canonical or historical wire document before submission."""
     if not isinstance(document, dict):
         raise DocumentValidationError("<unknown>", "document must be a JSON object")
     doc_id = str(document.get("id", document.get("_id", "<unknown>")))

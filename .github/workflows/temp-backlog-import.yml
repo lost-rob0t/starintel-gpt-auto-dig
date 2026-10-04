@@ -64,6 +64,8 @@ jobs:
       - name: Build threaded ingest core
         run: nimble buildIngest
 
+      - name: Install the maintained document validator
+        run: python3 -m pip install "git+https://github.com/lost-rob0t/starintel-doc.git@$(jq -r .python_commit schema/starintel-runtime.lock.json)"
       - name: Test ingest resolver, adaptive backlog importer, and threaded core
         run: |
           python3 -m unittest \
