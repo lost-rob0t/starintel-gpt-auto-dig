@@ -40,7 +40,15 @@ jobs:
       - uses: actions/setup-python@v6
         with:
           python-version: "3.13"
+      - name: Install the pinned canonical runtime
+        run: python3 -m pip install "git+https://github.com/lost-rob0t/starintel-doc.git@$(jq -r .python_commit schema/starintel-runtime.lock.json)"
+      - name: Checkout the pinned Nim runtime
+        uses: actions/checkout@v6
+        with:
+          repository: lost-rob0t/starintel-doc.nim
+          ref: 827f2c072e9893561a1925c47f898458bafd6759
+          path: .starintel-doc-nim
       - name: Check current release authority
         run: python3 scripts/schema-release.py check
-      - name: Test release resolver and bump dry-run
+      - name: Test archived local profile release tooling
         run: python3 -m unittest tests.test_schema_release -v

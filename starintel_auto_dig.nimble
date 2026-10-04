@@ -12,7 +12,7 @@ const ingestFlags = "-d:release -d:ssl --opt:speed --mm:orc --threads:on --path:
 
 task buildIngest, "Build the threaded StarIntel bulk ingest core":
   exec "mkdir -p bin"
-  exec "nim c " & ingestFlags & " --out:bin/starintel-ingest-core scripts/starintel_ingest_core.nim"
+  exec "nim c " & ingestFlags & " --path:" & runtimePath & " --out:bin/starintel-ingest-core scripts/starintel_ingest_core.nim"
 
 task buildFast, "Build speed-critical StarIntel binaries":
   exec "mkdir -p bin"
@@ -21,7 +21,7 @@ task buildFast, "Build speed-critical StarIntel binaries":
   exec "nim c " & nimFlags & " --out:bin/starintel-site scripts/starintel_site_entry.nim"
   exec "nim c " & nimFlags & " --out:bin/validate-for-merge scripts/validate_for_merge.nim"
   exec "nim c " & nimFlags & " --out:bin/import-gop-receipts scripts/import_gop_fec_receipts.nim"
-  exec "nim c " & ingestFlags & " --out:bin/starintel-ingest-core scripts/starintel_ingest_core.nim"
+  exec "nim c " & ingestFlags & " --path:" & runtimePath & " --out:bin/starintel-ingest-core scripts/starintel_ingest_core.nim"
 
 task validate, "Validate corpus and emit ./unverifed source audit":
   exec "nimble buildFast"

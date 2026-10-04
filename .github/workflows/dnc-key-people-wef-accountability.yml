@@ -26,7 +26,7 @@ concurrency:
 
 env:
   NIM_VERSION: 2.2.4
-  STARINTEL_NIM_REF: b55316bae294a146523cd2f977b81096e538c86a
+  STARINTEL_NIM_REF: 827f2c072e9893561a1925c47f898458bafd6759
 
 jobs:
   generate:
@@ -58,7 +58,12 @@ jobs:
           python-version: '3.13'
 
       - name: Install repository test dependencies
-        run: python3 -m pip install --disable-pip-version-check requests beautifulsoup4 lxml httpx
+        run: python3 -m pip install --disable-pip-version-check requests beautifulsoup4 lxml httpx "git+https://github.com/lost-rob0t/starintel-doc.git@$(jq -r .python_commit schema/starintel-runtime.lock.json)"
+
+      - name: Install native validator PCRE runtime
+        run: |
+          sudo apt-get update
+          sudo apt-get install --yes libpcre3
 
       - name: Generate universal WEF and key-person accountability queues
         run: python3 scripts/generate_dnc_key_people_wef_accountability.py --all-people
