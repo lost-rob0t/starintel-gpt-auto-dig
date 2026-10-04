@@ -1,8 +1,8 @@
 {
   "schema_version": "0.10.1",
   "release_version": "0.10.1",
-  "canonical_repository": "nsaspy/star-lang",
-  "canonical_commit": "919833266723edc9bddb337d606f72ae25fb8ced",
+  "canonical_repository": "lost-rob0t/star-lang",
+  "canonical_commit": "765f1673851192bcaf1cdd2f35c47608f979b079",
   "schema_path": "specs/starintel/0.10.1/generated/schema.json",
   "expansion_path": "specs/starintel/0.10.1/compatibility.json",
   "manifest_path": "specs/starintel/0.10.1/schema-lock-manifest.json",
@@ -18,6 +18,8 @@
     "transcript",
     "person-identifier",
     "geo-point",
-    "location"
+    "location",
+    "http-transaction",
+    "web-capture"
   ]
 }
