@@ -1,0 +1,73 @@
+{
+  "retrievalDate": "2026-10-10",
+  "retrievalPrecision": "day; no exact retrieval time was supplied",
+  "observationBasis": "Supplied verified public-page observations; no additional browsing or people collection during packet preparation",
+  "urls": [
+    {
+      "key": "ohio-voice-partners",
+      "url": "https://ohvoice.org/our-partners/",
+      "observation": "The listing is explicitly labeled Ohio Voice 2025 Partners. The supplied source review counted 33 organization entries. A 2026 partner roll was not confirmed."
+    },
+    {
+      "key": "ovrc-about",
+      "url": "https://www.ohiovoterrights.org/about-us",
+      "observation": "The page lists five steering organizations: ACLU of Ohio, All Voting is Local Ohio, Common Cause Ohio, LWV Ohio, and Ohio Voice. Its logo gallery is labeled Some of Our Coalition Partners and is a partial listing."
+    },
+    {
+      "key": "franklin-boe-administration",
+      "url": "https://vote.franklincountyohio.gov/about/administration",
+      "observation": "Franklin County Board of Elections public administration-directory link only; no people extracted."
+    },
+    {
+      "key": "lwvmc-board-staff",
+      "url": "https://my.lwv.org/ohio/metropolitan-columbus/board-members-trustees-and-staff",
+      "observation": "League of Women Voters of Metropolitan Columbus public board, trustees and staff-directory link only; no people extracted."
+    },
+    {
+      "key": "osu-student-life-leadership",
+      "url": "https://studentlife.osu.edu/about/leadership-team",
+      "observation": "The Ohio State University Office of Student Life public leadership-directory link only; no people extracted."
+    },
+    {
+      "key": "linkedin-franklin-boe",
+      "url": "https://www.linkedin.com/company/franklin-county-board-of-elections",
+      "observation": "Franklin County Board of Elections organization-level LinkedIn page opened publicly; organization correlation used official website/location. No employee records."
+    },
+    {
+      "key": "linkedin-ohio-voice",
+      "url": "https://www.linkedin.com/company/ohio-voice",
+      "observation": "Ohio Voice organization-level LinkedIn page opened publicly; organization correlation used official website/location. No employee records."
+    },
+    {
+      "key": "linkedin-osu-student-life",
+      "url": "https://www.linkedin.com/company/office-of-student-life-at-the-ohio-state-university",
+      "observation": "The Ohio State University Office of Student Life organization-level LinkedIn page opened publicly; organization correlation used official website/location. No employee records."
+    }
+  ],
+  "findings": [
+    {
+      "key": "ohio-voice-partners-2025",
+      "title": "Ohio Voice partner page is explicitly a 2025 listing",
+      "description": "The Ohio Voice page is labeled Ohio Voice 2025 Partners. The supplied source review counted 33 organization entries. This is a dated listing snapshot; a 2026 partner roll and current membership were not confirmed.",
+      "sources": ["ohio-voice-partners"]
+    },
+    {
+      "key": "ovrc-partial-listing",
+      "title": "OVRC identifies five steering organizations and a partial partner gallery",
+      "description": "The OVRC About Us page lists ACLU of Ohio, All Voting is Local Ohio, Common Cause Ohio, LWV Ohio, and Ohio Voice as five steering organizations. The separate gallery is labeled Some of Our Coalition Partners. That gallery is partial and does not establish a complete or independently current membership roll.",
+      "sources": ["ovrc-about"]
+    },
+    {
+      "key": "governance-directory-links",
+      "title": "Official institutional governance-directory links",
+      "description": "Public directory links were recorded for Franklin County Board of Elections administration, League of Women Voters of Metropolitan Columbus board/trustees/staff, and The Ohio State University Office of Student Life leadership. These are directory-link observations only; no individuals or personal profiles were extracted.",
+      "sources": ["franklin-boe-administration", "lwvmc-board-staff", "osu-student-life-leadership"]
+    },
+    {
+      "key": "organization-linkedin-pages",
+      "title": "Public organization-level LinkedIn page references",
+      "description": "Public organization-level LinkedIn pages were opened for Franklin County Board of Elections, Ohio Voice, and The Ohio State University Office of Student Life and correlated using official websites/location. No employee records were collected. These page observations do not establish membership, endorsement, or any person's political beliefs.",
+      "sources": ["linkedin-franklin-boe", "linkedin-ohio-voice", "linkedin-osu-student-life"]
+    }
+  ]
+}
