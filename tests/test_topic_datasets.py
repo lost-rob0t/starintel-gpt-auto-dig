@@ -46,6 +46,20 @@ class TopicDatasetTests(unittest.TestCase):
         self.assertTrue(MODULE.excluded_source_dataset("daily", self.config))
         self.assertFalse(MODULE.excluded_source_dataset("wef", self.config))
 
+    def test_exact_id_overlay_preserves_original_and_fallback_topics(self) -> None:
+        self.config["topics"].append({"id": "election26", "match": {"ids": ["exact:Case"]}})
+        for target, title, expected in [("columbus", "Source", "ohio"),
+                                        ("misc", "Ohio", "ohio"),
+                                        ("misc", "Source", "misc")]:
+            for wire in ({"schemaVersion": "0.10.1", "id": "exact:Case"},
+                         {"schema_version": "0.9.0", "_id": "exact:Case"}):
+                document = {**wire, "title": title, "dataset": "anarchist-violence"}
+                topics = MODULE.topics_for_document(target, document, self.config)
+                self.assertEqual({item["id"] for item in topics}, {expected, "election26"})
+        unmatched = {"id": "exact:case", "schemaVersion": "0.10.1", "dataset": "anarchist-violence"}
+        topics = MODULE.topics_for_document("misc", unmatched, self.config)
+        self.assertEqual([item["id"] for item in topics], ["misc"])
+
 
 if __name__ == "__main__":
     unittest.main()

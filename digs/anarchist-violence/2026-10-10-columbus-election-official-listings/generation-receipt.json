@@ -1,0 +1,29 @@
+{
+  "format": "columbus-official-listings-generation.v1",
+  "input": "observations.json",
+  "inputSha256": "c5b605cc0161bbeee67bc83bce536f487e1f1d7b39647389e9b478d8e2e8b025",
+  "output": "starintel-documents.jsonl",
+  "outputSha256": "28be539bcd78e8a7e1fec91d44eb3202b43eb40989d63a5f9b9a2457adc1de95",
+  "recordCounts": {
+    "finding": 4,
+    "url": 8
+  },
+  "recordIds": [
+    "starintel:url:columbus-election-official-listings-2026-10-10-ohio-voice-partners",
+    "starintel:url:columbus-election-official-listings-2026-10-10-ovrc-about",
+    "starintel:url:columbus-election-official-listings-2026-10-10-franklin-boe-administration",
+    "starintel:url:columbus-election-official-listings-2026-10-10-lwvmc-board-staff",
+    "starintel:url:columbus-election-official-listings-2026-10-10-osu-student-life-leadership",
+    "starintel:url:columbus-election-official-listings-2026-10-10-linkedin-franklin-boe",
+    "starintel:url:columbus-election-official-listings-2026-10-10-linkedin-ohio-voice",
+    "starintel:url:columbus-election-official-listings-2026-10-10-linkedin-osu-student-life",
+    "starintel:finding:columbus-election-official-listings-2026-10-10-ohio-voice-partners-2025",
+    "starintel:finding:columbus-election-official-listings-2026-10-10-ovrc-partial-listing",
+    "starintel:finding:columbus-election-official-listings-2026-10-10-governance-directory-links",
+    "starintel:finding:columbus-election-official-listings-2026-10-10-organization-linkedin-pages"
+  ],
+  "retrievalDate": "2026-10-10",
+  "retrievalPrecision": "day; no exact retrieval time was supplied",
+  "scope": "Supplied verified public-page observations; no additional browsing or people collection during packet preparation",
+  "timestampPolicy": "No integer timestamp is invented from date-only evidence; retrieval date and precision are explicit in notes."
+}

@@ -1,6 +1,7 @@
 import std/[algorithm, json, os, osproc, sets, strformat, strutils, tables, uri]
 
 import starintel_transport
+import starintel_site_projection
 
 
 const
@@ -42,6 +43,7 @@ type TopicRule = object
   targets: seq[string]
   datasets: seq[string]
   terms: seq[string]
+  ids: HashSet[string]
 
 
 type TopicConfig = object
@@ -61,6 +63,7 @@ type ScanState = ref object
   targets: Table[string, Bucket]
   complete: Bucket
   config: SiteConfig
+  restrictedIds: HashSet[string]
 
 
 type BulkShard = object
@@ -144,24 +147,32 @@ proc recordSummary(node: JsonNode): string =
   result = jsonText(node, "summary")
   if result.len == 0:
     result = jsonText(node, "description")
+  if result.len == 0:
+    for key in ["displayName", "fullName", "name", "contentTitle", "claim", "notes", "url"]:
+      result = jsonText(node, key)
+      if result.len > 0: break
   if result.len == 0 and node.hasKey("data") and node["data"].kind == JObject:
     for key in ["description", "definition", "claim", "bio", "business", "mission"]:
       result = jsonText(node["data"], key)
       if result.len > 0:
         break
   if result.len == 0:
-    result = jsonText(node, "title", jsonText(node, "_id"))
+    result = jsonText(node, "title", documentId(node))
 
 
 proc displayTitle(node: JsonNode): string =
   result = jsonText(node, "title")
+  if result.len == 0:
+    for key in ["displayName", "fullName", "name", "contentTitle", "claim", "notes", "url"]:
+      result = jsonText(node, key)
+      if result.len > 0: break
   if result.len == 0 and node.hasKey("data") and node["data"].kind == JObject:
     for key in ["display_name", "name", "full_name"]:
       result = jsonText(node["data"], key)
       if result.len > 0:
         break
   if result.len == 0:
-    result = jsonText(node, "_id")
+    result = documentId(node)
 
 
 proc graphEligible(dtype: string): bool =
@@ -176,7 +187,7 @@ proc sourceKey(source: JsonNode): string =
   of JString:
     result = source.getStr().strip()
   of JObject:
-    for key in ["source_id", "uri", "url"]:
+    for key in ["id", "source_id", "uri", "url"]:
       if source.hasKey(key) and source[key].kind == JString:
         let value = source[key].getStr().strip()
         if value.len > 0:
@@ -187,9 +198,7 @@ proc sourceKey(source: JsonNode): string =
 
 
 proc extractSourceKeys(document: JsonNode): seq[string] =
-  if not document.hasKey("sources") or document["sources"].kind != JArray:
-    return
-  for source in document["sources"].items:
+  for source in presentationSources(document).items:
     let key = sourceKey(source)
     if key.len > 0 and key notin result:
       result.add(key)
@@ -301,6 +310,7 @@ proc loadTopicConfig(path: string): TopicConfig =
     if item.kind != JObject:
       continue
     var rule: TopicRule
+    rule.ids = initHashSet[string]()
     rule.id = slug(jsonText(item, "id"))
     if rule.id.len == 0:
       continue
@@ -314,6 +324,13 @@ proc loadTopicConfig(path: string): TopicConfig =
       if matcher.hasKey("datasets"):
         for value in stringList(matcher["datasets"]):
           rule.datasets.add(slug(value))
+      if matcher.hasKey("ids"):
+        if matcher["ids"].kind != JArray:
+          raise newException(ValueError, "topic match.ids must be an array: " & rule.id)
+        for value in matcher["ids"].items:
+          if value.kind != JString or value.getStr().strip().len == 0:
+            raise newException(ValueError, "topic match.ids requires non-empty exact IDs: " & rule.id)
+          rule.ids.incl(value.getStr())
       if matcher.hasKey("terms"):
         for value in stringList(matcher["terms"]):
           rule.terms.add(value.toLowerAscii().strip())
@@ -327,19 +344,19 @@ proc inferDbTarget(dataset: string; config: SiteConfig): string =
 
 
 proc makeRecord(document: JsonNode; raw, target, run, path: string): Record =
-  let status = nestedText(document, "verification", "status", jsonText(document, "status", "recorded"))
+  let status = jsonText(document, "verificationStatus", nestedText(document, "verification", "status", jsonText(document, "status", "recorded")))
   Record(
     raw: raw,
     target: target,
     run: run,
     path: path,
-    id: jsonText(document, "_id"),
+    id: documentId(document),
     dtype: jsonText(document, "dtype"),
     dataset: jsonText(document, "dataset"),
     title: displayTitle(document),
     summary: recordSummary(document),
-    updated: jsonText(document, "date_updated"),
-    schemaVersion: jsonText(document, "schema_version"),
+    updated: documentTime(document),
+    schemaVersion: documentVersion(document),
     status: status,
     sourceKeys: extractSourceKeys(document),
     ordinal: -1
@@ -354,7 +371,7 @@ proc addRecord(state: ScanState; record: Record) =
 
 
 proc scanCorpus(inputRoot, dbRoot: string; config: SiteConfig): tuple[targets: Table[string, Bucket], complete: Bucket] =
-  let state = ScanState(targets: initTable[string, Bucket](), complete: newBucket(), config: config)
+  let state = ScanState(targets: initTable[string, Bucket](), complete: newBucket(), config: config, restrictedIds: initHashSet[string]())
 
   for packet in packetFiles(inputRoot):
     let packetPath = packet.path
@@ -366,7 +383,10 @@ proc scanCorpus(inputRoot, dbRoot: string; config: SiteConfig): tuple[targets: T
       let document = parseJson(raw)
       if document.kind != JObject:
         raise newException(ValueError, &"{packetPath}:{lineNumber}: expected JSON object")
-      addRecord(state, makeRecord(document, raw, packetTarget, packetRun, packetPath))
+      if publicProjectionAllowed(document):
+        addRecord(state, makeRecord(document, raw, packetTarget, packetRun, packetPath))
+      else:
+        state.restrictedIds.incl(documentId(document))
     )
 
   for path in dbFiles(dbRoot):
@@ -382,9 +402,17 @@ proc scanCorpus(inputRoot, dbRoot: string; config: SiteConfig): tuple[targets: T
         input.close()
         raise newException(ValueError, &"{path}:{lineNumber}: expected JSON object")
       let dataset = jsonText(document, "dataset", "database")
-      addRecord(state, makeRecord(document, raw, inferDbTarget(dataset, state.config), "db", path))
+      if publicProjectionAllowed(document):
+        addRecord(state, makeRecord(document, raw, inferDbTarget(dataset, state.config), "db", path))
+      else:
+        state.restrictedIds.incl(documentId(document))
     input.close()
 
+  # A restrictive observation must not expose an older public duplicate.
+  for id in state.restrictedIds:
+    state.complete.docs.del(id)
+    for bucket in state.targets.values:
+      bucket.docs.del(id)
   result = (state.targets, state.complete)
 
 
@@ -441,16 +469,12 @@ proc buildGraph(bucket: Bucket; limit: int; canonicalTarget: string): JsonNode =
     if record.dtype != "relation":
       continue
     let document = parseJson(record.raw)
-    if not document.hasKey("data") or document["data"].kind != JObject:
-      continue
-    let data = document["data"]
-    if not data.hasKey("subject") or not data.hasKey("object"):
-      continue
+    let data = relationPayload(document)
     let predicate = jsonText(data, "predicate", "related to").replace("_", " ")
-    for source in endpointIds(data["subject"]):
+    for source in endpointIds(relationEndpoint(document)):
       if source notin nodeIds:
         continue
-      for target in endpointIds(data["object"]):
+      for target in endpointIds(relationEndpoint(document, true)):
         if target notin nodeIds or target == source:
           continue
         let key = source & "\x1f" & target & "\x1f" & predicate
@@ -678,7 +702,7 @@ proc termTopicMatch(rule: TopicRule; record: Record): bool =
   false
 
 
-proc topicRulesFor(record: Record; topics: TopicConfig): seq[TopicRule] =
+proc baseTopicRulesFor(record: Record; topics: TopicConfig): seq[TopicRule] =
   for rule in topics.rules:
     if directTopicMatch(rule, record):
       result.add(rule)
@@ -693,6 +717,18 @@ proc topicRulesFor(record: Record; topics: TopicConfig): seq[TopicRule] =
       title: record.target.replace("-", " "),
       subtitle: "Merged dataset for all " & record.target.replace("-", " ") & " research packets"
     ))
+
+
+proc topicRulesFor(record: Record; topics: TopicConfig): seq[TopicRule] =
+  # Exact-ID overlays are additive. They must not suppress an established
+  # direct, term-based, or fallback topic, or broaden to the source dataset.
+  result = baseTopicRulesFor(record, topics)
+  var included = initHashSet[string]()
+  for rule in result: included.incl(rule.id)
+  for rule in topics.rules:
+    if record.id in rule.ids and rule.id notin included:
+      result.add(rule)
+      included.incl(rule.id)
 
 
 proc buildTopics(targets: Table[string, Bucket]; topics: TopicConfig): TopicBuild =
@@ -1014,7 +1050,7 @@ proc writeRoot(targets: Table[string, Bucket]; complete: Bucket; topicRows: seq[
         "target": target,
         "target_title": targetTitle(target, config),
         "record_count": count,
-        "updated_through": updatedByDataset[dataset],
+        "updated_through": updatedByDataset.getOrDefault(dataset),
         "url": target & "/documents.html?dataset=" & encodeUrl(dataset)
       })
 
