@@ -19,6 +19,8 @@ GRAPH_DTYPES = {
     "concept",
     "education",
     "employment",
+    "finding",
+    "url",
 }
 
 
@@ -39,6 +41,11 @@ def clip(value: Any, limit: int) -> str:
 
 def record_summary(document: dict[str, Any], limit: int) -> str:
     value = document.get("summary") or document.get("description")
+    if not value:
+        for key in ("displayName", "fullName", "name", "contentTitle", "claim", "notes", "url"):
+            value = document.get(key)
+            if value:
+                break
     data = document.get("data")
     if not value and isinstance(data, dict):
         for key in ("description", "definition", "claim", "bio", "business", "mission"):
@@ -46,7 +53,7 @@ def record_summary(document: dict[str, Any], limit: int) -> str:
             if value:
                 break
     if not value:
-        value = document.get("title") or document.get("_id") or ""
+        value = document.get("title") or document.get("id") or document.get("_id") or ""
     return clip(value, limit)
 
 
@@ -121,7 +128,7 @@ def prepare(site: Path, bulk: Path, summary_limit: int, quasar_limit: int, root_
                     if not raw:
                         raise ValueError("canonical corpus ended before record index")
                     document = json.loads(raw)
-                    record_id = str(document.get("_id") or "")
+                    record_id = str(document.get("id" if "schemaVersion" in document else "_id") or "")
                     if len(row) < 2 or str(row[1]) != record_id:
                         raise ValueError(
                             f"record/corpus ordering mismatch: index={row[1] if len(row) > 1 else None!r} corpus={record_id!r}"

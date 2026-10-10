@@ -18,6 +18,7 @@ on:
       - "tests/test_canonical_dataset_roots.py"
       - "tests/test_import_starintel_corpus.py"
       - "tests/test_operation_document.py"
+      - "tests/test_columbus_*packet.py"
       - "tests/test_starintel_legacy.nim"
       - "tests/test_starintel_transport.nim"
       - "tests/test_quasar_autodig_*.py"
@@ -40,6 +41,7 @@ on:
       - "tests/test_canonical_dataset_roots.py"
       - "tests/test_import_starintel_corpus.py"
       - "tests/test_operation_document.py"
+      - "tests/test_columbus_*packet.py"
       - "tests/test_starintel_legacy.nim"
       - "tests/test_starintel_transport.nim"
       - "tests/test_quasar_autodig_*.py"
@@ -102,6 +104,7 @@ jobs:
         run: |
           python -m unittest tests.test_canonical_dataset_roots -v
           python -m unittest tests.test_operation_document -v
+          python -m unittest discover -s tests -p 'test_columbus_*packet.py' -v
 
       - name: Probe importer corpus duplicate invariant
         shell: bash

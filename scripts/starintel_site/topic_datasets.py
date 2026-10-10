@@ -30,6 +30,11 @@ def load_topic_config(path: Path) -> dict[str, Any]:
             raise ValueError(f"{path}: duplicate topic id {topic_id}")
         seen.add(topic_id)
         topic["id"] = topic_id
+        match = topic.get("match") or {}
+        if isinstance(match, dict) and "ids" in match:
+            ids = match["ids"]
+            if not isinstance(ids, list) or any(not isinstance(item, str) or not item.strip() for item in ids):
+                raise ValueError(f"{path}: topic match.ids requires non-empty exact IDs")
     return value
 
 
@@ -85,13 +90,27 @@ def topics_for_document(target: str, doc: dict[str, Any], config: dict[str, Any]
                 "subtitle": str(raw.get("subtitle") or f"Merged topical dataset for {topic_id.replace('-', ' ')}"),
             }
         )
-    if matches:
-        return matches
-    topic_id = slug(target)
-    return [
-        {
+    if not matches:
+        topic_id = slug(target)
+        matches = [{
             "id": topic_id,
             "title": target.replace("-", " ").title(),
             "subtitle": f"Merged dataset for all {target.replace('-', ' ')} research packets",
-        }
-    ]
+        }]
+    included = {item["id"] for item in matches}
+    identity = doc.get("id") if "schemaVersion" in doc else doc.get("_id")
+    for raw in config.get("topics", []):
+        if not isinstance(raw, dict):
+            continue
+        rules = raw.get("match") or {}
+        if not isinstance(rules, dict):
+            continue
+        topic_id = slug(str(raw.get("id") or ""))
+        if identity in rules.get("ids", []) and topic_id not in included:
+            matches.append({
+                "id": topic_id,
+                "title": str(raw.get("title") or topic_id.replace("-", " ").title()),
+                "subtitle": str(raw.get("subtitle") or f"Merged topical dataset for {topic_id.replace('-', ' ')}"),
+            })
+            included.add(topic_id)
+    return matches
