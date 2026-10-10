@@ -4,6 +4,8 @@ import json
 import unittest
 from pathlib import Path
 
+from starintel_doc.storage_validation import document_id
+
 
 ROOT = Path(__file__).resolve().parents[1]
 COUNTEREVIDENCE_PACKET = (
@@ -27,7 +29,7 @@ def read_documents(path: Path) -> list[dict]:
 class CounterevidencePacketIdentityTests(unittest.TestCase):
     def test_counterevidence_does_not_shadow_canonical_entities(self) -> None:
         counterevidence_ids = {
-            document["_id"]
+            document_id(document)
             for document in read_documents(COUNTEREVIDENCE_PACKET)
             if document.get("dtype") in CANONICAL_ENTITY_DTYPES
         }
@@ -38,13 +40,13 @@ class CounterevidencePacketIdentityTests(unittest.TestCase):
                 continue
             for document in read_documents(path):
                 if document.get("dtype") in CANONICAL_ENTITY_DTYPES:
-                    canonical_ids.add(document["_id"])
+                    canonical_ids.add(document_id(document))
 
         shadowed_ids = sorted(counterevidence_ids & canonical_ids)
         self.assertEqual(
             shadowed_ids,
             [],
-            "counterevidence packets must reference existing canonical entities by _id "
+            "counterevidence packets must reference existing canonical entities by their stable ID "
             "instead of re-declaring packet-local copies",
         )
 

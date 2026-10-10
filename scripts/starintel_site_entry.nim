@@ -1,4 +1,5 @@
 import std/[algorithm, json, os, osproc, sets, strutils, tables, uri]
+import starintel_site_projection
 
 
 type
@@ -123,7 +124,7 @@ proc sourceKey(source: JsonNode): string =
   of JString:
     result = source.getStr().strip()
   of JObject:
-    for key in ["source_id", "url", "uri", "title"]:
+    for key in ["id", "source_id", "url", "uri", "title"]:
       let value = text(source, key)
       if value.len > 0:
         return value.strip()
@@ -158,8 +159,8 @@ proc sourceDomain(value: string): string =
 
 
 proc reviewStatus(document: JsonNode): string =
-  var raw = ""
-  if document.hasKey("verification") and document["verification"].kind == JObject:
+  var raw = text(document, "verificationStatus")
+  if raw.len == 0 and document.hasKey("verification") and document["verification"].kind == JObject:
     raw = text(document["verification"], "status")
   if raw.len == 0 and document.hasKey("workflow") and document["workflow"].kind == JObject:
     raw = text(document["workflow"], "review_status", text(document["workflow"], "status"))
@@ -192,17 +193,25 @@ proc endpointIds(value: JsonNode): seq[string] =
 
 proc documentTitle(document: JsonNode): string =
   result = text(document, "title")
+  if result.len == 0:
+    for key in ["displayName", "fullName", "name", "contentTitle", "claim", "notes", "url"]:
+      result = text(document, key)
+      if result.len > 0: break
   if result.len == 0 and document.hasKey("data") and document["data"].kind == JObject:
     for key in ["display_name", "name", "full_name", "claim"]:
       result = text(document["data"], key)
       if result.len > 0:
         break
   if result.len == 0:
-    result = text(document, "_id")
+    result = documentId(document)
 
 
 proc documentSummary(document: JsonNode): string =
   result = text(document, "summary", text(document, "description"))
+  if result.len == 0:
+    for key in ["displayName", "fullName", "name", "contentTitle", "claim", "notes", "url"]:
+      result = text(document, key)
+      if result.len > 0: break
   if result.len == 0 and document.hasKey("data") and document["data"].kind == JObject:
     for key in ["description", "definition", "claim", "bio", "business", "mission"]:
       result = text(document["data"], key)
@@ -401,18 +410,27 @@ proc buildProjection(corpusPath, output, siteTitle: string): tuple[data, catalog
   if not fileExists(corpusPath):
     raise newException(IOError, "dashboard restore missing canonical corpus: " & corpusPath)
 
+  # Entry can be exercised independently of the core. Denials take precedence
+  # across the entire input regardless of duplicate ordering.
+  var restrictedIds = initHashSet[string]()
+  for raw in lines(corpusPath):
+    if raw.strip().len == 0: continue
+    let document = parseJson(raw)
+    if document.kind == JObject and not publicProjectionAllowed(document):
+      restrictedIds.incl(documentId(document))
+
   for raw in lines(corpusPath):
     if raw.strip().len == 0:
       continue
     let document = parseJson(raw)
-    if document.kind != JObject:
+    if not publicProjectionAllowed(document) or documentId(document) in restrictedIds:
       continue
     inc total
-    let id = text(document, "_id")
+    let id = documentId(document)
     let dtype = text(document, "dtype", "unknown")
     let datasetName = text(document, "dataset", "unknown")
-    let added = datePrefix(text(document, "date_added"))
-    let updated = text(document, "date_updated")
+    let added = datePrefix(documentTime(document, true))
+    let updated = documentTime(document)
     let reviewed = reviewStatus(document) == "reviewed"
     let dataset = getDataset(datasets, datasetName)
     inc dataset.recordCount
@@ -441,25 +459,24 @@ proc buildProjection(corpusPath, output, siteTitle: string): tuple[data, catalog
     else:
       dtypes[dtype] = dtypes.getOrDefault(dtype) + 1
 
-    if document.hasKey("sources") and document["sources"].kind == JArray:
-      for source in document["sources"].items:
-        let key = sourceKey(source)
-        if key.len == 0:
-          continue
-        dataset.sources.incl(key)
-        if key notin globalSources:
-          globalSources.incl(key)
-          let domain = sourceDomain(key)
-          domains[domain] = domains.getOrDefault(domain) + 1
+    for source in presentationSources(document).items:
+      let key = sourceKey(source)
+      if key.len == 0:
+        continue
+      dataset.sources.incl(key)
+      if key notin globalSources:
+        globalSources.incl(key)
+        let domain = sourceDomain(key)
+        domains[domain] = domains.getOrDefault(domain) + 1
 
-    if dtype == "relation" and document.hasKey("data") and document["data"].kind == JObject:
-      let data = document["data"]
+    if dtype == "relation":
+      let data = relationPayload(document)
       let predicate = text(data, "predicate", "related to").replace("_", " ")
       relationTypes[predicate] = relationTypes.getOrDefault(predicate) + 1
-      if reviewed and data.hasKey("subject") and data.hasKey("object"):
+      if reviewed:
         var endpoints = initHashSet[string]()
-        for endpoint in endpointIds(data["subject"]): endpoints.incl(endpoint)
-        for endpoint in endpointIds(data["object"]): endpoints.incl(endpoint)
+        for endpoint in endpointIds(relationEndpoint(document)): endpoints.incl(endpoint)
+        for endpoint in endpointIds(relationEndpoint(document, true)): endpoints.incl(endpoint)
         for endpoint in endpoints:
           let person = getPerson(people, endpoint)
           person.connections += max(1, endpoints.len - 1)
@@ -679,6 +696,7 @@ proc main(): int =
   let args = commandLineParams()
   let code = runCore(args)
   if code != 0:
+    stderr.writeLine("canonical site core failed with exit status " & $code)
     return code
   if "--help" in args or "-h" in args:
     return 0
@@ -697,7 +715,13 @@ proc main(): int =
 
 when isMainModule:
   try:
-    quit(main())
+    let code = main()
+    when defined(posix):
+      # Nim quit saturates positive codes above 127. Use the signed equivalent
+      # so child signal statuses (e.g. SIGKILL = 137) survive unchanged.
+      quit(if code >= 128 and code <= 255: code - 256 else: code)
+    else:
+      quit(code)
   except CatchableError as exc:
     stderr.writeLine("starintel-site dashboard restore failed: " & exc.msg)
     quit(1)

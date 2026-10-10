@@ -4,9 +4,14 @@ on:
   pull_request:
     paths:
       - "db/**"
+      - "manifests/topic-datasets.json"
+      - "scripts/build_election26_manifest.py"
+      - "tests/test_topic_datasets.py"
       - "digs/**"
       - "scripts/starintel_site/**"
       - "scripts/starintel_site.nim"
+      - "scripts/starintel_site_entry.nim"
+      - "scripts/starintel_site_projection.nim"
       - "scripts/starintel_validate.nim"
       - "scripts/starintel_transport.nim"
       - "scripts/validate_for_merge.nim"
@@ -25,6 +30,7 @@ on:
       - "tests/test_auto_dig_quasar.py"
       - "tests/test_prepare_pages_data.py"
       - "tests/test_nim_site_scaling.py"
+      - "tests/test_nim_site_contract.py"
       - "tests/test_dark_academia_bilderberg.py"
       - "tests/fixtures/bilderberg_participants_split.html"
       - "docs/quasar-integration.md"
@@ -35,9 +41,14 @@ on:
     branches-ignore: [main]
     paths:
       - "db/**"
+      - "manifests/topic-datasets.json"
+      - "scripts/build_election26_manifest.py"
+      - "tests/test_topic_datasets.py"
       - "digs/**"
       - "scripts/starintel_site/**"
       - "scripts/starintel_site.nim"
+      - "scripts/starintel_site_entry.nim"
+      - "scripts/starintel_site_projection.nim"
       - "scripts/starintel_validate.nim"
       - "scripts/starintel_transport.nim"
       - "scripts/validate_for_merge.nim"
@@ -56,6 +67,7 @@ on:
       - "tests/test_auto_dig_quasar.py"
       - "tests/test_prepare_pages_data.py"
       - "tests/test_nim_site_scaling.py"
+      - "tests/test_nim_site_contract.py"
       - "tests/test_dark_academia_bilderberg.py"
       - "tests/fixtures/bilderberg_participants_split.html"
       - "docs/quasar-integration.md"
@@ -160,7 +172,7 @@ jobs:
         run: nimble buildFast
 
       - name: Test Pages deduplication invariants
-        run: python3 -m unittest tests.test_nim_site_scaling
+        run: python3 -m unittest tests.test_nim_site_scaling tests.test_nim_site_contract tests.test_topic_datasets
 
       - name: Run complete StarIntel merge and ADAR surface gate
         run: bin/validate-for-merge --site
