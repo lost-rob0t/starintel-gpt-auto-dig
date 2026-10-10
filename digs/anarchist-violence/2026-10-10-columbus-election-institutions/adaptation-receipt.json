@@ -1,0 +1,556 @@
+{
+  "archivePolicy": "Original bytes, unsupported fields, exact retrieval precision, and the complete research-pass receipt remain in the non-canonical archival artifact. No unsupported field is hidden in extensions, raw, metadata, or provenance.",
+  "canonicalArtifact": "digs/anarchist-violence/2026-10-10-columbus-election-institutions/starintel-documents.jsonl",
+  "canonicalSha256": "ada2ffbb0367e74d2a269eb87ffbc45149286c8e350247befe745dea9ad315c2",
+  "dtypeCounts": {
+    "finding": 1,
+    "org": 6,
+    "relation": 1,
+    "url": 5
+  },
+  "format": "columbus-election-packet-adaptation.v1",
+  "identityPolicy": "All 13 original IDs are retained, including source/research-pass prefixes after dtype adaptation. Identity is the preserved observation, not the dtype prefix. This is a documented correction, not a new observation or an identity merge.",
+  "metadataPolicy": {
+    "createdAt": "original collectedAt",
+    "sensitivity": "public",
+    "sourceKinds": [
+      "web"
+    ],
+    "sources": "org/relation/finding reference the url records that match their original sourceUrls exactly; url observations have no self-citations",
+    "updatedAt": "original collectedAt; adaptation does not claim a new collection time",
+    "visibility": "public"
+  },
+  "originalArtifact": "reports/archives/2026-10-10-columbus-election-institutions/original-unpublished-packet.jsonl.txt",
+  "originalSha256": "6811aa5d3f0f171f9a7d8493571a7363cccad21e0761eb7115c74249823b9b48",
+  "pythonRuntimeCommit": "ac015a5d92a1d9587e5dc7764dd9e0a150a6d0a8",
+  "recordCount": 13,
+  "records": [
+    {
+      "addedFields": [
+        "contentTitle",
+        "createdAt",
+        "fetchedAt",
+        "sensitivity",
+        "sourceKinds",
+        "sourceRetrievedAt",
+        "sources",
+        "updatedAt",
+        "visibility"
+      ],
+      "archiveOnlyFields": [
+        "accessMethod",
+        "kind"
+      ],
+      "canonicalDtype": "url",
+      "id": "starintel:source:columbus-election-institutions-2026-10-10-source-1",
+      "mappedFields": {
+        "retrievedAt": [
+          "fetchedAt",
+          "sourceRetrievedAt"
+        ],
+        "title": [
+          "contentTitle"
+        ]
+      },
+      "originalDtype": "source",
+      "originalLine": 1,
+      "precisionLossInCanonicalOnly": {
+        "retrievedAt": "Fractional seconds are retained only in the exact archive; canonical timestamps are integer seconds."
+      },
+      "preservedFields": [
+        "collectedAt",
+        "collectionMethod",
+        "collector",
+        "confidence",
+        "dataset",
+        "id",
+        "notes",
+        "runId",
+        "schemaVersion",
+        "sourceUrls",
+        "url"
+      ]
+    },
+    {
+      "addedFields": [
+        "contentTitle",
+        "createdAt",
+        "fetchedAt",
+        "sensitivity",
+        "sourceKinds",
+        "sourceRetrievedAt",
+        "sources",
+        "updatedAt",
+        "visibility"
+      ],
+      "archiveOnlyFields": [
+        "accessMethod",
+        "kind"
+      ],
+      "canonicalDtype": "url",
+      "id": "starintel:source:columbus-election-institutions-2026-10-10-source-2",
+      "mappedFields": {
+        "retrievedAt": [
+          "fetchedAt",
+          "sourceRetrievedAt"
+        ],
+        "title": [
+          "contentTitle"
+        ]
+      },
+      "originalDtype": "source",
+      "originalLine": 2,
+      "precisionLossInCanonicalOnly": {
+        "retrievedAt": "Fractional seconds are retained only in the exact archive; canonical timestamps are integer seconds."
+      },
+      "preservedFields": [
+        "collectedAt",
+        "collectionMethod",
+        "collector",
+        "confidence",
+        "dataset",
+        "id",
+        "notes",
+        "runId",
+        "schemaVersion",
+        "sourceUrls",
+        "url"
+      ]
+    },
+    {
+      "addedFields": [
+        "contentTitle",
+        "createdAt",
+        "fetchedAt",
+        "sensitivity",
+        "sourceKinds",
+        "sourceRetrievedAt",
+        "sources",
+        "updatedAt",
+        "visibility"
+      ],
+      "archiveOnlyFields": [
+        "accessMethod",
+        "kind"
+      ],
+      "canonicalDtype": "url",
+      "id": "starintel:source:columbus-election-institutions-2026-10-10-source-3",
+      "mappedFields": {
+        "retrievedAt": [
+          "fetchedAt",
+          "sourceRetrievedAt"
+        ],
+        "title": [
+          "contentTitle"
+        ]
+      },
+      "originalDtype": "source",
+      "originalLine": 3,
+      "precisionLossInCanonicalOnly": {
+        "retrievedAt": "Fractional seconds are retained only in the exact archive; canonical timestamps are integer seconds."
+      },
+      "preservedFields": [
+        "collectedAt",
+        "collectionMethod",
+        "collector",
+        "confidence",
+        "dataset",
+        "id",
+        "notes",
+        "runId",
+        "schemaVersion",
+        "sourceUrls",
+        "url"
+      ]
+    },
+    {
+      "addedFields": [
+        "contentTitle",
+        "createdAt",
+        "fetchedAt",
+        "sensitivity",
+        "sourceKinds",
+        "sourceRetrievedAt",
+        "sources",
+        "updatedAt",
+        "visibility"
+      ],
+      "archiveOnlyFields": [
+        "accessMethod",
+        "kind"
+      ],
+      "canonicalDtype": "url",
+      "id": "starintel:source:columbus-election-institutions-2026-10-10-source-4",
+      "mappedFields": {
+        "retrievedAt": [
+          "fetchedAt",
+          "sourceRetrievedAt"
+        ],
+        "title": [
+          "contentTitle"
+        ]
+      },
+      "originalDtype": "source",
+      "originalLine": 4,
+      "precisionLossInCanonicalOnly": {
+        "retrievedAt": "Fractional seconds are retained only in the exact archive; canonical timestamps are integer seconds."
+      },
+      "preservedFields": [
+        "collectedAt",
+        "collectionMethod",
+        "collector",
+        "confidence",
+        "dataset",
+        "id",
+        "notes",
+        "runId",
+        "schemaVersion",
+        "sourceUrls",
+        "url"
+      ]
+    },
+    {
+      "addedFields": [
+        "contentTitle",
+        "createdAt",
+        "fetchedAt",
+        "sensitivity",
+        "sourceKinds",
+        "sourceRetrievedAt",
+        "sources",
+        "updatedAt",
+        "visibility"
+      ],
+      "archiveOnlyFields": [
+        "accessMethod",
+        "kind"
+      ],
+      "canonicalDtype": "url",
+      "id": "starintel:source:columbus-election-institutions-2026-10-10-source-5",
+      "mappedFields": {
+        "retrievedAt": [
+          "fetchedAt",
+          "sourceRetrievedAt"
+        ],
+        "title": [
+          "contentTitle"
+        ]
+      },
+      "originalDtype": "source",
+      "originalLine": 5,
+      "precisionLossInCanonicalOnly": {
+        "retrievedAt": "Fractional seconds are retained only in the exact archive; canonical timestamps are integer seconds."
+      },
+      "preservedFields": [
+        "collectedAt",
+        "collectionMethod",
+        "collector",
+        "confidence",
+        "dataset",
+        "id",
+        "notes",
+        "runId",
+        "schemaVersion",
+        "sourceUrls",
+        "url"
+      ]
+    },
+    {
+      "addedFields": [
+        "createdAt",
+        "sensitivity",
+        "sourceKinds",
+        "sources",
+        "updatedAt",
+        "visibility"
+      ],
+      "archiveOnlyFields": [],
+      "canonicalDtype": "org",
+      "id": "starintel:org:franklin-county-ohio-board-of-elections",
+      "mappedFields": {},
+      "originalDtype": "org",
+      "originalLine": 6,
+      "precisionLossInCanonicalOnly": {},
+      "preservedFields": [
+        "collectedAt",
+        "collectionMethod",
+        "collector",
+        "confidence",
+        "dataset",
+        "description",
+        "dtype",
+        "id",
+        "jurisdiction",
+        "name",
+        "notes",
+        "organizationType",
+        "runId",
+        "schemaVersion",
+        "sourceUrls",
+        "website"
+      ]
+    },
+    {
+      "addedFields": [
+        "createdAt",
+        "sensitivity",
+        "sourceKinds",
+        "sources",
+        "updatedAt",
+        "visibility"
+      ],
+      "archiveOnlyFields": [],
+      "canonicalDtype": "org",
+      "id": "starintel:org:league-of-women-voters-metropolitan-columbus",
+      "mappedFields": {},
+      "originalDtype": "org",
+      "originalLine": 7,
+      "precisionLossInCanonicalOnly": {},
+      "preservedFields": [
+        "collectedAt",
+        "collectionMethod",
+        "collector",
+        "confidence",
+        "dataset",
+        "description",
+        "dtype",
+        "id",
+        "jurisdiction",
+        "name",
+        "notes",
+        "organizationType",
+        "runId",
+        "schemaVersion",
+        "sourceUrls",
+        "website"
+      ]
+    },
+    {
+      "addedFields": [
+        "createdAt",
+        "sensitivity",
+        "sourceKinds",
+        "sources",
+        "updatedAt",
+        "visibility"
+      ],
+      "archiveOnlyFields": [],
+      "canonicalDtype": "org",
+      "id": "starintel:org:osu-votes",
+      "mappedFields": {},
+      "originalDtype": "org",
+      "originalLine": 8,
+      "precisionLossInCanonicalOnly": {},
+      "preservedFields": [
+        "collectedAt",
+        "collectionMethod",
+        "collector",
+        "confidence",
+        "dataset",
+        "description",
+        "dtype",
+        "id",
+        "jurisdiction",
+        "name",
+        "notes",
+        "organizationType",
+        "runId",
+        "schemaVersion",
+        "sourceUrls",
+        "website"
+      ]
+    },
+    {
+      "addedFields": [
+        "createdAt",
+        "sensitivity",
+        "sourceKinds",
+        "sources",
+        "updatedAt",
+        "visibility"
+      ],
+      "archiveOnlyFields": [],
+      "canonicalDtype": "org",
+      "id": "starintel:org:ohio-state-university-office-of-student-life",
+      "mappedFields": {},
+      "originalDtype": "org",
+      "originalLine": 9,
+      "precisionLossInCanonicalOnly": {},
+      "preservedFields": [
+        "collectedAt",
+        "collectionMethod",
+        "collector",
+        "confidence",
+        "dataset",
+        "description",
+        "dtype",
+        "id",
+        "jurisdiction",
+        "name",
+        "notes",
+        "organizationType",
+        "runId",
+        "schemaVersion",
+        "sourceUrls",
+        "website"
+      ]
+    },
+    {
+      "addedFields": [
+        "createdAt",
+        "sensitivity",
+        "sourceKinds",
+        "sources",
+        "updatedAt",
+        "visibility"
+      ],
+      "archiveOnlyFields": [],
+      "canonicalDtype": "org",
+      "id": "starintel:org:ohio-voice",
+      "mappedFields": {},
+      "originalDtype": "org",
+      "originalLine": 10,
+      "precisionLossInCanonicalOnly": {},
+      "preservedFields": [
+        "collectedAt",
+        "collectionMethod",
+        "collector",
+        "confidence",
+        "dataset",
+        "description",
+        "dtype",
+        "id",
+        "jurisdiction",
+        "name",
+        "notes",
+        "organizationType",
+        "runId",
+        "schemaVersion",
+        "sourceUrls",
+        "website"
+      ]
+    },
+    {
+      "addedFields": [
+        "createdAt",
+        "sensitivity",
+        "sourceKinds",
+        "sources",
+        "updatedAt",
+        "visibility"
+      ],
+      "archiveOnlyFields": [],
+      "canonicalDtype": "org",
+      "id": "starintel:org:ohio-voter-rights-coalition",
+      "mappedFields": {},
+      "originalDtype": "org",
+      "originalLine": 11,
+      "precisionLossInCanonicalOnly": {},
+      "preservedFields": [
+        "collectedAt",
+        "collectionMethod",
+        "collector",
+        "confidence",
+        "dataset",
+        "description",
+        "dtype",
+        "id",
+        "jurisdiction",
+        "name",
+        "notes",
+        "organizationType",
+        "runId",
+        "schemaVersion",
+        "sourceUrls",
+        "website"
+      ]
+    },
+    {
+      "addedFields": [
+        "createdAt",
+        "sensitivity",
+        "sourceKinds",
+        "sources",
+        "updatedAt",
+        "visibility"
+      ],
+      "archiveOnlyFields": [],
+      "canonicalDtype": "relation",
+      "id": "starintel:relation:osu-votes-program-of-office-of-student-life",
+      "mappedFields": {},
+      "originalDtype": "relation",
+      "originalLine": 12,
+      "precisionLossInCanonicalOnly": {},
+      "preservedFields": [
+        "collectedAt",
+        "collectionMethod",
+        "collector",
+        "confidence",
+        "dataset",
+        "destination",
+        "dtype",
+        "id",
+        "note",
+        "notes",
+        "predicate",
+        "runId",
+        "schemaVersion",
+        "source",
+        "sourceUrls"
+      ]
+    },
+    {
+      "addedFields": [
+        "createdAt",
+        "description",
+        "evidence",
+        "sensitivity",
+        "sourceKinds",
+        "sources",
+        "title",
+        "updatedAt",
+        "visibility"
+      ],
+      "archiveOnlyFields": [
+        "agentIdentity",
+        "counterevidenceIds",
+        "iteration",
+        "method",
+        "terminationReason",
+        "unresolvedTargetIds"
+      ],
+      "canonicalDtype": "finding",
+      "id": "starintel:research-pass:columbus-election-institutions-2026-10-10",
+      "mappedFields": {
+        "findings[0].description": [
+          "description"
+        ],
+        "researchQuestion": [
+          "title"
+        ],
+        "supportingRecordIds": [
+          "evidence"
+        ]
+      },
+      "originalDtype": "research-pass",
+      "originalLine": 13,
+      "precisionLossInCanonicalOnly": {},
+      "preservedFields": [
+        "collectedAt",
+        "collectionMethod",
+        "collector",
+        "confidence",
+        "dataset",
+        "id",
+        "notes",
+        "runId",
+        "schemaVersion",
+        "sourceUrls",
+        "status"
+      ]
+    }
+  ],
+  "schemaVersion": "0.10.1",
+  "scope": "Schema adaptation of the existing 13-record institutional packet only; no new collection.",
+  "starLangCommit": "765f1673851192bcaf1cdd2f35c47608f979b079"
+}
