@@ -46,16 +46,35 @@ proc permissiveHandling(node: JsonNode): bool =
   if node.kind == JString:
     return node.getStr().strip().toLowerAscii() in ["public", "public-source-only"]
   if node.kind != JObject: return false
+  let explicitPublic = projectionText(node, "visibility") == "public"
+  # Newly recognized annotations are compatibility-only. Ambiguous handling
+  # marked sensitive remains excluded pending explicit publication review.
+  let safeAnnotation = explicitPublic and (not node.hasKey("sensitive") or
+    (node["sensitive"].kind == JBool and not node["sensitive"].getBool()))
   for key, flag in node.pairs:
     case policyKey(key)
     of "handling", "legacyhandling":
-      if not permissiveHandling(flag): return false
+      if flag.kind == JString and flag.getStr().strip().toLowerAscii() in [
+          "public-source only", "public-source-research",
+          "public-source-research-no-credentials", "verified-source-evidence",
+          "verified-source-artifact"]:
+        if not safeAnnotation: return false
+      elif not permissiveHandling(flag): return false
     of "public":
       if flag.kind != JBool or not flag.getBool(): return false
     of "visibility", "sensitivity":
       if flag.kind != JString or flag.getStr() != "public": return false
     of "restricted", "confidential", "classified", "deleted":
       if flag.kind != JBool or flag.getBool(): return false
+    of "classification":
+      if not safeAnnotation or flag.kind != JString or
+          flag.getStr().toLowerAscii() notin ["public", "unclassified"]: return false
+    of "notes":
+      if not safeAnnotation or flag.kind != JString: return false
+    of "caveats", "redactions":
+      if not safeAnnotation or flag.kind != JArray: return false
+      for annotation in flag.items:
+        if annotation.kind != JString: return false
     of "sensitive", "pii":
       # Content indicators are not access permissions. Historical public
       # professional/source records may legitimately carry either marker.
@@ -70,6 +89,9 @@ proc hasRestriction(node: JsonNode; policyContext = false): bool =
       let normalized = policyKey(key)
       if normalized in ["handling", "legacyhandling"]:
         if not permissiveHandling(value): return true
+        # The structured policy was evaluated in its own context. Do not
+        # reinterpret public evidence caveats/classification as a second ACL.
+        continue
       elif normalized in ["visibility", "sensitivity"]:
         if value.kind != JString or value.getStr() != "public": return true
       elif normalized in ["restricted", "confidential", "classified", "deleted"]:

@@ -14,6 +14,45 @@ from starintel_canonical import validate_document
 
 
 class NimSiteContractTests(unittest.TestCase):
+    def test_historical_public_handling_annotations_are_not_access_restrictions(self):
+        repo = Path(__file__).resolve().parents[1]
+        markers = ["public-source-only", "public-source only", "public-source-research",
+                   "public-source-research-no-credentials", "verified-source-evidence",
+                   "verified-source-artifact"]
+        base = {"dataset": "handling", "dtype": "org", "schema_version": "0.9.0",
+                "title": "Public institutional record", "sources": []}
+        policy = {"visibility": "public", "pii": True, "sensitive": False,
+                  "classification": "unclassified", "notes": "Public records only",
+                  "caveats": ["No unpublished details collected"],
+                  "redactions": ["Private details omitted"]}
+        public = [{**base, "_id": f"public:{i}", "handling": {**policy, "handling": marker},
+                   "extensions": {"receipt": {"handling": policy}}}
+                  for i, marker in enumerate(markers)]
+        restricted = [
+            {**base, "_id": "blocked:internal", "handling": {**policy, "visibility": "internal"}},
+            {**base, "_id": "blocked:ambiguous-sensitive", "handling": {
+                "visibility": "public", "handling": "verified-source-evidence", "sensitive": True}},
+            {**base, "_id": "blocked:classified", "handling": {**policy, "classification": "confidential"}},
+            {**base, "_id": "blocked:acl", "accessControl": {"allow": ["team"]}},
+            {**base, "_id": "blocked:unknown", "handling": {"visibility": "public", "unrecognized": True}},
+        ]
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            packet = root / "digs/handling/run"
+            packet.mkdir(parents=True)
+            (packet / "starintel-documents.jsonl").write_text(
+                "".join(json.dumps(row) + "\n" for row in public + restricted))
+            subprocess.run([
+                str(repo / "bin/starintel-site"), "--input", str(root / "digs"),
+                "--db", str(root / "db"), "--output", str(root / "site"),
+                "--bulk-output", str(root / "bulk"), "--org-output", str(root / "org"),
+                "--topics", str(root / "no-topics"), "--config", str(root / "no-config"),
+                "--assets", str(root / "no-assets"),
+            ], check=True, capture_output=True, text=True)
+            corpus = [json.loads(row) for row in
+                      (root / "bulk/starintel-complete-corpus.jsonl").read_text().splitlines()]
+            self.assertCountEqual(corpus, public)
+
     def test_flat_url_and_exact_id_overlay_preserve_existing_topics(self):
         repo = Path(__file__).resolve().parents[1]
         base = {"dataset": "anarchist-violence", "dtype": "url", "schemaVersion": "0.10.1",
