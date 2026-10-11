@@ -19,7 +19,7 @@ class PublicEventsPacketTests(unittest.TestCase):
 
     def test_canonical_contract_and_counts(self):
         self.assertEqual(Counter(d['dtype'] for d in self.rows),
-                         {'url': 3, 'scope': 1, 'mission': 1, 'finding': 6, 'target': 6, 'mission-target': 6})
+                         {'url': 3, 'scope': 1, 'mission': 6, 'finding': 6, 'target': 6, 'mission-target': 6})
         for doc in self.rows:
             validate_document(doc)
             self.assertEqual(doc['schemaVersion'], '0.10.1')
@@ -41,6 +41,11 @@ class PublicEventsPacketTests(unittest.TestCase):
         walk(self.rows)
 
     def test_no_execution_and_bounded_scope(self):
+        missions = {d['id']: d for d in self.rows if d['dtype'] == 'mission'}
+        tasks = [d for d in self.rows if d['dtype'] == 'mission-target']
+        self.assertEqual(len({d['mission']['id'] for d in tasks}), 6)
+        for task in tasks:
+            self.assertEqual(missions[task['mission']['id']]['targets'], [{'schema': 'mission-target', 'id': task['id']}])
         for doc in self.rows:
             if doc['dtype'] == 'target':
                 self.assertEqual(doc['state'], 'paused')

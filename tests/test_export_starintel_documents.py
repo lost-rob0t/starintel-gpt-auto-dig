@@ -46,6 +46,31 @@ def init_repo(root: Path) -> None:
 
 
 class DiffResolverTests(unittest.TestCase):
+    def test_flat_canonical_ids_support_readback_and_duplicate_detection(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            init_repo(root)
+            document = {"id": "starintel:target:canonical", "dtype": "target", "dataset": "test",
+                        "schemaVersion": "0.10.1", "actor": "manual-review", "target": "https://example.invalid/event"}
+            packet = root / "digs/example/base/starintel-documents.jsonl"
+            write_packet(packet, [document])
+            git(root, "add", ".")
+            git(root, "commit", "-m", "canonical base")
+            base = git(root, "rev-parse", "HEAD")
+            selected = EXPORTER.resolve_id_records(IMPORTER, root, {document['id']})
+            self.assertEqual([record.document for record in selected], [document])
+            write_packet(root / "digs/example/duplicate/starintel-documents.jsonl", [document])
+            git(root, "add", ".")
+            git(root, "commit", "-m", "duplicate canonical carrier")
+            self.assertEqual(EXPORTER.resolve_diff_records(IMPORTER, root, base), [])
+            changed = {**document, "target": "https://example.invalid/changed"}
+            write_packet(packet, [changed])
+            write_packet(root / "digs/example/duplicate/starintel-documents.jsonl", [changed])
+            git(root, "add", ".")
+            git(root, "commit", "-m", "unversioned canonical correction")
+            with self.assertRaisesRegex(ValueError, 'without comparable integer versions'):
+                EXPORTER.resolve_diff_records(IMPORTER, root, base)
+
     def test_identical_existing_id_added_in_new_packet_is_not_reimported(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)

@@ -67,17 +67,17 @@ def build():
         inScope=['Six dated public event announcements', 'Official public changes to date, location or status', 'Dated evidence preservation'],
         outOfScope=EXCLUSIONS, prohibitedActions=EXCLUSIONS,
         rules='Stop at event-level public announcements. Preserve contradictions and distinguish event time from retrieval and publication time.')
-    add('mission', 'october-12-17-2026', name='Verify Columbus-area public event announcements', state='draft',
-        objective='Review public date, location and status updates for six announced events; preserve dated evidence.',
-        scope=ref('scope', 'october-12-17-2026'), targets=[ref('mission-target', e[0]) for e in EVENTS],
-        constraints={'excluded': EXCLUSIONS, 'executionEnabled': False},
-        statusReason='Reviewable planning object only; no collector dispatched or schedule activated.')
     for slug, title, start, end, location, caveat in EVENTS:
         nokings = slug.startswith('no-kings')
         refs = source_refs[1:] if nokings else source_refs[:1]
         urls = [PRIMARY, SECONDARY] if nokings else [CALENDAR]
         event = {'name': title, 'start': start, 'end': end, 'timezone': 'America/New_York',
                  'announcedLocation': location, 'status': 'announced', 'uncertainty': caveat}
+        add('mission', slug, name='Verify public announcement: ' + title, state='draft',
+            objective=f'Review public date, location and status updates for {title} ({start}); preserve dated evidence.',
+            scope=ref('scope', 'october-12-17-2026'), targets=[ref('mission-target', slug)],
+            constraints={'excluded': EXCLUSIONS, 'executionEnabled': False}, sources=refs, sourceUrls=urls,
+            statusReason='Reviewable planning object only; no collector dispatched or schedule activated.')
         add('finding', slug, title=title + ': announced schedule', findingType='public-event-announcement',
             status='announced', description=f'{start} to {end}; {location}. {caveat}',
             evidence=refs, sources=refs, sourceUrls=urls,
@@ -86,7 +86,7 @@ def build():
             state='paused', recurring=False, scope=ref('scope', 'october-12-17-2026'), sources=refs, sourceUrls=urls,
             options={'eventKey': slug, 'executionEnabled': False, 'question': 'Has the official announcement changed its date, place or status?'},
             notes=f'{title}: {caveat} Paused planning target; no actor dispatch.')
-        add('mission-target', slug, mission=ref('mission', 'october-12-17-2026'), subject=ref('target', slug),
+        add('mission-target', slug, mission=ref('mission', slug), subject=ref('target', slug),
             state='pending', objective=f'Check official public updates for {title}; preserve changes and unresolved location details.',
             resultRefs=[ref('finding', slug)], sources=refs, sourceUrls=urls,
             options={'executionEnabled': False, 'stopAfter': end, 'excluded': EXCLUSIONS})
