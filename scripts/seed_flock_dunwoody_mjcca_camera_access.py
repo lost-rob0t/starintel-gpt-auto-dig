@@ -822,7 +822,7 @@ def main() -> int:
     payload = "".join(compact(document) + "\n" for document in docs)
     PACKET.write_text(payload, encoding="utf-8")
     subprocess.run(
-        [sys.executable, str(ROOT / "scripts/starintel.py"), "import", str(PACKET), "--root", str(ROOT)],
+        [sys.executable, str(ROOT / "scripts/starintel.py"), "--legacy-research-profile", "import", str(PACKET), "--root", str(ROOT)],
         cwd=ROOT,
         check=True,
     )

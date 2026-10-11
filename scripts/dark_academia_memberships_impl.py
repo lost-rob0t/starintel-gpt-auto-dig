@@ -926,7 +926,7 @@ class Scraper:
         for dtype, count in self.stats["counts_by_dtype"].items():
             lines.append(f"- `{dtype}`: {count}")
         (report_dir / "dark-academia-membership-recursion.md").write_text("\n".join(lines) + "\n", encoding="utf-8")
-        subprocess.run([sys.executable, "scripts/starintel.py", "import", str(packet), "--root", str(self.root), "--replace"], cwd=self.root, check=True)
+        subprocess.run([sys.executable, "scripts/starintel.py", "--legacy-research-profile", "import", str(packet), "--root", str(self.root), "--replace"], cwd=self.root, check=True)
 
 
 def main() -> int:

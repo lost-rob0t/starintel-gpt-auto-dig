@@ -225,7 +225,7 @@ def main() -> int:
         args.output.unlink(missing_ok=True)
         raise SystemExit("Aleph returned no accessible entities. Supply ALEPH_API_KEY or use a public query/collection available to the current account.")
     if args.import_db:
-        subprocess.run([sys.executable, str(ROOT / "scripts" / "starintel.py"), "import", str(args.output)], check=True)
+        subprocess.run([sys.executable, str(ROOT / "scripts" / "starintel.py"), "--legacy-research-profile", "import", str(args.output)], check=True)
     print(f"wrote {count} records to {args.output}")
     return 0
 

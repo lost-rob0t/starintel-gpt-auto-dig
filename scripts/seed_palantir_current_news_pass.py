@@ -173,7 +173,7 @@ def main() -> int:
     OUTPUT.mkdir(parents=True, exist_ok=True)
     PACKET.write_text("".join(compact(doc) + "\n" for doc in docs), encoding="utf-8")
     subprocess.run(
-        [sys.executable, str(ROOT / "scripts/starintel.py"), "import", str(PACKET), "--root", str(ROOT)],
+        [sys.executable, str(ROOT / "scripts/starintel.py"), "--legacy-research-profile", "import", str(PACKET), "--root", str(ROOT)],
         cwd=ROOT,
         check=True,
     )
