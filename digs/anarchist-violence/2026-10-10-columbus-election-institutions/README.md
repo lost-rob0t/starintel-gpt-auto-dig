@@ -23,7 +23,7 @@ state-level context; no Columbus membership or local affiliation is inferred.
 - `adaptation-receipt.json`: per-record field accounting, exact artifact hashes,
   retained IDs, mapping rules, and archive-only values.
 - `generate-packet.py`: deterministic generator and no-write `--check` verifier.
-- [Exact original artifact](../../../reports/archives/2026-10-10-columbus-election-institutions/original-unpublished-packet.jsonl.txt):
+- [Exact original artifact](../../../../reports/archives/2026-10-10-columbus-election-institutions/original-unpublished-packet.jsonl.txt):
   original unsupported packet bytes, including the full research-pass receipt.
   Its `.jsonl.txt` suffix and location outside `digs/` and `db/` make its archival,
   non-canonical status explicit. It must never be imported as published wire data.
