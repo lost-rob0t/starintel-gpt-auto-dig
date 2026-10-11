@@ -1,0 +1,55 @@
+#+title: Election26 — Columbus public institutional listings and communications
+#+date: 2026-10-10
+
+* Scope and interpretation
+This bounded review records public organization-level partnerships, steering bodies, governance-directory links and institutional communications. It does not infer membership from employment, attendance, following a social account, inclusion in a campus directory, or endorsement of another organization's positions. A public source's explicit statement is retained as a dated attributed observation. Personal political memberships and private individual social graphs are not compiled.
+
+Retrieval date: 2026-10-10 UTC. Most pages display no publication date; this is not evidence that their contents were updated on retrieval day. The preserved historical dataset name anarchist-violence makes no allegation about the listed institutions.
+
+* Ohio Voice
+[[https://ohvoice.org/our-partners/][Official partner directory]] explicitly says “Ohio Voice 2025 Partners.” A bounded count found 33 displayed organizational entries. Examples include Campus Vote Project, Cleveland VOTES, Columbus Stand Up, Common Cause Ohio, Ohio Environmental Council and Policy Matters Ohio. This is a 2025 partner snapshot, not a confirmed 2026 membership roll. The homepage's different 2024 partner metric refers to a different period and is not substituted for the directory count.
+
+[[https://ohvoice.org/annualreports/][Annual-report index]] provides dated institutional reports. [[https://ohvoice.org/programs/][Programs page]] describes its work and Ohio Voter Rights Coalition involvement. Partner status is not represented as a generic membership or endorsement edge.
+
+* Ohio Voter Rights Coalition
+[[https://www.ohiovoterrights.org/about-us][Official steering and partner page]] explicitly identifies five steering-committee organizations:
+- ACLU of Ohio
+- All Voting is Local Ohio
+- Common Cause Ohio
+- League of Women Voters Ohio
+- Ohio Voice
+
+The separate logo gallery is labeled “Some of Our Coalition Partners,” so it is partial. Unclear logos were not resolved by guesswork. Steering-committee participation is distinct from an ordinary partner relationship.
+
+Public communications: [[https://www.ohiovoterrights.org/press-statements][press statements]] and [[https://www.ohiovoterrights.org/blog][blog]]. The latest displayed press-statement date in the reviewed index was June 24, 2026.
+
+* Franklin County Board of Elections
+[[https://vote.franklincountyohio.gov/about/administration][Official administration directory]] contains four board-member roles and director/deputy-director roles. This is a government governance directory, not a membership association; individuals are not enumerated here.
+
+[[https://vote.franklincountyohio.gov/about/press-releases][Official press releases]]. The [[https://vote.franklincountyohio.gov/home][official homepage]] links organization accounts:
+- [[https://www.facebook.com/pages/Franklin-County-Ohio-Board-of-Elections/277581597507][Facebook]]
+- [[https://twitter.com/FranklinCoBOE][Twitter/X]]
+- [[https://www.instagram.com/franklincoboe/][Instagram]]
+
+Account attribution comes from official outbound links; the social destinations did not load in the review, so current posting activity was not verified.
+
+* League of Women Voters of Metropolitan Columbus
+[[https://my.lwv.org/ohio/metropolitan-columbus/board-members-trustees-and-staff][Public board/trustee/staff directory]] includes a 2026 board photograph. Link retained without enumerating individuals. [[https://my.lwv.org/ohio/metropolitan-columbus/lwvmc-committees][Committee directory]] identifies five internal functions: Voter Services, Advocacy and Education, Development, Membership, Communications. These are internal units, not member organizations.
+
+[[https://www.vote411.org/oh-lwvmc][VOTE411]] explicitly identifies the institutional partnership. [[https://nationalvoterregistrationday.org/2026-partners/][National Voter Registration Day 2026 partners]] lists LWV OF METRO COLUMBUS. [[https://my.lwv.org/ohio/metropolitan-columbus/get-involved][Official engagement page]] offers the public newsletter. No public general-member roll or comprehensive member-organization roster was located in the reviewed pages.
+
+* OSU Votes
+[[https://lead.osu.edu/community-engagement/osu-votes][Official program page]] identifies a nonpartisan resource in the Office of Student Life's Department of Leadership and Community Engagement. [[https://studentlife.osu.edu/articles/columbus-campus-resources-for-regional-campus-students/][University institutional description]] is explicitly dated August 12, 2026.
+
+The official program page links [[https://www.instagram.com/osuvotes/?hl=en][OSU Votes Instagram]]. Its account attribution was verified, but current Instagram posts were not accessible. Public recognition by outside civic programs is not classified as membership. No public member-organization roster was located in the bounded review; students or resource users were not counted as members.
+
+* OSU Office of Student Life
+[[https://studentlife.osu.edu/about/leadership-team][Leadership directory]], [[https://studentlife.osu.edu/about/student-life-departments][department directory]], [[https://studentlife.osu.edu/articles/][public articles]]. The [[https://activities.osu.edu/involvement/student-organizations/find-a-student-org/][registered student-organization directory]] is campus-wide, not an election coalition roster. Inclusion does not establish an OSU Votes affiliation. No department total is asserted because two official surfaces use different counts.
+
+* LinkedIn institutional corroboration
+These accessible public organization pages were opened without login and matched organization names, Columbus location and links to official institutional websites:
+- [[https://www.linkedin.com/company/franklin-county-board-of-elections][Franklin County Board of Elections]] links the county BOE site.
+- [[https://www.linkedin.com/company/ohio-voice][Ohio Voice]] links ohvoice.org.
+- [[https://www.linkedin.com/company/office-of-student-life-at-the-ohio-state-university][OSU Office of Student Life]] links studentlife.osu.edu.
+
+This is company-page institutional corroboration, not independent proof of account administrator identity. No official-site backlink to these LinkedIn pages was confirmed in this bounded review. Employee cards, followers, suggested similar pages and individual profiles were excluded. No confidently matching company page was located for LWV Metropolitan Columbus, OVRC or OSU Votes in the bounded search; absence from the results is not proof no page exists. No current headcount/follower/activity claims are derived from cached search snippets.
