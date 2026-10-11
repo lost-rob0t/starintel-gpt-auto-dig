@@ -1,0 +1,23 @@
+{
+  "total": 1315898,
+  "counts": {
+    "Stop the Cruelty": 0,
+    "Support Veterans Rush Hour": 0,
+    "Worthington Rush Hour": 2,
+    "Wednesday Husted": 0,
+    "Weekly Clintonville": 0,
+    "no-kings-vote-early": 0
+  },
+  "matches": [
+    {
+      "query": "Worthington Rush Hour",
+      "id": "starintel:research-pass:dark-academia-membership-recursion-wave-3-2026-07-31",
+      "path": "db/research-pass/starintel:research-pass:dark-academia-membership-recursion-wave-3-2026-07-31.ndjson"
+    },
+    {
+      "query": "Worthington Rush Hour",
+      "id": "starintel:research-pass:dark-academia-membership-recursion-wave-3-2026-07-31",
+      "path": "digs/dark-academia/dark-academia-membership-recursion-wave-3-2026-07-31/starintel-documents.jsonl"
+    }
+  ]
+}
