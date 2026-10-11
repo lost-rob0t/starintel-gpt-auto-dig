@@ -32,7 +32,7 @@ class DocumentRecord:
 
     @property
     def document_id(self) -> str:
-        return self.document["_id"]
+        return self.document.get("id", self.document.get("_id", ""))
 
 
 def run_git(root: Path, *args: str, text: bool = True) -> str | bytes:
@@ -73,7 +73,7 @@ def parse_jsonl(text: str, source: str) -> list[DocumentRecord]:
             raise ValueError(f"{source}:{line_number}: invalid JSON: {exc}") from exc
         if not isinstance(document, dict):
             raise ValueError(f"{source}:{line_number}: document must be a JSON object")
-        document_id = document.get("_id")
+        document_id = document.get("id", document.get("_id"))
         dtype = document.get("dtype")
         if not isinstance(document_id, str) or not document_id:
             raise ValueError(f"{source}:{line_number}: document is missing non-empty _id")
@@ -294,6 +294,12 @@ class IngestClient:
             time.sleep(self.poll_interval)
 
     def upload_batch(self, documents: list[dict]) -> dict:
+        root = str(Path(__file__).resolve().parents[1])
+        if root not in sys.path:
+            sys.path.insert(0, root)
+        from backend.validation import validate_v09
+        for document in documents:
+            validate_v09(document)
         response = self.request_json("POST", "/documents/bulk", documents)
         status_url = response.get("status_url")
         if response.get("status") == "accepted" and isinstance(status_url, str):

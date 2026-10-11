@@ -529,7 +529,7 @@ Empty, unavailable, and visibly partial routes are coverage gaps, not zero-partn
     )
 
     if not args.no_import:
-        subprocess.run([sys.executable, str(root / "scripts" / "starintel.py"), "import", str(output), "--root", str(root)], check=True)
+        subprocess.run([sys.executable, str(root / "scripts" / "starintel.py"), "--legacy-research-profile", "import", str(output), "--root", str(root)], check=True)
     print(json.dumps(report, indent=2, sort_keys=True))
     return 0
 

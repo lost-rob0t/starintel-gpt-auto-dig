@@ -23,43 +23,40 @@ This gate outranks every lower section of this file while paused.
 
 ## Non-negotiable authority
 
-The repository-local `starintel_doc/` package and generated `schemas/starintel-doc-v0.10.1.schema.json` are the StarIntel document **base/wire schema** specification (unified 0.10 line; the legacy `schemas/starintel-doc-v0.9.0.*` artifacts remain on disk for consumers pinned to 0.9). Never create a parallel JSON shape, a prompt-only “StarIntel style,” a renderer-specific schema, or undocumented fields. The Nim runtime is an implementation of this contract, not an independent schema.
+StarLang (`lost-rob0t/star-lang`, `specs/starintel/0.10.1/core.star`) is the sole
+StarIntel wire specification and release authority. This repository consumes
+its complete immutable generated release through `schema/starintel-schema.lock.json`
+and `schemas/starintel-0.10.1/`. Never author or mint a downstream wire schema.
 
-The active StarIntel **release/profile version** is resolved separately through the release tooling, never from a filename. Before relying on a StarIntel version number or changing schema/profile metadata, every agent must run:
+Before relying on a version or changing a dependency, run:
 
 ```bash
 python3 scripts/schema-release.py current
 python3 scripts/schema-release.py check
-```
-
-Rules:
-
-- use the reported `release_version` as the active StarIntel release;
-- do not infer the active release from `schema_version`, a schema filename, issue prose, research notes, README text, or memory;
-- on the unified 0.10 line, `release_version == profile_version == schema_version` (0.10.1 reunifies them; the 0.9 line kept release/profile distinct from the immutable 0.9.0 base, and those legacy artifacts are retained);
-- additive patch bumps MUST use `python3 scripts/schema-release.py bump --to <next-patch>`; never update version fields with `sed`, editor search/replace, or an ad hoc script;
-- creating a new base line MUST use `python3 scripts/schema-release.py mint --to <X.Y.Z>` after the spec source change lands; mint generates the schema/manifest and repins conformance, package, and schema-filename metadata programmatically;
-- the 0.9 expansion registry is retired as an authority: its vocabulary was absorbed into `starintel_doc/spec.py` in 0.10.1 (see `docs/schema-0.10.1-design.md`);
-- after a canonical release changes, consumers must repin their schema locks through their repository-owned sync/lock workflow and pass conformance before claiming support;
-- any disagreement among manifest, conformance metadata, package metadata, or a consumer lock is a hard blocker. Fix the authority chain instead of guessing.
-
-At the time this rule was updated the canonical release/profile/base schema is `0.10.1` and the next additive patch is `0.10.2`. Those literals are historical context only; `scripts/schema-release.py current` is authoritative after any bump or mint.
-
-Before creating or changing a document, every agent must inspect the executable schema:
-
-```bash
 python3 scripts/starintel.py types
 python3 scripts/starintel.py schema --dtype <dtype>
 ```
 
-Strict rules:
+Wire documents use generated `id`, `schemaVersion`, and flat lowerCamelCase fields.
+Use generated fields and namespaced `extensions` for opaque metadata. Run the
+strict generated runtime before persistence and every outbound submission.
+Repin only with `scripts/sync-starintel-schema.py --commit <full-StarLang-SHA>`;
+CI must verify the bytes against that immutable upstream commit. Python and Nim
+runtime commits are recorded in `schema/starintel-runtime.lock.json` and must
+consume exactly the same generated release.
 
-1. choose an exact dtype from `starintel_doc.TYPE_FIELDS`;
-2. place common metadata only in the document envelope (see `scripts/starintel.py schema`);
-3. place dtype-specific metadata only in `data`;
-4. use a namespaced `extensions` entry only when the schema cannot represent a value without loss;
-5. preserve exact sources, evidence, uncertainty, lineage, and migration provenance;
-6. stop immediately when validation fails.
+The repository-local `spec.py`, `model.py`, `schema_org.py`, legacy conformance
+fixtures, and `schemas/starintel-doc-v0.10.1.schema.json` describe a historical
+**local research storage profile**, not canonical StarIntel wire 0.10.1. Existing
+nested `_id`/`schema_version`/`data` records are preserved and validated in that
+explicit storage context. They cannot be submitted as canonical 0.10.1. Their
+extra dtypes need a StarLang proposal or a deliberate, lossless conversion;
+never relabel or silently flatten them. Access historical Python APIs through
+`starintel_doc.legacy` and historical CLI commands through
+`--legacy-research-profile`. `schema-release-legacy.py` is archival tooling only.
+
+Preserve exact sources, evidence, uncertainty, lineage, and migration provenance.
+Stop when validation fails. The native full merge gate below remains mandatory.
 
 ## Required scripted write path
 
@@ -68,7 +65,7 @@ Agents must not hand-write normalized DB records with an editor, heredoc, `cat`,
 For one normalized record, use the transactional writer:
 
 ```bash
-python3 scripts/create-db-document.py <dtype> \
+python3 scripts/create-db-document.py --legacy-research-profile <dtype> \
   --dataset <dataset> \
   --id <stable-id> \
   --title '<title>' \
@@ -86,7 +83,7 @@ python3 scripts/starintel.py import records.jsonl
 
 Use `--replace` only for an intentional correction or newer version of an existing `_id`. Use `--migrate` only for legacy input that must be normalized first.
 
-`scripts/starintel.py create` may be used to inspect or generate a draft document, but agents must not use `--output db/...`; normalized DB writes must go through `scripts/create-db-document.py` or `scripts/starintel.py import`.
+`scripts/starintel.py create` generates canonical flat documents (`--fields`). Historical drafts require `--legacy-research-profile create`. The create command may be used to inspect or generate a draft document, but agents must not use `--output db/...`; normalized DB writes must go through `scripts/create-db-document.py` or `scripts/starintel.py import`.
 
 ## Database convention
 

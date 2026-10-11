@@ -3,7 +3,7 @@ from __future__ import annotations
 import copy
 import unittest
 
-from starintel_doc import Document, ValidationError, document_schema, validate_document
+from starintel_doc.legacy import Document, ValidationError, document_schema, validate_document
 from starintel_doc.schema_org import schema_org_types
 
 

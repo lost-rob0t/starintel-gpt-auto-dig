@@ -1,9 +1,10 @@
 [project]
 name = "starintel-doc-auto-dig"
-version = "0.9.0"
-description = "Canonical StarIntel v0.9.0 document fork and auto-dig tooling"
+version = "0.10.1"
+description = "StarLang-generated StarIntel consumer and historical research corpus tooling"
 requires-python = ">=3.11"
 dependencies = [
+  "starintel-doc @ git+https://github.com/lost-rob0t/starintel-doc.git@ac015a5d92a1d9587e5dc7764dd9e0a150a6d0a8",
   "websocket-client>=1.9,<2",
 ]
 

@@ -1,6 +1,7 @@
 import std/[algorithm, json, os, strformat, strutils, tables]
 
-import starintel_doc/v090
+import starintel_doc/v090 as researchRuntime
+import starintel_doc/canonical as canonicalRuntime
 import starintel_legacy
 import starintel_transport
 
@@ -57,7 +58,8 @@ proc sourceShapeError(source: JsonNode): string =
 
 proc auditSources(state: AuditState; document: JsonNode; path: string; line: int) =
   if not document.hasKey("sources"):
-    state.errors.add(location(path, line) & ": missing sources field")
+    if not document.hasKey("schemaVersion"):
+      state.errors.add(location(path, line) & ": missing sources field")
     return
   if document["sources"].kind != JArray:
     state.errors.add(location(path, line) & ": sources must be an array")
@@ -68,7 +70,7 @@ proc auditSources(state: AuditState; document: JsonNode; path: string; line: int
     state.missing.add(MissingSource(
       path: path,
       line: line,
-      id: text(document, "_id", "<missing-id>"),
+      id: text(document, "id", text(document, "_id", "<missing-id>")),
       dataset: text(document, "dataset"),
       dtype: text(document, "dtype"),
       title: text(document, "title")
@@ -84,11 +86,19 @@ proc auditSources(state: AuditState; document: JsonNode; path: string; line: int
 proc auditDocument(state: AuditState; schema, document: JsonNode; path: string; line: int): bool =
   inc state.documents
   auditSources(state, document, path, line)
+  if document.hasKey("schemaVersion"):
+    let checked = canonicalRuntime.validateDocument(document)
+    if not checked.ok:
+      state.errors.add(location(path, line) & ": canonical: " & checked.category & ": " & checked.message)
+      return false
+    return true
   let normalizationError = normalizeLegacyDocument(document)
   if normalizationError.len > 0:
     state.errors.add(location(path, line) & ": legacy_normalization: " & normalizationError)
     return false
-  let checked = validateDocument(document, schema)
+  # Archived local research records have a separate storage profile. Do not
+  # mislabel this validation as canonical 0.10.1 or rewrite their version.
+  let checked = researchRuntime.validateValue(document, schema)
   if not checked.ok:
     state.errors.add(location(path, line) & ": " & checked.category & ": " & checked.message)
     return false
@@ -119,7 +129,7 @@ proc recordDbInvariants(state: AuditState; document: JsonNode; dbRoot, path: str
     return
 
   let dtype = text(document, "dtype")
-  let id = text(document, "_id")
+  let id = text(document, "id", text(document, "_id"))
   let expectedDtype = parts[0]
   let name = parts[1]
   let suffix = ".ndjson"
@@ -140,6 +150,10 @@ proc recordDbInvariants(state: AuditState; document: JsonNode; dbRoot, path: str
     for endpoint in ["subject", "object"]:
       if data.hasKey(endpoint):
         collectRelationReference(state, path, endpoint, data[endpoint])
+  elif dtype == "relation" and document.hasKey("schemaVersion"):
+    for endpoint in ["source", "destination"]:
+      if document.hasKey(endpoint):
+        collectRelationReference(state, path, endpoint, document[endpoint])
 
 proc auditDbFile(state: AuditState; schema: JsonNode; dbRoot, path: string) =
   try:
@@ -264,8 +278,8 @@ proc main(): int =
   if errorsReport.len == 0: errorsReport = root / DefaultErrorsReport
   elif not errorsReport.isAbsolute: errorsReport = root / errorsReport
 
-  putEnv("STARINTEL_SCHEMA", root / "schemas" / "starintel-doc-v0.10.1.schema.json")
-  let schema = loadSchema()
+  # This file is the frozen local research storage profile, not wire authority.
+  let schema = parseFile(root / "schemas" / "starintel-doc-v0.10.1.schema.json")
   let state = AuditState(dbIds: initTable[string, string]())
   let dbRoot = root / "db"
 

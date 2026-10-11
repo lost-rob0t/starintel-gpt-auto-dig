@@ -187,6 +187,7 @@ def main(argv: Sequence[str] | None = None) -> int:
         command = [
             sys.executable,
             str(ROOT / "scripts" / "starintel.py"),
+            "--legacy-research-profile",
             "import",
             str(args.output),
         ]

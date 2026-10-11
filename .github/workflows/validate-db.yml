@@ -57,7 +57,7 @@ concurrency:
 
 env:
   NIM_VERSION: 2.2.4
-  STARINTEL_NIM_REF: b55316bae294a146523cd2f977b81096e538c86a
+  STARINTEL_NIM_REF: 827f2c072e9893561a1925c47f898458bafd6759
 
 jobs:
   validate-documents:
@@ -72,6 +72,12 @@ jobs:
           repository: lost-rob0t/starintel-doc.nim
           ref: ${{ env.STARINTEL_NIM_REF }}
           path: .starintel-doc-nim
+
+      - name: Install the pinned canonical Python runtime and PCRE
+        run: |
+          python3 -m pip install "git+https://github.com/lost-rob0t/starintel-doc.git@$(jq -r .python_commit schema/starintel-runtime.lock.json)"
+          sudo apt-get update
+          sudo apt-get install --yes libpcre3
 
       - name: Set up Nim
         uses: jiro4989/setup-nim-action@v2

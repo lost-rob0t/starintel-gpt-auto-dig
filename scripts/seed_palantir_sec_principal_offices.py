@@ -402,6 +402,7 @@ def main() -> int:
         [
             sys.executable,
             str(ROOT / "scripts/starintel.py"),
+            "--legacy-research-profile",
             "import",
             str(PACKET),
             "--root",

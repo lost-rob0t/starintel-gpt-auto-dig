@@ -12,6 +12,7 @@ from typing import Any, Iterable, Iterator
 from .migration import migrate_document
 from .schema_org_migration import enrich_schema_org
 from .validation import ValidationError, validate_document
+from .storage_validation import validate_stored_document, document_id
 
 
 @dataclass(frozen=True, slots=True)
@@ -109,10 +110,11 @@ def search_documents(
             continue
         if dataset and dataset.lower() not in str(doc.get("dataset", "")).lower():
             continue
-        if doc_id and doc_id.lower() not in str(doc.get("_id", "")).lower():
+        if doc_id and doc_id.lower() not in str(document_id(doc) or "").lower():
             continue
         if predicate:
-            actual = str(doc.get("data", {}).get("predicate", ""))
+            fields = doc if "schemaVersion" in doc else doc.get("data", {})
+            actual = str(fields.get("predicate", ""))
             if predicate.lower() not in actual.lower():
                 continue
         if source:
@@ -130,7 +132,10 @@ def search_documents(
     return results
 
 
-def validate_repository(root: Path, *, require_v090: bool = True) -> dict[str, Any]:
+def validate_repository(
+    root: Path, *, require_v090: bool = True,
+    pending_documents: Iterable[LocatedDocument] = (),
+) -> dict[str, Any]:
     errors: list[str] = []
     counts: Counter[str] = Counter()
     ids_by_surface: dict[str, dict[str, Path]] = {"db": {}, "packet": {}}
@@ -140,14 +145,23 @@ def validate_repository(root: Path, *, require_v090: bool = True) -> dict[str, A
     except Exception as exc:
         errors.append(str(exc))
 
+    # Validate the final batch state before the transactional writer persists it.
+    # Replace only the exact normalized paths; duplicate IDs at other paths must
+    # remain visible to the ordinary corpus invariants below.
+    pending = list(pending_documents)
+    if pending:
+        replaced_paths = {item.path for item in pending}
+        located_docs = [item for item in located_docs if item.path not in replaced_paths]
+        located_docs.extend(pending)
+
     for located in located_docs:
         doc = located.document
         label = f"{located.path}:{located.line}"
         try:
             if require_v090:
-                validate_document(doc)
+                validate_stored_document(doc)
             dtype = str(doc.get("dtype", ""))
-            doc_id = str(doc.get("_id", ""))
+            doc_id = str(document_id(doc) or "")
             counts[dtype] += 1
             if located.surface == "db":
                 expected_dtype = located.path.parent.name
@@ -168,8 +182,9 @@ def validate_repository(root: Path, *, require_v090: bool = True) -> dict[str, A
     for located in located_docs:
         if located.surface != "db" or located.document.get("dtype") != "relation":
             continue
-        data = located.document.get("data", {})
-        for endpoint in ("subject", "object"):
+        canonical = "schemaVersion" in located.document
+        data = located.document if canonical else located.document.get("data", {})
+        for endpoint in (("subject", "object") if not canonical else ("source", "destination")):
             value = data.get(endpoint)
             values = value if isinstance(value, list) else [value]
             for item in values:

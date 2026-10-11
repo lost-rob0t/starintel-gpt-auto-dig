@@ -260,7 +260,7 @@ def main() -> int:
                         out.write(json.dumps(doc, ensure_ascii=False, separators=(",", ":")) + "\n")
 
     if args.import_db:
-        subprocess.run([sys.executable, str(ROOT / "scripts" / "starintel.py"), "import", str(args.output)], check=True)
+        subprocess.run([sys.executable, str(ROOT / "scripts" / "starintel.py"), "--legacy-research-profile", "import", str(args.output)], check=True)
     print(f"wrote {args.output}")
     return 0
 

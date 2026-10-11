@@ -73,7 +73,7 @@ concurrency:
 
 env:
   NIM_VERSION: 2.2.4
-  STARINTEL_NIM_REF: b55316bae294a146523cd2f977b81096e538c86a
+  STARINTEL_NIM_REF: 827f2c072e9893561a1925c47f898458bafd6759
 
 jobs:
   validate-site-ui:
@@ -99,6 +99,12 @@ jobs:
         uses: actions/setup-python@v6
         with:
           python-version: "3.13"
+
+      - name: Install the pinned canonical Python runtime and PCRE
+        run: |
+          python3 -m pip install "git+https://github.com/lost-rob0t/starintel-doc.git@$(jq -r .python_commit schema/starintel-runtime.lock.json)"
+          sudo apt-get update
+          sudo apt-get install --yes libpcre3
 
       - name: Install scraper parsing dependencies
         run: python3 -m pip install --disable-pip-version-check requests beautifulsoup4 lxml

@@ -1,46 +1,39 @@
-name: Sync canonical schema
-
+name: Consume the StarLang generated release
 on:
+  pull_request:
   push:
-    branches:
-      - "agent/**"
-    paths:
-      - "starintel_doc/**"
-      - "scripts/starintel.py"
-      - ".github/workflows/sync-schema.yml"
+    branches-ignore: [main]
   workflow_dispatch:
-
 permissions:
-  contents: write
-
-concurrency:
-  group: starintel-schema-${{ github.ref }}
-  cancel-in-progress: false
-
+  contents: read
 jobs:
-  sync:
-    if: github.actor != 'github-actions[bot]'
+  check:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
-        with:
-          ref: ${{ github.ref_name }}
-          fetch-depth: 0
       - uses: actions/setup-python@v6
         with:
           python-version: "3.12"
-      - name: Regenerate the current StarIntel schema
-        run: python3 scripts/starintel.py schema --output schemas/starintel-doc-v0.10.1.schema.json
-      - name: Commit generated schema
-        shell: bash
+      - name: Verify immutable upstream release bytes
+        run: python3 scripts/sync-starintel-schema.py
+      - name: Install the pinned runtime
+        run: python3 -m pip install "git+https://github.com/lost-rob0t/starintel-doc.git@$(jq -r .python_commit schema/starintel-runtime.lock.json)" fastapi httpx
+      - name: Checkout the pinned Nim runtime
+        uses: actions/checkout@v6
+        with:
+          repository: lost-rob0t/starintel-doc.nim
+          ref: 827f2c072e9893561a1925c47f898458bafd6759
+          path: .starintel-doc-nim
+      - uses: jiro4989/setup-nim-action@v2
+        with:
+          nim-version: "2.2.4"
+      - name: Build the actual canonical storage validator
         run: |
-          set -euo pipefail
-          git add schemas/starintel-doc-v0.10.1.schema.json
-          if git diff --cached --quiet; then
-            echo "Schema already current"
-            exit 0
-          fi
-          git config user.name "starintel-schema-bot"
-          git config user.email "starintel-schema-bot@users.noreply.github.com"
-          git commit -m "Sync Schema.org-expanded StarIntel schema"
-          git push origin "HEAD:${GITHUB_REF_NAME}"
+          sudo apt-get update
+          sudo apt-get install --yes libpcre3
+          mkdir -p bin
+          nim c -d:release --path:scripts --path:.starintel-doc-nim/src --out:bin/starintel-validate scripts/starintel_validate.nim
+      - name: Verify shared runtime authority and actual wire boundaries
+        run: |
+          python3 scripts/schema-release.py check
+          python3 -m unittest tests.test_starlang_consumer backend.tests.test_app -v

@@ -2,4 +2,11 @@
 
 __all__ = ["app"]
 
-from .app import app  # noqa: E402,F401
+def __getattr__(name):
+    # Importing the document validation helper must not initialize the web
+    # application or require its optional FastAPI dependencies.
+    if name == "app":
+        from .app import app
+        globals()[name] = app
+        return app
+    raise AttributeError(name)

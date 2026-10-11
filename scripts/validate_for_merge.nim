@@ -297,6 +297,8 @@ proc validateSite(options: Options) =
 
 proc main(): int =
   let options = parseOptions()
+  run("python3", @["scripts/sync-starintel-schema.py", "--offline"])
+  run("python3", @["scripts/schema-release.py", "check"])
   var validateArgs = @["--root", "."]
   if options.requireSources: validateArgs.add("--require-sources")
   run(executable("starintel-validate"), validateArgs)
