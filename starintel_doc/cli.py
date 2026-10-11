@@ -4,7 +4,7 @@ import json
 import sys
 from pathlib import Path
 from .canonical import DOCUMENT_TYPES, SPEC_VERSION, load_schema, validate_document
-from .writer import write_db_document
+from .writer import write_db_documents
 
 
 def main(argv=None):
@@ -54,8 +54,7 @@ def main(argv=None):
         documents = [json.loads(raw) for raw in args.source.read_text().splitlines() if raw.strip()]
         for document in documents:
             validate_document(document)
-        for document in documents:
-            write_db_document(args.root, document, replace=args.replace)
+        write_db_documents(args.root, documents, replace=args.replace)
         print(json.dumps({"imported": len(documents)}))
         return 0
     payload = json.dumps(value, indent=2 if args.command == "schema" or args.pretty else None) + "\n"

@@ -2,9 +2,9 @@ from __future__ import annotations
 
 import os
 from pathlib import Path
-from typing import Any
+from typing import Any, Iterable
 
-from .store import compact, validate_repository
+from .store import LocatedDocument, compact, validate_repository
 from .storage_validation import validate_stored_document as validate_document, document_id
 
 
@@ -31,6 +31,58 @@ def _restore(target: Path, previous: bytes | None) -> None:
     rollback = target.with_name(f".{target.name}.rollback")
     rollback.write_bytes(previous)
     os.replace(rollback, target)
+
+
+def write_db_documents(
+    root: Path, documents: Iterable[dict[str, Any]], *, replace: bool = False,
+) -> list[Path]:
+    """Validate a complete batch, then persist it with rollback on failure.
+
+    Relations may precede their endpoints. Duplicate IDs and replacement
+    conflicts are rejected before any record is changed. This is rollback on
+    in-process failures, not crash-safe multi-file filesystem atomicity.
+    """
+    root = root.resolve()
+    pending = []
+    updates = []
+    seen = set()
+    for document in documents:
+        target = canonical_db_path(root, document)
+        doc_id = document_id(document)
+        if doc_id in seen:
+            raise DatabaseWriteError(f"duplicate document id in batch: {doc_id!r}")
+        seen.add(doc_id)
+        payload = (compact(document) + "\n").encode("utf-8")
+        previous = target.read_bytes() if target.exists() else None
+        if previous is not None and previous != payload and not replace:
+            raise DatabaseWriteError(f"{target}: already exists with different content; pass replace=True for an intentional update")
+        pending.append(LocatedDocument(document, target))
+        if previous != payload:
+            updates.append((target, payload, previous))
+
+    result = validate_repository(root, pending_documents=pending)
+    if not result["ok"]:
+        raise DatabaseWriteError("repository validation failed before batch write:\n" + "\n".join(result["errors"]))
+
+    written = []
+    temporary = None
+    try:
+        for target, payload, previous in updates:
+            target.parent.mkdir(parents=True, exist_ok=True)
+            temporary = target.with_name(f".{target.name}.tmp")
+            temporary.write_bytes(payload)
+            os.replace(temporary, target)
+            written.append((target, previous))
+        result = validate_repository(root)
+        if not result["ok"]:
+            raise DatabaseWriteError("repository validation failed after batch write:\n" + "\n".join(result["errors"]))
+    except BaseException:
+        if temporary is not None:
+            temporary.unlink(missing_ok=True)
+        for target, previous in reversed(written):
+            _restore(target, previous)
+        raise
+    return [item.path for item in pending]
 
 
 def write_db_document(

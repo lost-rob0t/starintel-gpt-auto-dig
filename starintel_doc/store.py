@@ -110,10 +110,11 @@ def search_documents(
             continue
         if dataset and dataset.lower() not in str(doc.get("dataset", "")).lower():
             continue
-        if doc_id and doc_id.lower() not in str(doc.get("_id", "")).lower():
+        if doc_id and doc_id.lower() not in str(document_id(doc) or "").lower():
             continue
         if predicate:
-            actual = str(doc.get("data", {}).get("predicate", ""))
+            fields = doc if "schemaVersion" in doc else doc.get("data", {})
+            actual = str(fields.get("predicate", ""))
             if predicate.lower() not in actual.lower():
                 continue
         if source:
@@ -131,7 +132,10 @@ def search_documents(
     return results
 
 
-def validate_repository(root: Path, *, require_v090: bool = True) -> dict[str, Any]:
+def validate_repository(
+    root: Path, *, require_v090: bool = True,
+    pending_documents: Iterable[LocatedDocument] = (),
+) -> dict[str, Any]:
     errors: list[str] = []
     counts: Counter[str] = Counter()
     ids_by_surface: dict[str, dict[str, Path]] = {"db": {}, "packet": {}}
@@ -140,6 +144,15 @@ def validate_repository(root: Path, *, require_v090: bool = True) -> dict[str, A
         located_docs = list(iter_corpus(root))
     except Exception as exc:
         errors.append(str(exc))
+
+    # Validate the final batch state before the transactional writer persists it.
+    # Replace only the exact normalized paths; duplicate IDs at other paths must
+    # remain visible to the ordinary corpus invariants below.
+    pending = list(pending_documents)
+    if pending:
+        replaced_paths = {item.path for item in pending}
+        located_docs = [item for item in located_docs if item.path not in replaced_paths]
+        located_docs.extend(pending)
 
     for located in located_docs:
         doc = located.document
