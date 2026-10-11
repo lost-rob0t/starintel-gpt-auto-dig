@@ -65,7 +65,7 @@ def ere_escape(value: str) -> str:
 
 
 def records_at_ref_for_ids(importer, root: Path, ref: str, document_ids: set[str]):
-    """Read only documents with candidate `_id`s from a git tree.
+    """Read only documents with candidate canonical or historical IDs from a git tree.
 
     `git grep -z` NUL-separates the ref/path, line number, and matching text.
     This avoids ambiguity because canonical StarIntel DB filenames contain ':'.
@@ -80,7 +80,7 @@ def records_at_ref_for_ids(importer, root: Path, ref: str, document_ids: set[str
     for start in range(0, len(ordered), GREP_BATCH_SIZE):
         batch = ordered[start : start + GREP_BATCH_SIZE]
         alternatives = "|".join(ere_escape(document_id) for document_id in batch)
-        pattern = rf'"_id"[[:space:]]*:[[:space:]]*"({alternatives})"'
+        pattern = rf'"(id|_id)"[[:space:]]*:[[:space:]]*"({alternatives})"'
         result = subprocess.run(
             ["git", "grep", "-n", "-z", "-E", pattern, ref, "--", "db", "digs"],
             cwd=root,
