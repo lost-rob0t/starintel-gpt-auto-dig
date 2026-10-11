@@ -20,6 +20,7 @@ class FakeIngestHandler(BaseHTTPRequestHandler):
     auth_headers: list[str | None] = []
     response_mode = "async-success"
     post_attempts = 0
+    requests: list[list[dict]] = []
 
     def log_message(self, fmt: str, *args) -> None:
         pass
@@ -44,6 +45,15 @@ class FakeIngestHandler(BaseHTTPRequestHandler):
             attempt = type(self).post_attempts
             mode = type(self).response_mode
             self.auth_headers.append(self.headers.get("Authorization"))
+            self.requests.append(documents)
+
+        if mode == "legacy-id-required":
+            self.send_json(422, {
+                "status": "error", "code": "invalid_document",
+                "msg": "Document at index 0 requires a non-empty _id field",
+                "info": {"field": "_id", "index": 0},
+            })
+            return
 
         if mode == "http-503":
             self.send_json(503, {"error": "temporary"})
@@ -130,6 +140,7 @@ class StarIntelIngestCoreTests(unittest.TestCase):
         FakeIngestHandler.auth_headers = []
         FakeIngestHandler.response_mode = "async-success"
         FakeIngestHandler.post_attempts = 0
+        FakeIngestHandler.requests = []
         self.server = ThreadingHTTPServer(("127.0.0.1", 0), FakeIngestHandler)
         self.thread = threading.Thread(target=self.server.serve_forever, daemon=True)
         self.thread.start()
@@ -188,6 +199,41 @@ class StarIntelIngestCoreTests(unittest.TestCase):
         self.assertEqual(final["documents"], 7)
         self.assertEqual(final["failed_batches"], 0)
         self.assertEqual(final["workers"], 3)
+
+    def event_documents(self) -> list[dict]:
+        packet = ROOT / "digs/columbus/2026-10-11-public-event-announcements/starintel-documents.jsonl"
+        return [json.loads(line) for line in packet.read_text().splitlines() if line]
+
+    def test_event_packet_preserves_canonical_wire_values(self) -> None:
+        documents = self.event_documents()
+        self.assertEqual(len(documents), 28)
+        result = self.run_core(documents, "--workers", "1", "--batch-size", "28")
+
+        self.assertEqual(result.returncode, 0, result.stderr + result.stdout)
+        self.assertEqual(FakeIngestHandler.requests, [documents])
+        self.assertEqual(list(FakeIngestHandler.batches.values()), [documents])
+        for document in FakeIngestHandler.requests[0]:
+            self.assertIn("id", document)
+            self.assertEqual(document["schemaVersion"], "0.10.1")
+            self.assertNotIn("_id", document)
+            self.assertNotIn("schema_version", document)
+
+    def test_legacy_id_rejection_never_rewrites_or_retries_event_packet(self) -> None:
+        FakeIngestHandler.response_mode = "legacy-id-required"
+        documents = self.event_documents()
+        result = self.run_core(documents, "--workers", "1", "--batch-size", "28", "--retries", "6")
+
+        self.assertEqual(result.returncode, 1, result.stderr + result.stdout)
+        self.assertIn("HTTP 422", result.stderr)
+        self.assertIn("requires a non-empty _id field", result.stderr)
+        self.assertEqual(FakeIngestHandler.post_attempts, 1)
+        self.assertEqual(FakeIngestHandler.requests, [documents])
+        self.assertFalse(FakeIngestHandler.batches)
+        final = json.loads(result.stdout.strip().splitlines()[-1])
+        self.assertEqual(final["status"], "failed")
+        self.assertEqual(final["failed_batches"], 1)
+        # This counter describes client-confirmed success, not a durable DB readback.
+        self.assertEqual(final["uploaded"], 0)
 
     def test_actorless_target_uses_canonical_bulk_route(self) -> None:
         target = {
