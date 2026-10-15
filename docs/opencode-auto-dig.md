@@ -16,6 +16,10 @@ repository root, supplies [current task instructions](opencode-auto-dig-task.md)
 and uses the project `opencode.jsonc` for pinned Brave search and fetch MCP tools.
 Local corpus search, schema inspection, canonical builders and validation use
 OpenCode's ordinary shell tool. No legacy corpus MCP adapter is required.
+Relative executable paths resolve against the caller's directory before launch.
+The child receives an absolute `--dir` and matching `PWD` so an inherited caller
+directory cannot select another OpenCode project. Standard input is closed;
+use `--task` or `--task-file` rather than piping additional task content.
 
 ## Prerequisites
 

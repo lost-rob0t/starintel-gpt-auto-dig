@@ -36,7 +36,7 @@ class LauncherTests(unittest.TestCase):
         fake = self.root / "bin/opencode"
         fake.write_text(f"#!{sys.executable}\n" +
                        "import json,os,sys\nfrom pathlib import Path\n"
-                       "Path(os.environ['CAPTURE']).write_text(json.dumps({'argv':sys.argv[1:], 'cwd':os.getcwd(), 'key_present':bool(os.environ.get('BRAVE_API_KEY'))}))\n"
+                       "Path(os.environ['CAPTURE']).write_text(json.dumps({'argv':sys.argv[1:], 'cwd':os.getcwd(), 'pwd':os.environ.get('PWD'), 'stdin':sys.stdin.read(), 'executable':sys.argv[0], 'key_present':bool(os.environ.get('BRAVE_API_KEY'))}))\n"
                        "if os.environ.get('FAKE_SIGNAL'): os.kill(os.getpid(), 15)\n"
                        "sys.exit(int(os.environ.get('FAKE_EXIT', '0')))\n")
         fake.chmod(0o755)
@@ -48,9 +48,9 @@ class LauncherTests(unittest.TestCase):
     def write_control(self):
         (self.root / "config/auto-dig-control.json").write_text(json.dumps(self.control))
 
-    def run_launcher(self, *args):
+    def run_launcher(self, *args, stdin_text=""):
         return subprocess.run([sys.executable, str(self.root / "scripts/opencode-auto-dig.py"), *args],
-                              cwd="/tmp", env=self.env, capture_output=True, text=True)
+                              cwd="/tmp", env=self.env, input=stdin_text, capture_output=True, text=True)
 
     def test_dry_run_needs_no_tools_or_credentials_and_does_not_leak(self):
         self.env["PATH"] = ""
@@ -67,13 +67,38 @@ class LauncherTests(unittest.TestCase):
         result = self.run_launcher("--task-file", str(task), "--model", "provider/model")
         self.assertEqual(result.returncode, 0, result.stderr)
         got = json.loads(self.capture.read_text())
-        self.assertEqual(got["argv"][:4], ["run", "--model", "provider/model", "--"])
-        self.assertIn(task.read_text(), got["argv"][4])
-        self.assertIn("--fields @fields.json", got["argv"][4])
-        self.assertIn("bin/validate-for-merge --site", got["argv"][4])
+        self.assertEqual(got["argv"][:6], ["run", "--dir", str(self.root), "--model", "provider/model", "--"])
+        self.assertIn(task.read_text(), got["argv"][6])
+        self.assertIn("--fields @fields.json", got["argv"][6])
+        self.assertIn("bin/validate-for-merge --site", got["argv"][6])
         self.assertEqual(got["cwd"], str(self.root))
         self.assertTrue(got["key_present"])
         self.assertFalse((self.root / "NEVER").exists())
+
+    def test_foreign_pwd_cannot_select_another_project(self):
+        self.env["PWD"] = "/tmp/other-project"
+        result = self.run_launcher("--task", "fixture")
+        self.assertEqual(result.returncode, 0, result.stderr)
+        got = json.loads(self.capture.read_text())
+        self.assertEqual(got["pwd"], str(self.root))
+        self.assertEqual(got["cwd"], str(self.root))
+        self.assertEqual(got["argv"][:3], ["run", "--dir", str(self.root)])
+
+    def test_relative_executable_resolved_before_changing_directory(self):
+        executable = self.root / "bin/opencode"
+        relative = os.path.relpath(executable, "/tmp")
+        result = self.run_launcher("--task", "fixture", "--opencode", relative)
+        self.assertEqual(result.returncode, 0, result.stderr)
+        got = json.loads(self.capture.read_text())
+        self.assertEqual(got["executable"], str(executable))
+        self.assertEqual(got["cwd"], str(self.root))
+
+    def test_piped_stdin_cannot_append_to_explicit_task(self):
+        result = self.run_launcher("--task", "fixture", stdin_text="unrelated piped material")
+        self.assertEqual(result.returncode, 0, result.stderr)
+        got = json.loads(self.capture.read_text())
+        self.assertEqual(got["stdin"], "")
+        self.assertNotIn("unrelated piped material", got["argv"][-1])
 
     def test_exit_status_propagates(self):
         self.env["FAKE_EXIT"] = "42"

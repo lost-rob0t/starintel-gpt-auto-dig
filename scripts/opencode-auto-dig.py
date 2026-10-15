@@ -38,7 +38,7 @@ def main(argv=None) -> int:
                 return 75
         instructions = (ROOT / "docs/opencode-auto-dig-task.md").read_text(encoding="utf-8")
         prompt = instructions + "\n\nOperator task:\n" + task_text
-        command = [args.opencode, "run"]
+        command = [args.opencode, "run", "--dir", str(ROOT)]
         if args.model:
             command += ["--model", args.model]
         command += ["--", prompt]
@@ -47,10 +47,15 @@ def main(argv=None) -> int:
                               "config": str(ROOT / "opencode.jsonc"),
                               "required_environment": ["BRAVE_API_KEY", "provider credentials via OpenCode"]}, indent=2))
             return 0
+        resolved = {}
         for executable in (args.opencode, "npx", "nimble"):
-            if not shutil.which(executable):
+            location = shutil.which(executable)
+            if not location:
                 print(f"Missing prerequisite: {executable}; see docs/opencode-auto-dig.md", file=sys.stderr)
                 return 127
+            resolved[executable] = os.path.abspath(location)
+        # Resolve in the caller's cwd/PATH before changing either for the child.
+        command[0] = resolved[args.opencode]
         if not os.environ.get("BRAVE_API_KEY", "").strip():
             print("Missing BRAVE_API_KEY in runtime environment", file=sys.stderr)
             return 2
@@ -61,7 +66,10 @@ def main(argv=None) -> int:
         # Keep the activated Python environment available to the agent's python3 calls.
         env = os.environ.copy()
         env["PATH"] = str(Path(sys.executable).parent) + os.pathsep + env.get("PATH", "")
-        status = subprocess.run(command, cwd=ROOT, env=env).returncode
+        env["PWD"] = str(ROOT)
+        # OpenCode uses PWD for session routing and appends piped stdin to tasks.
+        # Both project selection and task content must come from this launcher.
+        status = subprocess.run(command, cwd=ROOT, env=env, stdin=subprocess.DEVNULL).returncode
         return status if status >= 0 else 128 - status
     except (OSError, ValueError) as exc:
         print(f"Cannot launch Auto-Dig: {exc}", file=sys.stderr)
