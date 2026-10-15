@@ -1,5 +1,7 @@
 # StarIntel GPT Auto Dig
 
+For one bounded OpenCode task, use the [OpenCode Auto-Dig launcher](docs/opencode-auto-dig.md) (`--dry-run` supported).
+
 Evidence-first research packets and a Git-backed database. **StarLang is the
 sole StarIntel wire specification and release authority.** This repository
 consumes the complete immutable generated 0.10.1 release and maintained Python
