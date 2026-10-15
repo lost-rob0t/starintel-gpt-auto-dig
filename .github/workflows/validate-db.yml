@@ -12,6 +12,11 @@ on:
       - "scripts/starintel_legacy.nim"
       - "scripts/starintel_transport.nim"
       - "scripts/starintel_validate.nim"
+      - "scripts/opencode-auto-dig.py"
+      - "scripts/random-targets.py"
+      - "tests/test_opencode_launcher.py"
+      - "opencode.jsonc"
+      - "docs/opencode-auto-dig*.md"
       - "scripts/quasar_autodig_worker.py"
       - "scripts/quasar_issue_queue.py"
       - "scripts/quasar_autodig_runtime.py"
@@ -35,6 +40,11 @@ on:
       - "scripts/starintel_legacy.nim"
       - "scripts/starintel_transport.nim"
       - "scripts/starintel_validate.nim"
+      - "scripts/opencode-auto-dig.py"
+      - "scripts/random-targets.py"
+      - "tests/test_opencode_launcher.py"
+      - "opencode.jsonc"
+      - "docs/opencode-auto-dig*.md"
       - "scripts/quasar_autodig_worker.py"
       - "scripts/quasar_issue_queue.py"
       - "scripts/quasar_autodig_runtime.py"
@@ -105,6 +115,9 @@ jobs:
           python -m unittest tests.test_canonical_dataset_roots -v
           python -m unittest tests.test_operation_document -v
           python -m unittest discover -s tests -p 'test_columbus_*packet.py' -v
+
+      - name: Test OpenCode launcher and canonical builders offline
+        run: python3 -m unittest tests.test_opencode_launcher -v
 
       - name: Probe importer corpus duplicate invariant
         shell: bash

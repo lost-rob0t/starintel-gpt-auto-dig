@@ -2,8 +2,8 @@
 """Sample random unresolved Auto-Dig targets and fan them out to workers.
 
 Persisted queue builder for the dig-queue workflow. Unresolved means an
-``investigation-target`` or ``target`` record whose ``data.status`` is not
-``completed``/``resolved``/``done``. Output is JSONL with one line per
+``investigation-target`` or ``target`` record whose canonical ``state`` or
+legacy ``data.status`` is not ``completed``/``resolved``/``done``. Output is JSONL with one line per
 sampled target, round-robin assigned to ``--assign`` workers.
 
 Usage:
@@ -31,19 +31,31 @@ def iter_unresolved(root: Path):
             except (OSError, json.JSONDecodeError) as exc:
                 print(f"warn: skipping unreadable {path}: {exc}", file=sys.stderr)
                 continue
-            status = (doc.get("data") or {}).get("status")
-            if str(status).lower() in RESOLVED_STATUSES:
+            if not isinstance(doc, dict):
+                print(f"warn: skipping non-object {path}", file=sys.stderr)
                 continue
-            data = doc.get("data") or {}
+            canonical = "id" in doc or "schemaVersion" in doc
+            identity = doc.get("id" if canonical else "_id")
+            data = doc if canonical else doc.get("data", {})
+            if (not isinstance(identity, str) or not identity.strip()
+                    or not isinstance(data, dict)
+                    or doc.get("dtype", dtype) != dtype):
+                print(f"warn: skipping malformed target {path}", file=sys.stderr)
+                continue
+            status = data.get("state", data.get("status")) if canonical else data.get("status")
+            if str(status).strip().lower() in RESOLVED_STATUSES:
+                continue
+            question = data.get("researchQuestion" if canonical else "research_question") or data.get("query")
             yield {
-                "_id": doc.get("_id"),
-                "dtype": doc.get("dtype", dtype),
+                # Queue compatibility: _id is the source identity, including flat id.
+                "_id": identity,
+                "dtype": dtype,
                 "status": status,
-                "title": doc.get("title") or data.get("target") or data.get("research_question") or doc.get("_id"),
-                "research_question": data.get("research_question") or data.get("query"),
+                "title": doc.get("title") or data.get("target") or question or identity,
+                "research_question": question,
                 "target": data.get("target"),
-                "target_id": data.get("target_id"),
-                "target_type": data.get("target_type"),
+                "target_id": data.get("targetId" if canonical else "target_id"),
+                "target_type": data.get("targetType" if canonical else "target_type"),
                 "dataset": doc.get("dataset"),
                 "priority": data.get("priority"),
             }
