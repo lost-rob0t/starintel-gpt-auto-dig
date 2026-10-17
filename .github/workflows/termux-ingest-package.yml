@@ -1,0 +1,211 @@
+name: Termux ingest packages
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "scripts/starintel_ingest_core.nim"
+      - "starintel_auto_dig.nimble"
+      - "tests/test_starintel_ingest_core.py"
+      - "packaging/termux/starintel-ingest/**"
+      - ".github/workflows/termux-ingest-package.yml"
+  pull_request:
+    paths:
+      - "scripts/starintel_ingest_core.nim"
+      - "starintel_auto_dig.nimble"
+      - "tests/test_starintel_ingest_core.py"
+      - "packaging/termux/starintel-ingest/**"
+      - ".github/workflows/termux-ingest-package.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: termux-ingest-package-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  NIM_VERSION: 2.2.4
+  TERMUX_PACKAGES_REF: 77eb0fc47349d1605e352ec46215207f9eccf84b
+
+jobs:
+  verify-ingest-core:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout StarIntel ingest source
+        uses: actions/checkout@v6
+
+      - name: Set up Nim
+        uses: jiro4989/setup-nim-action@v2
+        with:
+          nim-version: ${{ env.NIM_VERSION }}
+
+      - name: Validate Termux packaging shell
+        run: |
+          bash -n packaging/termux/starintel-ingest/build.sh
+          bash -n packaging/termux/starintel-ingest/install-termux.sh
+
+      - name: Build host ingest core
+        run: nimble buildIngest
+
+      - name: Run ingest core tests
+        run: python3 -m unittest tests.test_starintel_ingest_core
+
+  build-termux-deb:
+    needs: verify-ingest-core
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    strategy:
+      fail-fast: false
+      matrix:
+        arch:
+          - aarch64
+          - arm
+          - i686
+          - x86_64
+    steps:
+      - name: Checkout StarIntel ingest source
+        uses: actions/checkout@v6
+        with:
+          path: source
+
+      - name: Checkout pinned Termux package builder
+        uses: actions/checkout@v6
+        with:
+          repository: termux/termux-packages
+          ref: ${{ env.TERMUX_PACKAGES_REF }}
+          path: termux-packages
+
+      - name: Stage StarIntel package recipe
+        shell: bash
+        run: |
+          set -euo pipefail
+          package_dir="$GITHUB_WORKSPACE/termux-packages/packages/starintel-ingest"
+          mkdir -p "$package_dir"
+          cp "$GITHUB_WORKSPACE/source/packaging/termux/starintel-ingest/build.sh" "$package_dir/build.sh"
+          cp "$GITHUB_WORKSPACE/source/packaging/termux/starintel-ingest/README.termux.md" "$package_dir/README.termux.md"
+          cp "$GITHUB_WORKSPACE/source/scripts/starintel_ingest_core.nim" "$package_dir/starintel_ingest_core.nim"
+
+      - name: Cross-build Termux package
+        env:
+          TERMUX_ARCH: ${{ matrix.arch }}
+        shell: bash
+        working-directory: termux-packages
+        run: |
+          set -euo pipefail
+          ./scripts/run-docker.sh \
+            ./build-package.sh \
+            -f \
+            -I \
+            -a "$TERMUX_ARCH" \
+            starintel-ingest
+
+      - name: Audit package payload
+        env:
+          TERMUX_ARCH: ${{ matrix.arch }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          shopt -s nullglob
+          packages=("$GITHUB_WORKSPACE"/termux-packages/output/starintel-ingest_*.deb)
+          if (( ${#packages[@]} != 1 )); then
+            printf 'Expected exactly one starintel-ingest .deb, got %d\n' "${#packages[@]}" >&2
+            printf '%s\n' "${packages[@]:-}" >&2
+            exit 1
+          fi
+
+          package="${packages[0]}"
+          audit_dir="$RUNNER_TEMP/termux-package-audit"
+          rm -rf "$audit_dir"
+          mkdir -p "$audit_dir"
+          dpkg-deb --info "$package"
+          dpkg-deb --extract "$package" "$audit_dir"
+
+          binary="$(find "$audit_dir" -type f -path '*/bin/starintel-ingest' -print -quit)"
+          if [[ -z "$binary" || ! -x "$binary" ]]; then
+            echo "Termux package is missing executable starintel-ingest." >&2
+            exit 1
+          fi
+
+          file "$binary"
+          readelf -h "$binary"
+          test -L "$(dirname "$binary")/starintel-ingest-core"
+
+          mkdir -p "$GITHUB_WORKSPACE/dist/$TERMUX_ARCH"
+          cp "$package" "$GITHUB_WORKSPACE/dist/$TERMUX_ARCH/"
+
+      - name: Upload architecture package
+        uses: actions/upload-artifact@v4
+        with:
+          name: starintel-ingest-termux-${{ matrix.arch }}
+          path: dist/${{ matrix.arch }}/*.deb
+          if-no-files-found: error
+          retention-days: 1
+          compression-level: 0
+
+  bundle-termux-packages:
+    needs: build-termux-deb
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+    steps:
+      - name: Checkout bundle metadata
+        uses: actions/checkout@v6
+        with:
+          path: source
+
+      - name: Download architecture packages
+        uses: actions/download-artifact@v4
+        with:
+          pattern: starintel-ingest-termux-*
+          path: dist
+          merge-multiple: true
+
+      - name: Build aggregate manifest
+        shell: bash
+        run: |
+          set -euo pipefail
+          cp source/packaging/termux/starintel-ingest/install-termux.sh dist/install-termux.sh
+          cp source/packaging/termux/starintel-ingest/README.termux.md dist/README.md
+
+          cd dist
+          shopt -s nullglob
+          packages=(starintel-ingest_*.deb)
+          if (( ${#packages[@]} != 4 )); then
+            printf 'Expected four Termux .deb packages, got %d\n' "${#packages[@]}" >&2
+            exit 1
+          fi
+
+          sha256sum "${packages[@]}" > SHA256SUMS
+          cat > MANIFEST.txt <<EOF
+          StarIntel Termux ingest bundle
+          package: starintel-ingest
+          package-version: 0.9.1
+          source-repository: https://github.com/lost-rob0t/starintel-gpt-auto-dig
+          source-commit: $SOURCE_SHA
+          ingest-default: https://ingest.starintel.actor
+          termux-packages-commit: $TERMUX_PACKAGES_REF
+          architectures: aarch64 arm i686 x86_64
+          install: bash install-termux.sh
+          command: starintel-ingest < starintel-documents.jsonl
+          EOF
+          cat SHA256SUMS
+          cat MANIFEST.txt
+
+      - name: Upload one all-in-one Termux download
+        uses: actions/upload-artifact@v4
+        with:
+          name: starintel-ingest-termux-all
+          path: |
+            dist/starintel-ingest_*.deb
+            dist/SHA256SUMS
+            dist/MANIFEST.txt
+            dist/install-termux.sh
+            dist/README.md
+          if-no-files-found: error
+          retention-days: 30
+          compression-level: 0
