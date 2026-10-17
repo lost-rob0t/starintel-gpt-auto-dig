@@ -42,6 +42,7 @@ def test_http_transaction_redacts_sensitive_headers_and_uses_artifact_policy():
         observed_at=NOW,
         request_headers={"Authorization": "Bearer secret", "Accept": "text/html"},
         response_headers={"Set-Cookie": "sid=secret", "Content-Type": "text/html"},
+        legacy_profile=True,
         fields={
             "request_body_hash": "sha256:req",
             "request_body_artifact_uri": "artifact://requests/req-1",
@@ -74,6 +75,7 @@ def test_web_capture_requires_artifact_reference_and_hash():
         screenshot_uri="artifact://screenshots/abc.png",
         screenshot_hash="sha256:abc",
         captured_at=NOW,
+        legacy_profile=True,
         fields={
             "viewport_width": 1440,
             "viewport_height": 900,
@@ -95,6 +97,7 @@ def test_profile_rejects_unknown_http_fields():
         url="https://example.test/",
         response_status=204,
         observed_at=NOW,
+        legacy_profile=True,
     )
     bad = copy.deepcopy(doc)
     bad["data"]["raw_password"] = "nope"
@@ -109,6 +112,7 @@ def test_profile_rejects_missing_required_http_method():
         url="https://example.test/",
         response_status=204,
         observed_at=NOW,
+        legacy_profile=True,
     )
     bad = copy.deepcopy(doc)
     del bad["data"]["method"]
@@ -120,6 +124,43 @@ def test_profile_schema_inventory_is_additive():
     schema = document_schema()
     assert schema["properties"]["dtype"]["enum"] == sorted(TYPE_FIELDS)
     assert {"http-transaction", "web-capture"} <= set(schema["properties"]["dtype"]["enum"])
+
+
+def test_default_builders_emit_unified_0101_core():
+    http = build_http_transaction(
+        dataset="capture-fixture",
+        method="GET",
+        url="https://example.test/current",
+        response_status=200,
+        observed_at=NOW,
+    )
+    web = build_web_capture(
+        dataset="capture-fixture",
+        url="https://example.test/current",
+        screenshot_uri="artifact://screenshots/current.png",
+        screenshot_hash="sha256:current",
+        captured_at=NOW,
+    )
+    for doc in (http, web):
+        assert doc["schema_version"] == "0.10.1"
+        assert doc["extensions"]["starintel.profile"]["release_version"] == "0.10.1"
+        assert validate_network_capture_document(doc) == doc
+
+
+def test_legacy_profile_remains_opt_in_and_strict():
+    doc = build_http_transaction(
+        dataset="capture-fixture",
+        method="GET",
+        url="https://example.test/legacy",
+        response_status=204,
+        observed_at=NOW,
+        legacy_profile=True,
+    )
+    assert doc["schema_version"] == "0.9.0"
+    assert doc["extensions"]["starintel.profile"]["release_version"] == "0.9.2"
+    migrated = copy.deepcopy(doc)
+    migrated["schema_version"] = "0.10.1"
+    assert validate_network_capture_document(migrated) == migrated
 
 
 def test_redact_headers_is_case_insensitive():
