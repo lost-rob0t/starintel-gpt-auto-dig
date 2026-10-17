@@ -1,0 +1,25 @@
+#+TITLE: AD01 FEC 2026 official committee overview seed
+#+DATE: 2026-10-17
+#+OPTIONS: toc:2
+
+* Scope and evidence
+This is a *bounded research packet* for operator request #2749 (request key =auto-dig:election-26-fec-2026=). The source is the U.S. Federal Election Commission's own public 2026-cycle committee pages, inspected on 2026-10-17. All figures are the FEC's published *aggregates*, covering 2025-01-01 through 2026-08-31. The FEC notes that newly filed summary data may take up to 48 hours to appear.
+
+- DNC SERVICES CORP / DEMOCRATIC NATIONAL COMMITTEE, FEC committee =C00010603=: [[https://www.fec.gov/data/committee/C00010603/?cycle=2026][official FEC source]]. Total receipts USD 228,122,454.22; itemized individual contributions USD 69,003,510.56; total disbursements USD 233,343,989.19.
+- REPUBLICAN NATIONAL COMMITTEE, FEC committee =C00003418=: [[https://www.fec.gov/data/committee/C00003418/?cycle=2026][official FEC source]]. Total receipts USD 316,253,037.57; itemized individual contributions USD 101,243,230.32; total disbursements USD 228,749,585.28.
+
+Both committees are included under identical source and parsing rules. These amounts are neither netted nor disaggregated into individual FEC itemizations, and no conclusions about specific donors, transaction dates, amendments, refunds, or underlying sources of funds are drawn. These are *not* contribution records or evidence of any connection between specific people. Do not add these aggregates to itemized transactions or interpret them as an independent receipt ledger.
+
+* Materialized records
+Four JSONL records are stored in =starintel-documents.jsonl=: two canonical =org= records keyed by FEC committee IDs and two canonical =document= aggregate records keyed by committee ID and source coverage end. All have flat =id=, =dataset=election-26=, =dtype=, =schemaVersion=0.10.1=, exact primary FEC URLs, committee IDs, and =extensions.fec= for fields outside the canonical generated surface. No person or residential-location record is included.
+
+* Verification and limits
+The records were generated from an explicit FEC field extract and checked against the checked-in generated StarLang 0.10.1 =Org= and =Document= type definitions through a narrow model-executed required-field/type/property/$ref/pattern/URI validation. This is not equivalent to the *full* generated runtime or repository-native importer. The exact results and all NOT RUN gates are recorded in =ingest-manifest.json=.
+
+The official FEC 2026 itemized bulk ZIP could not be retrieved from this execution environment. Thus no FEC =SUB_ID= row, refund/negative amount, memo flag, conduit flow, amended report, or transaction ID was parsed. No normalized =db/= record was written; no GitHub PR is merge-ready based on this partial packet. The issue must remain open.
+
+* Next executable step
+Retrieve official FEC 2026 21-field individual contribution bulk rows and committee master data in a network-enabled checkout; reuse the existing DNC/GOP row parsers *as historical references* but enforce canonical 0.10.1. Apply row-level deidentification (especially home address and ZIP), stable record IDs, amendment and memo processing, then execute =scripts/schema-release.py current=, =check=, =scripts/starintel.py types=, =scripts/starintel.py schema --dtype org=, =--dtype document=, repository-owned batch importer, =nimble buildFast=, =bin/validate-for-merge --site=, and exact-head GitHub CI. Label every unexecuted validation step NOT RUN; do not publish these aggregates as individual transactions.
+
+* Neutrality and use
+This packet indexes public institutional campaign finance only. It is viewpoint-neutral and does not produce any voter-targeting or solicitation list. FEC contributor-data use restrictions still apply: [[https://www.fec.gov/updates/sale-or-use-contributor-information/][FEC restriction notice]]. AD02 should independently corroborate both FEC aggregate pages; AD03 should hold ingest until official row fixtures and native validation are available; AD04 can propose institutional-only recursive targets; AD05 should audit source values, schema release pin, and required gates.

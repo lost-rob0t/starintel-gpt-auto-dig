@@ -1,0 +1,67 @@
+{
+  "schema": "auto-dig-fec-seed-manifest.v1",
+  "issue": 2749,
+  "requestKey": "auto-dig:election-26-fec-2026",
+  "dataset": "election-26",
+  "schemaVersion": "0.10.1",
+  "schemaAuthority": {
+    "repo": "lost-rob0t/star-lang",
+    "commit": "765f1673851192bcaf1cdd2f35c47608f979b079",
+    "library": "org.starintel/core@1",
+    "localVendoredSchemaGitBlob": "d0c290a875794fae7d58f4ba9353cd33d6b6956f"
+  },
+  "collectedUTCDate": "2026-10-17",
+  "recordCounts": {
+    "org": 2,
+    "document": 2,
+    "relation": 0,
+    "total": 4,
+    "rawItemizedFecRows": 0
+  },
+  "sourceWindow": {
+    "start": "2025-01-01",
+    "end": "2026-08-31"
+  },
+  "sourceUrls": [
+    "https://www.fec.gov/data/committee/C00010603/?cycle=2026",
+    "https://www.fec.gov/data/committee/C00003418/?cycle=2026"
+  ],
+  "sourceRecordIds": [
+    "C00010603",
+    "C00003418"
+  ],
+  "recordIds": [
+    "starintel:org:fec-2026-c00010603",
+    "starintel:document:fec-2026-c00010603-summary-20260831",
+    "starintel:org:fec-2026-c00003418",
+    "starintel:document:fec-2026-c00003418-summary-20260831"
+  ],
+  "validation": {
+    "schemaType": "generated schema $defs.Org/$defs.Document field/required/ref/pattern/URI subset runtime validation via connected GitHub App code execution",
+    "result": "PASS",
+    "checkedRecords": 4,
+    "errors": 0,
+    "fullGeneratedRuntime": "NOT RUN",
+    "schemaReleaseCurrent": "NOT RUN",
+    "schemaReleaseCheck": "NOT RUN",
+    "repoImporter": "NOT RUN",
+    "nimbleBuildFast": "NOT RUN",
+    "validateForMerge": "NOT RUN",
+    "hostedHeadCI": "NOT RUN"
+  },
+  "releaseState": "DRAFT NOT INGESTED",
+  "limitations": [
+    "FEC HTML overview aggregate values, not bulk rows and not SUB_ID-bearing contributions",
+    "Raw FEC ZIP retrieval unavailable in this execution environment",
+    "No original downloaded page-byte hash; the extracted field set is source-addressable but not archived HTML",
+    "No transaction, amendment, refund, donor identity, or deduplication assertions",
+    "Not an executed native starintel_doc validator or persistent db write"
+  ],
+  "privacy": {
+    "hasContributorNames": false,
+    "hasPersonalAddresses": false,
+    "hasZipCodes": false,
+    "contactList": false
+  },
+  "next": "Retrieve official bulk rows; use repository-owned writer/importer to validate and ingest, then run full merge/CI gate. Leave issue #2749 open."
+}
