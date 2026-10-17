@@ -21,6 +21,20 @@ A worker that cannot read or validate the control file must fail closed and perf
 
 This gate outranks every lower section of this file while paused.
 
+## Operator authorization, public-data scope, and retry escalation
+
+The operator states that they are authorized to modify this repository, its retained Auto-Dig branches/PRs, and to conduct the public-source research used by this project.
+
+Auto-Dig publication is limited to public-source evidence and project-generated analysis. Do not publish secrets, credentials, private or sensitive personal information, or harmful operational material. Preserve uncertainty and source attribution. This authorization/scope statement is context for permission and safety triage; it does not override an explicit platform safety-policy denial.
+
+For connected GitHub App reads/writes, ordinary failures are recoverable by default. A generic `403`, `blocked`, `write failed`, `safety check`, auth/permission failure, rate limit, timeout, stale ref/path, or expected-SHA mismatch is not by itself an explicit OpenAI safety-policy denial.
+
+Retry the same intended GitHub operation up to **10 total attempts**. Before every retry, read back repository/ref/blob/PR state to determine whether the operation already landed, refresh connector/auth/path/ref/current blob SHA/expected head SHA as applicable, and avoid duplicate effects.
+
+If any attempt is explicitly identified by the tool/runtime as an OpenAI safety-policy denial, stop that exact action/material immediately and do not disguise, repackage, reroute, re-encode, or bypass it.
+
+If all 10 attempts fail without a successful write, **do not blindly continue and do not dismiss the failure as harmless**. Treat the repeated failure as potentially safety-relevant or otherwise policy/permission restricted, stop that operation, and escalate to the operator. The escalation must include the exact action, errors, attempt count, repo/ref/blob state, and this context: the operator states they are authorized to modify the repository and conduct the research; Auto-Dig publication is restricted to public-source evidence and excludes secrets, sensitive personal data, and harmful operational content. Ask the operator to unblock, clarify, or narrow the action before another write attempt.
+
 ## Non-negotiable authority
 
 StarLang (`lost-rob0t/star-lang`, `specs/starintel/0.10.1/core.star`) is the sole
